@@ -11,6 +11,8 @@ import com.cocroachden.planner.solver.solver.response.ResponseSchedule;
 import com.google.ortools.Loader;
 import com.google.ortools.sat.CpModel;
 import com.google.ortools.sat.CpSolver;
+import com.vaadin.flow.server.auth.AnonymousAllowed;
+import dev.hilla.BrowserCallable;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Async;
@@ -20,6 +22,8 @@ import java.util.concurrent.CompletableFuture;
 
 @RequiredArgsConstructor
 @Slf4j
+@BrowserCallable
+@AnonymousAllowed
 public class ScheduleSolver {
   private final GenericConstraintApplier constraintApplier;
   private ScheduleSolutionCb solutionCb;
@@ -27,7 +31,6 @@ public class ScheduleSolver {
   @Async
   public CompletableFuture<ResponseSchedule> solve(
       SchedulePlanConfiguration schedulePlanConfiguration,
-      List<ScheduleRequest> scheduleRequests,
       List<ConstraintRequest> constraintRequests,
       int timeLimitInSeconds
   ) {
