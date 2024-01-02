@@ -1,12 +1,13 @@
 package com.cocroachden.planner.solver.solver;
 
-import com.cockroachden.shiftschedulerback.model.SchedulePlanConfiguration;
-import com.cockroachden.shiftschedulerback.model.constraints.ConstraintRequest;
-import com.cockroachden.shiftschedulerback.model.constraints.GenericConstraintApplier;
-import com.cockroachden.shiftschedulerback.model.schedule.Objectives;
-import com.cockroachden.shiftschedulerback.model.schedule.SchedulePlanBuilder;
-import com.cockroachden.shiftschedulerback.model.schedule.request.ScheduleRequest;
-import com.cockroachden.shiftschedulerback.model.solver.response.ResponseSchedule;
+
+import com.cocroachden.planner.solver.SchedulePlanConfiguration;
+import com.cocroachden.planner.solver.constraints.ConstraintRequest;
+import com.cocroachden.planner.solver.constraints.GenericConstraintApplier;
+import com.cocroachden.planner.solver.schedule.Objectives;
+import com.cocroachden.planner.solver.schedule.SchedulePlanBuilder;
+import com.cocroachden.planner.solver.schedule.request.ScheduleRequest;
+import com.cocroachden.planner.solver.solver.response.ResponseSchedule;
 import com.google.ortools.Loader;
 import com.google.ortools.sat.CpModel;
 import com.google.ortools.sat.CpSolver;

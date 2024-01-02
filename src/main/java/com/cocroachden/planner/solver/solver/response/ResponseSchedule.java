@@ -1,6 +1,7 @@
 package com.cocroachden.planner.solver.solver.response;
 
-import com.cockroachden.shiftschedulerback.lib.WorkerId;
+
+import com.cocroachden.planner.lib.WorkerId;
 
 import java.util.List;
 import java.util.Map;

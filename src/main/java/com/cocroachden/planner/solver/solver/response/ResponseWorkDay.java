@@ -1,6 +1,7 @@
 package com.cocroachden.planner.solver.solver.response;
 
-import com.cockroachden.shiftschedulerback.model.schedule.WorkShifts;
+
+import com.cocroachden.planner.solver.schedule.WorkShifts;
 
 import java.time.LocalDate;
 

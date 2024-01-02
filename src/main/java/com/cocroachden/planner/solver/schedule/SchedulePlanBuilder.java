@@ -1,7 +1,8 @@
 package com.cocroachden.planner.solver.schedule;
 
-import com.cockroachden.shiftschedulerback.lib.WorkerId;
-import com.cockroachden.shiftschedulerback.model.SchedulePlanConfiguration;
+
+import com.cocroachden.planner.lib.WorkerId;
+import com.cocroachden.planner.solver.SchedulePlanConfiguration;
 import com.google.ortools.sat.CpModel;
 
 import java.time.LocalDate;

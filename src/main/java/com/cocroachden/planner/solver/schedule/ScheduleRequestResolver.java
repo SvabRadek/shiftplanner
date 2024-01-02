@@ -1,6 +1,7 @@
 package com.cocroachden.planner.solver.schedule;
 
-import com.cockroachden.shiftschedulerback.model.schedule.request.ScheduleRequest;
+
+import com.cocroachden.planner.solver.schedule.request.ScheduleRequest;
 
 public interface ScheduleRequestResolver {
 

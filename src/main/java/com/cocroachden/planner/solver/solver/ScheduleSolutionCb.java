@@ -1,10 +1,11 @@
 package com.cocroachden.planner.solver.solver;
 
-import com.cockroachden.shiftschedulerback.lib.WorkerId;
-import com.cockroachden.shiftschedulerback.model.schedule.SchedulePlan;
-import com.cockroachden.shiftschedulerback.model.schedule.WorkShifts;
-import com.cockroachden.shiftschedulerback.model.solver.response.ResponseSchedule;
-import com.cockroachden.shiftschedulerback.model.solver.response.ResponseWorkDay;
+
+import com.cocroachden.planner.lib.WorkerId;
+import com.cocroachden.planner.solver.schedule.SchedulePlan;
+import com.cocroachden.planner.solver.schedule.WorkShifts;
+import com.cocroachden.planner.solver.solver.response.ResponseSchedule;
+import com.cocroachden.planner.solver.solver.response.ResponseWorkDay;
 import com.google.ortools.sat.CpSolverSolutionCallback;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
