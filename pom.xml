@@ -3,9 +3,9 @@
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <!-- Project from https://start.vaadin.com/project/a17cb2ab-8d0d-49c8-be13-f0dce42ab697 -->
-    <groupId>com.example.application</groupId>
-    <artifactId>hilla-crm</artifactId>
-    <name>hilla-crm</name>
+    <groupId>com.cockroachden.planner</groupId>
+    <artifactId>shiftplanner</artifactId>
+    <name>shift planner</name>
     <version>1.0-SNAPSHOT</version>
     <packaging>jar</packaging>
 
@@ -46,23 +46,21 @@
             <artifactId>line-awesome</artifactId>
             <version>2.0.0</version>
         </dependency>
-
         <dependency>
-            <groupId>com.h2database</groupId>
-            <artifactId>h2</artifactId>
-            <scope>runtime</scope>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <optional>true</optional>
         </dependency>
-
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-data-jpa</artifactId>
-        </dependency>
-
-
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-validation</artifactId>
         </dependency>
+        <dependency>
+            <groupId>com.google.ortools</groupId>
+            <artifactId>ortools-java</artifactId>
+            <version>9.7.2996</version>
+        </dependency>
+
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-devtools</artifactId>
