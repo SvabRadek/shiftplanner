@@ -1,5 +1,9 @@
 package com.cocroachden.planner.lib;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
+
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class WorkerId extends AbstractIdentity {
   public WorkerId(String id) {
     super(id);

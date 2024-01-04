@@ -4,9 +4,11 @@ package com.cocroachden.planner.solver.constraints.specific.workerspershift.requ
 import com.cocroachden.planner.lib.ConstraintRequestId;
 import com.cocroachden.planner.solver.constraints.specific.AbstractMinMaxRequest;
 import com.cocroachden.planner.solver.schedule.WorkShifts;
+import com.fasterxml.jackson.annotation.JsonTypeName;
 import lombok.Getter;
 
 @Getter
+@JsonTypeName("WorkersPerShiftRequest")
 public class WorkersPerShiftRequest extends AbstractMinMaxRequest {
   public static final ConstraintRequestId ID = new ConstraintRequestId("WorkersPerShiftRequest");
   private final WorkShifts shift;

@@ -5,9 +5,11 @@ import com.cocroachden.planner.lib.ConstraintRequestId;
 import com.cocroachden.planner.lib.WorkerId;
 import com.cocroachden.planner.solver.constraints.specific.AbstractConstraintRequest;
 import com.cocroachden.planner.solver.schedule.WorkShifts;
+import com.fasterxml.jackson.annotation.JsonTypeName;
 import lombok.Getter;
 
 @Getter
+@JsonTypeName("ShiftFollowUpRestrictionRequest")
 public class ShiftFollowUpRestrictionRequest extends AbstractConstraintRequest {
   public static final ConstraintRequestId ID = new ConstraintRequestId("ShiftFollowupRestrictionRequest");
   private final WorkShifts firstShift;

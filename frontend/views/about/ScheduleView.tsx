@@ -1,10 +1,34 @@
+import { FormLayout } from "@hilla/react-components/FormLayout";
+import { DatePicker } from "@hilla/react-components/DatePicker";
+import { FormLayoutResponsiveStep } from "@vaadin/form-layout/src/vaadin-form-layout";
+import { useForm } from "@hilla/react-form";
+import SchedulePlanConfigurationModel
+  from "Frontend/generated/com/cocroachden/planner/solver/SchedulePlanConfigurationModel";
+
+const breakPoints: FormLayoutResponsiveStep[] = [
+  { minWidth: "0", columns: 1 },
+  { minWidth: "500px", columns: 2 }
+]
+
 export default function ScheduleView() {
+  const { model, field } = useForm(SchedulePlanConfigurationModel)
+
   return (
     <div className="p-m">
-      <h2>Hilla full-stack tutorial app</h2>
-      <p>
-        You can find the steps for building this app in the <a href="https://hilla.dev/docs">Hilla documentation</a>.
-      </p>
+      <FormLayout responsiveSteps={breakPoints}>
+        <DatePicker
+          label={"Od"}
+          {...field(model.startDate)}
+        />
+        <DatePicker
+          label={"Do"}
+          {...field(model.endDate)}
+        />
+      </FormLayout>
+      <div style={{ width: 100, height: 100 }}
+           className={"card"}>
+
+      </div>
     </div>
   );
 }

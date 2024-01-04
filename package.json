@@ -24,6 +24,7 @@
     "@vaadin/router": "1.7.5",
     "classnames": "^2.3.2",
     "construct-style-sheets-polyfill": "3.1.0",
+    "date-fns": "^3.0.6",
     "lit": "3.1.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
@@ -75,7 +76,8 @@
     "@hilla/generator-typescript-plugin-subtypes": "$@hilla/generator-typescript-plugin-subtypes",
     "@hilla/react-crud": "$@hilla/react-crud",
     "@hilla/generator-typescript-plugin-backbone": "$@hilla/generator-typescript-plugin-backbone",
-    "@hilla/generator-typescript-cli": "$@hilla/generator-typescript-cli"
+    "@hilla/generator-typescript-cli": "$@hilla/generator-typescript-cli",
+    "date-fns": "$date-fns"
   },
   "vaadin": {
     "dependencies": {
@@ -119,6 +121,6 @@
       "workbox-core": "7.0.0",
       "workbox-precaching": "7.0.0"
     },
-    "hash": "958b35b6da63ef31d2aefeb839cf3009bbcc4a884e493cc8b253fde5a4eaffef"
+    "hash": "b008d6ed2571752dd151c4c65d537abbd2958ad9b954af9cd2d53bec29d4ba3b"
   }
 }

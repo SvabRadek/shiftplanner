@@ -34,14 +34,6 @@
 
     <dependencies>
         <dependency>
-            <groupId>dev.hilla</groupId>
-            <artifactId>hilla-react</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>dev.hilla</groupId>
-            <artifactId>hilla-spring-boot-starter</artifactId>
-        </dependency>
-        <dependency>
             <groupId>org.parttio</groupId>
             <artifactId>line-awesome</artifactId>
             <version>2.0.0</version>
@@ -60,11 +52,22 @@
             <artifactId>ortools-java</artifactId>
             <version>9.7.2996</version>
         </dependency>
-
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-devtools</artifactId>
             <optional>true</optional>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-jpa</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>dev.hilla</groupId>
+            <artifactId>hilla-react-spring-boot-starter</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.h2database</groupId>
+            <artifactId>h2</artifactId>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
