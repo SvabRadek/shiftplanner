@@ -4,18 +4,19 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
 import java.io.Serial;
+import java.io.Serializable;
 
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class ScheduleRequestId extends AbstractIdentity {
+public class ConstraintRequestTypeId extends AbstractIdentity {
   @Serial
-  private static final long serialVersionUID = -7692638585201714516L;
-  public ScheduleRequestId(String id) {
+  private static final long serialVersionUID = 8930579657252155114L;
+  public ConstraintRequestTypeId(String id) {
     super(id);
   }
 
   @Override
   public boolean equals(Object obj) {
-    if (obj instanceof ScheduleRequestId other) {
+    if (obj instanceof ConstraintRequestTypeId other) {
       return other.id.equals(id);
     }
     return false;

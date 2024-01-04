@@ -1,8 +1,12 @@
 package com.cocroachden.planner.configuration;
 
 import com.cocroachden.planner.solver.constraints.ConstraintRequest;
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.PropertyAccessor;
+import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 import jakarta.persistence.AttributeConverter;
 import jakarta.persistence.Converter;
 
@@ -11,7 +15,10 @@ public class ConstraintRequestAttributeConverter implements AttributeConverter<C
   @Override
   public String convertToDatabaseColumn(ConstraintRequest constraintRequest) {
     try {
-      return new ObjectMapper().writeValueAsString(constraintRequest);
+      return new ObjectMapper()
+          .setVisibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.ANY)
+          .setVisibility(PropertyAccessor.GETTER, JsonAutoDetect.Visibility.NONE)
+          .writeValueAsString(constraintRequest);
     } catch (JsonProcessingException e) {
       throw new RuntimeException(e);
     }

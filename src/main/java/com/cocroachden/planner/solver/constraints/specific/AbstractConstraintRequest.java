@@ -1,9 +1,11 @@
 package com.cocroachden.planner.solver.constraints.specific;
 
 
-import com.cocroachden.planner.lib.ConstraintRequestId;
+import com.cocroachden.planner.lib.ConstraintRequestTypeId;
 import com.cocroachden.planner.lib.WorkerId;
 import com.cocroachden.planner.solver.constraints.ConstraintRequest;
+import com.fasterxml.jackson.annotation.JsonTypeName;
+import jakarta.persistence.Embedded;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
@@ -11,12 +13,13 @@ import lombok.NoArgsConstructor;
 import java.util.Optional;
 
 @AllArgsConstructor
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@JsonTypeName("AbstractConstraintRequest")
 public abstract class AbstractConstraintRequest implements ConstraintRequest {
-  private ConstraintRequestId id;
+  private ConstraintRequestTypeId id;
   private WorkerId owner;
   @Override
-  public ConstraintRequestId getId() {
+  public ConstraintRequestTypeId getId() {
     return this.id;
   }
 

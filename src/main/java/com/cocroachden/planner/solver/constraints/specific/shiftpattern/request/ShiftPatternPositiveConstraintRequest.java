@@ -1,19 +1,22 @@
 package com.cocroachden.planner.solver.constraints.specific.shiftpattern.request;
 
 
-import com.cocroachden.planner.lib.ConstraintRequestId;
+import com.cocroachden.planner.lib.ConstraintRequestTypeId;
 import com.cocroachden.planner.lib.WorkerId;
 import com.cocroachden.planner.solver.constraints.specific.AbstractConstraintRequest;
 import com.cocroachden.planner.solver.schedule.WorkShifts;
 import com.fasterxml.jackson.annotation.JsonTypeName;
+import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Getter
 @JsonTypeName("ShiftPatternPositiveConstraintRequest")
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class ShiftPatternPositiveConstraintRequest extends AbstractConstraintRequest {
-  public static final ConstraintRequestId ID = new ConstraintRequestId("ShiftPatternPositiveConstraintRequest");
-  private final WorkShifts[] shiftPattern;
-  private final Integer reward;
+  public static final ConstraintRequestTypeId ID = new ConstraintRequestTypeId("ShiftPatternPositiveConstraintRequest");
+  private WorkShifts[] shiftPattern;
+  private Integer reward;
 
   public ShiftPatternPositiveConstraintRequest(WorkerId owner, Integer reward, WorkShifts... shiftPattern) {
     super(ID, owner);

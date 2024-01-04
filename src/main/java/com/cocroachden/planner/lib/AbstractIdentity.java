@@ -7,10 +7,11 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
-@Embeddable
+
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @Getter
+@Embeddable
 public abstract class AbstractIdentity implements Serializable {
   protected String id;
   @Override
