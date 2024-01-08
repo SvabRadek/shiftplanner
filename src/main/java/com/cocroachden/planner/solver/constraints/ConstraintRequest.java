@@ -9,7 +9,6 @@ import com.cocroachden.planner.solver.constraints.specific.shiftfollowuprestrict
 import com.cocroachden.planner.solver.constraints.specific.shiftpattern.request.ShiftPatternPositiveConstraintRequest;
 import com.cocroachden.planner.solver.constraints.specific.shiftperday.request.OneShiftPerDayRequest;
 import com.cocroachden.planner.solver.constraints.specific.shiftperschedule.request.ShiftsPerScheduleRequest;
-import com.cocroachden.planner.solver.constraints.specific.workershiftrequest.request.SpecificNegativeShiftRequest;
 import com.cocroachden.planner.solver.constraints.specific.workershiftrequest.request.SpecificShiftRequest;
 import com.cocroachden.planner.solver.constraints.specific.workerspershift.request.WorkersPerShiftRequest;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
@@ -27,7 +26,6 @@ import java.io.Serializable;
     @JsonSubTypes.Type(value = ShiftFollowUpRestrictionRequest.class, name = "ShiftFollowUpRestrictionRequest"),
     @JsonSubTypes.Type(value = ShiftPatternPositiveConstraintRequest.class, name = "ShiftPatternPositiveConstraintRequest"),
     @JsonSubTypes.Type(value = ShiftsPerScheduleRequest.class, name = "ShiftsPerScheduleRequest"),
-    @JsonSubTypes.Type(value = SpecificNegativeShiftRequest.class, name = "SpecificNegativeShiftRequest"),
     @JsonSubTypes.Type(value = WorkersPerShiftRequest.class, name = "WorkersPerShiftRequest"),
     @JsonSubTypes.Type(value = AbstractConstraintRequest.class, name = "AbstractConstraintRequest"),
     @JsonSubTypes.Type(value = AbstractMinMaxRequest.class, name = "AbstractMinMaxRequest"),

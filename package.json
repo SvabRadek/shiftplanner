@@ -19,6 +19,7 @@
     "@hilla/react-crud": "2.5.5",
     "@hilla/react-form": "2.5.5",
     "@polymer/polymer": "3.5.1",
+    "@uidotdev/usehooks": "^2.4.1",
     "@vaadin/bundles": "24.3.0",
     "@vaadin/common-frontend": "0.0.19",
     "@vaadin/router": "1.7.5",
@@ -27,8 +28,7 @@
     "date-fns": "^3.0.6",
     "lit": "3.1.0",
     "react": "^18.2.0",
-    "react-dom": "^18.2.0",
-    "react-router-dom": "^6.4.2"
+    "react-dom": "^18.2.0"
   },
   "devDependencies": {
     "@lit-labs/react": "^1.1.0",
@@ -55,7 +55,6 @@
     "classnames": "$classnames",
     "react": "$react",
     "react-dom": "$react-dom",
-    "react-router-dom": "$react-router-dom",
     "@vaadin/bundles": "$@vaadin/bundles",
     "@hilla/react-components": "$@hilla/react-components",
     "@vaadin/common-frontend": "$@vaadin/common-frontend",
@@ -77,7 +76,8 @@
     "@hilla/react-crud": "$@hilla/react-crud",
     "@hilla/generator-typescript-plugin-backbone": "$@hilla/generator-typescript-plugin-backbone",
     "@hilla/generator-typescript-cli": "$@hilla/generator-typescript-cli",
-    "date-fns": "$date-fns"
+    "date-fns": "$date-fns",
+    "@uidotdev/usehooks": "$@uidotdev/usehooks"
   },
   "vaadin": {
     "dependencies": {
@@ -121,6 +121,6 @@
       "workbox-core": "7.0.0",
       "workbox-precaching": "7.0.0"
     },
-    "hash": "b008d6ed2571752dd151c4c65d537abbd2958ad9b954af9cd2d53bec29d4ba3b"
+    "hash": "e2ffb77de217a2b56b212150e9d6f0eae83fda7603d2320a4f7420bd27b95c90"
   }
 }

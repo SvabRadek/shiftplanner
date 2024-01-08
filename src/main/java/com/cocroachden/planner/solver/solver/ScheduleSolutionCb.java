@@ -55,7 +55,7 @@ public class ScheduleSolutionCb extends CpSolverSolutionCallback {
     var response = new HashMap<WorkerId, List<ResponseWorkDay>>();
     schedulePlan.assignments()
         .entrySet().stream()
-        .sorted(Comparator.comparingInt(value -> Integer.parseInt(value.getKey().getId())))
+        .sorted(Comparator.comparingInt(value -> Integer.parseInt(value.getKey().getWorkerId())))
         .forEach(entry -> {
           var workerId = entry.getKey();
           var assignments = entry.getValue();

@@ -2,7 +2,7 @@ import EmployeeView from 'Frontend/views/contacts/EmployeeView';
 import MainLayout from 'Frontend/views/MainLayout.js';
 import { createBrowserRouter, RouteObject } from 'react-router-dom';
 import { HomeView } from "Frontend/views/home/HomeView";
-import ScheduleView from "Frontend/views/about/ScheduleView";
+import ScheduleView from "Frontend/views/schedule/ScheduleView";
 
 export const routes = [
   {

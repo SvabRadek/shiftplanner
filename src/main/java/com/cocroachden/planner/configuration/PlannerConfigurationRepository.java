@@ -2,6 +2,7 @@ package com.cocroachden.planner.configuration;
 
 import org.springframework.data.repository.CrudRepository;
 
-public interface PlannerConfigurationRepository extends CrudRepository<PlannerConfigurationRecord, Long> {
+import java.util.UUID;
 
+public interface PlannerConfigurationRepository extends CrudRepository<PlannerConfigurationRecord, UUID> {
 }

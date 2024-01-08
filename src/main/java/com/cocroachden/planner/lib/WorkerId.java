@@ -1,23 +1,20 @@
 package com.cocroachden.planner.lib;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
+import jakarta.persistence.Column;
+import jakarta.persistence.Embeddable;
+import lombok.*;
 
 import java.io.Serial;
+import java.io.Serializable;
 
+@AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class WorkerId extends AbstractIdentity {
+@Getter
+@Embeddable
+@EqualsAndHashCode
+public class WorkerId implements Serializable {
   @Serial
   private static final long serialVersionUID = -3136703610267018121L;
-  public WorkerId(String id) {
-    super(id);
-  }
-
-  @Override
-  public boolean equals(Object other) {
-    if (other instanceof WorkerId workerId) {
-      return this.id.equals(workerId.id);
-    }
-    return false;
-  }
+  @Column(name = "worker_id", nullable = false)
+  private String workerId;
 }

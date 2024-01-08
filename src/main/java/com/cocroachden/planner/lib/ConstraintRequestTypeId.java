@@ -1,24 +1,20 @@
 package com.cocroachden.planner.lib;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
+import jakarta.persistence.Column;
+import jakarta.persistence.Embeddable;
+import lombok.*;
 
 import java.io.Serial;
 import java.io.Serializable;
 
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class ConstraintRequestTypeId extends AbstractIdentity {
+@AllArgsConstructor
+@Getter
+@Embeddable
+@EqualsAndHashCode
+public class ConstraintRequestTypeId implements Serializable {
   @Serial
   private static final long serialVersionUID = 8930579657252155114L;
-  public ConstraintRequestTypeId(String id) {
-    super(id);
-  }
-
-  @Override
-  public boolean equals(Object obj) {
-    if (obj instanceof ConstraintRequestTypeId other) {
-      return other.id.equals(id);
-    }
-    return false;
-  }
+  @Column(name = "constraint_request_type_id", nullable = false)
+  private String id;
 }
