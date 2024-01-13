@@ -22,6 +22,10 @@ public class PlannerConfigurationService {
         .orElseThrow(() -> new RuntimeException("No planner configuration was found"));
   }
 
+  public @Nonnull PlannerConfigurationRecord getConfiguration(UUID uuid) {
+    return repository.getById(uuid);
+  }
+
   @Nonnull
   public List<@Nonnull PlannerConfigurationMetaData> getMetaData() {
     return StreamSupport.stream(repository.findAll().spliterator(), false)
