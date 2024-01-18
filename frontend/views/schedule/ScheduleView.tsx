@@ -1,33 +1,27 @@
 import { DatePicker } from "@hilla/react-components/DatePicker";
 import { useForm } from "@hilla/react-form";
-import { useEffect, useRef } from "react";
-import PlannerConfigurationRecordModel
-  from "Frontend/generated/com/cocroachden/planner/configuration/PlannerConfigurationRecordModel";
-import { PlannerConfigurationService } from "Frontend/generated/endpoints";
+import { useContext, useEffect, useRef } from "react";
+import { ConstraintRequestService, EmployeeService, PlannerConfigurationService } from "Frontend/generated/endpoints";
 import { Button } from "@hilla/react-components/Button";
 import { HorizontalLayout } from "@hilla/react-components/HorizontalLayout";
 import { TextField } from "@hilla/react-components/TextField";
-import { ScheduleGrid } from "Frontend/views/schedule/ScheduleGrid";
+import { ScheduleGrid } from "Frontend/views/schedule/components/schedulegrid/ScheduleGrid";
 import { HorizontalDivider } from "Frontend/components/HorizontalDivider";
-import PlannerConfigurationRecord
-  from "Frontend/generated/com/cocroachden/planner/configuration/PlannerConfigurationRecord";
-import { useLocalStorage } from "@uidotdev/usehooks";
-import { PlannerConfigList } from "Frontend/views/schedule/PlannerConfigList";
 import { VerticalLayout } from "@hilla/react-components/VerticalLayout";
 import PlannerConfigurationMetaData
   from "Frontend/generated/com/cocroachden/planner/configuration/PlannerConfigurationMetaData";
+import { ConfigSelectDialog } from "Frontend/views/schedule/components/ConfigSelectDialog";
+import { RequestCtx } from "Frontend/views/schedule/components/schedulegrid/RequestCtxProvider";
+import PlannerConfigurationResponseModel
+  from "Frontend/generated/com/cocroachden/planner/configuration/PlannerConfigurationService/PlannerConfigurationResponseModel";
 
 export default function ScheduleView() {
 
   const saveAsNewRef = useRef<boolean>(false);
-  const [request, setRequest] = useLocalStorage<PlannerConfigurationRecord | undefined>(
-    "planner_config", undefined
-  )
+  const requestCtx = useContext(RequestCtx)
 
   useEffect(() => {
-    if (!request) {
-      PlannerConfigurationService.getLatestConfiguration().then(setRequest);
-    }
+    EmployeeService.getAllEmployees().then(requestCtx.setEmployees)
     window.addEventListener("beforeunload", handleUnload)
     return () => {
       window.removeEventListener("beforeunload", handleUnload)
@@ -35,14 +29,14 @@ export default function ScheduleView() {
   }, []);
 
   useEffect(() => {
-    form.read(request)
-  }, [request]);
+    form.read(requestCtx.request)
+  }, [requestCtx.request]);
 
   function handleUnload(e: Event) {
     e.preventDefault()
   }
 
-  const form = useForm(PlannerConfigurationRecordModel, {
+  const form = useForm(PlannerConfigurationResponseModel, {
     onSubmit: async value => {
       if (saveAsNewRef.current) {
         await PlannerConfigurationService.saveAsNew(value).then(form.read)
@@ -52,34 +46,41 @@ export default function ScheduleView() {
     }
   })
 
-  function handleConfigSelectionChanged(value: PlannerConfigurationMetaData) {
-    PlannerConfigurationService.getConfiguration(value.id).then(setRequest)
+  function handleConfigSelected(value: PlannerConfigurationMetaData) {
+    PlannerConfigurationService.getConfiguration(value.id).then(configResponse => {
+      requestCtx.setRequest(configResponse)
+      ConstraintRequestService.getSpecificShiftRequests(configResponse.id).then(response => {
+        response.forEach(req => {
+          requestCtx.addSpecificShiftRequest(req.requestedShift, req.owner, req.date)
+        })
+      })
+    })
   }
 
   return (
     <VerticalLayout theme={"spacing padding"}>
-      <PlannerConfigList onSelectionChanged={handleConfigSelectionChanged} />
+      <ConfigSelectDialog onConfigSelected={handleConfigSelected}/>
       <VerticalLayout theme={"spacing"}>
         <TextField
           label={"Nazev"}
-          value={request?.name}
-          onChange={e => setRequest(old => ({ ...old!, name: e.target.value }))}
+          value={requestCtx.request?.name}
+          onChange={e => requestCtx.setRequest({ ...requestCtx.request!, name: e.target.value })}
         />
         <HorizontalLayout theme={"spacing"}>
           <DatePicker
             label={"Od"}
-            value={request?.startDate}
-            onChange={e => setRequest(old => ({ ...old!, startDate: e.target.value }))}
+            value={requestCtx.request?.startDate}
+            onChange={e => requestCtx.setRequest({ ...requestCtx.request!, startDate: e.target.value })}
           />
           <DatePicker
             label={"Do"}
-            value={request?.endDate}
-            onChange={e => setRequest(old => ({ ...old!, endDate: e.target.value }))}
+            value={requestCtx.request?.endDate}
+            onChange={e => requestCtx.setRequest({ ...requestCtx.request!, endDate: e.target.value })}
           />
         </HorizontalLayout>
       </VerticalLayout>
       <HorizontalDivider/>
-      {request && <ScheduleGrid config={request}/>}
+      {requestCtx.request ? <ScheduleGrid/> : <div>Select configuration first</div>}
       <HorizontalLayout theme={"spacing"}>
         <Button
           theme={"primary"}

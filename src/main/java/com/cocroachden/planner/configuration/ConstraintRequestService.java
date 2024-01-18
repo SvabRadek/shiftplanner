@@ -46,6 +46,7 @@ public class ConstraintRequestService {
   @AllArgsConstructor
   @Getter
   public static class SpecificShiftRequestResponse {
+    public static final String TYPE = "SpecificShiftRequest";
     @Nonnull
     private String type;
     @Nonnull

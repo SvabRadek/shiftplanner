@@ -22,25 +22,34 @@ import java.util.UUID;
 @Entity(name = "planner_configuration")
 @Table(name = "planner_configurations")
 public class PlannerConfigurationRecord {
+
+  public static PlannerConfigurationRecord from(PlannerConfigurationService.PlannerConfigurationResponse response) {
+    return new PlannerConfigurationRecord(
+        UUID.randomUUID(),
+        response.getName(),
+        response.getCreatedAt(),
+        response.getLastUpdated(),
+        response.getStartDate(),
+        response.getEndDate(),
+        response.getWorkers(),
+        response.getConstraintRequestInstances()
+    );
+  }
+
   @Id
   @GeneratedValue
   @Setter
   private UUID id;
-  @NotEmpty(message = "Konfigurace musi mit nejake jmeno.")
   private String name;
   @CreationTimestamp
   private Instant createdAt;
   @UpdateTimestamp
   private Instant lastUpdated;
-  @Nonnull
   private LocalDate startDate;
-  @Nonnull
   private LocalDate endDate;
   @ElementCollection
   @OrderColumn(name = "list_index")
-  @Nonnull
-  private List<@Nonnull WorkerId> workers;
+  private List<WorkerId> workers;
   @ElementCollection
-  @Nonnull
-  private List<@Nonnull UUID> constraintRequestInstances;
+  private List<UUID> constraintRequestInstances;
 }

@@ -4,8 +4,6 @@ import PlannerConfigurationMetaData
 import { PlannerConfigurationService } from "Frontend/generated/endpoints";
 import { Grid } from "@hilla/react-components/Grid";
 import { GridColumn } from "@hilla/react-components/GridColumn";
-import PlannerConfigurationRecord
-  from "Frontend/generated/com/cocroachden/planner/configuration/PlannerConfigurationRecord";
 
 type Props = {
   onSelectionChanged: (value: PlannerConfigurationMetaData) => void

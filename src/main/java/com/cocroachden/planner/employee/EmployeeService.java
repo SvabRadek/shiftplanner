@@ -20,6 +20,23 @@ public class EmployeeService {
         .stream(employeeRepository.findAll().spliterator(), false)
         .toList();
   }
+
+  @Nonnull
+  public List<@Nonnull EmployeeRecord> getEmployeesByIds(@Nonnull List<@Nonnull String> workerIds) {
+    return StreamSupport
+        .stream(employeeRepository.findAll().spliterator(), false)
+        .filter(e -> workerIds.contains(e.getWorkerId()))
+        .toList();
+  }
+
+  @Nonnull
+  public List<@Nonnull EmployeeRecord> getEmployeesExcluding(@Nonnull List<@Nonnull String> workerIds) {
+    return StreamSupport
+        .stream(employeeRepository.findAll().spliterator(), false)
+        .filter(e -> !workerIds.contains(e.getWorkerId()))
+        .toList();
+  }
+
 }
 
 
