@@ -1,6 +1,6 @@
 import { DatePicker } from "@hilla/react-components/DatePicker";
 import { useForm } from "@hilla/react-form";
-import { useContext, useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { ConstraintRequestService, EmployeeService, PlannerConfigurationService } from "Frontend/generated/endpoints";
 import { Button } from "@hilla/react-components/Button";
 import { HorizontalLayout } from "@hilla/react-components/HorizontalLayout";
@@ -11,17 +11,23 @@ import { VerticalLayout } from "@hilla/react-components/VerticalLayout";
 import PlannerConfigurationMetaData
   from "Frontend/generated/com/cocroachden/planner/configuration/PlannerConfigurationMetaData";
 import { ConfigSelectDialog } from "Frontend/views/schedule/components/ConfigSelectDialog";
-import { RequestCtx } from "Frontend/views/schedule/components/schedulegrid/RequestCtxProvider";
 import PlannerConfigurationResponseModel
   from "Frontend/generated/com/cocroachden/planner/configuration/PlannerConfigurationService/PlannerConfigurationResponseModel";
+import PlannerConfigurationResponse
+  from "Frontend/generated/com/cocroachden/planner/configuration/PlannerConfigurationService/PlannerConfigurationResponse";
+import SpecificShiftRequestResponse
+  from "Frontend/generated/com/cocroachden/planner/configuration/ConstraintRequestService/SpecificShiftRequestResponse";
+import EmployeeRecord from "Frontend/generated/com/cocroachden/planner/employee/EmployeeRecord";
 
 export default function ScheduleView() {
 
   const saveAsNewRef = useRef<boolean>(false);
-  const requestCtx = useContext(RequestCtx)
+  const [request, setRequest] = useState<PlannerConfigurationResponse | undefined>()
+  const [employees, setEmployees] = useState<EmployeeRecord[]>([])
+  const [shiftRequests, setShiftRequests] = useState<SpecificShiftRequestResponse[]>([])
 
   useEffect(() => {
-    EmployeeService.getAllEmployees().then(requestCtx.setEmployees)
+    EmployeeService.getAllEmployees().then(setEmployees)
     window.addEventListener("beforeunload", handleUnload)
     return () => {
       window.removeEventListener("beforeunload", handleUnload)
@@ -29,8 +35,8 @@ export default function ScheduleView() {
   }, []);
 
   useEffect(() => {
-    form.read(requestCtx.request)
-  }, [requestCtx.request]);
+    form.read(request)
+  }, [request]);
 
   function handleUnload(e: Event) {
     e.preventDefault()
@@ -48,12 +54,8 @@ export default function ScheduleView() {
 
   function handleConfigSelected(value: PlannerConfigurationMetaData) {
     PlannerConfigurationService.getConfiguration(value.id).then(configResponse => {
-      requestCtx.setRequest(configResponse)
-      ConstraintRequestService.getSpecificShiftRequests(configResponse.id).then(response => {
-        response.forEach(req => {
-          requestCtx.addSpecificShiftRequest(req.requestedShift, req.owner, req.date)
-        })
-      })
+      setRequest(configResponse)
+      ConstraintRequestService.getSpecificShiftRequests(configResponse.id).then(setShiftRequests)
     })
   }
 
@@ -63,24 +65,35 @@ export default function ScheduleView() {
       <VerticalLayout theme={"spacing"}>
         <TextField
           label={"Nazev"}
-          value={requestCtx.request?.name}
-          onChange={e => requestCtx.setRequest({ ...requestCtx.request!, name: e.target.value })}
+          value={request?.name}
+          onChange={e => setRequest({ ...request!, name: e.target.value })}
+          disabled={!request}
         />
         <HorizontalLayout theme={"spacing"}>
           <DatePicker
             label={"Od"}
-            value={requestCtx.request?.startDate}
-            onChange={e => requestCtx.setRequest({ ...requestCtx.request!, startDate: e.target.value })}
+            value={request?.startDate}
+            onChange={e => setRequest({ ...request!, startDate: e.target.value })}
+            disabled={!request}
           />
           <DatePicker
             label={"Do"}
-            value={requestCtx.request?.endDate}
-            onChange={e => requestCtx.setRequest({ ...requestCtx.request!, endDate: e.target.value })}
+            value={request?.endDate}
+            onChange={e => setRequest({ ...request!, endDate: e.target.value })}
+            disabled={!request}
           />
         </HorizontalLayout>
       </VerticalLayout>
       <HorizontalDivider/>
-      {requestCtx.request ? <ScheduleGrid/> : <div>Select configuration first</div>}
+      {
+        request
+          ? <ScheduleGrid
+            request={request}
+            employees={employees}
+            shiftRequests={shiftRequests}
+          />
+          : <h2>Vyber konfiguraci</h2>
+      }
       <HorizontalLayout theme={"spacing"}>
         <Button
           theme={"primary"}
@@ -88,7 +101,7 @@ export default function ScheduleView() {
             saveAsNewRef.current = false
             form.submit().then()
           }}
-          disabled={form.invalid || form.submitting}>
+          disabled={form.invalid || form.submitting || !request}>
           Save
         </Button>
         <Button
@@ -97,7 +110,7 @@ export default function ScheduleView() {
             saveAsNewRef.current = true
             form.submit().then()
           }}
-          disabled={form.invalid || form.submitting}>
+          disabled={form.invalid || form.submitting || !request}>
           Save As New
         </Button>
       </HorizontalLayout>

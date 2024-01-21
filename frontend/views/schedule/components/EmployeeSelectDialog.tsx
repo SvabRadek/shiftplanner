@@ -1,14 +1,16 @@
 import { Dialog } from "@hilla/react-components/Dialog";
-import { useContext, useEffect, useState } from "react";
+import { useState } from "react";
 import { Button } from "@hilla/react-components/Button";
 import { VerticalLayout } from "@hilla/react-components/VerticalLayout";
 import { HorizontalLayout } from "@hilla/react-components/HorizontalLayout";
 import EmployeeRecord from "Frontend/generated/com/cocroachden/planner/employee/EmployeeRecord";
-import { RequestCtx } from "Frontend/views/schedule/components/schedulegrid/RequestCtxProvider";
 import { GridColumn } from "@hilla/react-components/GridColumn";
 import { Grid } from "@hilla/react-components/Grid";
+import WorkerId from "Frontend/generated/com/cocroachden/planner/lib/WorkerId";
 
 type Props = {
+  employees: EmployeeRecord[]
+  selectedWorkers: WorkerId[]
   onEmployeeSelected?: (value: EmployeeRecord) => void
   onOpenChanged: (value: boolean) => void
   isOpen: boolean
@@ -16,18 +18,13 @@ type Props = {
 
 export function EmployeeSelectDialog(props: Props) {
 
-  const requestCtx = useContext(RequestCtx)
-  const [employeesToShow, setEmployeesToShow] = useState<EmployeeRecord[]>([])
-  const [selectedItems, setSelectedItems] = useState<EmployeeRecord[]>([])
+  const unassignedEmployees = props.employees
+    .filter(employee => {
+      const isAlreadyAssigned = props.selectedWorkers.find(w => w.workerId === employee.workerId)
+      return !isAlreadyAssigned
+    })
 
-  useEffect(() => {
-    const unassignedEmployees = requestCtx.allEmployees
-      .filter(employee => {
-        const isAlreadyAssigned = requestCtx.request?.workers.find(w => w.workerId === employee.workerId)
-        return !isAlreadyAssigned
-      })
-    setEmployeesToShow(unassignedEmployees)
-  }, [requestCtx.request?.workers]);
+  const [selectedItems, setSelectedItems] = useState<EmployeeRecord[]>([])
 
   function confirmSelection() {
     if (props.onEmployeeSelected && selectedItems.length > 0) {
@@ -46,7 +43,7 @@ export function EmployeeSelectDialog(props: Props) {
       >
         <VerticalLayout style={{ minWidth: "700px", minHeight: "400px" }}>
           <Grid
-            items={employeesToShow}
+            items={unassignedEmployees}
             style={{ height: 200 }}
             selectedItems={selectedItems}
             onActiveItemChanged={(e) => {

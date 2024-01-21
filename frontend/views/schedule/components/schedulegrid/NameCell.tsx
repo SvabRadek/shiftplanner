@@ -1,11 +1,11 @@
 import { ContextMenu, ContextMenuItem } from "@hilla/react-components/ContextMenu";
-import { useContext } from "react";
-import { RequestCtx } from "Frontend/views/schedule/components/schedulegrid/RequestCtxProvider";
+import { Operation } from "Frontend/util/types";
+import { memo } from "react";
 
 type Props = {
   title: string
   workerId: string
-  onAddEmployee: () => void
+  onContextOperation?: (workerId: string, operation: Operation) => void
 }
 
 const menuItems: ContextMenuItem[] = [
@@ -20,16 +20,14 @@ const menuItems: ContextMenuItem[] = [
   }
 ]
 
-export function NameCell(props: Props) {
-
-  const requestCtx = useContext(RequestCtx)
+export const NameCell = memo(function NameCell(props: Props) {
 
   function handleMenuSelection(item: ContextMenuItem) {
     if (item.text === "Odstranit") {
-      requestCtx.removeEmployeeFromRequest(props.workerId)
+      props.onContextOperation?.(props.workerId, Operation.DELETE)
     }
     if (item.text === "Pridat") {
-      props.onAddEmployee()
+      props.onContextOperation?.(props.workerId, Operation.ADD)
     }
   }
 
@@ -43,4 +41,6 @@ export function NameCell(props: Props) {
       </div>
     </ContextMenu>
   );
-}
+}, (prevProps, nextProps) => {
+  return prevProps.title === nextProps.title && prevProps.workerId === nextProps.workerId
+})
