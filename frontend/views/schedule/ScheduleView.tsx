@@ -5,7 +5,6 @@ import { ConstraintRequestService, EmployeeService, PlannerConfigurationService 
 import { Button } from "@hilla/react-components/Button";
 import { HorizontalLayout } from "@hilla/react-components/HorizontalLayout";
 import { TextField } from "@hilla/react-components/TextField";
-import { ScheduleGrid } from "Frontend/views/schedule/components/schedulegrid/ScheduleGrid";
 import { HorizontalDivider } from "Frontend/components/HorizontalDivider";
 import { VerticalLayout } from "@hilla/react-components/VerticalLayout";
 import PlannerConfigurationMetaData
@@ -18,6 +17,7 @@ import PlannerConfigurationResponse
 import SpecificShiftRequestResponse
   from "Frontend/generated/com/cocroachden/planner/configuration/ConstraintRequestService/SpecificShiftRequestResponse";
 import EmployeeRecord from "Frontend/generated/com/cocroachden/planner/employee/EmployeeRecord";
+import { ScheduleGridContainer } from "./components/schedulegrid/ScheduleGridContainer";
 
 export default function ScheduleView() {
 
@@ -87,7 +87,7 @@ export default function ScheduleView() {
       <HorizontalDivider/>
       {
         request
-          ? <ScheduleGrid
+          ? <ScheduleGridContainer
             request={request}
             employees={employees}
             shiftRequests={shiftRequests}

@@ -1,9 +1,8 @@
-import { Cell } from "Frontend/views/schedule/components/schedulegrid/GridCell";
-import { Owner } from "Frontend/views/schedule/components/schedulegrid/ScheduleGrid";
-import { PlainCell } from "Frontend/views/schedule/components/customGrid/PlainCell";
+import { Owner } from "Frontend/views/schedule/components/schedulegrid/ScheduleGridContainer";
+import { Cell, PlainCell } from "Frontend/views/schedule/components/schedulegrid/PlainCell";
 import { ReactNode } from "react";
-import { NameCell } from "Frontend/views/schedule/components/customGrid/NameCell";
-import { HeaderCell } from "Frontend/views/schedule/components/customGrid/HeaderCell";
+import { NameCell } from "Frontend/views/schedule/components/schedulegrid/NameCell";
+import { HeaderCell } from "Frontend/views/schedule/components/schedulegrid/HeaderCell";
 
 type Row = {
   workerId: Owner
@@ -14,12 +13,12 @@ type Row = {
 
 type Props = {
   rows: Row[]
-  onShiftChanged?: (cell: Cell) => void
+  onCellChanged?: (cell: Cell) => void
+  onLeftClick?: (cell: Cell) => void
+  onMouseOverCell?: (cell: Cell) => void
 }
 
 export function PlainGrid(props: Props) {
-
-  console.log("render")
 
   const items = mapToGridCells(props.rows);
 
@@ -52,7 +51,9 @@ export function PlainGrid(props: Props) {
             c.index + 2,
             <PlainCell
               cell={c}
-              onShiftChange={props.onShiftChanged}
+              onShiftChange={props.onCellChanged}
+              onMouseOverCell={props.onMouseOverCell}
+              onLeftClick={props.onLeftClick}
             />
           ))
         })

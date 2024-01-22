@@ -1,12 +1,21 @@
-import { Cell } from "Frontend/views/schedule/components/schedulegrid/GridCell";
 import { ContextMenu, ContextMenuItem, ContextMenuItemSelectedEvent } from "@hilla/react-components/ContextMenu";
 import WorkShifts from "Frontend/generated/com/cocroachden/planner/solver/schedule/WorkShifts";
 import { workShiftBindings } from "Frontend/views/schedule/WorkShiftBindigs";
-import { memo } from "react";
+import StupidDate from "Frontend/generated/com/cocroachden/planner/configuration/StupidDate";
+
+export type Cell = {
+  shift: WorkShifts
+  index: number
+  owner: string
+  date: StupidDate
+  isHighlighted: boolean
+}
 
 type Props = {
   cell: Cell
   onShiftChange?: (cell: Cell) => void
+  onLeftClick?: (cell: Cell) => void
+  onMouseOverCell?: (cell: Cell) => void
 }
 
 function generateCellContextMenuItems(selectedShift: WorkShifts): ContextMenuItem[] {
@@ -21,7 +30,7 @@ function getWorkShift(fullText: string): WorkShifts {
   return Object.values(workShiftBindings).find(b => b.fullText === fullText)?.shift!
 }
 
-export const PlainCell = memo(function PlainCell(props: Props) {
+export function PlainCell(props: Props) {
   const cellContextMenuItems: ContextMenuItem[] = generateCellContextMenuItems(props.cell.shift)
 
   function handleShiftSelection(e: ContextMenuItemSelectedEvent) {
@@ -29,28 +38,34 @@ export const PlainCell = memo(function PlainCell(props: Props) {
     props.onShiftChange?.({ ...props.cell, shift: shift })
   }
 
+  function handleLeftClick() {
+    props.onLeftClick?.(props.cell)
+  }
+
+  function handleMouseOver() {
+    props.onMouseOverCell?.(props.cell)
+  }
+
   return (
     <ContextMenu items={cellContextMenuItems} onItemSelected={handleShiftSelection}>
-      <div style={{
-        display: "flex",
-        userSelect: "none",
-        width: 50,
-        height: 50,
-        border: "solid",
-        borderColor: "var(--lumo-tint-20pct)",
-        borderWidth: "1px",
-        justifyContent: "center",
-        alignItems: "center",
-        backgroundColor: "var(--lumo-shade-5pct)"
-      }}>
+      <div
+        style={{
+          display: "flex",
+          userSelect: "none",
+          width: 50,
+          height: 50,
+          border: "solid",
+          borderColor: "var(--lumo-tint-20pct)",
+          borderWidth: "1px",
+          justifyContent: "center",
+          alignItems: "center",
+          backgroundColor: props.cell.isHighlighted ? "var(--lumo-success-color-10pct)" : "var(--lumo-shade-5pct)"
+        }}
+        onClick={handleLeftClick}
+        onMouseOver={handleMouseOver}
+      >
         {workShiftBindings[props.cell.shift].symbol}
       </div>
     </ContextMenu>
   );
-}, (prevProps, nextProps) => {
-  return prevProps.cell.owner === nextProps.cell.owner
-    && prevProps.cell.index === nextProps.cell.index
-    && prevProps.cell.isHighlighted === nextProps.cell.isHighlighted
-    && prevProps.cell.date === nextProps.cell.date
-    && prevProps.cell.shift === nextProps.cell.shift
-})
+}
