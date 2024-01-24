@@ -104,7 +104,7 @@ function getDistanceInDays(startDate: Date, endDate: Date): Index[] {
   const diffTime = Math.abs(endDate.valueOf() - startDate.valueOf());
   const dayCount = diffTime / (1000 * 60 * 60 * 24)
   const dayIndexes: number[] = []
-  for (let i = 0; i < dayCount; i++) {
+  for (let i = 0; i <= dayCount; i++) {
     dayIndexes.push(i)
   }
   return dayIndexes

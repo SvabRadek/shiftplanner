@@ -4,7 +4,7 @@ import { ReactNode } from "react";
 import { EmployeeAction, GridNameCell } from "Frontend/views/schedule/components/schedulegrid/GridNameCell";
 import { GridHeaderCell } from "Frontend/views/schedule/components/schedulegrid/GridHeaderCell";
 import StupidDate from "Frontend/generated/com/cocroachden/planner/configuration/StupidDate";
-import { stupidDateToDate } from "Frontend/util/utils";
+import { stupidDateToDate, stupidDateToString } from "Frontend/util/utils";
 
 type Row = {
   workerId: Owner
@@ -43,6 +43,7 @@ export function ScheduleGrid(props: Props) {
             c.index + 2,
             <GridHeaderCell
               title={c.date.day.toString()}
+              hint={stupidDateToString(c.date)}
               backgroundColor={isWeekend(c.date) ? "var(--lumo-shade-20pct)" : undefined}
             />
           ))
@@ -79,7 +80,8 @@ export function ScheduleGrid(props: Props) {
     <div style={{
       display: "grid",
       width: "100%",
-      overflow: "scroll"
+      overflow: "scroll",
+      justifyContent: "start"
     }}>
       {items}
     </div>

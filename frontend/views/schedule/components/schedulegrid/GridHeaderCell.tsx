@@ -1,11 +1,24 @@
+import { VerticalLayout } from "@hilla/react-components/VerticalLayout";
+import { Tooltip } from "@hilla/react-components/Tooltip";
+
 type Props = {
   title: string
+  secondaryTitle?: string,
+  hint?: string,
   backgroundColor?: string
 }
 
 export function GridHeaderCell(props: Props) {
+  const cellId = "headercell" + props.title
+  let clippedSecTitle = props.secondaryTitle
+  if (clippedSecTitle && clippedSecTitle.length > 9) {
+    clippedSecTitle = clippedSecTitle.substring(0, 8) + "..."
+  }
+
   return (
-    <div style={{
+    <div
+      id={cellId}
+      style={{
       display: "flex",
       userSelect: "none",
       width: 50,
@@ -17,7 +30,16 @@ export function GridHeaderCell(props: Props) {
       alignItems: "center",
       backgroundColor: props.backgroundColor || "var(--lumo-shade-5pct)"
     }}>
-      {props.title}
+      <VerticalLayout
+        style={{
+          justifyContent: "center",
+          alignItems: "center"
+        }}
+      >
+        {props.title}
+        {clippedSecTitle ? <em style={{ fontSize: 10 }}>{clippedSecTitle}</em> : null}
+      </VerticalLayout>
+      {props.hint ? <Tooltip for={cellId} text={props.hint} position={"top"}/> : null}
     </div>
   );
 }
