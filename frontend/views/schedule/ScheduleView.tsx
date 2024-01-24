@@ -18,6 +18,8 @@ import SpecificShiftRequestResponse
   from "Frontend/generated/com/cocroachden/planner/configuration/ConstraintRequestService/SpecificShiftRequestResponse";
 import EmployeeRecord from "Frontend/generated/com/cocroachden/planner/employee/EmployeeRecord";
 import { ScheduleGridContainer } from "./components/schedulegrid/ScheduleGridContainer";
+import { EmployeeSelectDialog } from "Frontend/views/schedule/components/EmployeeSelectDialog";
+import { EmployeeAction, EmployeeActionEnum } from "Frontend/views/schedule/components/schedulegrid/GridNameCell";
 
 export default function ScheduleView() {
 
@@ -25,6 +27,7 @@ export default function ScheduleView() {
   const [request, setRequest] = useState<PlannerConfigurationResponse | undefined>()
   const [employees, setEmployees] = useState<EmployeeRecord[]>([])
   const [shiftRequests, setShiftRequests] = useState<SpecificShiftRequestResponse[]>([])
+  const [isAddEmployeeDialogOpen, setIsAddEmployeeDialogOpen] = useState(false)
 
   useEffect(() => {
     EmployeeService.getAllEmployees().then(setEmployees)
@@ -59,6 +62,33 @@ export default function ScheduleView() {
     })
   }
 
+  function handleAddEmployee(employee: EmployeeRecord) {
+    setRequest(prevState => {
+      if (!prevState) return undefined
+      return {
+        ...prevState,
+        workers: [...prevState.workers, { workerId: employee.workerId }]
+      }
+    })
+  }
+
+  function handleEmployeeAction(action: EmployeeAction) {
+    switch (action.type) {
+      case EmployeeActionEnum.ADD:
+        setIsAddEmployeeDialogOpen(true)
+        break
+      case EmployeeActionEnum.DELETE:
+        setRequest(prevState => {
+          if (!prevState) return undefined
+          return {
+            ...prevState,
+            workers: prevState.workers.filter(w => w.workerId !== action.workerId)
+          }
+        })
+    }
+
+  }
+
   return (
     <VerticalLayout theme={"spacing padding"}>
       <ConfigSelectDialog onConfigSelected={handleConfigSelected}/>
@@ -87,11 +117,22 @@ export default function ScheduleView() {
       <HorizontalDivider/>
       {
         request
-          ? <ScheduleGridContainer
-            request={request}
-            employees={employees}
-            shiftRequests={shiftRequests}
-          />
+          ?
+          <>
+            <EmployeeSelectDialog
+              employees={employees}
+              selectedWorkers={request.workers}
+              onEmployeeSelected={handleAddEmployee}
+              onOpenChanged={value => setIsAddEmployeeDialogOpen(value)}
+              isOpen={isAddEmployeeDialogOpen}
+            />
+            <ScheduleGridContainer
+              request={request}
+              employees={employees}
+              shiftRequests={shiftRequests}
+              onEmployeeAction={handleEmployeeAction}
+            />
+          </>
           : <h2>Vyber konfiguraci</h2>
       }
       <HorizontalLayout theme={"spacing"}>

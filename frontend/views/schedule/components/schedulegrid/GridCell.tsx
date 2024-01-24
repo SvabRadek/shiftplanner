@@ -16,6 +16,7 @@ type Props = {
   onShiftChange?: (cell: Cell) => void
   onLeftClick?: (cell: Cell) => void
   onMouseOverCell?: (cell: Cell) => void
+  backgroundColor?: string
 }
 
 function generateCellContextMenuItems(selectedShift: WorkShifts): ContextMenuItem[] {
@@ -30,7 +31,7 @@ function getWorkShift(fullText: string): WorkShifts {
   return Object.values(workShiftBindings).find(b => b.fullText === fullText)?.shift!
 }
 
-export function PlainCell(props: Props) {
+export function GridCell(props: Props) {
   const cellContextMenuItems: ContextMenuItem[] = generateCellContextMenuItems(props.cell.shift)
 
   function handleShiftSelection(e: ContextMenuItemSelectedEvent) {
@@ -59,7 +60,9 @@ export function PlainCell(props: Props) {
           borderWidth: "1px",
           justifyContent: "center",
           alignItems: "center",
-          backgroundColor: props.cell.isHighlighted ? "var(--lumo-success-color-10pct)" : "var(--lumo-shade-5pct)"
+          backgroundColor: props.cell.isHighlighted
+            ? "var(--lumo-success-color-10pct)"
+            : props.backgroundColor || "var(--lumo-shade-5pct)"
         }}
         onClick={handleLeftClick}
         onMouseOver={handleMouseOver}

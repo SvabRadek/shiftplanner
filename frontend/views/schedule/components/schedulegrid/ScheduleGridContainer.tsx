@@ -1,14 +1,14 @@
 import { useEffect, useState } from "react";
 import WorkShifts from "Frontend/generated/com/cocroachden/planner/solver/schedule/WorkShifts";
 import EmployeeRecord from "Frontend/generated/com/cocroachden/planner/employee/EmployeeRecord";
-import { EmployeeSelectDialog } from "Frontend/views/schedule/components/EmployeeSelectDialog";
 import { dateToStupidDate } from "Frontend/util/utils";
 import PlannerConfigurationResponse
   from "Frontend/generated/com/cocroachden/planner/configuration/PlannerConfigurationService/PlannerConfigurationResponse";
 import SpecificShiftRequestResponse
   from "Frontend/generated/com/cocroachden/planner/configuration/ConstraintRequestService/SpecificShiftRequestResponse";
-import { PlainGrid } from "Frontend/views/schedule/components/schedulegrid/PlainGrid";
-import { Cell } from "Frontend/views/schedule/components/schedulegrid/PlainCell";
+import { ScheduleGrid } from "Frontend/views/schedule/components/schedulegrid/ScheduleGrid";
+import { Cell } from "Frontend/views/schedule/components/schedulegrid/GridCell";
+import { EmployeeAction } from "Frontend/views/schedule/components/schedulegrid/GridNameCell";
 
 export type Owner = string
 export type Index = number
@@ -23,6 +23,7 @@ type Props = {
   request: PlannerConfigurationResponse
   employees: EmployeeRecord[]
   shiftRequests: SpecificShiftRequestResponse[]
+  onEmployeeAction?: (action: EmployeeAction) => void
 }
 
 type Highlight = {
@@ -32,44 +33,29 @@ type Highlight = {
 
 export function ScheduleGridContainer(props: Props) {
 
-  const [isAddEmployeeDialogOpen, setIsAddEmployeeDialogOpen] = useState(false)
   const [highlight, setHighlight] = useState<Highlight>({ originCell: undefined, lastCell: undefined })
-  const defaultRows = createRows(props.request, props.employees, props.shiftRequests, highlight)
-  const [rows, setRows] = useState<Row[]>(defaultRows)
-
-  console.log("render")
+  const [rows, setRows] = useState<Row[]>(createRows(props.request, props.employees, props.shiftRequests, highlight))
 
   useEffect(() => {
-    setRows(previous => {
-      return updateHighlightForRows(previous, highlight)
-    })
-  }, [highlight]);
+    setRows(() => createRows(props.request, props.employees, props.shiftRequests, highlight))
+  }, [props.request, props.employees, props.shiftRequests]);
 
-  function handleEmployeeAdded(employee: EmployeeRecord) {
-    setIsAddEmployeeDialogOpen(false)
-  }
+  useEffect(() => {
+    setRows(prevState => updateHighlightForRows(prevState, highlight))
+  }, [highlight]);
 
   function handleCellLeftClick(cell: Cell) {
     if (highlight.originCell === undefined) {
-      setHighlight({
-        originCell: cell,
-        lastCell: cell
-      })
+      setHighlight(() => ({ originCell: cell, lastCell: cell }))
     } else {
       copyShiftToCells(highlight.originCell, highlight.lastCell!)
-      setHighlight(() => ({
-        originCell: undefined,
-        lastCell: undefined
-      }))
+      setHighlight(() => ({ originCell: undefined, lastCell: undefined }))
     }
   }
 
   function handleCellOnMouseOver(cell: Cell) {
     if (!highlight.originCell) return
-    setHighlight(previous => ({
-      ...previous,
-      lastCell: cell
-    }))
+    setHighlight(previous => ({ ...previous, lastCell: cell }))
   }
 
   function updateCell(updatedCell: Cell) {
@@ -88,16 +74,14 @@ export function ScheduleGridContainer(props: Props) {
   }
 
   function copyShiftToCells(originCell: Cell, endCell: Cell) {
-    console.log([originCell, endCell])
     const indexes = getIndexesBetweenCells(originCell, endCell)
-    console.log("indexes to copy: " + indexes)
     setRows(previous => {
       return previous.map(row => {
         if (row.workerId !== originCell.owner) return row
         return {
           ...row,
           cells: row.cells.map(cell => {
-            if (!indexes.find(i => cell.index === i)) return cell
+            if (indexes.find(i => cell.index === i) === undefined) return cell
             return { ...cell, isHighlighted: false, shift: originCell.shift }
           })
         }
@@ -106,21 +90,13 @@ export function ScheduleGridContainer(props: Props) {
   }
 
   return (
-    <>
-      <EmployeeSelectDialog
-        employees={props.employees}
-        selectedWorkers={props.request.workers}
-        onEmployeeSelected={handleEmployeeAdded}
-        onOpenChanged={value => setIsAddEmployeeDialogOpen(value)}
-        isOpen={isAddEmployeeDialogOpen}
-      />
-      <PlainGrid
-        rows={rows}
-        onCellChanged={updateCell}
-        onMouseOverCell={handleCellOnMouseOver}
-        onLeftClick={handleCellLeftClick}
-      />
-    </>
+    <ScheduleGrid
+      rows={rows}
+      onCellChanged={updateCell}
+      onMouseOverCell={handleCellOnMouseOver}
+      onLeftClick={handleCellLeftClick}
+      onEmployeeAction={props.onEmployeeAction}
+    />
   );
 }
 
@@ -161,7 +137,7 @@ function createRows(
             index: dayOffset,
             owner: w.workerId,
             date: dateToStupidDate(cellDate),
-            isHighlighted: !!highLightIndexes.find(i => i === dayOffset)
+            isHighlighted: highLightIndexes.find(i => i === dayOffset) !== undefined
           } as Cell
         })
       const referencedEmployee = employees.find(e => e.workerId === w.workerId)!
@@ -198,7 +174,7 @@ function updateHighlightForRows(
     return {
       ...row,
       cells: row.cells.map(cell => {
-        if (highlightIndexes.find(i => cell.index === i)) {
+        if (highlightIndexes.find(i => cell.index === i) !== undefined) {
           return { ...cell, isHighlighted: true }
         } else {
           return { ...cell, isHighlighted: false };
@@ -208,8 +184,3 @@ function updateHighlightForRows(
   })
 }
 
-function isWeekend(startDate: Date, offset: number): boolean {
-  const columnDate = new Date()
-  columnDate.setDate(startDate.getDate() + offset)
-  return columnDate.getDay() === 0 || columnDate.getDay() === 6
-}

@@ -1,21 +1,21 @@
 type Props = {
   title: string
+  backgroundColor?: string
 }
 
-export function NameCell(props: Props) {
+export function GridHeaderCell(props: Props) {
   return (
     <div style={{
       display: "flex",
       userSelect: "none",
-      width: 200,
+      width: 50,
       height: 50,
       border: "solid",
       borderColor: "var(--lumo-tint-20pct)",
       borderWidth: "1px",
-      justifyContent: "start",
+      justifyContent: "center",
       alignItems: "center",
-      backgroundColor: "var(--lumo-shade-5pct)",
-      paddingLeft: 10
+      backgroundColor: props.backgroundColor || "var(--lumo-shade-5pct)"
     }}>
       {props.title}
     </div>
