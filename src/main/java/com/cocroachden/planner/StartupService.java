@@ -1,12 +1,11 @@
 package com.cocroachden.planner;
 
-import com.cocroachden.planner.configuration.ConstraintRequestRecord;
-import com.cocroachden.planner.configuration.ConstraintRequestService;
-import com.cocroachden.planner.configuration.PlannerConfigurationRecord;
-import com.cocroachden.planner.configuration.PlannerConfigurationService;
+import com.cocroachden.planner.constraint.ConstraintRequestRecord;
+import com.cocroachden.planner.constraint.service.ConstraintRequestService;
+import com.cocroachden.planner.plannerconfiguration.PlannerConfigurationDTO;
+import com.cocroachden.planner.plannerconfiguration.service.PlannerConfigurationService;
 import com.cocroachden.planner.employee.EmployeeRecord;
 import com.cocroachden.planner.employee.EmployeeRepository;
-import com.cocroachden.planner.employee.EmployeeService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.context.event.ApplicationStartedEvent;
 import org.springframework.context.ApplicationContext;
@@ -40,7 +39,7 @@ public class StartupService {
           .map(ConstraintRequestRecord::getId)
           .toList();
       configService.upsert(
-          new PlannerConfigurationService.PlannerConfigurationResponse(
+          new PlannerConfigurationDTO(
               configId,
               "Priklad konfigurace",
               Instant.now(),

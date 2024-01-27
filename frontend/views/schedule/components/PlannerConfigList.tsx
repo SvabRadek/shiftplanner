@@ -1,18 +1,18 @@
 import { useEffect, useState } from "react";
-import PlannerConfigurationMetaData
-  from "Frontend/generated/com/cocroachden/planner/configuration/PlannerConfigurationMetaData";
 import { PlannerConfigurationService } from "Frontend/generated/endpoints";
 import { Grid } from "@hilla/react-components/Grid";
 import { GridColumn } from "@hilla/react-components/GridColumn";
+import PlannerConfigurationMetaDataDTO
+  from "Frontend/generated/com/cocroachden/planner/plannerconfiguration/PlannerConfigurationMetaDataDTO";
 
 type Props = {
-  onSelectionChanged: (value: PlannerConfigurationMetaData) => void
+  onSelectionChanged: (value: PlannerConfigurationMetaDataDTO) => void
 }
 
 export function PlannerConfigList(props: Props) {
 
-  const [configMetaData, setConfigMetaData] = useState<PlannerConfigurationMetaData[]>([])
-  const [selectedItems, setSelectedItems] = useState<PlannerConfigurationMetaData[]>([])
+  const [configMetaData, setConfigMetaData] = useState<PlannerConfigurationMetaDataDTO[]>([])
+  const [selectedItems, setSelectedItems] = useState<PlannerConfigurationMetaDataDTO[]>([])
 
   useEffect(() => {
     PlannerConfigurationService.getMetaData().then(setConfigMetaData)

@@ -3,8 +3,8 @@ import { Cell, GridCell } from "Frontend/views/schedule/components/schedulegrid/
 import { ReactNode } from "react";
 import { EmployeeAction, GridNameCell } from "Frontend/views/schedule/components/schedulegrid/GridNameCell";
 import { GridHeaderCell } from "Frontend/views/schedule/components/schedulegrid/GridHeaderCell";
-import StupidDate from "Frontend/generated/com/cocroachden/planner/configuration/StupidDate";
 import { stupidDateToDate, stupidDateToString } from "Frontend/util/utils";
+import StupidDate from "Frontend/generated/com/cocroachden/planner/lib/StupidDate";
 
 type Row = {
   workerId: Owner

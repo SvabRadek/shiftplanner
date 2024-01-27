@@ -1,4 +1,4 @@
-package com.cocroachden.planner.configuration;
+package com.cocroachden.planner.constraint;
 
 import com.cocroachden.planner.solver.constraints.ConstraintRequest;
 import jakarta.persistence.*;

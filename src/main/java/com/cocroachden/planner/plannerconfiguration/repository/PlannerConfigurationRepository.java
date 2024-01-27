@@ -1,4 +1,4 @@
-package com.cocroachden.planner.configuration;
+package com.cocroachden.planner.plannerconfiguration.repository;
 
 import org.springframework.data.repository.CrudRepository;
 

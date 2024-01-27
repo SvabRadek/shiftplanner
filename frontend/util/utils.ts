@@ -1,6 +1,6 @@
-import StupidDate from "Frontend/generated/com/cocroachden/planner/configuration/StupidDate";
+import StupidDate from "Frontend/generated/com/cocroachden/planner/lib/StupidDate";
 import SpecificShiftRequestResponse
-  from "Frontend/generated/com/cocroachden/planner/configuration/ConstraintRequestService/SpecificShiftRequestResponse";
+  from "Frontend/generated/com/cocroachden/planner/constraint/service/ConstraintRequestService/SpecificShiftRequestResponse";
 
 export function dateToStupidDate(date: Date): StupidDate {
   return { day: date.getDate(), month: date.getMonth() + 1, year: date.getFullYear() }

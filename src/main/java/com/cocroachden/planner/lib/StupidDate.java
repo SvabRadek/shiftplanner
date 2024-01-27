@@ -1,4 +1,4 @@
-package com.cocroachden.planner.configuration;
+package com.cocroachden.planner.lib;
 
 
 import dev.hilla.Nonnull;

@@ -1,9 +1,8 @@
-package com.cocroachden.planner.configuration;
+package com.cocroachden.planner.plannerconfiguration.repository;
 
 import com.cocroachden.planner.lib.WorkerId;
-import dev.hilla.Nonnull;
+import com.cocroachden.planner.plannerconfiguration.PlannerConfigurationDTO;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotEmpty;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -23,7 +22,7 @@ import java.util.UUID;
 @Table(name = "planner_configurations")
 public class PlannerConfigurationRecord {
 
-  public static PlannerConfigurationRecord from(PlannerConfigurationService.PlannerConfigurationResponse response) {
+  public static PlannerConfigurationRecord from(PlannerConfigurationDTO response) {
     return new PlannerConfigurationRecord(
         UUID.randomUUID(),
         response.getName(),
