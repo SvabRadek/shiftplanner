@@ -50,7 +50,7 @@ public class PlannerConfigurationService {
     return PlannerConfigurationDTO.from(repository.save(PlannerConfigurationRecord.from(record)));
   }
 
-  public List<PlannerConfigurationDTO> findAll() {
+  public List<@Nonnull PlannerConfigurationDTO> findAll() {
     return StreamSupport.stream(repository.findAll().spliterator(), false)
         .map(PlannerConfigurationDTO::from)
         .toList();

@@ -16,7 +16,7 @@ type Props = {
   isOpen: boolean
 }
 
-export function EmployeeSelectDialog(props: Props) {
+export function AddEmployeeDialog(props: Props) {
 
   const unassignedEmployees = props.employees
     .filter(employee => {

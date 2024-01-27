@@ -1,4 +1,4 @@
-package com.cocroachden.planner.constraint;
+package com.cocroachden.planner.constraint.repository;
 
 import com.cocroachden.planner.solver.constraints.ConstraintRequest;
 import com.fasterxml.jackson.annotation.JsonAutoDetect;

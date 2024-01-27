@@ -1,6 +1,5 @@
 import StupidDate from "Frontend/generated/com/cocroachden/planner/lib/StupidDate";
-import SpecificShiftRequestResponse
-  from "Frontend/generated/com/cocroachden/planner/constraint/service/ConstraintRequestService/SpecificShiftRequestResponse";
+import SpecificShiftRequestDTO from "Frontend/generated/com/cocroachden/planner/constraint/SpecificShiftRequestDTO";
 
 export function dateToStupidDate(date: Date): StupidDate {
   return { day: date.getDate(), month: date.getMonth() + 1, year: date.getFullYear() }
@@ -23,6 +22,6 @@ export function getDistanceInDaysNumeric(startDate: Date, endDate: Date): number
   return diffTimeInMillis / (1000 * 60 * 60 * 24)
 }
 
-export function areShiftRequestsDuplicate(r1: SpecificShiftRequestResponse, r2: SpecificShiftRequestResponse): boolean {
+export function areShiftRequestsDuplicate(r1: SpecificShiftRequestDTO, r2: SpecificShiftRequestDTO): boolean {
   return [r1.owner, stupidDateToString(r1.date)].join() === [r2.owner, stupidDateToDate(r2.date)].join()
 }

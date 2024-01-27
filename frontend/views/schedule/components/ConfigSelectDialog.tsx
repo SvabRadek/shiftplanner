@@ -5,18 +5,18 @@ import { Icon } from "@hilla/react-components/Icon";
 import { VerticalLayout } from "@hilla/react-components/VerticalLayout";
 import { PlannerConfigList } from "Frontend/views/schedule/components/PlannerConfigList";
 import { HorizontalLayout } from "@hilla/react-components/HorizontalLayout";
-import PlannerConfigurationDTO
-  from "Frontend/generated/com/cocroachden/planner/plannerconfiguration/PlannerConfigurationDTO";
+import PlannerConfigurationMetaDataDTO
+  from "Frontend/generated/com/cocroachden/planner/plannerconfiguration/PlannerConfigurationMetaDataDTO";
 
 type Props = {
-  onConfigSelected?: (value: PlannerConfigurationDTO) => void
+  onConfigSelected?: (value: PlannerConfigurationMetaDataDTO) => void
   isOpen?: boolean
 }
 
 export function ConfigSelectDialog(props: Props) {
 
   const [isOpen, setIsOpen] = useState(props.isOpen);
-  const [selectedItem, setSelectedItem] = useState<PlannerConfigurationDTO>()
+  const [selectedItem, setSelectedItem] = useState<PlannerConfigurationMetaDataDTO>()
 
   useEffect(() => {
     setIsOpen(props.isOpen)

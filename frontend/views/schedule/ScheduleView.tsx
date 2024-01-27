@@ -1,7 +1,7 @@
 import { DatePicker } from "@hilla/react-components/DatePicker";
 import { useForm } from "@hilla/react-form";
 import { useEffect, useRef, useState } from "react";
-import { ConstraintRequestService, EmployeeService, PlannerConfigurationService } from "Frontend/generated/endpoints";
+import { ConstraintEndpoint, EmployeeService, PlannerConfigurationService } from "Frontend/generated/endpoints";
 import { Button } from "@hilla/react-components/Button";
 import { HorizontalLayout } from "@hilla/react-components/HorizontalLayout";
 import { TextField } from "@hilla/react-components/TextField";
@@ -10,26 +10,34 @@ import { VerticalLayout } from "@hilla/react-components/VerticalLayout";
 import { ConfigSelectDialog } from "Frontend/views/schedule/components/ConfigSelectDialog";
 import EmployeeRecord from "Frontend/generated/com/cocroachden/planner/employee/EmployeeRecord";
 import { ScheduleGridContainer } from "./components/schedulegrid/ScheduleGridContainer";
-import { EmployeeSelectDialog } from "Frontend/views/schedule/components/EmployeeSelectDialog";
+import { AddEmployeeDialog } from "Frontend/views/schedule/components/AddEmployeeDialog";
 import { EmployeeAction, EmployeeActionEnum } from "Frontend/views/schedule/components/schedulegrid/GridNameCell";
 import { EmployeeRequestConfig } from "Frontend/views/schedule/components/EmployeeRequestConfig";
 import PlannerConfigurationDTO
   from "Frontend/generated/com/cocroachden/planner/plannerconfiguration/PlannerConfigurationDTO";
-import SpecificShiftRequestResponse
-  from "Frontend/generated/com/cocroachden/planner/constraint/service/ConstraintRequestService/SpecificShiftRequestResponse";
 import PlannerConfigurationDTOModel
   from "Frontend/generated/com/cocroachden/planner/plannerconfiguration/PlannerConfigurationDTOModel";
 import PlannerConfigurationMetaDataDTO
   from "Frontend/generated/com/cocroachden/planner/plannerconfiguration/PlannerConfigurationMetaDataDTO";
+import SpecificShiftRequestDTO from "Frontend/generated/com/cocroachden/planner/constraint/SpecificShiftRequestDTO";
+import ShiftsPerScheduleRequestDTO
+  from "Frontend/generated/com/cocroachden/planner/constraint/ShiftsPerScheduleRequestDTO";
+import WorkerId from "Frontend/generated/com/cocroachden/planner/lib/WorkerId";
+
+type EmployeeConfigDialogParams = {
+  isOpen: boolean,
+  selectedEmployee?: WorkerId
+}
 
 export default function ScheduleView() {
 
   const saveAsNewRef = useRef<boolean>(false);
   const [request, setRequest] = useState<PlannerConfigurationDTO | undefined>()
   const [employees, setEmployees] = useState<EmployeeRecord[]>([])
-  const [shiftRequests, setShiftRequests] = useState<SpecificShiftRequestResponse[]>([])
+  const [shiftRequests, setShiftRequests] = useState<SpecificShiftRequestDTO[]>([])
+  const [shiftPerScheduleRequests, setShiftPerScheduleRequests] = useState<ShiftsPerScheduleRequestDTO[]>([])
   const [isAddEmployeeDialogOpen, setIsAddEmployeeDialogOpen] = useState(false)
-  const [isEmployeeConfigDialogOpen, setIsEmployeeConfigDialogOpen] = useState(false)
+  const [employeeConfigDialog, setEmployeeConfigDialog] = useState<EmployeeConfigDialogParams>({ isOpen: false })
 
   useEffect(() => {
     EmployeeService.getAllEmployees().then(setEmployees)
@@ -60,7 +68,8 @@ export default function ScheduleView() {
   function handleConfigSelected(value: PlannerConfigurationMetaDataDTO) {
     PlannerConfigurationService.getConfiguration(value.id).then(configResponse => {
       setRequest(configResponse)
-      ConstraintRequestService.getSpecificShiftRequests(configResponse.id).then(setShiftRequests)
+      ConstraintEndpoint.findSpecificShiftRequests(configResponse.id).then(setShiftRequests)
+      ConstraintEndpoint.findShiftsPerScheduleRequests(configResponse.id).then(setShiftPerScheduleRequests)
     })
   }
 
@@ -89,7 +98,7 @@ export default function ScheduleView() {
         })
         break
       case EmployeeActionEnum.EDIT:
-        setIsEmployeeConfigDialogOpen(true)
+        setEmployeeConfigDialog(() => ({ selectedEmployee: { workerId: action.workerId }, isOpen: true }))
         break
     }
   }
@@ -124,11 +133,11 @@ export default function ScheduleView() {
         request ?
           <>
             <EmployeeRequestConfig
-              employee={employees.find(w => w.workerId === "0")!}
-              isOpen={isEmployeeConfigDialogOpen}
-              onOpenChanged={setIsEmployeeConfigDialogOpen}
+              employee={employees.find(w => w.workerId === employeeConfigDialog.selectedEmployee?.workerId)!}
+              isOpen={employeeConfigDialog.isOpen}
+              onOpenChanged={(newValue) => setEmployeeConfigDialog(prevState => ({ ...prevState, isOpen: newValue }))}
             />
-            <EmployeeSelectDialog
+            <AddEmployeeDialog
               employees={employees}
               selectedWorkers={request.workers}
               onEmployeeSelected={handleAddEmployee}

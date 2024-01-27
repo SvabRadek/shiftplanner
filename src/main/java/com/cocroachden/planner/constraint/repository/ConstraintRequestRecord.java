@@ -1,4 +1,4 @@
-package com.cocroachden.planner.constraint;
+package com.cocroachden.planner.constraint.repository;
 
 import com.cocroachden.planner.solver.constraints.ConstraintRequest;
 import jakarta.persistence.*;
@@ -24,7 +24,10 @@ public class ConstraintRequestRecord {
   @Convert(converter = ConstraintRequestAttributeConverter.class)
   @Column(length = 1024)
   private ConstraintRequest request;
-  public ConstraintRequestRecord(ConstraintRequest request, UUID ownerConfiguration) {
+
+  public ConstraintRequestRecord(
+      UUID ownerConfiguration, ConstraintRequest request
+  ) {
     this.request = request;
     this.type = request.getId().getId();
     this.ownerConfiguration = ownerConfiguration;

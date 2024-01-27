@@ -1,6 +1,7 @@
 package com.cocroachden.planner;
 
-import com.cocroachden.planner.employee.EmployeeService;
+import com.cocroachden.planner.constraint.repository.ConstraintRequestRepository;
+import com.cocroachden.planner.constraint.service.ConstraintRequestService;
 import com.cocroachden.planner.solver.constraints.GenericConstraintApplier;
 import com.cocroachden.planner.solver.constraints.specific.consecutiveworkingdays.ConsecutiveWorkingDaysConstraint;
 import com.cocroachden.planner.solver.constraints.specific.shiftfollowuprestriction.ShiftFollowUpConstraint;
@@ -10,7 +11,6 @@ import com.cocroachden.planner.solver.constraints.specific.shiftperschedule.Shif
 import com.cocroachden.planner.solver.constraints.specific.workershiftrequest.WorkerShiftRequestConstraint;
 import com.cocroachden.planner.solver.constraints.specific.workerspershift.WorkersPerShiftConstraint;
 import com.cocroachden.planner.solver.solver.ScheduleSolver;
-import dev.hilla.BrowserCallable;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
@@ -51,6 +51,13 @@ public class ServiceConfiguration {
     executor.setThreadNamePrefix("CPSolver-");
     executor.initialize();
     return executor;
+  }
+
+  @Bean
+  public ConstraintRequestService constraintRequestService(
+      ConstraintRequestRepository repository
+  ) {
+    return new ConstraintRequestService(repository);
   }
 
 }

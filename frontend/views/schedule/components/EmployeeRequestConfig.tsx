@@ -6,12 +6,14 @@ import { HorizontalLayout } from "@hilla/react-components/HorizontalLayout";
 import { Button } from "@hilla/react-components/Button";
 
 type Props = {
-  employee: EmployeeRecord,
+  employee?: EmployeeRecord,
   isOpen: boolean
   onOpenChanged: (value: boolean) => void
 }
 
 export function EmployeeRequestConfig(props: Props) {
+
+  if (!props.employee) return null
 
   return (
     <Dialog

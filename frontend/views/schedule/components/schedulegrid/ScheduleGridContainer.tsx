@@ -2,13 +2,12 @@ import { useEffect, useState } from "react";
 import WorkShifts from "Frontend/generated/com/cocroachden/planner/solver/schedule/WorkShifts";
 import EmployeeRecord from "Frontend/generated/com/cocroachden/planner/employee/EmployeeRecord";
 import { dateToStupidDate } from "Frontend/util/utils";
-import PlannerConfigurationResponse
-  from "Frontend/generated/com/cocroachden/planner/configuration/PlannerConfigurationService/PlannerConfigurationResponse";
-import SpecificShiftRequestResponse
-  from "Frontend/generated/com/cocroachden/planner/configuration/ConstraintRequestService/SpecificShiftRequestResponse";
 import { ScheduleGrid } from "Frontend/views/schedule/components/schedulegrid/ScheduleGrid";
 import { Cell } from "Frontend/views/schedule/components/schedulegrid/GridCell";
 import { EmployeeAction } from "Frontend/views/schedule/components/schedulegrid/GridNameCell";
+import PlannerConfigurationDTO
+  from "Frontend/generated/com/cocroachden/planner/plannerconfiguration/PlannerConfigurationDTO";
+import SpecificShiftRequestDTO from "Frontend/generated/com/cocroachden/planner/constraint/SpecificShiftRequestDTO";
 
 export type Owner = string
 export type Index = number
@@ -20,9 +19,9 @@ type Row = {
 }
 
 type Props = {
-  request: PlannerConfigurationResponse
+  request: PlannerConfigurationDTO
   employees: EmployeeRecord[]
-  shiftRequests: SpecificShiftRequestResponse[]
+  shiftRequests: SpecificShiftRequestDTO[]
   onEmployeeAction?: (action: EmployeeAction) => void
 }
 
@@ -111,9 +110,9 @@ function getDistanceInDays(startDate: Date, endDate: Date): Index[] {
 }
 
 function createRows(
-  request: PlannerConfigurationResponse,
+  request: PlannerConfigurationDTO,
   employees: EmployeeRecord[],
-  shiftRequests: SpecificShiftRequestResponse[],
+  shiftRequests: SpecificShiftRequestDTO[],
   highlightInfo: Highlight
 ): Row[] {
   const startDate = new Date(request.startDate);

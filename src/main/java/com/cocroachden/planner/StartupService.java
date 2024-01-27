@@ -1,6 +1,6 @@
 package com.cocroachden.planner;
 
-import com.cocroachden.planner.constraint.ConstraintRequestRecord;
+import com.cocroachden.planner.constraint.repository.ConstraintRequestRecord;
 import com.cocroachden.planner.constraint.service.ConstraintRequestService;
 import com.cocroachden.planner.plannerconfiguration.PlannerConfigurationDTO;
 import com.cocroachden.planner.plannerconfiguration.service.PlannerConfigurationService;
@@ -34,7 +34,7 @@ public class StartupService {
     if (configService.findAll().isEmpty()) {
       var configId = UUID.randomUUID();
       var requestIds = Example.constraintRequests().stream()
-          .map(constraint -> new ConstraintRequestRecord(constraint, configId))
+          .map(constraint -> new ConstraintRequestRecord(configId, constraint))
           .map(requestService::upsert)
           .map(ConstraintRequestRecord::getId)
           .toList();

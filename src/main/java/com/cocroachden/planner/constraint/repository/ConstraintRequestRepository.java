@@ -1,6 +1,5 @@
 package com.cocroachden.planner.constraint.repository;
 
-import com.cocroachden.planner.constraint.ConstraintRequestRecord;
 import org.springframework.data.repository.CrudRepository;
 
 import java.util.List;
