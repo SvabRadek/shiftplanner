@@ -1,6 +1,5 @@
 package com.cocroachden.planner.constraint.service;
 
-import com.cocroachden.planner.constraint.ShiftsPerScheduleRequestDTO;
 import com.cocroachden.planner.constraint.SpecificShiftRequestDTO;
 import com.cocroachden.planner.constraint.repository.ConstraintRequestRecord;
 import com.cocroachden.planner.constraint.repository.ConstraintRequestRepository;
@@ -18,11 +17,8 @@ public class ConstraintRequestService {
   private ConstraintRequestRepository repository;
 
   @Nonnull
-  public List<@Nonnull SpecificShiftRequestDTO> getSpecificShiftRequests(UUID ownerConfiguration) {
-    return repository.findByOwnerConfigurationAndTypeIgnoreCase(
-            ownerConfiguration,
-            SpecificShiftRequest.ID.getId()
-        ).stream()
+  public List<@Nonnull SpecificShiftRequestDTO> getSpecificShiftRequests(List<UUID> uuids) {
+    return repository.findByIdIn(uuids).stream()
         .map(record -> {
           var request = (SpecificShiftRequest) record.getRequest();
           return new SpecificShiftRequestDTO(
@@ -43,24 +39,9 @@ public class ConstraintRequestService {
     return repository.save(record);
   }
 
-  public List<ShiftsPerScheduleRequestDTO> getShiftsPerScheduleRequests(UUID plannerConfigId) {
-    return repository.findByOwnerConfigurationAndTypeIgnoreCase(
-            plannerConfigId,
-            ShiftsPerScheduleRequest.ID.getId()
-        ).stream()
-        .map(record -> {
-          var constraint = (ShiftsPerScheduleRequest) record.getRequest();
-          return new ShiftsPerScheduleRequestDTO(
-              record.getId(),
-              constraint.getOwner().orElseThrow(),
-              constraint.getTargetShift(),
-              constraint.getHardMin(),
-              constraint.getSoftMin(),
-              constraint.getMinPenalty(),
-              constraint.getSoftMax(),
-              constraint.getMaxPenalty(),
-              constraint.getHardMax()
-          );
-        }).toList();
+  public List<ShiftsPerScheduleRequest> getShiftsPerScheduleRequests(List<UUID> uuids) {
+    return repository.findByIdIn(uuids).stream()
+        .map(record -> (ShiftsPerScheduleRequest) record.getRequest())
+        .toList();
   }
 }

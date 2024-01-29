@@ -1,7 +1,7 @@
 package com.cocroachden.planner.solver.constraints.specific.workerspershift.request;
 
 
-import com.cocroachden.planner.lib.ConstraintRequestTypeId;
+import com.cocroachden.planner.lib.ConstraintType;
 import com.cocroachden.planner.solver.constraints.specific.AbstractMinMaxRequest;
 import com.cocroachden.planner.solver.schedule.WorkShifts;
 import com.fasterxml.jackson.annotation.JsonTypeName;
@@ -13,7 +13,7 @@ import lombok.NoArgsConstructor;
 @JsonTypeName("WorkersPerShiftRequest")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class WorkersPerShiftRequest extends AbstractMinMaxRequest {
-  public static final ConstraintRequestTypeId ID = new ConstraintRequestTypeId("WorkersPerShiftRequest");
+  public static final ConstraintType ID = ConstraintType.WORKERS_PER_SHIFT;
   private WorkShifts shift;
   public WorkersPerShiftRequest(
       WorkShifts shift,

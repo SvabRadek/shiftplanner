@@ -25,7 +25,11 @@ public class PlannerConfigurationDTO {
         record.getStartDate(),
         record.getEndDate(),
         record.getWorkers(),
-        record.getConstraintRequestInstances()
+        record.getConstraintRequestInstances().stream()
+            .map(link -> new ConfigurationRequestLinkDTO(
+                link.getRequestType(),
+                link.getRequestId()
+            )).toList()
     );
   }
 
@@ -44,5 +48,5 @@ public class PlannerConfigurationDTO {
   @Nonnull
   private List<@Nonnull WorkerId> workers;
   @Nonnull
-  private List<@Nonnull UUID> constraintRequestInstances;
+  private List<@Nonnull ConfigurationRequestLinkDTO> constraintRequestInstances;
 }

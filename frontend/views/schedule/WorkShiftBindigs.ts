@@ -13,5 +13,6 @@ export const workShiftBindings: Record<string, WorkShiftBinding> = {
   NIGHT: { shift: WorkShifts.NIGHT, symbol: "N", fullText: "Nocni", indexOfNext: 3 },
   OFF: { shift: WorkShifts.OFF, symbol: "V", fullText: "Volno", indexOfNext: 4 },
   NOT_DAY: { shift: WorkShifts.NOT_DAY, symbol: "!D", fullText: "Ne denni", indexOfNext: 5 },
-  NOT_NIGHT: { shift: WorkShifts.NOT_NIGHT, symbol: "!N", fullText: "Ne nocni", indexOfNext: 0 },
+  NOT_NIGHT: { shift: WorkShifts.NOT_NIGHT, symbol: "!N", fullText: "Ne nocni", indexOfNext: 6 },
+  WORKING_SHIFTS: { shift: WorkShifts.WORKING_SHIFTS, symbol: "P", fullText: "Pracovni", indexOfNext: 0 },
 }

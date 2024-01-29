@@ -24,7 +24,7 @@ public class GenericConstraintApplier {
       Objectives objectives,
       ConstraintRequest request
   ) {
-      log.debug("Applying '{}'", request.getId());
+      log.debug("Applying '{}'", request.getType());
       this.getSupportingConstraint(request).apply(schedulePlan, model, objectives, request);
   }
 
@@ -33,10 +33,10 @@ public class GenericConstraintApplier {
         .filter(constraint -> constraint.supports(request))
         .toList();
     if (supportingConstraints.isEmpty()) {
-      throw new RuntimeException("Request '%s' is not supported by any constraint.".formatted(request.getId()));
+      throw new RuntimeException("Request '%s' is not supported by any constraint.".formatted(request.getType()));
     }
     if (supportingConstraints.size() > 1) {
-      throw new RuntimeException("Request '%s' is supported by multiple constraints. That is not allowed.".formatted(request.getId()));
+      throw new RuntimeException("Request '%s' is supported by multiple constraints. That is not allowed.".formatted(request.getType()));
     }
     return supportingConstraints.get(0);
   }

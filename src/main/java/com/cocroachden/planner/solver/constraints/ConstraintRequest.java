@@ -1,7 +1,6 @@
 package com.cocroachden.planner.solver.constraints;
 
-
-import com.cocroachden.planner.lib.ConstraintRequestTypeId;
+import com.cocroachden.planner.lib.ConstraintType;
 import com.cocroachden.planner.solver.constraints.specific.AbstractConstraintRequest;
 import com.cocroachden.planner.solver.constraints.specific.AbstractMinMaxRequest;
 import com.cocroachden.planner.solver.constraints.specific.consecutiveworkingdays.request.ConsecutiveWorkingDaysRequest;
@@ -32,5 +31,5 @@ import java.io.Serializable;
     @JsonSubTypes.Type(value = ConsecutiveWorkingDaysRequest.class, name = "ConsecutiveWorkingDaysRequest")
 })
 public interface ConstraintRequest extends Serializable {
-  ConstraintRequestTypeId getId();
+  ConstraintType getType();
 }

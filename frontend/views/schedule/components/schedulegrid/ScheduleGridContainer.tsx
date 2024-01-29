@@ -8,6 +8,9 @@ import { EmployeeAction } from "Frontend/views/schedule/components/schedulegrid/
 import PlannerConfigurationDTO
   from "Frontend/generated/com/cocroachden/planner/plannerconfiguration/PlannerConfigurationDTO";
 import SpecificShiftRequestDTO from "Frontend/generated/com/cocroachden/planner/constraint/SpecificShiftRequestDTO";
+import ShiftsPerScheduleRequestDTO
+  from "Frontend/generated/com/cocroachden/planner/constraint/ShiftsPerScheduleRequestDTO";
+import ConstraintType from "Frontend/generated/com/cocroachden/planner/lib/ConstraintType";
 
 export type Owner = string
 export type Index = number
@@ -22,7 +25,9 @@ type Props = {
   request: PlannerConfigurationDTO
   employees: EmployeeRecord[]
   shiftRequests: SpecificShiftRequestDTO[]
+  shiftPerScheduleRequests: ShiftsPerScheduleRequestDTO[]
   onEmployeeAction?: (action: EmployeeAction) => void
+  onShiftRequestsChanged?: (changedRequests: SpecificShiftRequestDTO[]) => void
 }
 
 type Highlight = {
@@ -33,15 +38,28 @@ type Highlight = {
 export function ScheduleGridContainer(props: Props) {
 
   const [highlight, setHighlight] = useState<Highlight>({ originCell: undefined, lastCell: undefined })
-  const [rows, setRows] = useState<Row[]>(createRows(props.request, props.employees, props.shiftRequests, highlight))
+  const [rows, setRows] = useState<Row[]>(createRows(props.request, props.employees, props.shiftRequests, props.shiftPerScheduleRequests, highlight))
 
   useEffect(() => {
-    setRows(() => createRows(props.request, props.employees, props.shiftRequests, highlight))
-  }, [props.request, props.employees, props.shiftRequests]);
+    setRows(() => createRows(props.request, props.employees, props.shiftRequests, props.shiftPerScheduleRequests, highlight))
+  }, [props.request, props.employees, props.shiftRequests, props.shiftPerScheduleRequests]);
 
   useEffect(() => {
     setRows(prevState => updateHighlightForRows(prevState, highlight))
   }, [highlight]);
+
+  function handleCellShiftChanged(cells: Cell[]) {
+    if (!props.onShiftRequestsChanged) return
+    const requests = cells.map(cell => {
+      return {
+        type: ConstraintType.SPECIFIC_SHIFT_REQUEST,
+        owner: cell.owner,
+        date: cell.date,
+        requestedShift: cell.shift
+      } as SpecificShiftRequestDTO
+    })
+    props.onShiftRequestsChanged?.(requests)
+  }
 
   function handleCellLeftClick(cell: Cell) {
     if (highlight.originCell === undefined) {
@@ -70,10 +88,12 @@ export function ScheduleGridContainer(props: Props) {
         }
       })
     })
+    handleCellShiftChanged([updatedCell])
   }
 
   function copyShiftToCells(originCell: Cell, endCell: Cell) {
     const indexes = getIndexesBetweenCells(originCell, endCell)
+    const changedCells: Cell[] = []
     setRows(previous => {
       return previous.map(row => {
         if (row.workerId !== originCell.owner) return row
@@ -81,11 +101,14 @@ export function ScheduleGridContainer(props: Props) {
           ...row,
           cells: row.cells.map(cell => {
             if (indexes.find(i => cell.index === i) === undefined) return cell
-            return { ...cell, isHighlighted: false, shift: originCell.shift }
+            const newCell = { ...cell, isHighlighted: false, shift: originCell.shift }
+            changedCells.push(newCell)
+            return newCell
           })
         }
       })
     })
+    handleCellShiftChanged(changedCells)
   }
 
   return (
@@ -113,6 +136,7 @@ function createRows(
   request: PlannerConfigurationDTO,
   employees: EmployeeRecord[],
   shiftRequests: SpecificShiftRequestDTO[],
+  shiftPerSchedule: ShiftsPerScheduleRequestDTO[],
   highlightInfo: Highlight
 ): Row[] {
   const startDate = new Date(request.startDate);
@@ -140,9 +164,14 @@ function createRows(
           } as Cell
         })
       const referencedEmployee = employees.find(e => e.workerId === w.workerId)!
+      const relatedShiftPerScheduleRequests = shiftPerSchedule.filter(r => r.owner.workerId === w.workerId)
+      const requestedShiftCount = relatedShiftPerScheduleRequests
+        .map(r => Math.floor((r.softMin + r.softMax)/2))
+        .reduce((previousValue, currentValue) => previousValue + currentValue, 0)
+
       return {
         workerId: w.workerId,
-        displayName: referencedEmployee.lastName + " " + referencedEmployee.firstName,
+        displayName: referencedEmployee.lastName + " " + referencedEmployee.firstName + " (" + requestedShiftCount + ")",
         cells
       } as Row
     })

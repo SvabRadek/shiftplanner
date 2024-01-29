@@ -2,6 +2,8 @@ package com.cocroachden.planner;
 
 import com.cocroachden.planner.constraint.repository.ConstraintRequestRepository;
 import com.cocroachden.planner.constraint.service.ConstraintRequestService;
+import com.cocroachden.planner.plannerconfiguration.repository.PlannerConfigurationRepository;
+import com.cocroachden.planner.plannerconfiguration.service.PlannerConfigurationService;
 import com.cocroachden.planner.solver.constraints.GenericConstraintApplier;
 import com.cocroachden.planner.solver.constraints.specific.consecutiveworkingdays.ConsecutiveWorkingDaysConstraint;
 import com.cocroachden.planner.solver.constraints.specific.shiftfollowuprestriction.ShiftFollowUpConstraint;
@@ -58,6 +60,13 @@ public class ServiceConfiguration {
       ConstraintRequestRepository repository
   ) {
     return new ConstraintRequestService(repository);
+  }
+
+  @Bean
+  public PlannerConfigurationService plannerConfigurationService(
+      PlannerConfigurationRepository repository
+  ) {
+    return new PlannerConfigurationService(repository);
   }
 
 }

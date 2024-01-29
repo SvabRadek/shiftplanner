@@ -2,6 +2,7 @@ package com.cocroachden.planner;
 
 import com.cocroachden.planner.constraint.repository.ConstraintRequestRecord;
 import com.cocroachden.planner.constraint.service.ConstraintRequestService;
+import com.cocroachden.planner.plannerconfiguration.ConfigurationRequestLinkDTO;
 import com.cocroachden.planner.plannerconfiguration.PlannerConfigurationDTO;
 import com.cocroachden.planner.plannerconfiguration.service.PlannerConfigurationService;
 import com.cocroachden.planner.employee.EmployeeRecord;
@@ -33,12 +34,14 @@ public class StartupService {
     var requestService = context.getBean(ConstraintRequestService.class);
     if (configService.findAll().isEmpty()) {
       var configId = UUID.randomUUID();
-      var requestIds = Example.constraintRequests().stream()
-          .map(constraint -> new ConstraintRequestRecord(configId, constraint))
+      var requestLinks = Example.constraintRequests().stream()
+          .map(ConstraintRequestRecord::new)
           .map(requestService::upsert)
-          .map(ConstraintRequestRecord::getId)
-          .toList();
-      configService.upsert(
+          .map(record -> new ConfigurationRequestLinkDTO(
+              record.getType(),
+              record.getId()
+          )).toList();
+      configService.save(
           new PlannerConfigurationDTO(
               configId,
               "Priklad konfigurace",
@@ -47,7 +50,7 @@ public class StartupService {
               LocalDate.now(),
               LocalDate.now().plusDays(30),
               Example.workers(),
-              requestIds
+              requestLinks
           )
       );
     }
@@ -57,11 +60,13 @@ public class StartupService {
     List<String> firstNames = Arrays.asList(
         "John", "Jane", "Alice", "Bob", "Charlie",
         "David", "Eva", "Frank", "Grace", "Henry",
-        "Ivy", "Jack", "Kate", "Leo", "Mia");
+        "Ivy", "Jack", "Kate", "Leo", "Mia"
+    );
     List<String> lastNames = Arrays.asList(
         "Anderson", "Brown", "Clark", "Davis", "Evans",
         "Fisher", "Garcia", "Hill", "Irwin", "Jones",
-        "King", "Lee", "Miller", "Nelson", "Owens");
+        "King", "Lee", "Miller", "Nelson", "Owens"
+    );
     var employeeRepo = context.getBean(EmployeeRepository.class);
     Example.workers().stream()
         .map(id -> new EmployeeRecord(

@@ -1,6 +1,7 @@
 package com.cocroachden.planner.plannerconfiguration.repository;
 
 import com.cocroachden.planner.lib.WorkerId;
+import com.cocroachden.planner.plannerconfiguration.ConfigurationRequestLinkDTO;
 import com.cocroachden.planner.plannerconfiguration.PlannerConfigurationDTO;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -31,7 +32,11 @@ public class PlannerConfigurationRecord {
         response.getStartDate(),
         response.getEndDate(),
         response.getWorkers(),
-        response.getConstraintRequestInstances()
+        response.getConstraintRequestInstances().stream()
+            .map(link -> new ConfigurationRequestLink(
+                link.getRequestType(),
+                link.getRequestId()
+            )).toList()
     );
   }
 
@@ -50,5 +55,5 @@ public class PlannerConfigurationRecord {
   @OrderColumn(name = "list_index")
   private List<WorkerId> workers;
   @ElementCollection
-  private List<UUID> constraintRequestInstances;
+  private List<ConfigurationRequestLink> constraintRequestInstances;
 }

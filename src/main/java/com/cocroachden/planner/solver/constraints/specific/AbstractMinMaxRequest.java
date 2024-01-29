@@ -1,7 +1,7 @@
 package com.cocroachden.planner.solver.constraints.specific;
 
 
-import com.cocroachden.planner.lib.ConstraintRequestTypeId;
+import com.cocroachden.planner.lib.ConstraintType;
 import com.cocroachden.planner.lib.WorkerId;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import lombok.AccessLevel;
@@ -19,7 +19,7 @@ public class AbstractMinMaxRequest extends AbstractConstraintRequest {
   private Integer maxPenalty;
   private Integer hardMax;
   public AbstractMinMaxRequest(
-      ConstraintRequestTypeId constraintRequestTypeId,
+      ConstraintType constraintType,
       WorkerId owner,
       Integer hardMin,
       Integer softMin,
@@ -28,7 +28,7 @@ public class AbstractMinMaxRequest extends AbstractConstraintRequest {
       Integer maxPenalty,
       Integer hardMax
   ) {
-    super(constraintRequestTypeId, owner);
+    super(constraintType, owner);
     this.softMin = softMin;
     this.minPenalty = minPenalty;
     this.hardMin = hardMin;

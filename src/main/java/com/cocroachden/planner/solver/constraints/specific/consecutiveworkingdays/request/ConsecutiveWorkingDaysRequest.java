@@ -1,7 +1,7 @@
 package com.cocroachden.planner.solver.constraints.specific.consecutiveworkingdays.request;
 
 
-import com.cocroachden.planner.lib.ConstraintRequestTypeId;
+import com.cocroachden.planner.lib.ConstraintType;
 import com.cocroachden.planner.lib.WorkerId;
 import com.cocroachden.planner.solver.constraints.specific.AbstractMinMaxRequest;
 import com.fasterxml.jackson.annotation.JsonTypeName;
@@ -13,7 +13,7 @@ import lombok.NoArgsConstructor;
 @JsonTypeName("ConsecutiveWorkingDaysRequest")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class ConsecutiveWorkingDaysRequest extends AbstractMinMaxRequest {
-  public static final ConstraintRequestTypeId ID = new ConstraintRequestTypeId("ConsecutiveWorkingDaysRequest");
+  public static final ConstraintType ID = ConstraintType.CONSECUTIVE_WORKING_DAYS;
 
   public ConsecutiveWorkingDaysRequest(
       WorkerId owner,

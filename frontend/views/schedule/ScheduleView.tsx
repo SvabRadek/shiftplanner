@@ -1,7 +1,6 @@
 import { DatePicker } from "@hilla/react-components/DatePicker";
-import { useForm } from "@hilla/react-form";
-import { useEffect, useRef, useState } from "react";
-import { ConstraintEndpoint, EmployeeService, PlannerConfigurationService } from "Frontend/generated/endpoints";
+import { useEffect, useState } from "react";
+import { ConstraintEndpoint, EmployeeService, PlannerConfigurationEndpoint } from "Frontend/generated/endpoints";
 import { Button } from "@hilla/react-components/Button";
 import { HorizontalLayout } from "@hilla/react-components/HorizontalLayout";
 import { TextField } from "@hilla/react-components/TextField";
@@ -12,17 +11,26 @@ import EmployeeRecord from "Frontend/generated/com/cocroachden/planner/employee/
 import { ScheduleGridContainer } from "./components/schedulegrid/ScheduleGridContainer";
 import { AddEmployeeDialog } from "Frontend/views/schedule/components/AddEmployeeDialog";
 import { EmployeeAction, EmployeeActionEnum } from "Frontend/views/schedule/components/schedulegrid/GridNameCell";
-import { EmployeeRequestConfig } from "Frontend/views/schedule/components/EmployeeRequestConfig";
+import {
+  EmployeeConfigModel,
+  EmployeeRequestConfig
+} from "Frontend/views/schedule/components/employeeConstraints/EmployeeRequestConfig";
 import PlannerConfigurationDTO
   from "Frontend/generated/com/cocroachden/planner/plannerconfiguration/PlannerConfigurationDTO";
-import PlannerConfigurationDTOModel
-  from "Frontend/generated/com/cocroachden/planner/plannerconfiguration/PlannerConfigurationDTOModel";
-import PlannerConfigurationMetaDataDTO
-  from "Frontend/generated/com/cocroachden/planner/plannerconfiguration/PlannerConfigurationMetaDataDTO";
 import SpecificShiftRequestDTO from "Frontend/generated/com/cocroachden/planner/constraint/SpecificShiftRequestDTO";
 import ShiftsPerScheduleRequestDTO
   from "Frontend/generated/com/cocroachden/planner/constraint/ShiftsPerScheduleRequestDTO";
 import WorkerId from "Frontend/generated/com/cocroachden/planner/lib/WorkerId";
+import ConstraintType from "Frontend/generated/com/cocroachden/planner/lib/ConstraintType";
+import { areShiftRequestsSame } from "Frontend/util/utils";
+
+async function saveSpecificShiftRequests(requests: SpecificShiftRequestDTO[]): Promise<string[]> {
+  return ConstraintEndpoint.saveAllSpecificShiftRequests(requests)
+}
+
+async function saveShiftPerScheduleRequests(requests: ShiftsPerScheduleRequestDTO[]): Promise<string[]> {
+  return ConstraintEndpoint.saveAllShiftsPerScheduleRequests(requests)
+}
 
 type EmployeeConfigDialogParams = {
   isOpen: boolean,
@@ -31,7 +39,6 @@ type EmployeeConfigDialogParams = {
 
 export default function ScheduleView() {
 
-  const saveAsNewRef = useRef<boolean>(false);
   const [request, setRequest] = useState<PlannerConfigurationDTO | undefined>()
   const [employees, setEmployees] = useState<EmployeeRecord[]>([])
   const [shiftRequests, setShiftRequests] = useState<SpecificShiftRequestDTO[]>([])
@@ -47,29 +54,38 @@ export default function ScheduleView() {
     }
   }, []);
 
-  useEffect(() => {
-    form.read(request)
-  }, [request]);
-
   function handleUnload(e: Event) {
     e.preventDefault()
   }
 
-  const form = useForm(PlannerConfigurationDTOModel, {
-    onSubmit: async value => {
-      if (saveAsNewRef.current) {
-        await PlannerConfigurationService.saveAsNew(value).then(form.read)
-      } else {
-        await PlannerConfigurationService.upsert(value).then(form.read)
-      }
-    }
-  })
+  async function handleSave() {
+    const [specificShiftIds, shiftPerScheduleIds] = await Promise.all([
+      saveSpecificShiftRequests(shiftRequests),
+      saveShiftPerScheduleRequests(shiftPerScheduleRequests)
+    ])
+    await PlannerConfigurationEndpoint.save({
+      ...request!,
+      workers: employees.map(e => ({ workerId: e.workerId })),
+      constraintRequestInstances: [
+        ...specificShiftIds.map(id => ({ requestType: ConstraintType.SPECIFIC_SHIFT_REQUEST, requestId: id })),
+        ...shiftPerScheduleIds.map(id => ({ requestType: ConstraintType.SHIFT_PER_SCHEDULE, requestId: id }))
+      ]
+    }).then(response => handleConfigSelected(response))
+  }
 
-  function handleConfigSelected(value: PlannerConfigurationMetaDataDTO) {
-    PlannerConfigurationService.getConfiguration(value.id).then(configResponse => {
+  function handleConfigSelected(configId: string) {
+    PlannerConfigurationEndpoint.getConfiguration(configId).then(configResponse => {
       setRequest(configResponse)
-      ConstraintEndpoint.findSpecificShiftRequests(configResponse.id).then(setShiftRequests)
-      ConstraintEndpoint.findShiftsPerScheduleRequests(configResponse.id).then(setShiftPerScheduleRequests)
+      ConstraintEndpoint.findSpecificShiftRequests(
+        configResponse.constraintRequestInstances
+          .filter(l => l.requestType === ConstraintType.SPECIFIC_SHIFT_REQUEST)
+          .map(l => l.requestId)
+      ).then(setShiftRequests)
+      ConstraintEndpoint.findShiftsPerScheduleRequests(
+        configResponse.constraintRequestInstances
+          .filter(l => l.requestType === ConstraintType.SHIFT_PER_SCHEDULE)
+          .map(l => l.requestId)
+      ).then(setShiftPerScheduleRequests)
     })
   }
 
@@ -81,6 +97,16 @@ export default function ScheduleView() {
         workers: [...prevState.workers, { workerId: employee.workerId }]
       }
     })
+  }
+
+  function handleEmployeeConfigSave(config: EmployeeConfigModel) {
+    setShiftPerScheduleRequests(prevState => {
+      return [
+        ...prevState.filter(previous => previous.owner.workerId !== config.workerId),
+        ...config.shiftsPerScheduleRequests
+      ]
+    })
+    setEmployeeConfigDialog({ isOpen: false })
   }
 
   function handleEmployeeAction(action: EmployeeAction) {
@@ -103,9 +129,18 @@ export default function ScheduleView() {
     }
   }
 
+  function handleShiftRequestsChanged(changedRequests: SpecificShiftRequestDTO[]) {
+    setShiftRequests(prevState => {
+      return [
+        ...prevState.filter(r => !changedRequests.some(changed => areShiftRequestsSame(r, changed))),
+        ...changedRequests
+      ]
+    })
+  }
+
   return (
     <VerticalLayout theme={"spacing padding"}>
-      <ConfigSelectDialog onConfigSelected={handleConfigSelected}/>
+      <ConfigSelectDialog onConfigSelected={value => handleConfigSelected(value.id)}/>
       <VerticalLayout theme={"spacing"}>
         <TextField
           label={"Nazev"}
@@ -133,9 +168,12 @@ export default function ScheduleView() {
         request ?
           <>
             <EmployeeRequestConfig
+              key={employeeConfigDialog.selectedEmployee?.workerId}
               employee={employees.find(w => w.workerId === employeeConfigDialog.selectedEmployee?.workerId)!}
               isOpen={employeeConfigDialog.isOpen}
               onOpenChanged={(newValue) => setEmployeeConfigDialog(prevState => ({ ...prevState, isOpen: newValue }))}
+              shiftsPerScheduleRequests={shiftPerScheduleRequests.filter(r => r.owner.workerId === employeeConfigDialog.selectedEmployee?.workerId)}
+              onSave={handleEmployeeConfigSave}
             />
             <AddEmployeeDialog
               employees={employees}
@@ -148,7 +186,9 @@ export default function ScheduleView() {
               request={request}
               employees={employees}
               shiftRequests={shiftRequests}
+              shiftPerScheduleRequests={shiftPerScheduleRequests}
               onEmployeeAction={handleEmployeeAction}
+              onShiftRequestsChanged={handleShiftRequestsChanged}
             />
           </>
           : <h2>Vyber konfiguraci</h2>
@@ -156,23 +196,12 @@ export default function ScheduleView() {
       <HorizontalLayout theme={"spacing"}>
         <Button
           theme={"primary"}
-          onClick={() => {
-            saveAsNewRef.current = false
-            form.submit().then()
-          }}
-          disabled={form.invalid || form.submitting || !request}>
+          onClick={handleSave}
+          disabled={!request}>
           Save
-        </Button>
-        <Button
-          theme={"primary"}
-          onClick={() => {
-            saveAsNewRef.current = true
-            form.submit().then()
-          }}
-          disabled={form.invalid || form.submitting || !request}>
-          Save As New
         </Button>
       </HorizontalLayout>
     </VerticalLayout>
   )
 }
+

@@ -1,5 +1,6 @@
 package com.cocroachden.planner.constraint;
 
+import com.cocroachden.planner.lib.ConstraintType;
 import com.cocroachden.planner.lib.StupidDate;
 import com.cocroachden.planner.solver.schedule.WorkShifts;
 import dev.hilla.Nonnull;
@@ -14,7 +15,7 @@ import lombok.NoArgsConstructor;
 public class SpecificShiftRequestDTO {
   public static final String TYPE = "SpecificShiftRequest";
   @Nonnull
-  private String type;
+  private ConstraintType type;
   @Nonnull
   private String owner;
   @Nonnull

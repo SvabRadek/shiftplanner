@@ -1,7 +1,7 @@
 package com.cocroachden.planner.solver.constraints.specific.workershiftrequest.request;
 
 
-import com.cocroachden.planner.lib.ConstraintRequestTypeId;
+import com.cocroachden.planner.lib.ConstraintType;
 import com.cocroachden.planner.lib.WorkerId;
 import com.cocroachden.planner.solver.constraints.specific.AbstractConstraintRequest;
 import com.cocroachden.planner.solver.schedule.WorkShifts;
@@ -16,7 +16,7 @@ import java.time.LocalDate;
 @JsonTypeName("SpecificShiftRequest")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class SpecificShiftRequest extends AbstractConstraintRequest {
-  public static final ConstraintRequestTypeId ID = new ConstraintRequestTypeId("SpecificShiftRequest");
+  public static final ConstraintType ID = ConstraintType.SPECIFIC_SHIFT_REQUEST;
   private LocalDate date;
   private WorkShifts requestedShift;
 

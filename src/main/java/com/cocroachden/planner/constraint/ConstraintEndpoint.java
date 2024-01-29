@@ -20,49 +20,52 @@ public class ConstraintEndpoint {
   private final ConstraintRequestService service;
 
   public @Nonnull List<@Nonnull SpecificShiftRequestDTO> findSpecificShiftRequests(
-      @Nonnull UUID plannerConfigId
+      @Nonnull List<@Nonnull UUID> requestIds
   ) {
-    return service.getSpecificShiftRequests(plannerConfigId);
+    return service.getSpecificShiftRequests(requestIds);
   }
 
-  public void saveSpecificShiftRequest(
-      @Nonnull UUID plannerConfigId,
-      @Nonnull SpecificShiftRequestDTO requestDTO
+  public @Nonnull List<@Nonnull UUID> saveAllSpecificShiftRequests(
+      @Nonnull List<@Nonnull SpecificShiftRequestDTO> requestDTOs
   ) {
-    var request = new ConstraintRequestRecord(
-        plannerConfigId,
-        new SpecificShiftRequest(
-            new WorkerId(requestDTO.getOwner()),
-            requestDTO.getDate().toDate(),
-            requestDTO.getRequestedShift()
-        )
-    );
-    service.saveAsNew(request);
+    return requestDTOs.stream()
+        .map(requestDTO ->
+            new ConstraintRequestRecord(
+                new SpecificShiftRequest(
+                    new WorkerId(requestDTO.getOwner()),
+                    requestDTO.getDate().toDate(),
+                    requestDTO.getRequestedShift()
+                )
+            )
+        ).map(record -> service.saveAsNew(record).getId())
+        .toList();
   }
 
   public @Nonnull List<@Nonnull ShiftsPerScheduleRequestDTO> findShiftsPerScheduleRequests(
-      @Nonnull UUID plannerConfigId
+      @Nonnull List<@Nonnull UUID> requestIds
   ) {
-    return service.getShiftsPerScheduleRequests(plannerConfigId);
+    return service.getShiftsPerScheduleRequests(requestIds).stream()
+        .map(ShiftsPerScheduleRequestDTO::from)
+        .toList();
   }
 
-  public void saveShiftsPerScheduleRequests(
-      @Nonnull UUID plannerConfigId,
-      @Nonnull ShiftsPerScheduleRequestDTO requestDTO
+  public @Nonnull List<@Nonnull UUID> saveAllShiftsPerScheduleRequests(
+      @Nonnull List<@Nonnull ShiftsPerScheduleRequestDTO> requestDTOs
   ) {
-    var request = new ConstraintRequestRecord(
-        plannerConfigId,
-        new ShiftsPerScheduleRequest(
-            requestDTO.getOwner(),
-            requestDTO.getTargetShift(),
-            requestDTO.getHardMin(),
-            requestDTO.getSoftMin(),
-            requestDTO.getMinPenalty(),
-            requestDTO.getSoftMax(),
-            requestDTO.getMaxPenalty(),
-            requestDTO.getHardMax()
-        )
-    );
-    service.saveAsNew(request);
+    return requestDTOs.stream().map(requestDTO ->
+            new ConstraintRequestRecord(
+                new ShiftsPerScheduleRequest(
+                    requestDTO.getOwner(),
+                    requestDTO.getTargetShift(),
+                    requestDTO.getHardMin(),
+                    requestDTO.getSoftMin(),
+                    requestDTO.getMinPenalty(),
+                    requestDTO.getSoftMax(),
+                    requestDTO.getMaxPenalty(),
+                    requestDTO.getHardMax()
+                )
+            )
+        ).map(request -> service.saveAsNew(request).getId())
+        .toList();
   }
 }
