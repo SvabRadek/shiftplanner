@@ -29,8 +29,8 @@ public class PlannerConfigurationRecord {
         response.getName(),
         response.getCreatedAt(),
         response.getLastUpdated(),
-        response.getStartDate(),
-        response.getEndDate(),
+        response.getStartDate().toDate(),
+        response.getEndDate().toDate(),
         response.getWorkers(),
         response.getConstraintRequestInstances().stream()
             .map(link -> new ConfigurationRequestLink(

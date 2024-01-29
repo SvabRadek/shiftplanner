@@ -43,7 +43,7 @@ export function ScheduleGrid(props: Props) {
             c.index + 2,
             <GridHeaderCell
               title={c.date.day.toString()}
-              hint={stupidDateToString(c.date)}
+              hint={stupidDateToString(c.date) + ", " + stupidDateToDate(c.date).getDay()}
               backgroundColor={isWeekend(c.date) ? "var(--lumo-shade-20pct)" : undefined}
             />
           ))

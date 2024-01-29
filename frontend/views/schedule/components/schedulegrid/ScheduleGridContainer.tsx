@@ -117,8 +117,8 @@ function createRows(
   shiftPerSchedule: ShiftsPerScheduleRequestDTO[],
   highlightInfo: Highlight
 ): Row[] {
-  const startDate = new Date(request.startDate);
-  const endDate = new Date(request.endDate);
+  const startDate = stupidDateToDate(request.startDate)
+  const endDate = stupidDateToDate(request.endDate)
   const dayIndexes = getDistanceInDays(startDate, endDate)
   return request.workers
     .map(w => {
@@ -128,7 +128,7 @@ function createRows(
       }
       const cells = dayIndexes
         .map(dayOffset => {
-          const cellDate = new Date()
+          const cellDate = new Date(startDate)
           cellDate.setDate(startDate.getDate() + dayOffset)
           const relatedRequest = shiftRequests.find(r => {
             return stupidDateToString(r.date) === dateToString(cellDate) && r.owner === w.workerId

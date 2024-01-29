@@ -1,5 +1,6 @@
 package com.cocroachden.planner.plannerconfiguration;
 
+import com.cocroachden.planner.lib.StupidDate;
 import com.cocroachden.planner.lib.WorkerId;
 import com.cocroachden.planner.plannerconfiguration.repository.PlannerConfigurationRecord;
 import dev.hilla.Nonnull;
@@ -22,8 +23,8 @@ public class PlannerConfigurationDTO {
         record.getName(),
         record.getCreatedAt(),
         record.getLastUpdated(),
-        record.getStartDate(),
-        record.getEndDate(),
+        StupidDate.fromDate(record.getStartDate()),
+        StupidDate.fromDate(record.getEndDate()),
         record.getWorkers(),
         record.getConstraintRequestInstances().stream()
             .map(link -> new ConfigurationRequestLinkDTO(
@@ -42,9 +43,9 @@ public class PlannerConfigurationDTO {
   @Nonnull
   private Instant lastUpdated;
   @Nonnull
-  private LocalDate startDate;
+  private StupidDate startDate;
   @Nonnull
-  private LocalDate endDate;
+  private StupidDate endDate;
   @Nonnull
   private List<@Nonnull WorkerId> workers;
   @Nonnull

@@ -13,8 +13,8 @@ import { AddEmployeeDialog } from "Frontend/views/schedule/components/AddEmploye
 import { EmployeeAction, EmployeeActionEnum } from "Frontend/views/schedule/components/schedulegrid/GridNameCell";
 import {
   EmployeeConfigModel,
-  EmployeeRequestConfig
-} from "Frontend/views/schedule/components/employeeConstraints/EmployeeRequestConfig";
+  EmployeeRequestConfigDialog
+} from "Frontend/views/schedule/components/employeeConstraints/EmployeeRequestConfigDialog";
 import PlannerConfigurationDTO
   from "Frontend/generated/com/cocroachden/planner/plannerconfiguration/PlannerConfigurationDTO";
 import SpecificShiftRequestDTO from "Frontend/generated/com/cocroachden/planner/constraint/SpecificShiftRequestDTO";
@@ -22,7 +22,7 @@ import ShiftsPerScheduleRequestDTO
   from "Frontend/generated/com/cocroachden/planner/constraint/ShiftsPerScheduleRequestDTO";
 import WorkerId from "Frontend/generated/com/cocroachden/planner/lib/WorkerId";
 import ConstraintType from "Frontend/generated/com/cocroachden/planner/lib/ConstraintType";
-import { areShiftRequestsSame } from "Frontend/util/utils";
+import { areShiftRequestsSame, dateToStupidDate, stupidDateToString } from "Frontend/util/utils";
 import WorkShifts from "Frontend/generated/com/cocroachden/planner/solver/schedule/WorkShifts";
 import { Notification } from "@hilla/react-components/Notification";
 
@@ -159,14 +159,20 @@ export default function ScheduleView() {
           />
           <DatePicker
             label={"Od"}
-            value={request?.startDate}
-            onChange={e => setRequest({ ...request!, startDate: e.target.value })}
+            value={request && stupidDateToString(request?.startDate)}
+            onChange={e => setRequest({
+              ...request!,
+              startDate: dateToStupidDate(new Date(e.target.value))
+            })}
             disabled={!request}
           />
           <DatePicker
             label={"Do"}
-            value={request?.endDate}
-            onChange={e => setRequest({ ...request!, endDate: e.target.value })}
+            value={request && stupidDateToString(request?.endDate)}
+            onChange={e => setRequest({
+              ...request!,
+              endDate: dateToStupidDate(new Date(e.target.value))
+            })}
             disabled={!request}
           />
         </HorizontalLayout>
@@ -175,7 +181,7 @@ export default function ScheduleView() {
       {
         request ?
           <>
-            <EmployeeRequestConfig
+            <EmployeeRequestConfigDialog
               key={employeeConfigDialog.selectedEmployee?.workerId}
               employee={employees.find(w => w.workerId === employeeConfigDialog.selectedEmployee?.workerId)!}
               isOpen={employeeConfigDialog.isOpen}
@@ -205,8 +211,9 @@ export default function ScheduleView() {
         <Button
           theme={"primary"}
           onClick={handleSave}
-          disabled={!request}>
-          Save
+          disabled={!request}
+        >
+          Uloz
         </Button>
       </HorizontalLayout>
     </VerticalLayout>

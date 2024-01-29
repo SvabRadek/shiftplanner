@@ -32,7 +32,7 @@ type Props = {
   onOpenChanged: (value: boolean) => void
 }
 
-export function EmployeeRequestConfig(props: Props) {
+export function EmployeeRequestConfigDialog(props: Props) {
 
   if (!props.employee) return null
   const [employeeConfigModel, setEmployeeConfigModel] = useState<EmployeeConfigModel>({

@@ -2,6 +2,7 @@ package com.cocroachden.planner;
 
 import com.cocroachden.planner.constraint.repository.ConstraintRequestRecord;
 import com.cocroachden.planner.constraint.service.ConstraintRequestService;
+import com.cocroachden.planner.lib.StupidDate;
 import com.cocroachden.planner.plannerconfiguration.ConfigurationRequestLinkDTO;
 import com.cocroachden.planner.plannerconfiguration.PlannerConfigurationDTO;
 import com.cocroachden.planner.plannerconfiguration.service.PlannerConfigurationService;
@@ -47,8 +48,8 @@ public class StartupService {
               "Priklad konfigurace",
               Instant.now(),
               Instant.now(),
-              LocalDate.now(),
-              LocalDate.now().plusDays(30),
+              StupidDate.fromDate(LocalDate.now()),
+              StupidDate.fromDate(LocalDate.now().plusDays(30)),
               Example.workers(),
               requestLinks
           )
