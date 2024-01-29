@@ -23,6 +23,7 @@ import ShiftsPerScheduleRequestDTO
 import WorkerId from "Frontend/generated/com/cocroachden/planner/lib/WorkerId";
 import ConstraintType from "Frontend/generated/com/cocroachden/planner/lib/ConstraintType";
 import { areShiftRequestsSame } from "Frontend/util/utils";
+import WorkShifts from "Frontend/generated/com/cocroachden/planner/solver/schedule/WorkShifts";
 
 async function saveSpecificShiftRequests(requests: SpecificShiftRequestDTO[]): Promise<string[]> {
   return ConstraintEndpoint.saveAllSpecificShiftRequests(requests)
@@ -133,7 +134,7 @@ export default function ScheduleView() {
     setShiftRequests(prevState => {
       return [
         ...prevState.filter(r => !changedRequests.some(changed => areShiftRequestsSame(r, changed))),
-        ...changedRequests
+        ...changedRequests.filter(r => r.requestedShift !== WorkShifts.ANY)
       ]
     })
   }

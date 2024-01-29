@@ -36,27 +36,13 @@ type Highlight = {
 }
 
 export function ScheduleGridContainer(props: Props) {
-
   const [highlight, setHighlight] = useState<Highlight>({ originCell: undefined, lastCell: undefined })
-
-  function handleCellShiftChanged(cells: Cell[]) {
-    if (!props.onShiftRequestsChanged) return
-    const requests = cells.map(cell => {
-      return {
-        type: ConstraintType.SPECIFIC_SHIFT_REQUEST,
-        owner: cell.owner,
-        date: cell.date,
-        requestedShift: cell.shift
-      } as SpecificShiftRequestDTO
-    })
-    props.onShiftRequestsChanged?.(requests)
-  }
 
   function handleCellLeftClick(cell: Cell) {
     if (highlight.originCell === undefined) {
       setHighlight(() => ({ originCell: cell, lastCell: cell }))
     } else {
-      copyShiftToCells(highlight.originCell, highlight.lastCell!)
+      handleGroupShiftChange(highlight.originCell, highlight.lastCell!)
       setHighlight(() => ({ originCell: undefined, lastCell: undefined }))
     }
   }
@@ -66,16 +52,26 @@ export function ScheduleGridContainer(props: Props) {
     setHighlight(previous => ({ ...previous, lastCell: cell }))
   }
 
-  function updateCell(updatedCell: Cell) {
-    handleCellShiftChanged([updatedCell])
+  function handleShiftChange(updatedCell: Cell) {
+    props.onShiftRequestsChanged?.([
+      {
+        type: ConstraintType.SPECIFIC_SHIFT_REQUEST,
+        owner: updatedCell.owner,
+        date: updatedCell.date,
+        requestedShift: updatedCell.shift
+      }
+    ])
   }
 
-  function copyShiftToCells(originCell: Cell, endCell: Cell) {
-    const originDate = stupidDateToDate(originCell.date).getDate()
+  function handleGroupShiftChange(originCell: Cell, endCell: Cell) {
+    const originDate = originCell.index < endCell.index ? stupidDateToDate(originCell.date) : stupidDateToDate(endCell.date)
+    const lowEnd = originCell.index < endCell.index ? originCell.index : endCell.index
+    const highEnd = originCell.index > endCell.index ? originCell.index : endCell.index
     const requests: SpecificShiftRequestDTO[] = []
-    for (let i = 0; i <= endCell.index; i++) {
-      const requestDate = new Date()
-      requestDate.setDate(originDate + i)
+    for (let i = lowEnd; i <= highEnd; i++) {
+      const index = i - lowEnd
+      const requestDate = new Date(originDate)
+      requestDate.setDate(requestDate.getDate() + index)
       requests.push({
           type: ConstraintType.SPECIFIC_SHIFT_REQUEST,
           owner: originCell.owner,
@@ -96,7 +92,7 @@ export function ScheduleGridContainer(props: Props) {
         props.shiftPerScheduleRequests,
         highlight
       )}
-      onCellChanged={updateCell}
+      onCellChanged={handleShiftChange}
       onMouseOverCell={handleCellOnMouseOver}
       onLeftClick={handleCellLeftClick}
       onEmployeeAction={props.onEmployeeAction}
