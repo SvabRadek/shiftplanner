@@ -7,6 +7,7 @@ import { PlannerConfigList } from "Frontend/views/schedule/components/PlannerCon
 import { HorizontalLayout } from "@hilla/react-components/HorizontalLayout";
 import PlannerConfigurationMetaDataDTO
   from "Frontend/generated/com/cocroachden/planner/plannerconfiguration/PlannerConfigurationMetaDataDTO";
+import { PlannerConfigurationEndpoint } from "Frontend/generated/endpoints";
 
 type Props = {
   onConfigSelected?: (value: PlannerConfigurationMetaDataDTO) => void
@@ -17,11 +18,17 @@ export function ConfigSelectDialog(props: Props) {
 
   const [isOpen, setIsOpen] = useState(props.isOpen);
   const [selectedItem, setSelectedItem] = useState<PlannerConfigurationMetaDataDTO>()
+  const [configMetaData, setConfigMetaData] = useState<PlannerConfigurationMetaDataDTO[]>([])
 
   useEffect(() => {
     setIsOpen(props.isOpen)
   }, [props.isOpen]);
-  
+
+  function handleOpen() {
+    PlannerConfigurationEndpoint.getMetaData().then(setConfigMetaData)
+    setIsOpen(true)
+  }
+
   function confirmSelection() {
     if (props.onConfigSelected && selectedItem) {
       props.onConfigSelected(selectedItem)
@@ -39,14 +46,14 @@ export function ConfigSelectDialog(props: Props) {
         }}
       >
         <VerticalLayout style={{ minWidth: "700px", minHeight: "400px" }}>
-          <PlannerConfigList onSelectionChanged={setSelectedItem}/>
+          <PlannerConfigList configList={configMetaData} onSelectionChanged={setSelectedItem}/>
           <HorizontalLayout style={{ width: "100%", justifyContent: "end" }} theme={"padding spacing"}>
             <Button onClick={() => setIsOpen(false)}>Zrusit</Button>
             <Button disabled={!selectedItem} onClick={confirmSelection}>Vybrat</Button>
           </HorizontalLayout>
         </VerticalLayout>
       </Dialog>
-      <Button theme={"icon primary"} onClick={() => setIsOpen(true)}>
+      <Button theme={"icon primary"} onClick={handleOpen}>
         <Icon icon={"vaadin:cog"} slot={"prefix"}/>
           Vybrat konfiguraci
       </Button>

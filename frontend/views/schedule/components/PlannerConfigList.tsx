@@ -3,20 +3,15 @@ import { Grid } from "@hilla/react-components/Grid";
 import { GridColumn } from "@hilla/react-components/GridColumn";
 import PlannerConfigurationMetaDataDTO
   from "Frontend/generated/com/cocroachden/planner/plannerconfiguration/PlannerConfigurationMetaDataDTO";
-import { PlannerConfigurationEndpoint } from "Frontend/generated/endpoints";
 
 type Props = {
+  configList: PlannerConfigurationMetaDataDTO[]
   onSelectionChanged: (value: PlannerConfigurationMetaDataDTO) => void
 }
 
 export function PlannerConfigList(props: Props) {
 
-  const [configMetaData, setConfigMetaData] = useState<PlannerConfigurationMetaDataDTO[]>([])
   const [selectedItems, setSelectedItems] = useState<PlannerConfigurationMetaDataDTO[]>([])
-
-  useEffect(() => {
-    PlannerConfigurationEndpoint.getMetaData().then(setConfigMetaData)
-  }, []);
 
   useEffect(() => {
     selectedItems.length > 0 && props.onSelectionChanged?.(selectedItems[0])
@@ -24,7 +19,7 @@ export function PlannerConfigList(props: Props) {
 
   return (
     <Grid
-      items={configMetaData}
+      items={props.configList}
       style={{ height: 200 }}
       selectedItems={selectedItems}
       onActiveItemChanged={(e) => {

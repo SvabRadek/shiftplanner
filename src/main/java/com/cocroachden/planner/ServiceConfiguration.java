@@ -13,6 +13,10 @@ import com.cocroachden.planner.solver.constraints.specific.shiftperschedule.Shif
 import com.cocroachden.planner.solver.constraints.specific.workershiftrequest.WorkerShiftRequestConstraint;
 import com.cocroachden.planner.solver.constraints.specific.workerspershift.WorkersPerShiftConstraint;
 import com.cocroachden.planner.solver.solver.ScheduleSolver;
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.PropertyAccessor;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JSR310Module;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
@@ -68,5 +72,4 @@ public class ServiceConfiguration {
   ) {
     return new PlannerConfigurationService(repository);
   }
-
 }

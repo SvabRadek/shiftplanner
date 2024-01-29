@@ -25,7 +25,7 @@ export function getDistanceInDaysNumeric(startDate: Date, endDate: Date): number
 }
 
 export function areShiftRequestsSame(r1: SpecificShiftRequestDTO, r2: SpecificShiftRequestDTO): boolean {
-  return [r1.owner, stupidDateToString(r1.date)].join() === [r2.owner, stupidDateToDate(r2.date)].join()
+  return [r1.owner, stupidDateToString(r1.date)].join() === [r2.owner, stupidDateToString(r2.date)].join()
 }
 
 type IdentifiableShiftsPerScheduleRequestDTO = Pick<ShiftsPerScheduleRequestDTO, "owner" | "targetShift">
