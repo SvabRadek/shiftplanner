@@ -24,6 +24,7 @@ import WorkerId from "Frontend/generated/com/cocroachden/planner/lib/WorkerId";
 import ConstraintType from "Frontend/generated/com/cocroachden/planner/lib/ConstraintType";
 import { areShiftRequestsSame } from "Frontend/util/utils";
 import WorkShifts from "Frontend/generated/com/cocroachden/planner/solver/schedule/WorkShifts";
+import { Notification } from "@hilla/react-components/Notification";
 
 async function saveSpecificShiftRequests(requests: SpecificShiftRequestDTO[]): Promise<string[]> {
   return ConstraintEndpoint.saveAllSpecificShiftRequests(requests)
@@ -66,12 +67,18 @@ export default function ScheduleView() {
     ])
     await PlannerConfigurationEndpoint.save({
       ...request!,
-      workers: employees.map(e => ({ workerId: e.workerId })),
       constraintRequestInstances: [
         ...specificShiftIds.map(id => ({ requestType: ConstraintType.SPECIFIC_SHIFT_REQUEST, requestId: id })),
         ...shiftPerScheduleIds.map(id => ({ requestType: ConstraintType.SHIFT_PER_SCHEDULE, requestId: id }))
       ]
-    }).then(response => handleConfigSelected(response))
+    }).then(response => {
+      handleConfigSelected(response)
+      Notification.show("Konfigurace uspesne ulozena!", {
+        position: "top-center",
+        duration: 5000,
+        theme: "success"
+      })
+    })
   }
 
   function handleConfigSelected(configId: string) {
@@ -143,13 +150,13 @@ export default function ScheduleView() {
     <VerticalLayout theme={"spacing padding"}>
       <ConfigSelectDialog onConfigSelected={value => handleConfigSelected(value.id)}/>
       <VerticalLayout theme={"spacing"}>
-        <TextField
-          label={"Nazev"}
-          value={request?.name}
-          onChange={e => setRequest({ ...request!, name: e.target.value })}
-          disabled={!request}
-        />
         <HorizontalLayout theme={"spacing"}>
+          <TextField
+            label={"Nazev"}
+            value={request?.name}
+            onChange={e => setRequest({ ...request!, name: e.target.value })}
+            disabled={!request}
+          />
           <DatePicker
             label={"Od"}
             value={request?.startDate}
