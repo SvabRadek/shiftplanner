@@ -5,6 +5,7 @@ type Props = {
   title: string
   backgroundColor?: string
   onEmployeeAction?: (action: EmployeeAction) => void
+  readonly?: boolean
 }
 
 export type EmployeeAction = {
@@ -24,7 +25,7 @@ export function GridNameCell(props: Props) {
     .map(value => ({ text: value }))
 
   function handleContextMenuSelection(e: ContextMenuItemSelectedEvent) {
-   const item = e.detail.value
+    const item = e.detail.value
     props.onEmployeeAction?.({
       type: item.text!,
       workerId: props.workerId
@@ -32,7 +33,7 @@ export function GridNameCell(props: Props) {
   }
 
   return (
-    <ContextMenu items={cellContextMenuItems} onItemSelected={handleContextMenuSelection}>
+    props.readonly ?
       <div style={{
         display: "flex",
         userSelect: "none",
@@ -48,6 +49,23 @@ export function GridNameCell(props: Props) {
       }}>
         {props.title}
       </div>
-    </ContextMenu>
-  );
+      :
+      <ContextMenu items={cellContextMenuItems} onItemSelected={handleContextMenuSelection}>
+        <div style={{
+          display: "flex",
+          userSelect: "none",
+          width: 200,
+          height: 50,
+          border: "solid",
+          borderColor: "var(--lumo-tint-20pct)",
+          borderWidth: "1px",
+          justifyContent: "start",
+          alignItems: "center",
+          backgroundColor: props.backgroundColor || "var(--lumo-shade-5pct)",
+          paddingLeft: 10
+        }}>
+          {props.title}
+        </div>
+      </ContextMenu>
+  )
 }

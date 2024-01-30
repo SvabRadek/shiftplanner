@@ -4,7 +4,6 @@ import { ConstraintEndpoint, EmployeeService, PlannerConfigurationEndpoint } fro
 import { Button } from "@hilla/react-components/Button";
 import { HorizontalLayout } from "@hilla/react-components/HorizontalLayout";
 import { TextField } from "@hilla/react-components/TextField";
-import { HorizontalDivider } from "Frontend/components/HorizontalDivider";
 import { VerticalLayout } from "@hilla/react-components/VerticalLayout";
 import { ConfigSelectDialog } from "Frontend/views/schedule/components/ConfigSelectDialog";
 import EmployeeRecord from "Frontend/generated/com/cocroachden/planner/employee/EmployeeRecord";
@@ -22,9 +21,15 @@ import ShiftsPerScheduleRequestDTO
   from "Frontend/generated/com/cocroachden/planner/constraint/ShiftsPerScheduleRequestDTO";
 import WorkerId from "Frontend/generated/com/cocroachden/planner/lib/WorkerId";
 import ConstraintType from "Frontend/generated/com/cocroachden/planner/lib/ConstraintType";
-import { areShiftRequestsSame, dateToStupidDate, stupidDateToString } from "Frontend/util/utils";
+import {
+  areShiftRequestsSame,
+  dateToStupidDate,
+  fieldDateToStupidDate,
+  stupidDateToDateFieldString
+} from "Frontend/util/utils";
 import WorkShifts from "Frontend/generated/com/cocroachden/planner/solver/schedule/WorkShifts";
 import { Notification } from "@hilla/react-components/Notification";
+import { Card } from "Frontend/components/Card";
 
 async function saveSpecificShiftRequests(requests: SpecificShiftRequestDTO[]): Promise<string[]> {
   return ConstraintEndpoint.saveAllSpecificShiftRequests(requests)
@@ -47,6 +52,7 @@ export default function ScheduleView() {
   const [shiftPerScheduleRequests, setShiftPerScheduleRequests] = useState<ShiftsPerScheduleRequestDTO[]>([])
   const [isAddEmployeeDialogOpen, setIsAddEmployeeDialogOpen] = useState(false)
   const [employeeConfigDialog, setEmployeeConfigDialog] = useState<EmployeeConfigDialogParams>({ isOpen: false })
+  const [isInEditMode, setIsInEditMode] = useState<boolean>(false)
 
   useEffect(() => {
     EmployeeService.getAllEmployees().then(setEmployees)
@@ -146,38 +152,87 @@ export default function ScheduleView() {
     })
   }
 
+  function renderHeaderStrip(isRequestLoaded: boolean, isInEditMode: boolean) {
+    if (isInEditMode) {
+      return (
+        <HorizontalLayout theme={"spacing"}>
+          <ConfigSelectDialog onConfigSelected={value => handleConfigSelected(value.id)}/>
+          {
+            isRequestLoaded ?
+              <Button theme={"primary"} onClick={handleSave}>Uloz</Button> : null
+          }
+        </HorizontalLayout>
+      )
+    } else {
+      return (
+        <HorizontalLayout theme={"spacing"}>
+          <ConfigSelectDialog onConfigSelected={value => handleConfigSelected(value.id)}/>
+          {
+            isRequestLoaded ?
+              <>
+                <Button onClick={() => setIsInEditMode(true)}>Uprav</Button>
+                <Button>Zkopiruj</Button>
+              </> : null
+          }
+        </HorizontalLayout>
+      )
+    }
+  }
+
   return (
     <VerticalLayout theme={"spacing padding"}>
-      <ConfigSelectDialog onConfigSelected={value => handleConfigSelected(value.id)}/>
-      <VerticalLayout theme={"spacing"}>
+      <Card style={{ width: "100%" }}>
+        {renderHeaderStrip(request !== undefined, isInEditMode)}
+      </Card>
+      {/*<HorizontalLayout theme={"spacing"}>*/}
+      {/*  <ConfigSelectDialog onConfigSelected={value => handleConfigSelected(value.id)}/>*/}
+      {/*  {request && !isInEditMode ?*/}
+      {/*    <Button*/}
+      {/*      onClick={() => setIsInEditMode(true)}*/}
+      {/*      theme={"primary"}*/}
+      {/*    >*/}
+      {/*      Edit*/}
+      {/*    </Button>*/}
+      {/*    :*/}
+      {/*    <Button*/}
+      {/*      theme={"primary"}*/}
+      {/*      onClick={handleSave}*/}
+      {/*    >*/}
+      {/*      Uloz*/}
+      {/*    </Button>*/}
+      {/*  }*/}
+      {/*</HorizontalLayout>*/}
+      <Card style={{ width: "100%" }}>
         <HorizontalLayout theme={"spacing"}>
           <TextField
             label={"Nazev"}
             value={request?.name}
             onChange={e => setRequest({ ...request!, name: e.target.value })}
+            readonly={!isInEditMode}
             disabled={!request}
           />
           <DatePicker
             label={"Od"}
-            value={request && stupidDateToString(request?.startDate)}
+            value={request && stupidDateToDateFieldString(request?.startDate)}
             onChange={e => setRequest({
               ...request!,
-              startDate: dateToStupidDate(new Date(e.target.value))
+              startDate: fieldDateToStupidDate(e.target.value)
             })}
+            readonly={!isInEditMode}
             disabled={!request}
           />
           <DatePicker
             label={"Do"}
-            value={request && stupidDateToString(request?.endDate)}
+            value={request && stupidDateToDateFieldString(request?.endDate)}
             onChange={e => setRequest({
               ...request!,
-              endDate: dateToStupidDate(new Date(e.target.value))
+              endDate: fieldDateToStupidDate(e.target.value)
             })}
+            readonly={!isInEditMode}
             disabled={!request}
           />
         </HorizontalLayout>
-      </VerticalLayout>
-      <HorizontalDivider/>
+      </Card>
       {
         request ?
           <>
@@ -196,25 +251,28 @@ export default function ScheduleView() {
               onOpenChanged={setIsAddEmployeeDialogOpen}
               isOpen={isAddEmployeeDialogOpen}
             />
-            <ScheduleGridContainer
-              request={request}
-              employees={employees}
-              shiftRequests={shiftRequests}
-              shiftPerScheduleRequests={shiftPerScheduleRequests}
-              onEmployeeAction={handleEmployeeAction}
-              onShiftRequestsChanged={handleShiftRequestsChanged}
-            />
+            <Card
+              style={{
+                maxWidth: "100%",
+                borderWidth: "1px",
+                borderColor: "var(--lumo-shade-70pct)"
+              }}
+            >
+              <ScheduleGridContainer
+                request={request}
+                employees={employees}
+                shiftRequests={shiftRequests}
+                shiftPerScheduleRequests={shiftPerScheduleRequests}
+                onEmployeeAction={handleEmployeeAction}
+                onShiftRequestsChanged={handleShiftRequestsChanged}
+                readonly={!isInEditMode}
+              />
+            </Card>
+
           </>
           : <h2>Vyber konfiguraci</h2>
       }
       <HorizontalLayout theme={"spacing"}>
-        <Button
-          theme={"primary"}
-          onClick={handleSave}
-          disabled={!request}
-        >
-          Uloz
-        </Button>
       </HorizontalLayout>
     </VerticalLayout>
   )

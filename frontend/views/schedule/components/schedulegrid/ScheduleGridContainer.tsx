@@ -28,6 +28,7 @@ type Props = {
   shiftPerScheduleRequests: ShiftsPerScheduleRequestDTO[]
   onEmployeeAction?: (action: EmployeeAction) => void
   onShiftRequestsChanged?: (changedRequests: SpecificShiftRequestDTO[]) => void
+  readonly?: boolean
 }
 
 type Highlight = {
@@ -96,6 +97,7 @@ export function ScheduleGridContainer(props: Props) {
       onMouseOverCell={handleCellOnMouseOver}
       onLeftClick={handleCellLeftClick}
       onEmployeeAction={props.onEmployeeAction}
+      readonly={props.readonly}
     />
   );
 }

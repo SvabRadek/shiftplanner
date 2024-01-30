@@ -19,6 +19,7 @@ type Props = {
   onLeftClick?: (cell: Cell) => void
   onMouseOverCell?: (cell: Cell) => void
   onEmployeeAction?: (action: EmployeeAction) => void
+  readonly?: boolean
 }
 
 export function ScheduleGrid(props: Props) {
@@ -35,6 +36,7 @@ export function ScheduleGrid(props: Props) {
           <GridNameCell
             workerId={r.workerId}
             title={"Jmeno"}
+            readonly={true}
           />
         ))
         r.cells.forEach(c => {
@@ -56,10 +58,25 @@ export function ScheduleGrid(props: Props) {
           title={r.displayName}
           workerId={r.workerId}
           onEmployeeAction={props.onEmployeeAction}
+          backgroundColor={props.readonly ? "var(--lumo-shade-20pct)" : undefined }
+          readonly={props.readonly}
         />
       ))
       return r.cells
         .forEach((c) => {
+
+          let cellColor = undefined
+          if (isWeekend(c.date)) {
+            cellColor = "var(--lumo-shade-20pct)"
+            if (props.readonly) {
+              cellColor = "var(--lumo-shade-30pct)"
+            }
+          } else {
+            if (props.readonly) {
+              cellColor = "var(--lumo-shade-20pct)"
+            }
+          }
+
           items.push(renderCell(
             rowIndex + 2,
             c.index + 2,
@@ -68,9 +85,10 @@ export function ScheduleGrid(props: Props) {
               onShiftChange={props.onCellChanged}
               onMouseOverCell={props.onMouseOverCell}
               onLeftClick={props.onLeftClick}
-              backgroundColor={isWeekend(c.date) ? "var(--lumo-shade-20pct)" : undefined}
+              backgroundColor={cellColor}
+              readonly={props.readonly}
             />
-          ))
+          ));
         })
     })
     return items

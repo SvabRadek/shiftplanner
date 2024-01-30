@@ -11,6 +11,17 @@ export function stupidDateToString(date: StupidDate): string {
   return [date.day, date.month, date.year].join("/")
 }
 
+export function stupidDateToDateFieldString(date: StupidDate): string {
+  return [date.year, date.month, date.day,].join("-")
+}
+
+export function fieldDateToStupidDate(date: string): StupidDate {
+  const [year, month, day] = date
+    .split("-")
+    .map(Number.parseInt)
+  return { day, month, year }
+}
+
 export function stupidDateToDate(date: StupidDate): Date {
   return new Date(date.year,date.month -1, date.day)
 }

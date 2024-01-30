@@ -42,6 +42,10 @@ export function EmployeeRequestConfigDialog(props: Props) {
 
   function handleClose() {
     props.onOpenChanged(false)
+    setEmployeeConfigModel({
+      ...employeeConfigModel,
+      shiftsPerScheduleRequests: props.shiftsPerScheduleRequests
+    })
   }
 
   function handleSave() {
@@ -51,7 +55,10 @@ export function EmployeeRequestConfigDialog(props: Props) {
   function addNewShiftPerScheduleRequest(workerId: string) {
     setEmployeeConfigModel(prevState => ({
       ...prevState,
-      shiftsPerScheduleRequests: [...prevState.shiftsPerScheduleRequests, generateNewShiftsPerSchedule(workerId)]
+      shiftsPerScheduleRequests: [
+        ...prevState.shiftsPerScheduleRequests,
+        generateNewUniqueShiftsPerSchedule(workerId, prevState.shiftsPerScheduleRequests.map(s => s.targetShift))
+      ]
     }))
   }
 
@@ -62,11 +69,11 @@ export function EmployeeRequestConfigDialog(props: Props) {
     }))
   }
 
-  function handleRequestUpdate(updatedRequest: ShiftsPerScheduleRequestDTO) {
+  function handleRequestUpdate(previous: WorkShifts, updatedRequest: ShiftsPerScheduleRequestDTO) {
     setEmployeeConfigModel(prevState => ({
       ...prevState,
       shiftsPerScheduleRequests: prevState.shiftsPerScheduleRequests.map(r => {
-        if (!areShiftPerScheduleSame(r, updatedRequest)) return r
+        if (!areShiftPerScheduleSame(r, { targetShift: previous, owner: updatedRequest.owner })) return r
         return updatedRequest
       })
     }));
@@ -101,10 +108,11 @@ export function EmployeeRequestConfigDialog(props: Props) {
                 : employeeConfigModel.shiftsPerScheduleRequests.map(request => {
                 return (
                   <ShiftCountConstraintForm
-                    key={request.owner.workerId + request.targetShift.toString()}
+                    key={request.owner.workerId + request.targetShift}
                     request={request}
-                    onChange={updatedRequest => handleRequestUpdate(updatedRequest)}
+                    onChange={handleRequestUpdate}
                     onRemove={removeShiftPerScheduleRequest}
+                    excludedShifts={employeeConfigModel.shiftsPerScheduleRequests.map(r => r.targetShift)}
                   />
                 )
               })
@@ -130,11 +138,14 @@ export function EmployeeRequestConfigDialog(props: Props) {
   );
 }
 
-function generateNewShiftsPerSchedule(workerId: string): ShiftsPerScheduleRequestDTO {
+function generateNewUniqueShiftsPerSchedule(workerId: string, excludeShifts: WorkShifts[]): ShiftsPerScheduleRequestDTO {
+
+  const allowedShifts = Object.values(WorkShifts).filter(val => !excludeShifts.some(s => s === val))
+
   return {
     type: ConstraintType.SHIFT_PER_SCHEDULE,
     owner: { workerId: workerId },
-    targetShift: WorkShifts.WORKING_SHIFTS,
+    targetShift: allowedShifts[0],
     hardMin: 0,
     softMin: 0,
     minPenalty: 1,

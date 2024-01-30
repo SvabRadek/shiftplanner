@@ -17,6 +17,7 @@ type Props = {
   onLeftClick?: (cell: Cell) => void
   onMouseOverCell?: (cell: Cell) => void
   backgroundColor?: string
+  readonly?: boolean
 }
 
 function generateCellContextMenuItems(selectedShift: WorkShifts): ContextMenuItem[] {
@@ -48,7 +49,7 @@ export function GridCell(props: Props) {
   }
 
   return (
-    <ContextMenu items={cellContextMenuItems} onItemSelected={handleShiftSelection}>
+    props.readonly ?
       <div
         style={{
           display: "flex",
@@ -64,11 +65,31 @@ export function GridCell(props: Props) {
             ? "var(--lumo-success-color-10pct)"
             : props.backgroundColor || "var(--lumo-shade-5pct)"
         }}
-        onClick={handleLeftClick}
-        onMouseOver={handleMouseOver}
       >
         {workShiftBindings[props.cell.shift].symbol}
       </div>
-    </ContextMenu>
+      :
+      <ContextMenu items={cellContextMenuItems} onItemSelected={handleShiftSelection}>
+        <div
+          style={{
+            display: "flex",
+            userSelect: "none",
+            width: 50,
+            height: 50,
+            border: "solid",
+            borderColor: "var(--lumo-tint-20pct)",
+            borderWidth: "1px",
+            justifyContent: "center",
+            alignItems: "center",
+            backgroundColor: props.cell.isHighlighted
+              ? "var(--lumo-success-color-10pct)"
+              : props.backgroundColor || "var(--lumo-shade-5pct)"
+          }}
+          onClick={handleLeftClick}
+          onMouseOver={handleMouseOver}
+        >
+          {workShiftBindings[props.cell.shift].symbol}
+        </div>
+      </ContextMenu>
   );
 }

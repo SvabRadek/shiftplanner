@@ -14,23 +14,32 @@ import WorkerId from "Frontend/generated/com/cocroachden/planner/lib/WorkerId";
 
 type Props = {
   request: ShiftsPerScheduleRequestDTO
-  onChange?: (newValue: ShiftsPerScheduleRequestDTO) => void
+  excludedShifts: WorkShifts[]
+  onChange?: (previous: WorkShifts, newValue: ShiftsPerScheduleRequestDTO) => void
   onRemove?: (owner: WorkerId, shift: WorkShifts) => void
 }
-
-const selectItems: SelectItem[] =
-  Object.values(workShiftBindings)
-    .map(binding => ({
-      label: binding.fullText,
-      value: binding.shift
-    }))
 
 export function ShiftCountConstraintForm(props: Props) {
 
   const [isAdvancedMode, setIsAdvancedMode] = useState<boolean>(false)
 
+  const selectItems: SelectItem[] =
+    Object.values(workShiftBindings)
+      .map(binding => ({
+        label: binding.fullText,
+        value: binding.shift,
+        disabled: props.request.targetShift !== binding.shift && props.excludedShifts.some(s => s === binding.shift)
+      }))
+
   function handleRemove() {
     props.onRemove?.(props.request.owner, props.request.targetShift);
+  }
+
+  function handleUpdate(partial: Partial<ShiftsPerScheduleRequestDTO>) {
+    props.onChange?.(
+      props.request.targetShift,
+      { ...props.request, ...partial }
+    )
   }
 
   function renderWorkshiftSelect() {
@@ -41,9 +50,7 @@ export function ShiftCountConstraintForm(props: Props) {
         style={{ width: "200px" }}
         items={selectItems}
         value={props.request.targetShift}
-        onChange={(e) => {
-          props.onChange?.({ ...props.request, targetShift: e.target.value as WorkShifts })
-        }}
+        onChange={(e) => handleUpdate({ targetShift: e.target.value as WorkShifts })}
       >
       </Select>
     )
@@ -60,8 +67,7 @@ export function ShiftCountConstraintForm(props: Props) {
           value={props.request.softMin.toString()}
           stepButtonsVisible
           onChange={e => {
-            props.onChange?.({
-              ...props.request,
+            handleUpdate({
               softMin: Number.parseInt(e.target.value),
               softMax: Number.parseInt(e.target.value)
             })
@@ -77,8 +83,7 @@ export function ShiftCountConstraintForm(props: Props) {
           stepButtonsVisible
           value={(props.request.hardMax - props.request.softMax).toString()}
           onChange={e => {
-            props.onChange?.({
-              ...props.request,
+            handleUpdate({
               hardMax: props.request.softMax + Number.parseInt(e.target.value),
               hardMin: props.request.softMin - Number.parseInt(e.target.value)
             })
@@ -93,8 +98,7 @@ export function ShiftCountConstraintForm(props: Props) {
           stepButtonsVisible
           value={props.request.maxPenalty.toString()}
           onChange={e => {
-            props.onChange?.({
-              ...props.request,
+            handleUpdate({
               maxPenalty: Number.parseInt(e.target.value),
               minPenalty: Number.parseInt(e.target.value)
             })
@@ -118,8 +122,7 @@ export function ShiftCountConstraintForm(props: Props) {
             label={"Minimum"}
             value={props.request.hardMin.toString()}
             onChange={e => {
-              props.onChange?.({
-                ...props.request,
+              handleUpdate({
                 hardMin: Number.parseInt(e.target.value)
               })
             }}
@@ -131,8 +134,7 @@ export function ShiftCountConstraintForm(props: Props) {
             label={"Min Optimum"}
             value={props.request.softMin.toString()}
             onChange={e => {
-              props.onChange?.({
-                ...props.request,
+              handleUpdate({
                 softMin: Number.parseInt(e.target.value)
               })
             }}
@@ -145,8 +147,7 @@ export function ShiftCountConstraintForm(props: Props) {
             label={"Pokuta"}
             value={props.request.minPenalty.toString()}
             onChange={e => {
-              props.onChange?.({
-                ...props.request,
+              handleUpdate({
                 minPenalty: Number.parseInt(e.target.value)
               })
             }}
@@ -160,8 +161,7 @@ export function ShiftCountConstraintForm(props: Props) {
             style={{ width: "100px" }}
             value={props.request.hardMax.toString()}
             onChange={e => {
-              props.onChange?.({
-                ...props.request,
+              handleUpdate({
                 hardMax: Number.parseInt(e.target.value)
               })
             }}
@@ -173,8 +173,7 @@ export function ShiftCountConstraintForm(props: Props) {
             style={{ width: "100px" }}
             value={props.request.softMax.toString()}
             onChange={e => {
-              props.onChange?.({
-                ...props.request,
+              handleUpdate({
                 softMax: Number.parseInt(e.target.value)
               })
             }}
@@ -186,8 +185,7 @@ export function ShiftCountConstraintForm(props: Props) {
             style={{ width: "100px" }}
             value={props.request.maxPenalty.toString()}
             onChange={e => {
-              props.onChange?.({
-                ...props.request,
+              handleUpdate({
                 maxPenalty: Number.parseInt(e.target.value)
               })
             }}
