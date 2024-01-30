@@ -30,6 +30,7 @@ type Props = {
   shiftsPerScheduleRequests: ShiftsPerScheduleRequestDTO[]
   onSave: (value: EmployeeConfigModel) => void
   onOpenChanged: (value: boolean) => void
+  readonly?: boolean
 }
 
 export function EmployeeRequestConfigDialog(props: Props) {
@@ -113,6 +114,7 @@ export function EmployeeRequestConfigDialog(props: Props) {
                     onChange={handleRequestUpdate}
                     onRemove={removeShiftPerScheduleRequest}
                     excludedShifts={employeeConfigModel.shiftsPerScheduleRequests.map(r => r.targetShift)}
+                    readonly={props.readonly}
                   />
                 )
               })
@@ -120,6 +122,7 @@ export function EmployeeRequestConfigDialog(props: Props) {
             <Button
               theme={"small"}
               style={{ marginTop: "10px" }}
+              disabled={props.readonly}
               onClick={() => addNewShiftPerScheduleRequest(props.employee!.workerId)}>
               <Icon icon={"vaadin:plus"} slot={"prefix"}/>
               Pridat
@@ -131,7 +134,7 @@ export function EmployeeRequestConfigDialog(props: Props) {
         </TabSheet>
         <HorizontalLayout style={{ width: "100%", justifyContent: "flex-end" }} theme={"spacing"}>
           <Button onClick={handleClose}>Zrusit</Button>
-          <Button onClick={handleSave}>Ulozit</Button>
+          <Button disabled={props.readonly} onClick={handleSave}>Ulozit</Button>
         </HorizontalLayout>
       </VerticalLayout>
     </Dialog>

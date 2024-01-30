@@ -21,12 +21,7 @@ import ShiftsPerScheduleRequestDTO
   from "Frontend/generated/com/cocroachden/planner/constraint/ShiftsPerScheduleRequestDTO";
 import WorkerId from "Frontend/generated/com/cocroachden/planner/lib/WorkerId";
 import ConstraintType from "Frontend/generated/com/cocroachden/planner/lib/ConstraintType";
-import {
-  areShiftRequestsSame,
-  dateToStupidDate,
-  fieldDateToStupidDate,
-  stupidDateToDateFieldString
-} from "Frontend/util/utils";
+import { areShiftRequestsSame, fieldDateToStupidDate, stupidDateToDateFieldString } from "Frontend/util/utils";
 import WorkShifts from "Frontend/generated/com/cocroachden/planner/solver/schedule/WorkShifts";
 import { Notification } from "@hilla/react-components/Notification";
 import { Card } from "Frontend/components/Card";
@@ -243,6 +238,7 @@ export default function ScheduleView() {
               onOpenChanged={(newValue) => setEmployeeConfigDialog(prevState => ({ ...prevState, isOpen: newValue }))}
               shiftsPerScheduleRequests={shiftPerScheduleRequests.filter(r => r.owner.workerId === employeeConfigDialog.selectedEmployee?.workerId)}
               onSave={handleEmployeeConfigSave}
+              readonly={!isInEditMode}
             />
             <AddEmployeeDialog
               employees={employees}

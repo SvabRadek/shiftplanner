@@ -41,55 +41,43 @@ export function GridCell(props: Props) {
   }
 
   function handleLeftClick() {
-    props.onLeftClick?.(props.cell)
+    if (props.readonly) return
+    props.onLeftClick?.(props.cell);
   }
 
   function handleMouseOver() {
+    if (props.readonly) return
     props.onMouseOverCell?.(props.cell)
   }
 
+  function renderCell() {
+    return <div
+      style={{
+        display: "flex",
+        userSelect: "none",
+        width: 50,
+        height: 50,
+        border: "solid",
+        borderColor: "var(--lumo-tint-20pct)",
+        borderWidth: "1px",
+        justifyContent: "center",
+        alignItems: "center",
+        backgroundColor: props.cell.isHighlighted
+          ? "var(--lumo-success-color-10pct)"
+          : props.backgroundColor || "var(--lumo-shade-5pct)"
+      }}
+      onClick={handleLeftClick}
+      onMouseOver={handleMouseOver}
+    >
+      {workShiftBindings[props.cell.shift].symbol}
+    </div>
+  }
+
   return (
-    props.readonly ?
-      <div
-        style={{
-          display: "flex",
-          userSelect: "none",
-          width: 50,
-          height: 50,
-          border: "solid",
-          borderColor: "var(--lumo-tint-20pct)",
-          borderWidth: "1px",
-          justifyContent: "center",
-          alignItems: "center",
-          backgroundColor: props.cell.isHighlighted
-            ? "var(--lumo-success-color-10pct)"
-            : props.backgroundColor || "var(--lumo-shade-5pct)"
-        }}
-      >
-        {workShiftBindings[props.cell.shift].symbol}
-      </div>
-      :
-      <ContextMenu items={cellContextMenuItems} onItemSelected={handleShiftSelection}>
-        <div
-          style={{
-            display: "flex",
-            userSelect: "none",
-            width: 50,
-            height: 50,
-            border: "solid",
-            borderColor: "var(--lumo-tint-20pct)",
-            borderWidth: "1px",
-            justifyContent: "center",
-            alignItems: "center",
-            backgroundColor: props.cell.isHighlighted
-              ? "var(--lumo-success-color-10pct)"
-              : props.backgroundColor || "var(--lumo-shade-5pct)"
-          }}
-          onClick={handleLeftClick}
-          onMouseOver={handleMouseOver}
-        >
-          {workShiftBindings[props.cell.shift].symbol}
-        </div>
+    props.readonly
+      ? renderCell()
+      : <ContextMenu items={cellContextMenuItems} onItemSelected={handleShiftSelection}>
+        {renderCell()}
       </ContextMenu>
-  );
+  )
 }

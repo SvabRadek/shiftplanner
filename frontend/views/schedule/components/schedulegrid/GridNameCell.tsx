@@ -14,7 +14,7 @@ export type EmployeeAction = {
 }
 
 export enum EmployeeActionEnum {
-  EDIT = "Upravit",
+  EDIT = "Detail",
   DELETE = "Odstranit",
   ADD = "Pridat"
 }
@@ -22,7 +22,7 @@ export enum EmployeeActionEnum {
 export function GridNameCell(props: Props) {
 
   const cellContextMenuItems: ContextMenuItem[] = Object.values(EmployeeActionEnum)
-    .map(value => ({ text: value }))
+    .map(value => ({ text: value, disabled: !!(props.readonly && value !== "Detail") }))
 
   function handleContextMenuSelection(e: ContextMenuItemSelectedEvent) {
     const item = e.detail.value
@@ -33,23 +33,6 @@ export function GridNameCell(props: Props) {
   }
 
   return (
-    props.readonly ?
-      <div style={{
-        display: "flex",
-        userSelect: "none",
-        width: 200,
-        height: 50,
-        border: "solid",
-        borderColor: "var(--lumo-tint-20pct)",
-        borderWidth: "1px",
-        justifyContent: "start",
-        alignItems: "center",
-        backgroundColor: props.backgroundColor || "var(--lumo-shade-5pct)",
-        paddingLeft: 10
-      }}>
-        {props.title}
-      </div>
-      :
       <ContextMenu items={cellContextMenuItems} onItemSelected={handleContextMenuSelection}>
         <div style={{
           display: "flex",

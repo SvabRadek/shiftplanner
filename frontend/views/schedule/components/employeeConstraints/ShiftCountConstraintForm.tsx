@@ -15,6 +15,7 @@ import WorkerId from "Frontend/generated/com/cocroachden/planner/lib/WorkerId";
 type Props = {
   request: ShiftsPerScheduleRequestDTO
   excludedShifts: WorkShifts[]
+  readonly?: boolean
   onChange?: (previous: WorkShifts, newValue: ShiftsPerScheduleRequestDTO) => void
   onRemove?: (owner: WorkerId, shift: WorkShifts) => void
 }
@@ -47,6 +48,7 @@ export function ShiftCountConstraintForm(props: Props) {
       <Select
         theme={"small"}
         label={"Smena"}
+        disabled={props.readonly}
         style={{ width: "200px" }}
         items={selectItems}
         value={props.request.targetShift}
@@ -66,6 +68,7 @@ export function ShiftCountConstraintForm(props: Props) {
           label={"Pocet"}
           value={props.request.softMin.toString()}
           stepButtonsVisible
+          disabled={props.readonly}
           onChange={e => {
             handleUpdate({
               softMin: Number.parseInt(e.target.value),
@@ -81,6 +84,7 @@ export function ShiftCountConstraintForm(props: Props) {
           theme={"align-center small"}
           label={"Odchylka"}
           stepButtonsVisible
+          disabled={props.readonly}
           value={(props.request.hardMax - props.request.softMax).toString()}
           onChange={e => {
             handleUpdate({
@@ -96,6 +100,7 @@ export function ShiftCountConstraintForm(props: Props) {
           label={"Pokuta"}
           theme={"align-center small"}
           stepButtonsVisible
+          disabled={props.readonly}
           value={props.request.maxPenalty.toString()}
           onChange={e => {
             handleUpdate({
@@ -118,6 +123,7 @@ export function ShiftCountConstraintForm(props: Props) {
           <NumberField
             theme={"align-center small"}
             stepButtonsVisible
+            disabled={props.readonly}
             style={{ width: "100px" }}
             label={"Minimum"}
             value={props.request.hardMin.toString()}
@@ -130,6 +136,7 @@ export function ShiftCountConstraintForm(props: Props) {
           <NumberField
             theme={"align-center small"}
             stepButtonsVisible
+            disabled={props.readonly}
             style={{ width: "100px" }}
             label={"Min Optimum"}
             value={props.request.softMin.toString()}
@@ -143,6 +150,7 @@ export function ShiftCountConstraintForm(props: Props) {
           <NumberField
             theme={"align-center small"}
             stepButtonsVisible
+            disabled={props.readonly}
             style={{ width: "100px" }}
             label={"Pokuta"}
             value={props.request.minPenalty.toString()}
@@ -158,6 +166,7 @@ export function ShiftCountConstraintForm(props: Props) {
             label={"Maximum"}
             theme={"align-center small"}
             stepButtonsVisible
+            disabled={props.readonly}
             style={{ width: "100px" }}
             value={props.request.hardMax.toString()}
             onChange={e => {
@@ -170,6 +179,7 @@ export function ShiftCountConstraintForm(props: Props) {
             label={"Max Optimum"}
             theme={"align-center small"}
             stepButtonsVisible
+            disabled={props.readonly}
             style={{ width: "100px" }}
             value={props.request.softMax.toString()}
             onChange={e => {
@@ -182,6 +192,7 @@ export function ShiftCountConstraintForm(props: Props) {
             label={"Pokuta"}
             theme={"align-center small"}
             stepButtonsVisible
+            disabled={props.readonly}
             style={{ width: "100px" }}
             value={props.request.maxPenalty.toString()}
             onChange={e => {
@@ -221,6 +232,7 @@ export function ShiftCountConstraintForm(props: Props) {
         <Button
           theme={"small"}
           onClick={handleRemove}
+          disabled={props.readonly}
         >
           Odstranit
         </Button>
