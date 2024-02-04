@@ -41,6 +41,11 @@ public class PlannerConfigurationEndpoint {
     return service.save(configurationDTO).getId();
   }
 
+  @Nonnull
+  public UUID update(@Nonnull PlannerConfigurationDTO configurationDTO) {
+    return service.save(configurationDTO).getId();
+  }
+
 
 
 }

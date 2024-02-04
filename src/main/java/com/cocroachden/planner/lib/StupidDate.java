@@ -52,6 +52,6 @@ public class StupidDate {
 
   @Override
   public String toString() {
-    return "%s/%s/%s".formatted(day, month, year);
+    return "%s/%s/%s".formatted(String.format("%02d", day), String.format("%02d", month), year);
   }
 }

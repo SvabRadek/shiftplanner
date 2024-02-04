@@ -3,6 +3,7 @@ package com.cocroachden.planner.plannerconfiguration.service;
 import com.cocroachden.planner.plannerconfiguration.PlannerConfigurationDTO;
 import com.cocroachden.planner.plannerconfiguration.repository.PlannerConfigurationRecord;
 import com.cocroachden.planner.plannerconfiguration.repository.PlannerConfigurationRepository;
+import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 
 import java.util.List;
@@ -17,8 +18,12 @@ public class PlannerConfigurationService {
     return repository.getById(uuid);
   }
 
-  public PlannerConfigurationRecord save(PlannerConfigurationDTO record) {
-    return repository.save(PlannerConfigurationRecord.from(record));
+  public PlannerConfigurationRecord save(PlannerConfigurationDTO dto) {
+    return repository.save(PlannerConfigurationRecord.from(UUID.randomUUID(), dto));
+  }
+
+  public PlannerConfigurationRecord update(PlannerConfigurationDTO dto) {
+    return repository.save(PlannerConfigurationRecord.from(dto.getId(), dto));
   }
 
   public List<PlannerConfigurationRecord> findAll() {

@@ -1,13 +1,11 @@
 package com.cocroachden.planner.plannerconfiguration.repository;
 
 import com.cocroachden.planner.lib.WorkerId;
-import com.cocroachden.planner.plannerconfiguration.ConfigurationRequestLinkDTO;
 import com.cocroachden.planner.plannerconfiguration.PlannerConfigurationDTO;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
@@ -19,20 +17,23 @@ import java.util.UUID;
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
-@Entity(name = "planner_configuration")
+@Entity
 @Table(name = "planner_configurations")
 public class PlannerConfigurationRecord {
 
-  public static PlannerConfigurationRecord from(PlannerConfigurationDTO response) {
+  public static PlannerConfigurationRecord from(
+      UUID id,
+      PlannerConfigurationDTO dto
+  ) {
     return new PlannerConfigurationRecord(
-        UUID.randomUUID(),
-        response.getName(),
-        response.getCreatedAt(),
-        response.getLastUpdated(),
-        response.getStartDate().toDate(),
-        response.getEndDate().toDate(),
-        response.getWorkers(),
-        response.getConstraintRequestInstances().stream()
+        id,
+        dto.getName(),
+        dto.getCreatedAt(),
+        dto.getLastUpdated(),
+        dto.getStartDate().toDate(),
+        dto.getEndDate().toDate(),
+        dto.getWorkers(),
+        dto.getConstraintRequestInstances().stream()
             .map(link -> new ConfigurationRequestLink(
                 link.getRequestType(),
                 link.getRequestId()
@@ -40,9 +41,7 @@ public class PlannerConfigurationRecord {
     );
   }
 
-  @Id
-  @GeneratedValue
-  @Setter
+  @Id @GeneratedValue
   private UUID id;
   private String name;
   @CreationTimestamp

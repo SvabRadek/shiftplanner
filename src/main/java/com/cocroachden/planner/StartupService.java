@@ -8,6 +8,7 @@ import com.cocroachden.planner.plannerconfiguration.PlannerConfigurationDTO;
 import com.cocroachden.planner.plannerconfiguration.service.PlannerConfigurationService;
 import com.cocroachden.planner.employee.EmployeeRecord;
 import com.cocroachden.planner.employee.EmployeeRepository;
+import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.context.event.ApplicationStartedEvent;
 import org.springframework.context.ApplicationContext;

@@ -11,6 +11,7 @@ import SpecificShiftRequestDTO from "Frontend/generated/com/cocroachden/planner/
 import ShiftsPerScheduleRequestDTO
   from "Frontend/generated/com/cocroachden/planner/constraint/ShiftsPerScheduleRequestDTO";
 import ConstraintType from "Frontend/generated/com/cocroachden/planner/lib/ConstraintType";
+import ScheduleResultDTO from "Frontend/generated/com/cocroachden/planner/solver/ScheduleResultDTO";
 
 export type Owner = string
 export type Index = number
@@ -29,6 +30,7 @@ type Props = {
   onEmployeeAction?: (action: EmployeeAction) => void
   onShiftRequestsChanged?: (changedRequests: SpecificShiftRequestDTO[]) => void
   readonly?: boolean
+  result?: ScheduleResultDTO
 }
 
 type Highlight = {
@@ -91,7 +93,8 @@ export function ScheduleGridContainer(props: Props) {
         props.employees,
         props.shiftRequests,
         props.shiftPerScheduleRequests,
-        highlight
+        highlight,
+        props.result
       )}
       onCellChanged={handleShiftChange}
       onMouseOverCell={handleCellOnMouseOver}
@@ -117,7 +120,8 @@ function createRows(
   employees: EmployeeRecord[],
   shiftRequests: SpecificShiftRequestDTO[],
   shiftPerSchedule: ShiftsPerScheduleRequestDTO[],
-  highlightInfo: Highlight
+  highlightInfo: Highlight,
+  results?: ScheduleResultDTO
 ): Row[] {
   const startDate = stupidDateToDate(request.startDate)
   const endDate = stupidDateToDate(request.endDate)
@@ -135,8 +139,24 @@ function createRows(
           const relatedRequest = shiftRequests.find(r => {
             return stupidDateToString(r.date) === dateToString(cellDate) && r.owner === w.workerId
           })
+
+          let cellShift: WorkShifts
+          if (results) {
+            const resultShift = results.assignments[w.workerId][dateToString(cellDate)]
+            if (resultShift === WorkShifts.OFF) {
+              cellShift = WorkShifts.ANY
+            } else {
+              cellShift = resultShift || WorkShifts.ANY
+            }
+          } else {
+            if (relatedRequest) {
+              cellShift = relatedRequest.requestedShift
+            } else {
+              cellShift = WorkShifts.ANY
+            }
+          }
           return {
-            shift: relatedRequest ? relatedRequest.requestedShift : WorkShifts.ANY,
+            shift: cellShift,
             index: dayOffset,
             owner: w.workerId,
             date: dateToStupidDate(cellDate),

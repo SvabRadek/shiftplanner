@@ -1,6 +1,11 @@
 import { DatePicker } from "@hilla/react-components/DatePicker";
-import { useEffect, useState } from "react";
-import { ConstraintEndpoint, EmployeeService, PlannerConfigurationEndpoint } from "Frontend/generated/endpoints";
+import { useEffect, useRef, useState } from "react";
+import {
+  ConstraintEndpoint,
+  EmployeeService,
+  PlannerConfigurationEndpoint,
+  PlannerEndpoint
+} from "Frontend/generated/endpoints";
 import { Button } from "@hilla/react-components/Button";
 import { HorizontalLayout } from "@hilla/react-components/HorizontalLayout";
 import { TextField } from "@hilla/react-components/TextField";
@@ -21,10 +26,14 @@ import ShiftsPerScheduleRequestDTO
   from "Frontend/generated/com/cocroachden/planner/constraint/ShiftsPerScheduleRequestDTO";
 import WorkerId from "Frontend/generated/com/cocroachden/planner/lib/WorkerId";
 import ConstraintType from "Frontend/generated/com/cocroachden/planner/lib/ConstraintType";
-import { areShiftRequestsSame, fieldDateToStupidDate, stupidDateToDateFieldString } from "Frontend/util/utils";
+import { areShiftRequestsSame, localeDateToStupidDate, stupidDateToLocaleDate } from "Frontend/util/utils";
 import WorkShifts from "Frontend/generated/com/cocroachden/planner/solver/schedule/WorkShifts";
 import { Notification } from "@hilla/react-components/Notification";
 import { Card } from "Frontend/components/Card";
+import { Icon } from "@hilla/react-components/Icon";
+import { Subscription } from "@hilla/frontend";
+import ScheduleResultDTO from "Frontend/generated/com/cocroachden/planner/solver/ScheduleResultDTO";
+import { ProgressBar } from "@hilla/react-components/ProgressBar.js";
 
 async function saveSpecificShiftRequests(requests: SpecificShiftRequestDTO[]): Promise<string[]> {
   return ConstraintEndpoint.saveAllSpecificShiftRequests(requests)
@@ -41,13 +50,16 @@ type EmployeeConfigDialogParams = {
 
 export default function ScheduleView() {
 
-  const [request, setRequest] = useState<PlannerConfigurationDTO | undefined>()
+  const isCopy = useRef(false);
+  const [request, setRequest] = useState<PlannerConfigurationDTO | undefined>();
   const [employees, setEmployees] = useState<EmployeeRecord[]>([])
   const [shiftRequests, setShiftRequests] = useState<SpecificShiftRequestDTO[]>([])
   const [shiftPerScheduleRequests, setShiftPerScheduleRequests] = useState<ShiftsPerScheduleRequestDTO[]>([])
   const [isAddEmployeeDialogOpen, setIsAddEmployeeDialogOpen] = useState(false)
   const [employeeConfigDialog, setEmployeeConfigDialog] = useState<EmployeeConfigDialogParams>({ isOpen: false })
   const [isInEditMode, setIsInEditMode] = useState<boolean>(false)
+  const [result, setResult] = useState<ScheduleResultDTO | undefined>();
+  const [resultSubscription, setResultSubscription] = useState<Subscription<ScheduleResultDTO> | undefined>();
 
   useEffect(() => {
     EmployeeService.getAllEmployees().then(setEmployees)
@@ -59,6 +71,11 @@ export default function ScheduleView() {
 
   function handleUnload(e: Event) {
     e.preventDefault()
+  }
+
+  function handleCancel() {
+    isCopy.current = false
+    handleConfigSelected(request?.id!)
   }
 
   async function handleSave() {
@@ -96,6 +113,7 @@ export default function ScheduleView() {
           .map(l => l.requestId)
       ).then(setShiftPerScheduleRequests)
     })
+    setIsInEditMode(false)
   }
 
   function handleAddEmployee(employee: EmployeeRecord) {
@@ -147,56 +165,105 @@ export default function ScheduleView() {
     })
   }
 
-  function renderHeaderStrip(isRequestLoaded: boolean, isInEditMode: boolean) {
-    if (isInEditMode) {
-      return (
-        <HorizontalLayout theme={"spacing"}>
-          <ConfigSelectDialog onConfigSelected={value => handleConfigSelected(value.id)}/>
-          {
-            isRequestLoaded ?
-              <Button theme={"primary"} onClick={handleSave}>Uloz</Button> : null
-          }
-        </HorizontalLayout>
-      )
-    } else {
-      return (
-        <HorizontalLayout theme={"spacing"}>
-          <ConfigSelectDialog onConfigSelected={value => handleConfigSelected(value.id)}/>
-          {
-            isRequestLoaded ?
-              <>
-                <Button onClick={() => setIsInEditMode(true)}>Uprav</Button>
-                <Button>Zkopiruj</Button>
-              </> : null
-          }
-        </HorizontalLayout>
-      )
+  function handleCopyConfig() {
+    isCopy.current = true
+    setRequest(prevState => ({
+      ...prevState!,
+      name: ""
+    }));
+    setIsInEditMode(true)
+  }
+
+  function handleStopCalculation() {
+    if (resultSubscription) {
+      PlannerEndpoint.stop()
+      resultSubscription.cancel()
+      setResultSubscription(() => undefined)
     }
+  }
+
+  function handleStartCalculation() {
+    if (resultSubscription) {
+      handleStopCalculation()
+    }
+    setTimeout(
+      () => {
+        if (resultSubscription) {
+          handleStopCalculation()
+          Notification.show("Casovy limit vyprsel.", {
+            position: "top-center",
+            duration: 5000,
+            theme: "success"
+          })
+        }
+      },
+      60 * 1000
+    )
+    setResultSubscription(PlannerEndpoint.solve(request?.id, 60)
+      .onNext(value => {
+        setResult(value)
+      }).onComplete(() => {
+        Notification.show("Vypocet uspesne ukoncen!", {
+          position: "top-center",
+          duration: 5000,
+          theme: "success"
+        })
+        setResultSubscription(undefined)
+      }).onError(() => {
+        Notification.show("Ztrata spojeni!", {
+          position: "top-center",
+          duration: 5000,
+          theme: "warning"
+        })
+
+      })
+    )
+  }
+
+  function renderHeaderStrip(isRequestLoaded: boolean, isInEditMode: boolean) {
+    return (
+      <HorizontalLayout theme={"spacing"}>
+        {
+          resultSubscription ?
+            <Button onClick={handleStopCalculation} theme={"primary"}>
+              <Icon icon={"vaadin:stop"}></Icon>
+              Stop
+            </Button>
+            : <Button onClick={handleStartCalculation} disabled={isInEditMode || !request} theme={"primary"}>
+              <Icon icon={"vaadin:play"}/>
+              Vypocitat
+            </Button>
+        }
+        <ConfigSelectDialog onConfigSelected={value => handleConfigSelected(value.id)}/>
+        {isRequestLoaded && <Button disabled={isInEditMode} onClick={() => setIsInEditMode(true)}>Upravit</Button>}
+        {isRequestLoaded && <Button disabled={isInEditMode} onClick={handleCopyConfig}>Zkopirovat</Button>}
+        {isRequestLoaded && <Button disabled={!isInEditMode} theme={"secondary"} onClick={handleSave}>Ulozit</Button>}
+        {isRequestLoaded && <Button disabled={!isInEditMode} theme={"secondary"} onClick={handleCancel}>Zrusit</Button>}
+        {result && <Button theme={"secondary"} onClick={() => setResult(undefined)}>Vycistit vysledky</Button>}
+      </HorizontalLayout>
+    )
+  }
+
+  function renderResultStrip(result?: ScheduleResultDTO) {
+    if (!resultSubscription) return null
+    return (
+      <VerticalLayout style={{ width: "100%" }}>
+        {<HorizontalLayout theme={"spacing"}>
+          <span>Reseni: {result ? result.resultIndex : "-"}</span>
+          <span>Skore: {result ? result.resultScore : "-"}</span>
+        </HorizontalLayout>}
+        {<ProgressBar indeterminate></ProgressBar>}
+      </VerticalLayout>
+
+    )
   }
 
   return (
     <VerticalLayout theme={"spacing padding"}>
       <Card style={{ width: "100%" }}>
         {renderHeaderStrip(request !== undefined, isInEditMode)}
+        {renderResultStrip(result)}
       </Card>
-      {/*<HorizontalLayout theme={"spacing"}>*/}
-      {/*  <ConfigSelectDialog onConfigSelected={value => handleConfigSelected(value.id)}/>*/}
-      {/*  {request && !isInEditMode ?*/}
-      {/*    <Button*/}
-      {/*      onClick={() => setIsInEditMode(true)}*/}
-      {/*      theme={"primary"}*/}
-      {/*    >*/}
-      {/*      Edit*/}
-      {/*    </Button>*/}
-      {/*    :*/}
-      {/*    <Button*/}
-      {/*      theme={"primary"}*/}
-      {/*      onClick={handleSave}*/}
-      {/*    >*/}
-      {/*      Uloz*/}
-      {/*    </Button>*/}
-      {/*  }*/}
-      {/*</HorizontalLayout>*/}
       <Card style={{ width: "100%" }}>
         <HorizontalLayout theme={"spacing"}>
           <TextField
@@ -205,23 +272,24 @@ export default function ScheduleView() {
             onChange={e => setRequest({ ...request!, name: e.target.value })}
             readonly={!isInEditMode}
             disabled={!request}
+            style={{ width: "385px" }}
           />
           <DatePicker
             label={"Od"}
-            value={request && stupidDateToDateFieldString(request?.startDate)}
+            value={request && stupidDateToLocaleDate(request?.startDate)}
             onChange={e => setRequest({
               ...request!,
-              startDate: fieldDateToStupidDate(e.target.value)
+              startDate: localeDateToStupidDate(e.target.value)
             })}
             readonly={!isInEditMode}
             disabled={!request}
           />
           <DatePicker
             label={"Do"}
-            value={request && stupidDateToDateFieldString(request?.endDate)}
+            value={request && stupidDateToLocaleDate(request?.endDate)}
             onChange={e => setRequest({
               ...request!,
-              endDate: fieldDateToStupidDate(e.target.value)
+              endDate: localeDateToStupidDate(e.target.value)
             })}
             readonly={!isInEditMode}
             disabled={!request}
@@ -262,6 +330,7 @@ export default function ScheduleView() {
                 onEmployeeAction={handleEmployeeAction}
                 onShiftRequestsChanged={handleShiftRequestsChanged}
                 readonly={!isInEditMode}
+                result={result}
               />
             </Card>
 

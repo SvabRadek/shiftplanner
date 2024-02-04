@@ -8,18 +8,37 @@ export function dateToStupidDate(date: Date): StupidDate {
 }
 
 export function stupidDateToString(date: StupidDate): string {
-  return [date.day, date.month, date.year].join("/")
+  return [
+    doubleDigit(date.day),
+    doubleDigit(date.month),
+    date.year.toString()
+  ].join("/")
 }
 
-export function stupidDateToDateFieldString(date: StupidDate): string {
-  return [date.year, date.month, date.day,].join("-")
+export function stupidDateToLocaleDate(date: StupidDate): string {
+  return [
+    date.year,
+    doubleDigit(date.month),
+    doubleDigit(date.day)
+  ].join("-")
 }
 
-export function fieldDateToStupidDate(date: string): StupidDate {
-  const [year, month, day] = date
-    .split("-")
-    .map(Number.parseInt)
-  return { day, month, year }
+export function dateToLocaleDate(date: Date): string {
+  return [
+    date.getFullYear(),
+    doubleDigit(date.getUTCMonth() + 1),
+    doubleDigit(date.getUTCDate())
+  ].join("-")
+}
+
+export function localeDateToStupidDate(date: string): StupidDate {
+  console.log(date)
+  const dateArray = date.split("-")
+  return {
+    year: Number.parseInt(dateArray[0]),
+    month: Number.parseInt(dateArray[1]),
+    day: Number.parseInt(dateArray[2]),
+  }
 }
 
 export function stupidDateToDate(date: StupidDate): Date {
@@ -61,4 +80,11 @@ export function generateUUID() { // Public Domain/MIT
     }
     return (c === 'x' ? r : (r & 0x3 | 0x8)).toString(16);
   });
+}
+
+function doubleDigit(num: number): string {
+  return num.toLocaleString("en-US", {
+    minimumIntegerDigits: 2,
+    useGrouping: false
+  })
 }

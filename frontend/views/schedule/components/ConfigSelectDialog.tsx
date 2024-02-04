@@ -25,6 +25,7 @@ export function ConfigSelectDialog(props: Props) {
   }, [props.isOpen]);
 
   function handleOpen() {
+    setSelectedItem(undefined)
     PlannerConfigurationEndpoint.getMetaData().then(setConfigMetaData)
     setIsOpen(true)
   }
@@ -45,11 +46,11 @@ export function ConfigSelectDialog(props: Props) {
           setIsOpen(e.detail.value)
         }}
       >
-        <VerticalLayout style={{ minWidth: "700px", minHeight: "400px" }}>
+        <VerticalLayout theme={"spacing"} style={{ minWidth: "700px", minHeight: "400px" }}>
           <PlannerConfigList configList={configMetaData} onSelectionChanged={setSelectedItem}/>
-          <HorizontalLayout style={{ width: "100%", justifyContent: "end" }} theme={"padding spacing"}>
+          <HorizontalLayout style={{ width: "100%", justifyContent: "end" }} theme={"spacing"}>
+            <Button theme={"primary"} disabled={!selectedItem} onClick={confirmSelection}>Vybrat</Button>
             <Button onClick={() => setIsOpen(false)}>Zrusit</Button>
-            <Button disabled={!selectedItem} onClick={confirmSelection}>Vybrat</Button>
           </HorizontalLayout>
         </VerticalLayout>
       </Dialog>

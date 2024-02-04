@@ -1,7 +1,9 @@
 package com.cocroachden.planner.solver.solver;
 
 
+import com.cocroachden.planner.lib.StupidDate;
 import com.cocroachden.planner.lib.WorkerId;
+import com.cocroachden.planner.solver.ScheduleResultDTO;
 import com.cocroachden.planner.solver.schedule.SchedulePlan;
 import com.cocroachden.planner.solver.schedule.WorkShifts;
 import com.cocroachden.planner.solver.solver.response.ResponseSchedule;
@@ -9,14 +11,13 @@ import com.cocroachden.planner.solver.solver.response.ResponseWorkDay;
 import com.google.ortools.sat.CpSolverSolutionCallback;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
+import reactor.core.publisher.FluxSink;
 
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 
 @Slf4j
 public class ScheduleSolutionCb extends CpSolverSolutionCallback {
+  private final FluxSink<ScheduleResultDTO> fluxSink;
   @Getter
   private Integer currentSolutionCount = 0;
   @Getter
@@ -26,7 +27,11 @@ public class ScheduleSolutionCb extends CpSolverSolutionCallback {
   private final SchedulePlan schedulePlan;
 
 
-  public ScheduleSolutionCb(SchedulePlan schedulePlan) {
+  public ScheduleSolutionCb(
+      FluxSink<ScheduleResultDTO> fluxSink,
+      SchedulePlan schedulePlan
+  ) {
+    this.fluxSink = fluxSink;
     this.solutionLimit = 999999999;
     this.schedulePlan = schedulePlan;
   }
@@ -45,11 +50,29 @@ public class ScheduleSolutionCb extends CpSolverSolutionCallback {
     var latestResponse = new ResponseSchedule(response);
     this.printStatsHeader(currentObjective);
     this.latestResponse = latestResponse;
+    var workerMap = new HashMap<String, Map<StupidDate, WorkShifts>>();
+    latestResponse.workdays().forEach((workerId, responseWorkDays) -> {
+      var shiftMap = new HashMap<StupidDate, WorkShifts>();
+      responseWorkDays.forEach(responseWorkDay -> {
+        shiftMap.put(StupidDate.fromDate(responseWorkDay.date()), responseWorkDay.assignedShift());
+      });
+      workerMap.put(workerId.getWorkerId(), shiftMap);
+    });
+    fluxSink.next(
+        new ScheduleResultDTO(
+            currentObjective,
+            currentSolutionCount,
+            workerMap
+        )
+    );
     currentSolutionCount++;
     if (currentSolutionCount >= solutionLimit) {
+      fluxSink.complete();
       stopSearch();
     }
   }
+
+
 
   private HashMap<WorkerId, List<ResponseWorkDay>> createResponseSchedule() {
     var response = new HashMap<WorkerId, List<ResponseWorkDay>>();
