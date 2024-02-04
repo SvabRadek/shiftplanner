@@ -19,6 +19,7 @@ import { areShiftPerScheduleSame } from "Frontend/util/utils";
 import WorkerId from "Frontend/generated/com/cocroachden/planner/lib/WorkerId";
 import ConstraintType from "Frontend/generated/com/cocroachden/planner/lib/ConstraintType";
 import { Card } from "Frontend/components/Card";
+import { CardFooter } from "Frontend/components/CardFooter";
 
 export type EmployeeConfigModel = {
   workerId: string
@@ -67,7 +68,10 @@ export function EmployeeRequestConfigDialog(props: Props) {
   function removeShiftPerScheduleRequest(workerId: WorkerId, shift: WorkShifts) {
     setEmployeeConfigModel(prevState => ({
       ...prevState,
-      shiftsPerScheduleRequests: prevState.shiftsPerScheduleRequests.filter(r => !areShiftPerScheduleSame(r, { owner: workerId, targetShift: shift }))
+      shiftsPerScheduleRequests: prevState.shiftsPerScheduleRequests.filter(r => !areShiftPerScheduleSame(r, {
+        owner: workerId,
+        targetShift: shift
+      }))
     }))
   }
 
@@ -90,20 +94,16 @@ export function EmployeeRequestConfigDialog(props: Props) {
       }}
     >
       <VerticalLayout
-        style={{ width: "600px" }}
-        theme={"spacing padding"}
+        style={{ width: "600px", minHeight: "300px" }}
+        theme={"spacing"}
       >
-        <Card style={{
-          width: "100%"
-        }}>
+        <Card style={{ width: "100%" }}>
           <HorizontalLayout theme={"spacing"}>
             <TextField value={props.employee.firstName} readonly/>
             <TextField value={props.employee.lastName} readonly/>
           </HorizontalLayout>
         </Card>
-        <Card style={{
-          width: "100%"
-        }}>
+        <Card style={{ width: "100%" }}>
           <TabSheet style={{ width: "100%" }}>
             <Tabs slot={"tabs"}>
               <Tab id={"smeny-tab"}>Smeny</Tab>
@@ -128,7 +128,7 @@ export function EmployeeRequestConfigDialog(props: Props) {
               }
               <Button
                 theme={"small"}
-                style={{ marginTop: "20px" }}
+                style={{ marginTop: "var(--lumo-size-xs)" }}
                 disabled={props.readonly}
                 onClick={() => addNewShiftPerScheduleRequest(props.employee!.workerId)}>
                 <Icon icon={"vaadin:plus"} slot={"prefix"}/>
@@ -140,11 +140,11 @@ export function EmployeeRequestConfigDialog(props: Props) {
             </div>
           </TabSheet>
         </Card>
-        <HorizontalLayout style={{ width: "100%", justifyContent: "flex-end" }} theme={"spacing"}>
-          <Button onClick={handleClose}>Zrusit</Button>
-          <Button disabled={props.readonly} onClick={handleSave}>Ulozit</Button>
-        </HorizontalLayout>
       </VerticalLayout>
+      <CardFooter>
+        <Button onClick={handleClose}>Zrusit</Button>
+        <Button disabled={props.readonly} onClick={handleSave}>Ulozit</Button>
+      </CardFooter>
     </Dialog>
   );
 }

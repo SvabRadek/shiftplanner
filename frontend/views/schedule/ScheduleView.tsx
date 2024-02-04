@@ -37,6 +37,10 @@ import { ProgressBar } from "@hilla/react-components/ProgressBar.js";
 import { ScheduleMode, ScheduleModeCtx } from "Frontend/views/schedule/ScheduleModeCtxProvider";
 import ConsecutiveWorkingDaysRequestDTO
   from "Frontend/generated/com/cocroachden/planner/constraint/ConsecutiveWorkingDaysRequestDTO";
+import {
+  ScheduleConstraintDialogModel,
+  ScheduleConstraintsDialog
+} from "Frontend/views/schedule/components/scheduleConstraints/ScheduleConstraintsDialog";
 
 async function saveSpecificShiftRequests(requests: SpecificShiftRequestDTO[]): Promise<string[]> {
   return ConstraintEndpoint.saveAllSpecificShiftRequests(requests)
@@ -62,6 +66,7 @@ export default function ScheduleView() {
   const [employees, setEmployees] = useState<EmployeeRecord[]>([])
   const [isAddEmployeeDialogOpen, setIsAddEmployeeDialogOpen] = useState(false)
   const [employeeConfigDialog, setEmployeeConfigDialog] = useState<EmployeeConfigDialogParams>({ isOpen: false })
+  const [isScheduleConfigDialogOpen, setIsScheduleConfigDialogOpen] = useState(false);
   const [result, setResult] = useState<ScheduleResultDTO | undefined>();
   const [resultSubscription, setResultSubscription] = useState<Subscription<ScheduleResultDTO> | undefined>();
 
@@ -98,7 +103,10 @@ export default function ScheduleView() {
       constraintRequestInstances: [
         ...specificShiftIds.map(id => ({ requestType: ConstraintType.SPECIFIC_SHIFT_REQUEST, requestId: id })),
         ...shiftPerScheduleIds.map(id => ({ requestType: ConstraintType.SHIFT_PER_SCHEDULE, requestId: id })),
-        ...consecutiveWorkingDaysIds.map(id => ({ requestType: ConstraintType.CONSECUTIVE_WORKING_DAYS, requestId: id }))
+        ...consecutiveWorkingDaysIds.map(id => ({
+          requestType: ConstraintType.CONSECUTIVE_WORKING_DAYS,
+          requestId: id
+        }))
       ]
     }).then(response => {
       handleConfigSelected(response)
@@ -236,6 +244,11 @@ export default function ScheduleView() {
     )
   }
 
+  function handleScheduleConstraintSave(value: ScheduleConstraintDialogModel) {
+    setConsecutiveWorkingDaysRequests(value.consecutiveWorkingDaysRequests)
+    setIsScheduleConfigDialogOpen(false)
+  }
+
   function renderHeaderStrip() {
     const isRequestLoaded = request !== undefined
     return (
@@ -246,16 +259,21 @@ export default function ScheduleView() {
               <Icon icon={"vaadin:stop"}></Icon>
               Stop
             </Button>
-            : <Button onClick={handleStartCalculation} disabled={modeCtx.mode === ScheduleMode.EDIT || !request} theme={"primary"}>
+            : <Button onClick={handleStartCalculation} disabled={modeCtx.mode === ScheduleMode.EDIT || !request}
+                      theme={"primary"}>
               <Icon icon={"vaadin:play"}/>
               Vypocitat
             </Button>
         }
         <ConfigSelectDialog onConfigSelected={value => handleConfigSelected(value.id)}/>
-        {isRequestLoaded && <Button disabled={modeCtx.mode === ScheduleMode.EDIT} onClick={() => modeCtx.setMode(ScheduleMode.EDIT)}>Upravit</Button>}
-        {isRequestLoaded && <Button disabled={modeCtx.mode === ScheduleMode.EDIT} onClick={handleCopyConfig}>Zkopirovat</Button>}
-        {isRequestLoaded && <Button disabled={modeCtx.mode !== ScheduleMode.EDIT} theme={"secondary"} onClick={handleSave}>Ulozit</Button>}
-        {isRequestLoaded && <Button disabled={modeCtx.mode !== ScheduleMode.EDIT} theme={"secondary"} onClick={handleCancel}>Zrusit</Button>}
+        {isRequestLoaded && <Button disabled={modeCtx.mode === ScheduleMode.EDIT}
+                                    onClick={() => modeCtx.setMode(ScheduleMode.EDIT)}>Upravit</Button>}
+        {isRequestLoaded &&
+            <Button disabled={modeCtx.mode === ScheduleMode.EDIT} onClick={handleCopyConfig}>Zkopirovat</Button>}
+        {isRequestLoaded && <Button disabled={modeCtx.mode !== ScheduleMode.EDIT} theme={"secondary"}
+                                    onClick={handleSave}>Ulozit</Button>}
+        {isRequestLoaded && <Button disabled={modeCtx.mode !== ScheduleMode.EDIT} theme={"secondary"}
+                                    onClick={handleCancel}>Zrusit</Button>}
         {result && <Button theme={"secondary"} onClick={() => setResult(undefined)}>Vycistit vysledky</Button>}
       </HorizontalLayout>
     )
@@ -278,7 +296,7 @@ export default function ScheduleView() {
   function renderGridHeader() {
     return (
       <Card style={{ width: "100%" }}>
-        <HorizontalLayout theme={"spacing"}>
+        <HorizontalLayout theme={"spacing"} style={{ alignItems: "end" }}>
           <TextField
             label={"Nazev"}
             value={request?.name}
@@ -307,6 +325,14 @@ export default function ScheduleView() {
             readonly={modeCtx.mode !== ScheduleMode.EDIT}
             disabled={!request}
           />
+          <Button
+            disabled={modeCtx.mode !== ScheduleMode.EDIT}
+            theme={"secondary"}
+            onClick={() => setIsScheduleConfigDialogOpen(true)}
+          >
+            <Icon style={{ marginRight: "5px" }} icon={"vaadin:cog"}/>
+            Nastaveni
+          </Button>
         </HorizontalLayout>
       </Card>
     )
@@ -318,47 +344,51 @@ export default function ScheduleView() {
         {renderHeaderStrip()}
         {renderResultStrip()}
       </Card>
-      <Card>
-        <HorizontalLayout>
-          <Button>Nastaveni</Button>
-        </HorizontalLayout>
-      </Card>
       {request ? renderGridHeader() : <h2 style={{ marginTop: "30px", padding: "10px" }}>Vyberte rozvrh</h2>}
       {request &&
           <>
-            <EmployeeRequestConfigDialog
-              key={employeeConfigDialog.selectedEmployee?.workerId}
-              employee={employees.find(w => w.workerId === employeeConfigDialog.selectedEmployee?.workerId)!}
-              isOpen={employeeConfigDialog.isOpen}
-              onOpenChanged={(newValue) => setEmployeeConfigDialog(prevState => ({ ...prevState, isOpen: newValue }))}
-              shiftsPerScheduleRequests={shiftPerScheduleRequests.filter(r => r.owner.workerId === employeeConfigDialog.selectedEmployee?.workerId)}
-              onSave={handleEmployeeConfigSave}
-              readonly={modeCtx.mode !== ScheduleMode.EDIT}
-            />
-            <AddEmployeeDialog
-              employees={employees}
-              selectedWorkers={request.workers}
-              onEmployeeSelected={handleAddEmployee}
-              onOpenChanged={setIsAddEmployeeDialogOpen}
-              isOpen={isAddEmployeeDialogOpen}
-            />
-            <Card
-              style={{
-                maxWidth: "100%",
-                borderWidth: "1px",
-                borderColor: "var(--lumo-shade-70pct)"
-              }}
-            >
-              <ScheduleGridContainer
-                request={request}
-                employees={employees}
-                shiftRequests={shiftRequests}
-                shiftPerScheduleRequests={shiftPerScheduleRequests}
-                onEmployeeAction={handleEmployeeAction}
-                onShiftRequestsChanged={handleShiftRequestsChanged}
-                result={result}
+              <ScheduleConstraintsDialog
+                  isOpen={isScheduleConfigDialogOpen}
+                  onOpenChanged={setIsScheduleConfigDialogOpen}
+                  consecutiveWorkingDaysRequests={consecutiveWorkingDaysRequests}
+                  onSave={handleScheduleConstraintSave}
               />
-            </Card>
+              <EmployeeRequestConfigDialog
+                  key={employeeConfigDialog.selectedEmployee?.workerId}
+                  employee={employees.find(w => w.workerId === employeeConfigDialog.selectedEmployee?.workerId)!}
+                  isOpen={employeeConfigDialog.isOpen}
+                  onOpenChanged={(newValue) => setEmployeeConfigDialog(prevState => ({
+                    ...prevState,
+                    isOpen: newValue
+                  }))}
+                  shiftsPerScheduleRequests={shiftPerScheduleRequests.filter(r => r.owner.workerId === employeeConfigDialog.selectedEmployee?.workerId)}
+                  onSave={handleEmployeeConfigSave}
+                  readonly={modeCtx.mode !== ScheduleMode.EDIT}
+              />
+              <AddEmployeeDialog
+                  employees={employees}
+                  selectedWorkers={request.workers}
+                  onEmployeeSelected={handleAddEmployee}
+                  onOpenChanged={setIsAddEmployeeDialogOpen}
+                  isOpen={isAddEmployeeDialogOpen}
+              />
+              <Card
+                  style={{
+                    maxWidth: "100%",
+                    borderWidth: "1px",
+                    borderColor: "var(--lumo-shade-70pct)"
+                  }}
+              >
+                  <ScheduleGridContainer
+                      request={request}
+                      employees={employees}
+                      shiftRequests={shiftRequests}
+                      shiftPerScheduleRequests={shiftPerScheduleRequests}
+                      onEmployeeAction={handleEmployeeAction}
+                      onShiftRequestsChanged={handleShiftRequestsChanged}
+                      result={result}
+                  />
+              </Card>
           </>
       }
       <HorizontalLayout theme={"spacing"}>
