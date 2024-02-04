@@ -2,6 +2,8 @@ import { ContextMenu, ContextMenuItem, ContextMenuItemSelectedEvent } from "@hil
 import StupidDate from "Frontend/generated/com/cocroachden/planner/lib/StupidDate";
 import WorkShifts from "Frontend/generated/com/cocroachden/planner/solver/schedule/WorkShifts";
 import { workShiftBindings } from "Frontend/views/schedule/WorkShiftBindigs";
+import { useContext } from "react";
+import { ScheduleModeCtx } from "Frontend/views/schedule/ScheduleModeCtxProvider";
 
 export type Cell = {
   shift: WorkShifts

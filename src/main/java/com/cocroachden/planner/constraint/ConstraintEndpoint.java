@@ -3,6 +3,7 @@ package com.cocroachden.planner.constraint;
 import com.cocroachden.planner.constraint.repository.ConstraintRequestRecord;
 import com.cocroachden.planner.constraint.service.ConstraintRequestService;
 import com.cocroachden.planner.lib.WorkerId;
+import com.cocroachden.planner.solver.constraints.specific.consecutiveworkingdays.request.ConsecutiveWorkingDaysRequest;
 import com.cocroachden.planner.solver.constraints.specific.shiftperschedule.request.ShiftsPerScheduleRequest;
 import com.cocroachden.planner.solver.constraints.specific.workershiftrequest.request.SpecificShiftRequest;
 import com.vaadin.flow.server.auth.AnonymousAllowed;
@@ -22,7 +23,9 @@ public class ConstraintEndpoint {
   public @Nonnull List<@Nonnull SpecificShiftRequestDTO> findSpecificShiftRequests(
       @Nonnull List<@Nonnull UUID> requestIds
   ) {
-    return service.getSpecificShiftRequests(requestIds);
+    return service.getSpecificShiftRequests(requestIds).stream()
+        .map(SpecificShiftRequestDTO::from)
+        .toList();
   }
 
   public @Nonnull List<@Nonnull UUID> saveAllSpecificShiftRequests(
@@ -48,7 +51,6 @@ public class ConstraintEndpoint {
         .map(ShiftsPerScheduleRequestDTO::from)
         .toList();
   }
-
   public @Nonnull List<@Nonnull UUID> saveAllShiftsPerScheduleRequests(
       @Nonnull List<@Nonnull ShiftsPerScheduleRequestDTO> requestDTOs
   ) {
@@ -68,4 +70,31 @@ public class ConstraintEndpoint {
         ).map(request -> service.saveAsNew(request).getId())
         .toList();
   }
+
+  public @Nonnull List<@Nonnull ConsecutiveWorkingDaysRequestDTO> findConsecutiveWorkingDaysRequests(
+      @Nonnull List<@Nonnull UUID> requestIds
+  ) {
+    return service.getConsecutiveDayRequests(requestIds).stream()
+        .map(ConsecutiveWorkingDaysRequestDTO::from)
+        .toList();
+  }
+
+  public @Nonnull List<@Nonnull UUID> saveAllConsecutiveWorkingDaysRequests(
+      @Nonnull List<@Nonnull ConsecutiveWorkingDaysRequestDTO> requestDTOs
+  ) {
+    return requestDTOs.stream().map(requestDTO ->
+            new ConstraintRequestRecord(
+                new ConsecutiveWorkingDaysRequest(
+                    requestDTO.getHardMin(),
+                    requestDTO.getSoftMin(),
+                    requestDTO.getMinPenalty(),
+                    requestDTO.getSoftMax(),
+                    requestDTO.getMaxPenalty(),
+                    requestDTO.getHardMax()
+                )
+            )
+        ).map(request -> service.saveAsNew(request).getId())
+        .toList();
+  }
+
 }

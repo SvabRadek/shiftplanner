@@ -38,7 +38,7 @@ public class StartupService {
       var configId = UUID.randomUUID();
       var requestLinks = Example.constraintRequests().stream()
           .map(ConstraintRequestRecord::new)
-          .map(requestService::upsert)
+          .map(requestService::saveAsNew)
           .map(record -> new ConfigurationRequestLinkDTO(
               record.getType(),
               record.getId()

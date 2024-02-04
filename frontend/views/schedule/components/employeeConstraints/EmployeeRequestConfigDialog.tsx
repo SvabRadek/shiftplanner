@@ -18,6 +18,7 @@ import { Icon } from "@hilla/react-components/Icon";
 import { areShiftPerScheduleSame } from "Frontend/util/utils";
 import WorkerId from "Frontend/generated/com/cocroachden/planner/lib/WorkerId";
 import ConstraintType from "Frontend/generated/com/cocroachden/planner/lib/ConstraintType";
+import { Card } from "Frontend/components/Card";
 
 export type EmployeeConfigModel = {
   workerId: string
@@ -92,46 +93,53 @@ export function EmployeeRequestConfigDialog(props: Props) {
         style={{ width: "600px" }}
         theme={"spacing padding"}
       >
-        <h6>Jmeno</h6>
-        <HorizontalLayout theme={"spacing"}>
-          <TextField value={props.employee.firstName} readonly/>
-          <TextField value={props.employee.lastName} readonly/>
-        </HorizontalLayout>
-        <TabSheet style={{ width: "100%" }}>
-          <Tabs slot={"tabs"}>
-            <Tab id={"smeny-tab"}>Smeny</Tab>
-            <Tab id={"pattern-tab"}>Rozvrh</Tab>
-          </Tabs>
-          <div {...{ tab: "smeny-tab" }}>
-            {
-              employeeConfigModel.shiftsPerScheduleRequests.length === 0
-                ? <div style={{ paddingTop: "var(--lumo-size-xs)" }}/>
-                : employeeConfigModel.shiftsPerScheduleRequests.map(request => {
-                return (
-                  <ShiftCountConstraintForm
-                    key={request.owner.workerId + request.targetShift}
-                    request={request}
-                    onChange={handleRequestUpdate}
-                    onRemove={removeShiftPerScheduleRequest}
-                    excludedShifts={employeeConfigModel.shiftsPerScheduleRequests.map(r => r.targetShift)}
-                    readonly={props.readonly}
-                  />
-                )
-              })
-            }
-            <Button
-              theme={"small"}
-              style={{ marginTop: "10px" }}
-              disabled={props.readonly}
-              onClick={() => addNewShiftPerScheduleRequest(props.employee!.workerId)}>
-              <Icon icon={"vaadin:plus"} slot={"prefix"}/>
-              Pridat
-            </Button>
-          </div>
-          <div {...{ tab: "pattern-tab" }}>
-            <div>To be done...</div>
-          </div>
-        </TabSheet>
+        <Card style={{
+          width: "100%"
+        }}>
+          <HorizontalLayout theme={"spacing"}>
+            <TextField value={props.employee.firstName} readonly/>
+            <TextField value={props.employee.lastName} readonly/>
+          </HorizontalLayout>
+        </Card>
+        <Card style={{
+          width: "100%"
+        }}>
+          <TabSheet style={{ width: "100%" }}>
+            <Tabs slot={"tabs"}>
+              <Tab id={"smeny-tab"}>Smeny</Tab>
+              <Tab id={"pattern-tab"}>Rozvrh</Tab>
+            </Tabs>
+            <div {...{ tab: "smeny-tab" }}>
+              {
+                employeeConfigModel.shiftsPerScheduleRequests.length === 0
+                  ? <div style={{ paddingTop: "var(--lumo-size-xs)" }}/>
+                  : employeeConfigModel.shiftsPerScheduleRequests.map(request => {
+                    return (
+                      <ShiftCountConstraintForm
+                        key={request.owner.workerId + request.targetShift}
+                        request={request}
+                        onChange={handleRequestUpdate}
+                        onRemove={removeShiftPerScheduleRequest}
+                        excludedShifts={employeeConfigModel.shiftsPerScheduleRequests.map(r => r.targetShift)}
+                        readonly={props.readonly}
+                      />
+                    )
+                  })
+              }
+              <Button
+                theme={"small"}
+                style={{ marginTop: "20px" }}
+                disabled={props.readonly}
+                onClick={() => addNewShiftPerScheduleRequest(props.employee!.workerId)}>
+                <Icon icon={"vaadin:plus"} slot={"prefix"}/>
+                Pridat
+              </Button>
+            </div>
+            <div {...{ tab: "pattern-tab" }}>
+              <div>To be done...</div>
+            </div>
+          </TabSheet>
+        </Card>
         <HorizontalLayout style={{ width: "100%", justifyContent: "flex-end" }} theme={"spacing"}>
           <Button onClick={handleClose}>Zrusit</Button>
           <Button disabled={props.readonly} onClick={handleSave}>Ulozit</Button>

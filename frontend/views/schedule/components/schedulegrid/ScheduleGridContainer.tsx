@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useContext, useState } from "react";
 import WorkShifts from "Frontend/generated/com/cocroachden/planner/solver/schedule/WorkShifts";
 import EmployeeRecord from "Frontend/generated/com/cocroachden/planner/employee/EmployeeRecord";
 import { dateToString, dateToStupidDate, stupidDateToDate, stupidDateToString } from "Frontend/util/utils";
@@ -12,6 +12,7 @@ import ShiftsPerScheduleRequestDTO
   from "Frontend/generated/com/cocroachden/planner/constraint/ShiftsPerScheduleRequestDTO";
 import ConstraintType from "Frontend/generated/com/cocroachden/planner/lib/ConstraintType";
 import ScheduleResultDTO from "Frontend/generated/com/cocroachden/planner/solver/ScheduleResultDTO";
+import { ScheduleModeCtx } from "Frontend/views/schedule/ScheduleModeCtxProvider";
 
 export type Owner = string
 export type Index = number
@@ -29,7 +30,6 @@ type Props = {
   shiftPerScheduleRequests: ShiftsPerScheduleRequestDTO[]
   onEmployeeAction?: (action: EmployeeAction) => void
   onShiftRequestsChanged?: (changedRequests: SpecificShiftRequestDTO[]) => void
-  readonly?: boolean
   result?: ScheduleResultDTO
 }
 
@@ -100,7 +100,6 @@ export function ScheduleGridContainer(props: Props) {
       onMouseOverCell={handleCellOnMouseOver}
       onLeftClick={handleCellLeftClick}
       onEmployeeAction={props.onEmployeeAction}
-      readonly={props.readonly}
     />
   );
 }

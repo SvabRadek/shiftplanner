@@ -14,10 +14,10 @@ import java.util.UUID;
 @Table(name = "constraint_requests")
 @NoArgsConstructor
 @Getter
+@Setter
 public class ConstraintRequestRecord {
   @Id
   @GeneratedValue
-  @Setter
   private UUID id;
   private ConstraintType type;
   @Convert(converter = ConstraintRequestAttributeConverter.class)

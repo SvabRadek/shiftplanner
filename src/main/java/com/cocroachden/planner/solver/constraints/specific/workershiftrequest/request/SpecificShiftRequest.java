@@ -17,13 +17,13 @@ import java.time.LocalDate;
 @JsonTypeName("SpecificShiftRequest")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class SpecificShiftRequest extends AbstractConstraintRequest {
-  public static final ConstraintType ID = ConstraintType.SPECIFIC_SHIFT_REQUEST;
+  public static final ConstraintType TYPE = ConstraintType.SPECIFIC_SHIFT_REQUEST;
   @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd/MM/yyyy")
   private LocalDate date;
   private WorkShifts requestedShift;
 
   public SpecificShiftRequest(WorkerId owner, LocalDate date, WorkShifts requestedShift) {
-    super(ID, owner);
+    super(TYPE, owner);
     this.date = date;
     this.requestedShift = requestedShift;
   }

@@ -13,7 +13,7 @@ import lombok.NoArgsConstructor;
 @JsonTypeName("ConsecutiveWorkingDaysRequest")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class ConsecutiveWorkingDaysRequest extends AbstractMinMaxRequest {
-  public static final ConstraintType ID = ConstraintType.CONSECUTIVE_WORKING_DAYS;
+  public static final ConstraintType CONSTRAINT_TYPE = ConstraintType.CONSECUTIVE_WORKING_DAYS;
 
   public ConsecutiveWorkingDaysRequest(
       WorkerId owner,
@@ -24,7 +24,7 @@ public class ConsecutiveWorkingDaysRequest extends AbstractMinMaxRequest {
       Integer maxPenalty,
       Integer hardMax
   ) {
-    super(ID, owner, hardMin, softMin, minPenalty, softMax, maxPenalty, hardMax);
+    super(CONSTRAINT_TYPE, owner, hardMin, softMin, minPenalty, softMax, maxPenalty, hardMax);
   }
 
   public ConsecutiveWorkingDaysRequest(

@@ -1,10 +1,11 @@
 import { Owner } from "Frontend/views/schedule/components/schedulegrid/ScheduleGridContainer";
 import { Cell, GridCell } from "Frontend/views/schedule/components/schedulegrid/GridCell";
-import { ReactNode } from "react";
+import { ReactNode, useContext } from "react";
 import { EmployeeAction, GridNameCell } from "Frontend/views/schedule/components/schedulegrid/GridNameCell";
 import { GridHeaderCell } from "Frontend/views/schedule/components/schedulegrid/GridHeaderCell";
 import { stupidDateToDate, stupidDateToString } from "Frontend/util/utils";
 import StupidDate from "Frontend/generated/com/cocroachden/planner/lib/StupidDate";
+import { ScheduleMode, ScheduleModeCtx } from "Frontend/views/schedule/ScheduleModeCtxProvider";
 
 type Row = {
   workerId: Owner
@@ -19,64 +20,81 @@ type Props = {
   onLeftClick?: (cell: Cell) => void
   onMouseOverCell?: (cell: Cell) => void
   onEmployeeAction?: (action: EmployeeAction) => void
-  readonly?: boolean
+}
+
+function shadowIntensity(
+  row: number,
+  column: number,
+  mode: ScheduleMode,
+  date?: StupidDate
+): number {
+  let shadowIntensity = 10
+  if(date && isWeekend(date)) shadowIntensity += 10
+  if (mode !== ScheduleMode.EDIT) shadowIntensity += 10
+  if (row === 1) shadowIntensity += 30
+  if (column === 1 && row > 1) shadowIntensity += 10
+  return shadowIntensity
+}
+
+function cellColor(
+  row: number,
+  column: number,
+  mode: ScheduleMode,
+  date?: StupidDate
+) {
+  return "var(--lumo-shade-" + shadowIntensity(row, column, mode, date) + "pct)"
 }
 
 export function ScheduleGrid(props: Props) {
 
+  const modeCtx = useContext(ScheduleModeCtx)
   const items = mapToGridCells(props.rows);
+
+  function generateFirstRow(row: Row): ReactNode[] {
+    const items: ReactNode[] = []
+    items.push(renderCell(
+      1,
+      1,
+      <GridNameCell
+        workerId={row.workerId}
+        title={"Jmeno"}
+        backgroundColor={cellColor(1, 1, modeCtx.mode)}
+        disableContextMenu={true}
+      />
+    ))
+    row.cells.forEach(c => {
+      items.push(renderCell(
+        1,
+        c.index + 2,
+        <GridHeaderCell
+          title={c.date.day.toString()}
+          hint={stupidDateToString(c.date) + ", " + stupidDateToDate(c.date).getDay()}
+          backgroundColor={cellColor(1, c.index + 2, modeCtx.mode, c.date)}
+        />
+      ))
+    })
+    return items
+  }
 
   function mapToGridCells(rows: Row[]): ReactNode[] {
     const items: ReactNode[] = []
-    rows.forEach((r, rowIndex) => {
+    rows.forEach((row, rowIndex) => {
       if (rowIndex === 0) {
-        items.push(renderCell(
-          rowIndex + 1,
-          1,
-          <GridNameCell
-            workerId={r.workerId}
-            title={"Jmeno"}
-            readonly={true}
-          />
-        ))
-        r.cells.forEach(c => {
-          items.push(renderCell(
-            1,
-            c.index + 2,
-            <GridHeaderCell
-              title={c.date.day.toString()}
-              hint={stupidDateToString(c.date) + ", " + stupidDateToDate(c.date).getDay()}
-              backgroundColor={isWeekend(c.date) ? "var(--lumo-shade-20pct)" : undefined}
-            />
-          ))
-        })
+        items.push(generateFirstRow(row))
       }
       items.push(renderCell(
         rowIndex + 2,
         1,
         <GridNameCell
-          title={r.displayName}
-          workerId={r.workerId}
+          title={row.displayName}
+          workerId={row.workerId}
           onEmployeeAction={props.onEmployeeAction}
-          backgroundColor={props.readonly ? "var(--lumo-shade-20pct)" : undefined }
-          readonly={props.readonly}
+          backgroundColor={cellColor(rowIndex +2, 1, modeCtx.mode)}
+          readonly={modeCtx.mode !== ScheduleMode.EDIT}
         />
       ))
-      return r.cells
+      return row.cells
         .forEach((c) => {
-
-          let cellColor = undefined
-          if (isWeekend(c.date)) {
-            cellColor = "var(--lumo-shade-20pct)"
-            if (props.readonly) {
-              cellColor = "var(--lumo-shade-30pct)"
-            }
-          } else {
-            if (props.readonly) {
-              cellColor = "var(--lumo-shade-20pct)"
-            }
-          }
-
           items.push(renderCell(
             rowIndex + 2,
             c.index + 2,
@@ -85,8 +103,8 @@ export function ScheduleGrid(props: Props) {
               onShiftChange={props.onCellChanged}
               onMouseOverCell={props.onMouseOverCell}
               onLeftClick={props.onLeftClick}
-              backgroundColor={cellColor}
-              readonly={props.readonly}
+              backgroundColor={cellColor(rowIndex + 2, c.index + 2, modeCtx.mode, c.date)}
+              readonly={modeCtx.mode !== ScheduleMode.EDIT}
             />
           ));
         })

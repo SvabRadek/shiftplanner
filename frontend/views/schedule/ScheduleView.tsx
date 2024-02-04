@@ -1,5 +1,5 @@
 import { DatePicker } from "@hilla/react-components/DatePicker";
-import { useEffect, useRef, useState } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 import {
   ConstraintEndpoint,
   EmployeeService,
@@ -34,6 +34,9 @@ import { Icon } from "@hilla/react-components/Icon";
 import { Subscription } from "@hilla/frontend";
 import ScheduleResultDTO from "Frontend/generated/com/cocroachden/planner/solver/ScheduleResultDTO";
 import { ProgressBar } from "@hilla/react-components/ProgressBar.js";
+import { ScheduleMode, ScheduleModeCtx } from "Frontend/views/schedule/ScheduleModeCtxProvider";
+import ConsecutiveWorkingDaysRequestDTO
+  from "Frontend/generated/com/cocroachden/planner/constraint/ConsecutiveWorkingDaysRequestDTO";
 
 async function saveSpecificShiftRequests(requests: SpecificShiftRequestDTO[]): Promise<string[]> {
   return ConstraintEndpoint.saveAllSpecificShiftRequests(requests)
@@ -43,6 +46,10 @@ async function saveShiftPerScheduleRequests(requests: ShiftsPerScheduleRequestDT
   return ConstraintEndpoint.saveAllShiftsPerScheduleRequests(requests)
 }
 
+async function saveConsecutiveWorkingDaysRequests(requests: ConsecutiveWorkingDaysRequestDTO[]): Promise<string[]> {
+  return ConstraintEndpoint.saveAllConsecutiveWorkingDaysRequests(requests)
+}
+
 type EmployeeConfigDialogParams = {
   isOpen: boolean,
   selectedEmployee?: WorkerId
@@ -50,16 +57,18 @@ type EmployeeConfigDialogParams = {
 
 export default function ScheduleView() {
 
+  const modeCtx = useContext(ScheduleModeCtx);
   const isCopy = useRef(false);
-  const [request, setRequest] = useState<PlannerConfigurationDTO | undefined>();
   const [employees, setEmployees] = useState<EmployeeRecord[]>([])
-  const [shiftRequests, setShiftRequests] = useState<SpecificShiftRequestDTO[]>([])
-  const [shiftPerScheduleRequests, setShiftPerScheduleRequests] = useState<ShiftsPerScheduleRequestDTO[]>([])
   const [isAddEmployeeDialogOpen, setIsAddEmployeeDialogOpen] = useState(false)
   const [employeeConfigDialog, setEmployeeConfigDialog] = useState<EmployeeConfigDialogParams>({ isOpen: false })
-  const [isInEditMode, setIsInEditMode] = useState<boolean>(false)
   const [result, setResult] = useState<ScheduleResultDTO | undefined>();
   const [resultSubscription, setResultSubscription] = useState<Subscription<ScheduleResultDTO> | undefined>();
+
+  const [request, setRequest] = useState<PlannerConfigurationDTO | undefined>();
+  const [shiftRequests, setShiftRequests] = useState<SpecificShiftRequestDTO[]>([])
+  const [shiftPerScheduleRequests, setShiftPerScheduleRequests] = useState<ShiftsPerScheduleRequestDTO[]>([])
+  const [consecutiveWorkingDaysRequests, setConsecutiveWorkingDaysRequests] = useState<ConsecutiveWorkingDaysRequestDTO[]>([]);
 
   useEffect(() => {
     EmployeeService.getAllEmployees().then(setEmployees)
@@ -79,15 +88,17 @@ export default function ScheduleView() {
   }
 
   async function handleSave() {
-    const [specificShiftIds, shiftPerScheduleIds] = await Promise.all([
+    const [specificShiftIds, shiftPerScheduleIds, consecutiveWorkingDaysIds] = await Promise.all([
       saveSpecificShiftRequests(shiftRequests),
-      saveShiftPerScheduleRequests(shiftPerScheduleRequests)
+      saveShiftPerScheduleRequests(shiftPerScheduleRequests),
+      saveConsecutiveWorkingDaysRequests(consecutiveWorkingDaysRequests)
     ])
     await PlannerConfigurationEndpoint.save({
       ...request!,
       constraintRequestInstances: [
         ...specificShiftIds.map(id => ({ requestType: ConstraintType.SPECIFIC_SHIFT_REQUEST, requestId: id })),
-        ...shiftPerScheduleIds.map(id => ({ requestType: ConstraintType.SHIFT_PER_SCHEDULE, requestId: id }))
+        ...shiftPerScheduleIds.map(id => ({ requestType: ConstraintType.SHIFT_PER_SCHEDULE, requestId: id })),
+        ...consecutiveWorkingDaysIds.map(id => ({ requestType: ConstraintType.CONSECUTIVE_WORKING_DAYS, requestId: id }))
       ]
     }).then(response => {
       handleConfigSelected(response)
@@ -112,8 +123,13 @@ export default function ScheduleView() {
           .filter(l => l.requestType === ConstraintType.SHIFT_PER_SCHEDULE)
           .map(l => l.requestId)
       ).then(setShiftPerScheduleRequests)
+      ConstraintEndpoint.findConsecutiveWorkingDaysRequests(
+        configResponse.constraintRequestInstances
+          .filter(l => l.requestType === ConstraintType.CONSECUTIVE_WORKING_DAYS)
+          .map(l => l.requestId)
+      ).then(setConsecutiveWorkingDaysRequests)
     })
-    setIsInEditMode(false)
+    modeCtx.setMode(ScheduleMode.READONLY)
   }
 
   function handleAddEmployee(employee: EmployeeRecord) {
@@ -171,7 +187,7 @@ export default function ScheduleView() {
       ...prevState!,
       name: ""
     }));
-    setIsInEditMode(true)
+    modeCtx.setMode(ScheduleMode.EDIT)
   }
 
   function handleStopCalculation() {
@@ -220,7 +236,8 @@ export default function ScheduleView() {
     )
   }
 
-  function renderHeaderStrip(isRequestLoaded: boolean, isInEditMode: boolean) {
+  function renderHeaderStrip() {
+    const isRequestLoaded = request !== undefined
     return (
       <HorizontalLayout theme={"spacing"}>
         {
@@ -229,22 +246,22 @@ export default function ScheduleView() {
               <Icon icon={"vaadin:stop"}></Icon>
               Stop
             </Button>
-            : <Button onClick={handleStartCalculation} disabled={isInEditMode || !request} theme={"primary"}>
+            : <Button onClick={handleStartCalculation} disabled={modeCtx.mode === ScheduleMode.EDIT || !request} theme={"primary"}>
               <Icon icon={"vaadin:play"}/>
               Vypocitat
             </Button>
         }
         <ConfigSelectDialog onConfigSelected={value => handleConfigSelected(value.id)}/>
-        {isRequestLoaded && <Button disabled={isInEditMode} onClick={() => setIsInEditMode(true)}>Upravit</Button>}
-        {isRequestLoaded && <Button disabled={isInEditMode} onClick={handleCopyConfig}>Zkopirovat</Button>}
-        {isRequestLoaded && <Button disabled={!isInEditMode} theme={"secondary"} onClick={handleSave}>Ulozit</Button>}
-        {isRequestLoaded && <Button disabled={!isInEditMode} theme={"secondary"} onClick={handleCancel}>Zrusit</Button>}
+        {isRequestLoaded && <Button disabled={modeCtx.mode === ScheduleMode.EDIT} onClick={() => modeCtx.setMode(ScheduleMode.EDIT)}>Upravit</Button>}
+        {isRequestLoaded && <Button disabled={modeCtx.mode === ScheduleMode.EDIT} onClick={handleCopyConfig}>Zkopirovat</Button>}
+        {isRequestLoaded && <Button disabled={modeCtx.mode !== ScheduleMode.EDIT} theme={"secondary"} onClick={handleSave}>Ulozit</Button>}
+        {isRequestLoaded && <Button disabled={modeCtx.mode !== ScheduleMode.EDIT} theme={"secondary"} onClick={handleCancel}>Zrusit</Button>}
         {result && <Button theme={"secondary"} onClick={() => setResult(undefined)}>Vycistit vysledky</Button>}
       </HorizontalLayout>
     )
   }
 
-  function renderResultStrip(result?: ScheduleResultDTO) {
+  function renderResultStrip() {
     if (!resultSubscription) return null
     return (
       <VerticalLayout style={{ width: "100%" }}>
@@ -258,19 +275,15 @@ export default function ScheduleView() {
     )
   }
 
-  return (
-    <VerticalLayout theme={"spacing padding"}>
-      <Card style={{ width: "100%" }}>
-        {renderHeaderStrip(request !== undefined, isInEditMode)}
-        {renderResultStrip(result)}
-      </Card>
+  function renderGridHeader() {
+    return (
       <Card style={{ width: "100%" }}>
         <HorizontalLayout theme={"spacing"}>
           <TextField
             label={"Nazev"}
             value={request?.name}
             onChange={e => setRequest({ ...request!, name: e.target.value })}
-            readonly={!isInEditMode}
+            readonly={modeCtx.mode !== ScheduleMode.EDIT}
             disabled={!request}
             style={{ width: "385px" }}
           />
@@ -281,7 +294,7 @@ export default function ScheduleView() {
               ...request!,
               startDate: localeDateToStupidDate(e.target.value)
             })}
-            readonly={!isInEditMode}
+            readonly={modeCtx.mode !== ScheduleMode.EDIT}
             disabled={!request}
           />
           <DatePicker
@@ -291,13 +304,27 @@ export default function ScheduleView() {
               ...request!,
               endDate: localeDateToStupidDate(e.target.value)
             })}
-            readonly={!isInEditMode}
+            readonly={modeCtx.mode !== ScheduleMode.EDIT}
             disabled={!request}
           />
         </HorizontalLayout>
       </Card>
-      {
-        request ?
+    )
+  }
+
+  return (
+    <VerticalLayout theme={"spacing padding"}>
+      <Card style={{ width: "100%" }}>
+        {renderHeaderStrip()}
+        {renderResultStrip()}
+      </Card>
+      <Card>
+        <HorizontalLayout>
+          <Button>Nastaveni</Button>
+        </HorizontalLayout>
+      </Card>
+      {request ? renderGridHeader() : <h2 style={{ marginTop: "30px", padding: "10px" }}>Vyberte rozvrh</h2>}
+      {request &&
           <>
             <EmployeeRequestConfigDialog
               key={employeeConfigDialog.selectedEmployee?.workerId}
@@ -306,7 +333,7 @@ export default function ScheduleView() {
               onOpenChanged={(newValue) => setEmployeeConfigDialog(prevState => ({ ...prevState, isOpen: newValue }))}
               shiftsPerScheduleRequests={shiftPerScheduleRequests.filter(r => r.owner.workerId === employeeConfigDialog.selectedEmployee?.workerId)}
               onSave={handleEmployeeConfigSave}
-              readonly={!isInEditMode}
+              readonly={modeCtx.mode !== ScheduleMode.EDIT}
             />
             <AddEmployeeDialog
               employees={employees}
@@ -329,13 +356,10 @@ export default function ScheduleView() {
                 shiftPerScheduleRequests={shiftPerScheduleRequests}
                 onEmployeeAction={handleEmployeeAction}
                 onShiftRequestsChanged={handleShiftRequestsChanged}
-                readonly={!isInEditMode}
                 result={result}
               />
             </Card>
-
           </>
-          : <h2>Vyber konfiguraci</h2>
       }
       <HorizontalLayout theme={"spacing"}>
       </HorizontalLayout>
