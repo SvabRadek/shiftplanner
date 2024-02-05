@@ -43,6 +43,8 @@ import {
 } from "Frontend/views/schedule/components/scheduleConstraints/ScheduleConstraintsDialog";
 import EmployeesPerShiftRequestDTO
   from "Frontend/generated/com/cocroachden/planner/constraint/EmployeesPerShiftRequestDTO";
+import ShiftFollowupRestrictionRequestDTO
+  from "Frontend/generated/com/cocroachden/planner/constraint/ShiftFollowupRestrictionRequestDTO";
 
 async function saveSpecificShiftRequests(requests: SpecificShiftRequestDTO[]): Promise<string[]> {
   return ConstraintEndpoint.saveAllSpecificShiftRequests(requests)
@@ -58,6 +60,10 @@ async function saveConsecutiveWorkingDaysRequests(requests: ConsecutiveWorkingDa
 
 async function saveEmployeesPerShiftRequests(requests: EmployeesPerShiftRequestDTO[]): Promise<string[]> {
   return ConstraintEndpoint.saveAllEmployeesPerShiftRequests(requests)
+}
+
+async function saveShiftFollowupRestrictionRequests(requests: ShiftFollowupRestrictionRequestDTO[]): Promise<string[]> {
+  return ConstraintEndpoint.saveShiftFollowupRestrictionRequests(requests)
 }
 
 type EmployeeConfigDialogParams = {
@@ -81,6 +87,7 @@ export default function ScheduleView() {
   const [shiftPerScheduleRequests, setShiftPerScheduleRequests] = useState<ShiftsPerScheduleRequestDTO[]>([])
   const [consecutiveWorkingDaysRequests, setConsecutiveWorkingDaysRequests] = useState<ConsecutiveWorkingDaysRequestDTO[]>([]);
   const [employeesPerShiftRequests, setEmployeesPerShiftRequests] = useState<EmployeesPerShiftRequestDTO[]>([]);
+  const [shiftFollowupRestrictionRequests, setShiftFollowupRestrictionRequests] = useState<ShiftFollowupRestrictionRequestDTO[]>([]);
 
   useEffect(() => {
     EmployeeService.getAllEmployees().then(setEmployees)
@@ -100,22 +107,21 @@ export default function ScheduleView() {
   }
 
   async function handleSave() {
-    const [specificShiftIds, shiftPerScheduleIds, consecutiveWorkingDaysIds, employeesPerShiftIds] = await Promise.all([
+    const [specificShiftIds, shiftPerScheduleIds, consecutiveWorkingDaysIds, employeesPerShiftIds, shiftFollowupRestrictionIds] = await Promise.all([
       saveSpecificShiftRequests(shiftRequests),
       saveShiftPerScheduleRequests(shiftPerScheduleRequests),
       saveConsecutiveWorkingDaysRequests(consecutiveWorkingDaysRequests),
-      saveEmployeesPerShiftRequests(employeesPerShiftRequests)
+      saveEmployeesPerShiftRequests(employeesPerShiftRequests),
+      saveShiftFollowupRestrictionRequests(shiftFollowupRestrictionRequests)
     ])
     await PlannerConfigurationEndpoint.save({
       ...request!,
       constraintRequestInstances: [
         ...specificShiftIds.map(id => ({ requestType: ConstraintType.SPECIFIC_SHIFT_REQUEST, requestId: id })),
         ...shiftPerScheduleIds.map(id => ({ requestType: ConstraintType.SHIFT_PER_SCHEDULE, requestId: id })),
-        ...consecutiveWorkingDaysIds.map(id => ({
-          requestType: ConstraintType.CONSECUTIVE_WORKING_DAYS,
-          requestId: id
-        })),
-        ...employeesPerShiftIds.map(id => ({ requestType: ConstraintType.WORKERS_PER_SHIFT, requestId: id }))
+        ...consecutiveWorkingDaysIds.map(id => ({ requestType: ConstraintType.CONSECUTIVE_WORKING_DAYS, requestId: id })),
+        ...employeesPerShiftIds.map(id => ({ requestType: ConstraintType.WORKERS_PER_SHIFT, requestId: id })),
+        ...shiftFollowupRestrictionIds.map(id => ({ requestType: ConstraintType.SHIFT_FOLLOW_UP_RESTRICTION, requestId: id }))
       ]
     }).then(response => {
       handleConfigSelected(response)
@@ -150,6 +156,11 @@ export default function ScheduleView() {
           .filter(l => l.requestType === ConstraintType.WORKERS_PER_SHIFT)
           .map(l => l.requestId)
       ).then(setEmployeesPerShiftRequests)
+      ConstraintEndpoint.findShiftFollowupRestrictionRequests(
+        configResponse.constraintRequestInstances
+          .filter(l => l.requestType === ConstraintType.SHIFT_FOLLOW_UP_RESTRICTION)
+          .map(l => l.requestId)
+      ).then(setShiftFollowupRestrictionRequests)
     })
     modeCtx.setMode(ScheduleMode.READONLY)
   }
@@ -261,6 +272,7 @@ export default function ScheduleView() {
   function handleScheduleConstraintSave(value: ScheduleConstraintDialogModel) {
     setConsecutiveWorkingDaysRequests(value.consecutiveWorkingDaysRequests)
     setEmployeesPerShiftRequests(value.employeesPerShiftRequests)
+    setShiftFollowupRestrictionRequests(value.shiftFollowupRestrictionRequests)
     setIsScheduleConfigDialogOpen(false)
   }
 
@@ -366,6 +378,7 @@ export default function ScheduleView() {
                   onOpenChanged={setIsScheduleConfigDialogOpen}
                   consecutiveWorkingDaysRequests={consecutiveWorkingDaysRequests}
                   employeesPerShiftRequests={employeesPerShiftRequests}
+                  shiftFollowupRestrictionRequests={shiftFollowupRestrictionRequests}
                   onSave={handleScheduleConstraintSave}
               />
               <EmployeeRequestConfigDialog

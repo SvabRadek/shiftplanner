@@ -3,11 +3,10 @@ import { HorizontalLayout } from "@hilla/react-components/HorizontalLayout";
 import { NumberField } from "@hilla/react-components/NumberField";
 import EmployeesPerShiftRequestDTO
   from "Frontend/generated/com/cocroachden/planner/constraint/EmployeesPerShiftRequestDTO";
-import { Select, SelectItem } from "@hilla/react-components/Select";
 import WorkShifts from "Frontend/generated/com/cocroachden/planner/solver/schedule/WorkShifts";
-import { workShiftBindings } from "Frontend/views/schedule/WorkShiftBindigs";
 import { useContext } from "react";
 import { ScheduleMode, ScheduleModeCtx } from "Frontend/views/schedule/ScheduleModeCtxProvider";
+import { ShiftSelect } from "Frontend/components/ShiftSelect";
 
 type Props = {
   request: EmployeesPerShiftRequestDTO
@@ -19,15 +18,6 @@ export function EmployeesPerShiftForm(props: Props) {
 
   const modeCtx = useContext(ScheduleModeCtx);
 
-  const selectItems: SelectItem[] =
-    Object.values(workShiftBindings)
-      .map(binding => ({
-        label: binding.fullText,
-        value: binding.shift,
-        disabled: props.request.targetShift !== binding.shift && props.excludedShifts.some(s => s === binding.shift)
-      }))
-
-
   function handleUpdate(value: Partial<EmployeesPerShiftRequestDTO>) {
     props.onChange({
       ...props.request,
@@ -35,25 +25,15 @@ export function EmployeesPerShiftForm(props: Props) {
     })
   }
 
-  function renderWorkShiftSelect() {
-    return (
-      <Select
-        label={"Smena"}
-        style={{ width: "200px" }}
-        items={selectItems}
-        readonly={modeCtx.mode !== ScheduleMode.EDIT}
-        value={props.request.targetShift}
-        onChange={(e) => handleUpdate({ targetShift: e.target.value as WorkShifts })}
-      >
-      </Select>
-    )
-  }
-
   return (
     <Card>
       <h6>Pocet zamestancu prirazenych na smenu</h6>
       <HorizontalLayout theme={"spacing"} style={{ alignItems: "center" }}>
-        {renderWorkShiftSelect()}
+        <ShiftSelect
+          label={"Smena"}
+          selectedShift={props.request.targetShift}
+          onSelect={e => handleUpdate({ targetShift: e })}
+        />
         <NumberField
           readonly={modeCtx.mode !== ScheduleMode.EDIT}
           label={"Min"}

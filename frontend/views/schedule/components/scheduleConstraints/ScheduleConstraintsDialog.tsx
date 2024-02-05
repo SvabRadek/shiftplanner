@@ -11,12 +11,18 @@ import { useContext, useState } from "react";
 import EmployeesPerShiftRequestDTO
   from "Frontend/generated/com/cocroachden/planner/constraint/EmployeesPerShiftRequestDTO";
 import { EmployeesPerShiftForm } from "Frontend/views/schedule/components/scheduleConstraints/EmployeesPerShiftForm";
-import { areEmployeesPerShiftSame } from "Frontend/util/utils";
+import { areEmployeesPerShiftSame, areShiftFollowupRestrictionsSame } from "Frontend/util/utils";
 import { ScheduleMode, ScheduleModeCtx } from "Frontend/views/schedule/ScheduleModeCtxProvider";
+import ShiftFollowupRestrictionRequestDTO
+  from "Frontend/generated/com/cocroachden/planner/constraint/ShiftFollowupRestrictionRequestDTO";
+import {
+  ShiftFollowupRestrictionForm
+} from "Frontend/views/schedule/components/scheduleConstraints/ShiftFollowupRestrictionForm";
 
 export type ScheduleConstraintDialogModel = {
   consecutiveWorkingDaysRequests: ConsecutiveWorkingDaysRequestDTO[]
   employeesPerShiftRequests: EmployeesPerShiftRequestDTO[]
+  shiftFollowupRestrictionRequests: ShiftFollowupRestrictionRequestDTO[]
 }
 
 type Props = {
@@ -24,6 +30,7 @@ type Props = {
   onOpenChanged: (value: boolean) => void
   consecutiveWorkingDaysRequests: ConsecutiveWorkingDaysRequestDTO[]
   employeesPerShiftRequests: EmployeesPerShiftRequestDTO[]
+  shiftFollowupRestrictionRequests: ShiftFollowupRestrictionRequestDTO[]
   onSave: (value: ScheduleConstraintDialogModel) => void
 }
 
@@ -33,7 +40,8 @@ export function ScheduleConstraintsDialog(props: Props) {
 
   const [scheduleConstraintModel, setScheduleConstraintModel] = useState<ScheduleConstraintDialogModel>({
     consecutiveWorkingDaysRequests: props.consecutiveWorkingDaysRequests,
-    employeesPerShiftRequests: props.employeesPerShiftRequests
+    employeesPerShiftRequests: props.employeesPerShiftRequests,
+    shiftFollowupRestrictionRequests: props.shiftFollowupRestrictionRequests
   });
 
   function handleOpenedChanged(e: DialogOpenedChangedEvent) {
@@ -57,11 +65,22 @@ export function ScheduleConstraintsDialog(props: Props) {
     }))
   }
 
+  function handleShiftFollowupRestrictionChange(value: ShiftFollowupRestrictionRequestDTO) {
+    setScheduleConstraintModel(prevState => ({
+      ...prevState,
+      shiftFollowupRestrictionRequests: prevState.shiftFollowupRestrictionRequests.map(r => {
+        if (!areShiftFollowupRestrictionsSame(r, value)) return r
+        return value
+      })
+    }))
+  }
+
   function handleClose() {
     props.onOpenChanged(false)
     setScheduleConstraintModel({
       consecutiveWorkingDaysRequests: props.consecutiveWorkingDaysRequests,
-      employeesPerShiftRequests: props.employeesPerShiftRequests
+      employeesPerShiftRequests: props.employeesPerShiftRequests,
+      shiftFollowupRestrictionRequests: props.shiftFollowupRestrictionRequests
     })
   }
 
@@ -93,6 +112,13 @@ export function ScheduleConstraintsDialog(props: Props) {
           />
         ))
         }
+        {props.shiftFollowupRestrictionRequests.map(request => (
+          <ShiftFollowupRestrictionForm
+            key={request.firstShift + request.forbiddenFollowup}
+            request={request}
+            onChange={handleShiftFollowupRestrictionChange}
+          />
+        ))}
       </VerticalLayout>
       <CardFooter>
         <Button disabled={modeCtx.mode !== ScheduleMode.EDIT} onClick={handleSave}>

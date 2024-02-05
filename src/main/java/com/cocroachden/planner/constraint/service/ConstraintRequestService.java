@@ -3,6 +3,7 @@ package com.cocroachden.planner.constraint.service;
 import com.cocroachden.planner.constraint.repository.ConstraintRequestRecord;
 import com.cocroachden.planner.constraint.repository.ConstraintRequestRepository;
 import com.cocroachden.planner.solver.constraints.specific.consecutiveworkingdays.request.ConsecutiveWorkingDaysRequest;
+import com.cocroachden.planner.solver.constraints.specific.shiftfollowuprestriction.request.ShiftFollowUpRestrictionRequest;
 import com.cocroachden.planner.solver.constraints.specific.shiftperschedule.request.ShiftsPerScheduleRequest;
 import com.cocroachden.planner.solver.constraints.specific.workershiftrequest.request.SpecificShiftRequest;
 import com.cocroachden.planner.solver.constraints.specific.workerspershift.request.WorkersPerShiftRequest;
@@ -45,6 +46,12 @@ public class ConstraintRequestService {
   public List<WorkersPerShiftRequest> getEmployeesPerShiftRequests(List<UUID> uuids) {
     return repository.findByIdIn(uuids).stream()
         .map(record -> (WorkersPerShiftRequest) record.getRequest())
+        .toList();
+  }
+
+  public List<ShiftFollowUpRestrictionRequest> getShiftFollowupRestrictionRequests(List<UUID> uuids) {
+    return repository.findByIdIn(uuids).stream()
+        .map(record -> (ShiftFollowUpRestrictionRequest) record.getRequest())
         .toList();
   }
 

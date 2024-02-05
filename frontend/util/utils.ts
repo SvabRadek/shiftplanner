@@ -4,6 +4,8 @@ import ShiftsPerScheduleRequestDTO
   from "Frontend/generated/com/cocroachden/planner/constraint/ShiftsPerScheduleRequestDTO";
 import EmployeesPerShiftRequestDTO
   from "Frontend/generated/com/cocroachden/planner/constraint/EmployeesPerShiftRequestDTO";
+import ShiftFollowupRestrictionRequestDTO
+  from "Frontend/generated/com/cocroachden/planner/constraint/ShiftFollowupRestrictionRequestDTO";
 
 export function dateToStupidDate(date: Date): StupidDate {
   return { day: date.getDate(), month: date.getMonth() + 1, year: date.getFullYear() }
@@ -75,6 +77,15 @@ export function areEmployeesPerShiftSame(
   r2: IdentifiableEmployeesPerShiftRequestDTO
 ) {
   return r1.targetShift.toString() === r2.targetShift.toString()
+}
+
+type IdentifiableShiftFollowupRestrictionRequestDTO = Pick<ShiftFollowupRestrictionRequestDTO, "firstShift" | "forbiddenFollowup">
+
+export function areShiftFollowupRestrictionsSame(
+  r1: IdentifiableShiftFollowupRestrictionRequestDTO,
+  r2: IdentifiableShiftFollowupRestrictionRequestDTO
+) {
+  return r1.firstShift.toString() + r1.forbiddenFollowup.toString() === r2.firstShift.toString() + r2.forbiddenFollowup.toString()
 }
 
 export function generateUUID() { // Public Domain/MIT

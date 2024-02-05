@@ -9,6 +9,7 @@ import { workShiftBindings } from "Frontend/views/schedule/WorkShiftBindigs";
 import { Tooltip } from "@hilla/react-components/Tooltip";
 import { Card } from "Frontend/components/Card";
 import WorkerId from "Frontend/generated/com/cocroachden/planner/lib/WorkerId";
+import { ShiftSelect } from "Frontend/components/ShiftSelect";
 
 type Props = {
   request: ShiftsPerScheduleRequestDTO
@@ -66,6 +67,11 @@ export function ShiftCountConstraintForm(props: Props) {
         </Button>
       </HorizontalLayout>
       <HorizontalLayout style={{ width: "100%" }} theme={"spacing"}>
+        <ShiftSelect
+          label={"Smena"}
+          selectedShift={props.request.targetShift}
+          onSelect={e => handleUpdate({ targetShift: e })}
+        />
         {renderWorkShiftSelect()}
         <NumberField
           style={{ width: "100px" }}

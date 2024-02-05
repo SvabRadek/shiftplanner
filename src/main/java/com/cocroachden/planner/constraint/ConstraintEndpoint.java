@@ -4,6 +4,7 @@ import com.cocroachden.planner.constraint.repository.ConstraintRequestRecord;
 import com.cocroachden.planner.constraint.service.ConstraintRequestService;
 import com.cocroachden.planner.lib.WorkerId;
 import com.cocroachden.planner.solver.constraints.specific.consecutiveworkingdays.request.ConsecutiveWorkingDaysRequest;
+import com.cocroachden.planner.solver.constraints.specific.shiftfollowuprestriction.request.ShiftFollowUpRestrictionRequest;
 import com.cocroachden.planner.solver.constraints.specific.shiftperschedule.request.ShiftsPerScheduleRequest;
 import com.cocroachden.planner.solver.constraints.specific.workershiftrequest.request.SpecificShiftRequest;
 import com.cocroachden.planner.solver.constraints.specific.workerspershift.request.WorkersPerShiftRequest;
@@ -119,6 +120,29 @@ public class ConstraintEndpoint {
                     requestDTO.getSoftMax(),
                     requestDTO.getMaxPenalty(),
                     requestDTO.getHardMax()
+                )
+            )
+        ).map(request -> service.saveAsNew(request).getId())
+        .toList();
+  }
+
+  public @Nonnull List<@Nonnull ShiftFollowupRestrictionRequestDTO> findShiftFollowupRestrictionRequests(
+      @Nonnull List<@Nonnull UUID> requestIds
+  ) {
+    return service.getShiftFollowupRestrictionRequests(requestIds).stream()
+        .map(ShiftFollowupRestrictionRequestDTO::from)
+        .toList();
+  }
+
+  public @Nonnull List<@Nonnull UUID> saveShiftFollowupRestrictionRequests(
+      @Nonnull List<@Nonnull ShiftFollowupRestrictionRequestDTO> requestDTOs
+  ) {
+    return requestDTOs.stream().map(requestDTO ->
+            new ConstraintRequestRecord(
+                new ShiftFollowUpRestrictionRequest(
+                    requestDTO.getFirstShift(),
+                    requestDTO.getForbiddenFollowup(),
+                    requestDTO.getPenalty()
                 )
             )
         ).map(request -> service.saveAsNew(request).getId())

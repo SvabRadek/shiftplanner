@@ -31,9 +31,7 @@ public class PlannerConfigurationEndpoint {
 
   @Nonnull
   public PlannerConfigurationDTO getConfiguration(@Nonnull UUID uuid) {
-    return PlannerConfigurationDTO.from(
-        service.getConfiguration(uuid)
-    );
+    return PlannerConfigurationDTO.from(service.getConfiguration(uuid));
   }
 
   @Nonnull
