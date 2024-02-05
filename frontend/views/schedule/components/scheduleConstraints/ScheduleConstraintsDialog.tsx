@@ -7,23 +7,33 @@ import ConsecutiveWorkingDaysRequestDTO
   from "Frontend/generated/com/cocroachden/planner/constraint/ConsecutiveWorkingDaysRequestDTO";
 import { Button } from "@hilla/react-components/Button";
 import { CardFooter } from "Frontend/components/CardFooter";
-import { useState } from "react";
+import { useContext, useState } from "react";
+import EmployeesPerShiftRequestDTO
+  from "Frontend/generated/com/cocroachden/planner/constraint/EmployeesPerShiftRequestDTO";
+import { EmployeesPerShiftForm } from "Frontend/views/schedule/components/scheduleConstraints/EmployeesPerShiftForm";
+import { areEmployeesPerShiftSame } from "Frontend/util/utils";
+import { ScheduleMode, ScheduleModeCtx } from "Frontend/views/schedule/ScheduleModeCtxProvider";
 
 export type ScheduleConstraintDialogModel = {
   consecutiveWorkingDaysRequests: ConsecutiveWorkingDaysRequestDTO[]
+  employeesPerShiftRequests: EmployeesPerShiftRequestDTO[]
 }
 
 type Props = {
   isOpen: boolean
   onOpenChanged: (value: boolean) => void
   consecutiveWorkingDaysRequests: ConsecutiveWorkingDaysRequestDTO[]
+  employeesPerShiftRequests: EmployeesPerShiftRequestDTO[]
   onSave: (value: ScheduleConstraintDialogModel) => void
 }
 
 export function ScheduleConstraintsDialog(props: Props) {
 
+  const modeCtx = useContext(ScheduleModeCtx);
+
   const [scheduleConstraintModel, setScheduleConstraintModel] = useState<ScheduleConstraintDialogModel>({
-    consecutiveWorkingDaysRequests: props.consecutiveWorkingDaysRequests
+    consecutiveWorkingDaysRequests: props.consecutiveWorkingDaysRequests,
+    employeesPerShiftRequests: props.employeesPerShiftRequests
   });
 
   function handleOpenedChanged(e: DialogOpenedChangedEvent) {
@@ -37,10 +47,21 @@ export function ScheduleConstraintsDialog(props: Props) {
     }))
   }
 
+  function handleEmployeesPerShiftChange(value: EmployeesPerShiftRequestDTO) {
+    setScheduleConstraintModel(prevState => ({
+      ...prevState,
+      employeesPerShiftRequests: prevState.employeesPerShiftRequests.map(r => {
+        if (!areEmployeesPerShiftSame(r, value)) return r
+        return value
+      })
+    }))
+  }
+
   function handleClose() {
     props.onOpenChanged(false)
     setScheduleConstraintModel({
-      consecutiveWorkingDaysRequests: props.consecutiveWorkingDaysRequests
+      consecutiveWorkingDaysRequests: props.consecutiveWorkingDaysRequests,
+      employeesPerShiftRequests: props.employeesPerShiftRequests
     })
   }
 
@@ -63,9 +84,18 @@ export function ScheduleConstraintsDialog(props: Props) {
             onChange={handleConsecutiveFormChange}
           />
         ))}
+        {props.employeesPerShiftRequests.map(request => (
+          <EmployeesPerShiftForm
+            key={request.targetShift}
+            request={request}
+            excludedShifts={props.employeesPerShiftRequests.map(r => r.targetShift)}
+            onChange={handleEmployeesPerShiftChange}
+          />
+        ))
+        }
       </VerticalLayout>
       <CardFooter>
-        <Button onClick={handleSave}>
+        <Button disabled={modeCtx.mode !== ScheduleMode.EDIT} onClick={handleSave}>
           Ulozit
         </Button>
         <Button onClick={handleClose}>

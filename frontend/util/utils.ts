@@ -2,6 +2,8 @@ import StupidDate from "Frontend/generated/com/cocroachden/planner/lib/StupidDat
 import SpecificShiftRequestDTO from "Frontend/generated/com/cocroachden/planner/constraint/SpecificShiftRequestDTO";
 import ShiftsPerScheduleRequestDTO
   from "Frontend/generated/com/cocroachden/planner/constraint/ShiftsPerScheduleRequestDTO";
+import EmployeesPerShiftRequestDTO
+  from "Frontend/generated/com/cocroachden/planner/constraint/EmployeesPerShiftRequestDTO";
 
 export function dateToStupidDate(date: Date): StupidDate {
   return { day: date.getDate(), month: date.getMonth() + 1, year: date.getFullYear() }
@@ -64,6 +66,15 @@ export function areShiftPerScheduleSame(
   r2: IdentifiableShiftsPerScheduleRequestDTO
 ): boolean {
   return (r1.owner.workerId + r1.targetShift.toString()) === (r2.owner.workerId + r2.targetShift.toString())
+}
+
+type IdentifiableEmployeesPerShiftRequestDTO = Pick<EmployeesPerShiftRequestDTO, "targetShift">
+
+export function areEmployeesPerShiftSame(
+  r1: IdentifiableEmployeesPerShiftRequestDTO,
+  r2: IdentifiableEmployeesPerShiftRequestDTO
+) {
+  return r1.targetShift.toString() === r2.targetShift.toString()
 }
 
 export function generateUUID() { // Public Domain/MIT

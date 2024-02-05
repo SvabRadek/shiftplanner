@@ -6,6 +6,7 @@ import com.cocroachden.planner.lib.WorkerId;
 import com.cocroachden.planner.solver.constraints.specific.consecutiveworkingdays.request.ConsecutiveWorkingDaysRequest;
 import com.cocroachden.planner.solver.constraints.specific.shiftperschedule.request.ShiftsPerScheduleRequest;
 import com.cocroachden.planner.solver.constraints.specific.workershiftrequest.request.SpecificShiftRequest;
+import com.cocroachden.planner.solver.constraints.specific.workerspershift.request.WorkersPerShiftRequest;
 import com.vaadin.flow.server.auth.AnonymousAllowed;
 import dev.hilla.BrowserCallable;
 import dev.hilla.Nonnull;
@@ -85,6 +86,33 @@ public class ConstraintEndpoint {
     return requestDTOs.stream().map(requestDTO ->
             new ConstraintRequestRecord(
                 new ConsecutiveWorkingDaysRequest(
+                    requestDTO.getHardMin(),
+                    requestDTO.getSoftMin(),
+                    requestDTO.getMinPenalty(),
+                    requestDTO.getSoftMax(),
+                    requestDTO.getMaxPenalty(),
+                    requestDTO.getHardMax()
+                )
+            )
+        ).map(request -> service.saveAsNew(request).getId())
+        .toList();
+  }
+
+  public @Nonnull List<@Nonnull EmployeesPerShiftRequestDTO> findEmployeesPerShiftRequests(
+      @Nonnull List<@Nonnull UUID> requestIds
+  ) {
+    return service.getEmployeesPerShiftRequests(requestIds).stream()
+        .map(EmployeesPerShiftRequestDTO::from)
+        .toList();
+  }
+
+  public @Nonnull List<@Nonnull UUID> saveAllEmployeesPerShiftRequests(
+      @Nonnull List<@Nonnull EmployeesPerShiftRequestDTO> requestDTOs
+  ) {
+    return requestDTOs.stream().map(requestDTO ->
+            new ConstraintRequestRecord(
+                new WorkersPerShiftRequest(
+                    requestDTO.getTargetShift(),
                     requestDTO.getHardMin(),
                     requestDTO.getSoftMin(),
                     requestDTO.getMinPenalty(),

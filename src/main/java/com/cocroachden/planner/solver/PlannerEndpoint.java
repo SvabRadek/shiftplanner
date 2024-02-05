@@ -4,6 +4,7 @@ import com.cocroachden.planner.constraint.repository.ConstraintRequestRecord;
 import com.cocroachden.planner.constraint.service.ConstraintRequestService;
 import com.cocroachden.planner.plannerconfiguration.repository.ConfigurationRequestLink;
 import com.cocroachden.planner.plannerconfiguration.service.PlannerConfigurationService;
+import com.cocroachden.planner.solver.constraints.specific.shiftperday.request.OneShiftPerDayRequest;
 import com.cocroachden.planner.solver.schedule.ScheduleWorker;
 import com.cocroachden.planner.solver.solver.ScheduleSolutionCb;
 import com.cocroachden.planner.solver.solver.ScheduleSolver;
@@ -17,6 +18,7 @@ import lombok.extern.slf4j.Slf4j;
 import reactor.core.publisher.Flux;
 
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @BrowserCallable
 @AnonymousAllowed
@@ -50,7 +52,10 @@ public class PlannerEndpoint {
                 .toList()
         ).stream()
         .map(ConstraintRequestRecord::getRequest)
-        .toList();
+        .collect(Collectors.toList());
+    if (constraints.stream().noneMatch(r -> r instanceof OneShiftPerDayRequest)) {
+      constraints.add(new OneShiftPerDayRequest());
+    }
 
     var flux = Flux.<ScheduleResultDTO>create(fluxSink -> {
       scheduleSolver.solve(

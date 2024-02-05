@@ -41,6 +41,8 @@ import {
   ScheduleConstraintDialogModel,
   ScheduleConstraintsDialog
 } from "Frontend/views/schedule/components/scheduleConstraints/ScheduleConstraintsDialog";
+import EmployeesPerShiftRequestDTO
+  from "Frontend/generated/com/cocroachden/planner/constraint/EmployeesPerShiftRequestDTO";
 
 async function saveSpecificShiftRequests(requests: SpecificShiftRequestDTO[]): Promise<string[]> {
   return ConstraintEndpoint.saveAllSpecificShiftRequests(requests)
@@ -52,6 +54,10 @@ async function saveShiftPerScheduleRequests(requests: ShiftsPerScheduleRequestDT
 
 async function saveConsecutiveWorkingDaysRequests(requests: ConsecutiveWorkingDaysRequestDTO[]): Promise<string[]> {
   return ConstraintEndpoint.saveAllConsecutiveWorkingDaysRequests(requests)
+}
+
+async function saveEmployeesPerShiftRequests(requests: EmployeesPerShiftRequestDTO[]): Promise<string[]> {
+  return ConstraintEndpoint.saveAllEmployeesPerShiftRequests(requests)
 }
 
 type EmployeeConfigDialogParams = {
@@ -74,6 +80,7 @@ export default function ScheduleView() {
   const [shiftRequests, setShiftRequests] = useState<SpecificShiftRequestDTO[]>([])
   const [shiftPerScheduleRequests, setShiftPerScheduleRequests] = useState<ShiftsPerScheduleRequestDTO[]>([])
   const [consecutiveWorkingDaysRequests, setConsecutiveWorkingDaysRequests] = useState<ConsecutiveWorkingDaysRequestDTO[]>([]);
+  const [employeesPerShiftRequests, setEmployeesPerShiftRequests] = useState<EmployeesPerShiftRequestDTO[]>([]);
 
   useEffect(() => {
     EmployeeService.getAllEmployees().then(setEmployees)
@@ -93,10 +100,11 @@ export default function ScheduleView() {
   }
 
   async function handleSave() {
-    const [specificShiftIds, shiftPerScheduleIds, consecutiveWorkingDaysIds] = await Promise.all([
+    const [specificShiftIds, shiftPerScheduleIds, consecutiveWorkingDaysIds, employeesPerShiftIds] = await Promise.all([
       saveSpecificShiftRequests(shiftRequests),
       saveShiftPerScheduleRequests(shiftPerScheduleRequests),
-      saveConsecutiveWorkingDaysRequests(consecutiveWorkingDaysRequests)
+      saveConsecutiveWorkingDaysRequests(consecutiveWorkingDaysRequests),
+      saveEmployeesPerShiftRequests(employeesPerShiftRequests)
     ])
     await PlannerConfigurationEndpoint.save({
       ...request!,
@@ -106,7 +114,8 @@ export default function ScheduleView() {
         ...consecutiveWorkingDaysIds.map(id => ({
           requestType: ConstraintType.CONSECUTIVE_WORKING_DAYS,
           requestId: id
-        }))
+        })),
+        ...employeesPerShiftIds.map(id => ({ requestType: ConstraintType.WORKERS_PER_SHIFT, requestId: id }))
       ]
     }).then(response => {
       handleConfigSelected(response)
@@ -136,6 +145,11 @@ export default function ScheduleView() {
           .filter(l => l.requestType === ConstraintType.CONSECUTIVE_WORKING_DAYS)
           .map(l => l.requestId)
       ).then(setConsecutiveWorkingDaysRequests)
+      ConstraintEndpoint.findEmployeesPerShiftRequests(
+        configResponse.constraintRequestInstances
+          .filter(l => l.requestType === ConstraintType.WORKERS_PER_SHIFT)
+          .map(l => l.requestId)
+      ).then(setEmployeesPerShiftRequests)
     })
     modeCtx.setMode(ScheduleMode.READONLY)
   }
@@ -246,6 +260,7 @@ export default function ScheduleView() {
 
   function handleScheduleConstraintSave(value: ScheduleConstraintDialogModel) {
     setConsecutiveWorkingDaysRequests(value.consecutiveWorkingDaysRequests)
+    setEmployeesPerShiftRequests(value.employeesPerShiftRequests)
     setIsScheduleConfigDialogOpen(false)
   }
 
@@ -326,7 +341,6 @@ export default function ScheduleView() {
             disabled={!request}
           />
           <Button
-            disabled={modeCtx.mode !== ScheduleMode.EDIT}
             theme={"secondary"}
             onClick={() => setIsScheduleConfigDialogOpen(true)}
           >
@@ -351,6 +365,7 @@ export default function ScheduleView() {
                   isOpen={isScheduleConfigDialogOpen}
                   onOpenChanged={setIsScheduleConfigDialogOpen}
                   consecutiveWorkingDaysRequests={consecutiveWorkingDaysRequests}
+                  employeesPerShiftRequests={employeesPerShiftRequests}
                   onSave={handleScheduleConstraintSave}
               />
               <EmployeeRequestConfigDialog

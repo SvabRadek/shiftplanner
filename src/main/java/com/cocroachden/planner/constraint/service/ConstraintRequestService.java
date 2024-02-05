@@ -5,6 +5,7 @@ import com.cocroachden.planner.constraint.repository.ConstraintRequestRepository
 import com.cocroachden.planner.solver.constraints.specific.consecutiveworkingdays.request.ConsecutiveWorkingDaysRequest;
 import com.cocroachden.planner.solver.constraints.specific.shiftperschedule.request.ShiftsPerScheduleRequest;
 import com.cocroachden.planner.solver.constraints.specific.workershiftrequest.request.SpecificShiftRequest;
+import com.cocroachden.planner.solver.constraints.specific.workerspershift.request.WorkersPerShiftRequest;
 import lombok.AllArgsConstructor;
 
 import java.util.List;
@@ -38,6 +39,12 @@ public class ConstraintRequestService {
   public List<ConsecutiveWorkingDaysRequest> getConsecutiveDayRequests(List<UUID> uuids) {
     return repository.findByIdIn(uuids).stream()
         .map(record -> (ConsecutiveWorkingDaysRequest) record.getRequest())
+        .toList();
+  }
+
+  public List<WorkersPerShiftRequest> getEmployeesPerShiftRequests(List<UUID> uuids) {
+    return repository.findByIdIn(uuids).stream()
+        .map(record -> (WorkersPerShiftRequest) record.getRequest())
         .toList();
   }
 

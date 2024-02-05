@@ -1,31 +1,59 @@
-import ConsecutiveWorkingDaysRequestDTO
-  from "Frontend/generated/com/cocroachden/planner/constraint/ConsecutiveWorkingDaysRequestDTO";
 import { Card } from "Frontend/components/Card";
 import { HorizontalLayout } from "@hilla/react-components/HorizontalLayout";
 import { NumberField } from "@hilla/react-components/NumberField";
+import EmployeesPerShiftRequestDTO
+  from "Frontend/generated/com/cocroachden/planner/constraint/EmployeesPerShiftRequestDTO";
+import { Select, SelectItem } from "@hilla/react-components/Select";
+import WorkShifts from "Frontend/generated/com/cocroachden/planner/solver/schedule/WorkShifts";
+import { workShiftBindings } from "Frontend/views/schedule/WorkShiftBindigs";
 import { useContext } from "react";
 import { ScheduleMode, ScheduleModeCtx } from "Frontend/views/schedule/ScheduleModeCtxProvider";
 
 type Props = {
-  request: ConsecutiveWorkingDaysRequestDTO
-  onChange: (value: ConsecutiveWorkingDaysRequestDTO) => void
+  request: EmployeesPerShiftRequestDTO
+  excludedShifts: WorkShifts[]
+  onChange: (value: EmployeesPerShiftRequestDTO) => void
 }
 
-export function ConsecutiveWorkingDaysForm(props: Props) {
+export function EmployeesPerShiftForm(props: Props) {
 
   const modeCtx = useContext(ScheduleModeCtx);
 
-  function handleUpdate(value: Partial<ConsecutiveWorkingDaysRequestDTO>) {
+  const selectItems: SelectItem[] =
+    Object.values(workShiftBindings)
+      .map(binding => ({
+        label: binding.fullText,
+        value: binding.shift,
+        disabled: props.request.targetShift !== binding.shift && props.excludedShifts.some(s => s === binding.shift)
+      }))
+
+
+  function handleUpdate(value: Partial<EmployeesPerShiftRequestDTO>) {
     props.onChange({
       ...props.request,
       ...value
     })
   }
 
+  function renderWorkShiftSelect() {
+    return (
+      <Select
+        label={"Smena"}
+        style={{ width: "200px" }}
+        items={selectItems}
+        readonly={modeCtx.mode !== ScheduleMode.EDIT}
+        value={props.request.targetShift}
+        onChange={(e) => handleUpdate({ targetShift: e.target.value as WorkShifts })}
+      >
+      </Select>
+    )
+  }
+
   return (
     <Card>
-      <h6>Nastaveni poctu po sobe jdoucich pracovnich smen</h6>
-      <HorizontalLayout theme={"spacing"}>
+      <h6>Pocet zamestancu prirazenych na smenu</h6>
+      <HorizontalLayout theme={"spacing"} style={{ alignItems: "center" }}>
+        {renderWorkShiftSelect()}
         <NumberField
           readonly={modeCtx.mode !== ScheduleMode.EDIT}
           label={"Min"}
