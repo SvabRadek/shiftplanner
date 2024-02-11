@@ -11,6 +11,7 @@ export type Cell = {
   owner: string
   date: StupidDate
   isHighlighted: boolean
+  requestId?: string
 }
 
 type Props = {

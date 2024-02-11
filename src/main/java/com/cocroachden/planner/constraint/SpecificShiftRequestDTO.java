@@ -25,6 +25,7 @@ public class SpecificShiftRequestDTO {
         request.getRequestedShift()
     );
   }
+  @Nonnull
   private UUID id;
   @Nonnull
   private ConstraintType type;

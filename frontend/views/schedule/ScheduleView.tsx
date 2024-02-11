@@ -30,7 +30,7 @@ import {
   areShiftFollowupRestrictionsSame,
   areShiftRequestsSame,
   CrudAction,
-  CRUDActions,
+  CRUDActions, generateUUID,
   localeDateToStupidDate,
   stupidDateToLocaleDate
 } from "Frontend/util/utils";
@@ -96,7 +96,6 @@ export default function ScheduleView() {
   const modeCtx = useContext(ScheduleModeCtx);
   const isCopy = useRef(false);
   const [employees, setEmployees] = useState<EmployeeRecord[]>([])
-  const [isAddEmployeeDialogOpen, setIsAddEmployeeDialogOpen] = useState(false)
   const [employeeConfigDialog, setEmployeeConfigDialog] = useState<EmployeeConfigDialogParams>({ isOpen: false })
   const [isScheduleConfigDialogOpen, setIsScheduleConfigDialogOpen] = useState(false);
   const [resultCache, setResultCache] = useState<ResultCache>({
@@ -243,11 +242,11 @@ export default function ScheduleView() {
     }
   }
 
-  function handleShiftRequestsChanged(changedRequests: SpecificShiftRequestDTO[]) {
+  function handleShiftRequestsChanged(changedRequests: Omit<SpecificShiftRequestDTO, "id">[]) {
     setShiftRequests(prevState => {
       return [
         ...prevState.filter(r => !changedRequests.some(changed => areShiftRequestsSame(r, changed))),
-        ...changedRequests.filter(r => r.requestedShift !== WorkShifts.ANY)
+        ...changedRequests.filter(r => r.requestedShift !== WorkShifts.ANY).map(r => ({ ...r, id: generateUUID() }))
       ]
     })
   }
@@ -313,14 +312,14 @@ export default function ScheduleView() {
       case CRUDActions.UPDATE:
         setEmployeesPerShiftRequests(prevState =>
           prevState.map(r => {
-            if (!areEmployeesPerShiftSame(action.payload, r)) return r
+            if (action.payload.id !== r.id) return r
             return action.payload
           })
         )
         break
       case CRUDActions.DELETE:
         setEmployeesPerShiftRequests(prevState =>
-          prevState.filter(r => !areEmployeesPerShiftSame(r, action.payload))
+          prevState.filter(r => r.id !== action.payload.id)
         )
         break
       case CRUDActions.CREATE:
@@ -333,14 +332,14 @@ export default function ScheduleView() {
       case CRUDActions.UPDATE:
         setShiftFollowupRestrictionRequests(prevState =>
           prevState.map(r => {
-            if (!areShiftFollowupRestrictionsSame(action.payload, r)) return r
+            if (action.payload.id !== r.id) return r
             return action.payload
           })
         )
         break
       case CRUDActions.DELETE:
         setShiftFollowupRestrictionRequests(prevState =>
-          prevState.filter(r => !areShiftFollowupRestrictionsSame(r, action.payload))
+          prevState.filter(r => r.id !== action.payload.id)
         )
         break
       case CRUDActions.CREATE:
@@ -355,14 +354,14 @@ export default function ScheduleView() {
       case CRUDActions.UPDATE:
         setConsecutiveWorkingDaysRequests(prevState =>
           prevState.map(r => {
-            if (!areConsecutiveWorkingDaysRequestsSame(action.payload, r)) return r
+            if (action.payload.id !== r.id) return r
             return action.payload
           })
         )
         break
       case CRUDActions.DELETE:
         setConsecutiveWorkingDaysRequests(prevState =>
-          prevState.filter(r => !areConsecutiveWorkingDaysRequestsSame(r, action.payload))
+          prevState.filter(r => r.id !== action.payload.id)
         )
         break
       case CRUDActions.CREATE:

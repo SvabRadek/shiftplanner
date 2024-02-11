@@ -31,6 +31,7 @@ public class EmployeesPerShiftRequestDTO {
         request.getHardMax()
     );
   }
+  @Nonnull
   private UUID id;
   @Nonnull
   private ConstraintType type;

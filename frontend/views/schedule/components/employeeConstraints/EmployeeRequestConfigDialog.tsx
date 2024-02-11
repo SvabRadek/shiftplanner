@@ -15,7 +15,7 @@ import { Tabs } from "@hilla/react-components/Tabs";
 import { Tab } from "@hilla/react-components/Tab";
 import { TabSheet } from "@hilla/react-components/TabSheet";
 import { Icon } from "@hilla/react-components/Icon";
-import { areShiftPerScheduleSame } from "Frontend/util/utils";
+import { areShiftPerScheduleSame, generateUUID } from "Frontend/util/utils";
 import WorkerId from "Frontend/generated/com/cocroachden/planner/lib/WorkerId";
 import ConstraintType from "Frontend/generated/com/cocroachden/planner/lib/ConstraintType";
 import { Card } from "Frontend/components/Card";
@@ -154,6 +154,7 @@ function generateNewUniqueShiftsPerSchedule(workerId: string, excludeShifts: Wor
   const allowedShifts = Object.values(WorkShifts).filter(val => !excludeShifts.some(s => s === val))
 
   return {
+    id: generateUUID(),
     type: ConstraintType.SHIFT_PER_SCHEDULE,
     owner: { workerId: workerId },
     targetShift: allowedShifts[0],

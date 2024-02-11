@@ -31,6 +31,7 @@ public class ShiftsPerScheduleRequestDTO {
         request.getHardMax()
     );
   }
+  @Nonnull
   private UUID id;
   @Nonnull
   private WorkerId owner;

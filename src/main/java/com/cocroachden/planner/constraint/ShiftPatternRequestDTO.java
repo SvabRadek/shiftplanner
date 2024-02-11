@@ -27,6 +27,7 @@ public class ShiftPatternRequestDTO {
         request.getReward()
     );
   }
+  @Nonnull
   private UUID id;
   @Nonnull
   private ConstraintType type;

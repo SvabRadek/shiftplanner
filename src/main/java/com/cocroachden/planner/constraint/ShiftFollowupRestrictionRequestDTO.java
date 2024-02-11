@@ -24,6 +24,7 @@ public class ShiftFollowupRestrictionRequestDTO {
         request.getPenalty()
     );
   }
+  @Nonnull
   private UUID id;
   @Nonnull
   private ConstraintType type;

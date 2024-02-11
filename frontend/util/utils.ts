@@ -72,7 +72,9 @@ export function getDistanceInDaysNumeric(startDate: Date, endDate: Date): number
   return diffTimeInMillis / (1000 * 60 * 60 * 24)
 }
 
-export function areShiftRequestsSame(r1: SpecificShiftRequestDTO, r2: SpecificShiftRequestDTO): boolean {
+type IdentifiableSpecificShiftRequestDTO = Pick<SpecificShiftRequestDTO, "owner" | "date">
+
+export function areShiftRequestsSame(r1: IdentifiableSpecificShiftRequestDTO, r2: IdentifiableSpecificShiftRequestDTO): boolean {
   return [r1.owner, stupidDateToString(r1.date)].join() === [r2.owner, stupidDateToString(r2.date)].join()
 }
 

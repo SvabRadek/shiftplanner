@@ -1,7 +1,14 @@
 import { useState } from "react";
 import WorkShifts from "Frontend/generated/com/cocroachden/planner/solver/schedule/WorkShifts";
 import EmployeeRecord from "Frontend/generated/com/cocroachden/planner/employee/EmployeeRecord";
-import { CrudAction, dateToString, dateToStupidDate, stupidDateToDate, stupidDateToString } from "Frontend/util/utils";
+import {
+  CrudAction,
+  dateToString,
+  dateToStupidDate,
+  generateUUID,
+  stupidDateToDate,
+  stupidDateToString
+} from "Frontend/util/utils";
 import { ScheduleGrid } from "Frontend/views/schedule/components/schedulegrid/ScheduleGrid";
 import { Cell } from "Frontend/views/schedule/components/schedulegrid/GridCell";
 import PlannerConfigurationDTO
@@ -28,7 +35,7 @@ type Props = {
   shiftRequests: SpecificShiftRequestDTO[]
   shiftPerScheduleRequests: ShiftsPerScheduleRequestDTO[]
   onEmployeeAction: (action: CrudAction<EmployeeRecord>) => void
-  onShiftRequestsChanged?: (changedRequests: SpecificShiftRequestDTO[]) => void
+  onShiftRequestsChanged?: (changedRequests: Omit<SpecificShiftRequestDTO, "id">[]) => void
   result?: ScheduleResultDTO
 }
 
@@ -69,7 +76,7 @@ export function ScheduleGridContainer(props: Props) {
     const originDate = originCell.index < endCell.index ? stupidDateToDate(originCell.date) : stupidDateToDate(endCell.date)
     const lowEnd = originCell.index < endCell.index ? originCell.index : endCell.index
     const highEnd = originCell.index > endCell.index ? originCell.index : endCell.index
-    const requests: SpecificShiftRequestDTO[] = []
+    const requests: Omit<SpecificShiftRequestDTO, "id">[] = []
     for (let i = lowEnd; i <= highEnd; i++) {
       const index = i - lowEnd
       const requestDate = new Date(originDate)
@@ -79,7 +86,7 @@ export function ScheduleGridContainer(props: Props) {
           owner: originCell.owner,
           requestedShift: originCell.shift,
           date: dateToStupidDate(requestDate)
-        } as SpecificShiftRequestDTO
+        } as Omit<SpecificShiftRequestDTO, "id">
       )
     }
     props.onShiftRequestsChanged?.(requests)
@@ -140,15 +147,14 @@ function createRows(
           const relatedRequest = shiftRequests.find(r => {
             return stupidDateToString(r.date) === dateToString(cellDate) && r.owner === workerId.workerId
           })
-
           const cellShift = getResultingShift(results, workerId, cellDate, relatedRequest);
-
           return {
             shift: cellShift,
             index: dayOffset,
             owner: workerId.workerId,
             date: dateToStupidDate(cellDate),
-            isHighlighted: highLightIndexes.find(i => i === dayOffset) !== undefined
+            isHighlighted: highLightIndexes.find(i => i === dayOffset) !== undefined,
+            requestId: relatedRequest?.id
           } as Cell
         })
       const referencedEmployee = employees.find(e => e.workerId === workerId.workerId)!
