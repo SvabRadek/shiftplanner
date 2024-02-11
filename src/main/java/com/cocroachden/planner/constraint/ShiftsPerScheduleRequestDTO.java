@@ -11,12 +11,15 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.util.UUID;
+
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 public class ShiftsPerScheduleRequestDTO {
-  public static ShiftsPerScheduleRequestDTO from(ShiftsPerScheduleRequest request) {
+  public static ShiftsPerScheduleRequestDTO from(UUID id, ShiftsPerScheduleRequest request) {
     return new ShiftsPerScheduleRequestDTO(
+        id,
         request.getOwner().orElseThrow(),
         request.getType(),
         request.getTargetShift(),
@@ -28,6 +31,7 @@ public class ShiftsPerScheduleRequestDTO {
         request.getHardMax()
     );
   }
+  private UUID id;
   @Nonnull
   private WorkerId owner;
   @Nonnull

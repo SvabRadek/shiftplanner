@@ -3,9 +3,7 @@ import { NumberField } from "@hilla/react-components/NumberField";
 import ShiftsPerScheduleRequestDTO
   from "Frontend/generated/com/cocroachden/planner/constraint/ShiftsPerScheduleRequestDTO";
 import { Button } from "@hilla/react-components/Button";
-import { Select, SelectItem } from "@hilla/react-components/Select";
 import WorkShifts from "Frontend/generated/com/cocroachden/planner/solver/schedule/WorkShifts";
-import { workShiftBindings } from "Frontend/views/schedule/WorkShiftBindigs";
 import { Tooltip } from "@hilla/react-components/Tooltip";
 import { Card } from "Frontend/components/Card";
 import WorkerId from "Frontend/generated/com/cocroachden/planner/lib/WorkerId";
@@ -21,14 +19,6 @@ type Props = {
 
 export function ShiftCountConstraintForm(props: Props) {
 
-  const selectItems: SelectItem[] =
-    Object.values(workShiftBindings)
-      .map(binding => ({
-        label: binding.fullText,
-        value: binding.shift,
-        disabled: props.request.targetShift !== binding.shift && props.excludedShifts.some(s => s === binding.shift)
-      }))
-
   function handleRemove() {
     props.onRemove?.(props.request.owner, props.request.targetShift);
   }
@@ -37,21 +27,6 @@ export function ShiftCountConstraintForm(props: Props) {
     props.onChange?.(
       props.request.targetShift,
       { ...props.request, ...partial }
-    )
-  }
-
-  function renderWorkShiftSelect() {
-    return (
-      <Select
-        theme={"small"}
-        label={"Smena"}
-        disabled={props.readonly}
-        style={{ width: "200px" }}
-        items={selectItems}
-        value={props.request.targetShift}
-        onChange={(e) => handleUpdate({ targetShift: e.target.value as WorkShifts })}
-      >
-      </Select>
     )
   }
 
@@ -68,11 +43,11 @@ export function ShiftCountConstraintForm(props: Props) {
       </HorizontalLayout>
       <HorizontalLayout style={{ width: "100%" }} theme={"spacing"}>
         <ShiftSelect
+          theme={"small"}
           label={"Smena"}
           selectedShift={props.request.targetShift}
           onSelect={e => handleUpdate({ targetShift: e })}
         />
-        {renderWorkShiftSelect()}
         <NumberField
           style={{ width: "100px" }}
           theme={"align-center small"}

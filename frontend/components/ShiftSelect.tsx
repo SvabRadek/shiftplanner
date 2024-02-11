@@ -10,6 +10,7 @@ type Props = {
   onSelect: (value: WorkShifts) => void
   excludedShifts?: WorkShifts[]
   style?: CSSProperties
+  theme?: string
 }
 
 export function ShiftSelect(props: Props) {
@@ -26,6 +27,7 @@ export function ShiftSelect(props: Props) {
   return (
     <Select
       label={props.label}
+      theme={props.theme}
       style={{ ...props.style, width: props.style?.width ?? "200px" }}
       items={selectItems}
       readonly={modeCtx.mode !== ScheduleMode.EDIT}

@@ -6,6 +6,20 @@ import EmployeesPerShiftRequestDTO
   from "Frontend/generated/com/cocroachden/planner/constraint/EmployeesPerShiftRequestDTO";
 import ShiftFollowupRestrictionRequestDTO
   from "Frontend/generated/com/cocroachden/planner/constraint/ShiftFollowupRestrictionRequestDTO";
+import ConsecutiveWorkingDaysRequestDTO
+  from "Frontend/generated/com/cocroachden/planner/constraint/ConsecutiveWorkingDaysRequestDTO";
+
+export enum CRUDActions {
+  CREATE,
+  READ,
+  UPDATE,
+  DELETE
+}
+
+export type CrudAction<T> = {
+  type: CRUDActions,
+  payload: T
+}
 
 export function dateToStupidDate(date: Date): StupidDate {
   return { day: date.getDate(), month: date.getMonth() + 1, year: date.getFullYear() }
@@ -86,6 +100,15 @@ export function areShiftFollowupRestrictionsSame(
   r2: IdentifiableShiftFollowupRestrictionRequestDTO
 ) {
   return r1.firstShift.toString() + r1.forbiddenFollowup.toString() === r2.firstShift.toString() + r2.forbiddenFollowup.toString()
+}
+
+type IdentifiableConsecutiveWorkingDaysRequestDTO = Pick<ConsecutiveWorkingDaysRequestDTO, "type">
+
+export function areConsecutiveWorkingDaysRequestsSame(
+  r1: IdentifiableConsecutiveWorkingDaysRequestDTO,
+  r2: IdentifiableConsecutiveWorkingDaysRequestDTO
+) {
+  return r1.type === r2.type
 }
 
 export function generateUUID() { // Public Domain/MIT

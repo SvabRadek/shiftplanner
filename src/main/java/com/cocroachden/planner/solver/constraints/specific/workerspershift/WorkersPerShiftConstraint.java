@@ -16,7 +16,7 @@ public class WorkersPerShiftConstraint implements Constraint {
     var assignmentsByDate = schedulePlan.getAllAssignmentsByDate();
     assignmentsByDate.forEach((date, workDays) -> {
       var shiftAssignmentsInOneDay = workDays.stream()
-          .map(workDay -> workDay.getShift(request.getShift()))
+          .map(workDay -> workDay.getShifts(request.getShift()))
           .toArray(BoolVar[]::new);
       MinMaxConstraint.apply(
           request,

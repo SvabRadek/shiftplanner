@@ -12,12 +12,15 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.util.UUID;
+
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 public class EmployeesPerShiftRequestDTO {
-  public static EmployeesPerShiftRequestDTO from(WorkersPerShiftRequest request) {
+  public static EmployeesPerShiftRequestDTO from(UUID id, WorkersPerShiftRequest request) {
     return new EmployeesPerShiftRequestDTO(
+        id,
         request.getType(),
         request.getShift(),
         request.getHardMin(),
@@ -28,6 +31,7 @@ public class EmployeesPerShiftRequestDTO {
         request.getHardMax()
     );
   }
+  private UUID id;
   @Nonnull
   private ConstraintType type;
   @Nonnull

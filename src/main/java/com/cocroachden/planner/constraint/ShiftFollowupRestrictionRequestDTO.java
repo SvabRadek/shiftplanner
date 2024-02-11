@@ -9,19 +9,22 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.util.UUID;
+
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
 public class ShiftFollowupRestrictionRequestDTO {
-  public static ShiftFollowupRestrictionRequestDTO from(ShiftFollowUpRestrictionRequest request) {
+  public static ShiftFollowupRestrictionRequestDTO from(UUID id, ShiftFollowUpRestrictionRequest request) {
     return new ShiftFollowupRestrictionRequestDTO(
+        id,
         ShiftFollowUpRestrictionRequest.ID,
         request.getFirstShift(),
         request.getForbiddenFollowup(),
         request.getPenalty()
     );
   }
-
+  private UUID id;
   @Nonnull
   private ConstraintType type;
   @Nonnull

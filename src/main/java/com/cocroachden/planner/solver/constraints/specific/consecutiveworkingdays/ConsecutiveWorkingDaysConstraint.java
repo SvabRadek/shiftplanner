@@ -41,8 +41,7 @@ public class ConsecutiveWorkingDaysConstraint implements Constraint {
       var shifts = new ArrayList<BoolVar>();
       date.datesUntil(date.plusDays(hardMax + 1)).forEach(day -> {
         if (assignments.containsKey(day)) {
-          shifts.add(assignments.get(day).dayShiftAssignment());
-          shifts.add(assignments.get(day).nightShiftAssignment());
+          shifts.addAll(assignments.get(day).getShifts(request.getTargetShift()));
         }
       });
       MinMaxConstraint.apply(

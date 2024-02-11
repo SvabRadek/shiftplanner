@@ -46,7 +46,7 @@ public class ShiftPatternPositiveConstraint implements Constraint {
       for (int i = 0; i < patternSize; i++) {
         var patternDate = date.plusDays(i);
         if (assignments.containsKey(patternDate)) {
-          shifts.add(assignments.get(patternDate).getShift(pattern[i]));
+          shifts.addAll(assignments.get(patternDate).getShifts(pattern[i]));
         }
       }
       var patternHits = model.newIntVar(0, patternSize, "");

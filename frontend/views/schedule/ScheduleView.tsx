@@ -13,8 +13,6 @@ import { VerticalLayout } from "@hilla/react-components/VerticalLayout";
 import { ConfigSelectDialog } from "Frontend/views/schedule/components/ConfigSelectDialog";
 import EmployeeRecord from "Frontend/generated/com/cocroachden/planner/employee/EmployeeRecord";
 import { ScheduleGridContainer } from "./components/schedulegrid/ScheduleGridContainer";
-import { AddEmployeeDialog } from "Frontend/views/schedule/components/AddEmployeeDialog";
-import { EmployeeAction, EmployeeActionEnum } from "Frontend/views/schedule/components/schedulegrid/GridNameCell";
 import {
   EmployeeConfigModel,
   EmployeeRequestConfigDialog
@@ -26,7 +24,16 @@ import ShiftsPerScheduleRequestDTO
   from "Frontend/generated/com/cocroachden/planner/constraint/ShiftsPerScheduleRequestDTO";
 import WorkerId from "Frontend/generated/com/cocroachden/planner/lib/WorkerId";
 import ConstraintType from "Frontend/generated/com/cocroachden/planner/lib/ConstraintType";
-import { areShiftRequestsSame, localeDateToStupidDate, stupidDateToLocaleDate } from "Frontend/util/utils";
+import {
+  areConsecutiveWorkingDaysRequestsSame,
+  areEmployeesPerShiftSame,
+  areShiftFollowupRestrictionsSame,
+  areShiftRequestsSame,
+  CrudAction,
+  CRUDActions,
+  localeDateToStupidDate,
+  stupidDateToLocaleDate
+} from "Frontend/util/utils";
 import WorkShifts from "Frontend/generated/com/cocroachden/planner/solver/schedule/WorkShifts";
 import { Notification } from "@hilla/react-components/Notification";
 import { Card } from "Frontend/components/Card";
@@ -37,14 +44,12 @@ import { ProgressBar } from "@hilla/react-components/ProgressBar.js";
 import { ScheduleMode, ScheduleModeCtx } from "Frontend/views/schedule/ScheduleModeCtxProvider";
 import ConsecutiveWorkingDaysRequestDTO
   from "Frontend/generated/com/cocroachden/planner/constraint/ConsecutiveWorkingDaysRequestDTO";
-import {
-  ScheduleConstraintDialogModel,
-  ScheduleConstraintsDialog
-} from "Frontend/views/schedule/components/scheduleConstraints/ScheduleConstraintsDialog";
 import EmployeesPerShiftRequestDTO
   from "Frontend/generated/com/cocroachden/planner/constraint/EmployeesPerShiftRequestDTO";
 import ShiftFollowupRestrictionRequestDTO
   from "Frontend/generated/com/cocroachden/planner/constraint/ShiftFollowupRestrictionRequestDTO";
+import ShiftPatternRequestDTO from "Frontend/generated/com/cocroachden/planner/constraint/ShiftPatternRequestDTO";
+import { ScheduleSettingsDialog } from "Frontend/views/schedule/components/schedulesettings/ScheduleSettingsDialog";
 
 async function saveSpecificShiftRequests(requests: SpecificShiftRequestDTO[]): Promise<string[]> {
   return ConstraintEndpoint.saveAllSpecificShiftRequests(requests)
@@ -66,10 +71,25 @@ async function saveShiftFollowupRestrictionRequests(requests: ShiftFollowupRestr
   return ConstraintEndpoint.saveShiftFollowupRestrictionRequests(requests)
 }
 
+async function saveShiftPatternRequests(requests: ShiftPatternRequestDTO[]): Promise<string[]> {
+  return ConstraintEndpoint.saveShiftPatternRequests(requests)
+}
+
 type EmployeeConfigDialogParams = {
   isOpen: boolean,
   selectedEmployee?: WorkerId
 }
+
+type ResultCache = {
+  results: ScheduleResultDTO[]
+  selectedIndex: number
+}
+
+function handleUnload(e: Event) {
+  e.preventDefault()
+}
+
+const RESULT_CACHE_SIZE = 5
 
 export default function ScheduleView() {
 
@@ -79,15 +99,20 @@ export default function ScheduleView() {
   const [isAddEmployeeDialogOpen, setIsAddEmployeeDialogOpen] = useState(false)
   const [employeeConfigDialog, setEmployeeConfigDialog] = useState<EmployeeConfigDialogParams>({ isOpen: false })
   const [isScheduleConfigDialogOpen, setIsScheduleConfigDialogOpen] = useState(false);
-  const [result, setResult] = useState<ScheduleResultDTO | undefined>();
-  const [resultSubscription, setResultSubscription] = useState<Subscription<ScheduleResultDTO> | undefined>();
+  const [resultCache, setResultCache] = useState<ResultCache>({
+    results: [],
+    selectedIndex: 0
+  });
 
+  const [resultSubscription, setResultSubscription] = useState<Subscription<ScheduleResultDTO> | undefined>();
   const [request, setRequest] = useState<PlannerConfigurationDTO | undefined>();
   const [shiftRequests, setShiftRequests] = useState<SpecificShiftRequestDTO[]>([])
   const [shiftPerScheduleRequests, setShiftPerScheduleRequests] = useState<ShiftsPerScheduleRequestDTO[]>([])
   const [consecutiveWorkingDaysRequests, setConsecutiveWorkingDaysRequests] = useState<ConsecutiveWorkingDaysRequestDTO[]>([]);
   const [employeesPerShiftRequests, setEmployeesPerShiftRequests] = useState<EmployeesPerShiftRequestDTO[]>([]);
   const [shiftFollowupRestrictionRequests, setShiftFollowupRestrictionRequests] = useState<ShiftFollowupRestrictionRequestDTO[]>([]);
+
+  const [shiftPatternRequests, setShiftPatternRequests] = useState<ShiftPatternRequestDTO[]>([]);
 
   useEffect(() => {
     EmployeeService.getAllEmployees().then(setEmployees)
@@ -97,31 +122,38 @@ export default function ScheduleView() {
     }
   }, []);
 
-  function handleUnload(e: Event) {
-    e.preventDefault()
-  }
-
   function handleCancel() {
     isCopy.current = false
     handleConfigSelected(request?.id!)
   }
 
   async function handleSave() {
-    const [specificShiftIds, shiftPerScheduleIds, consecutiveWorkingDaysIds, employeesPerShiftIds, shiftFollowupRestrictionIds] = await Promise.all([
+    const [specificShiftIds, shiftPerScheduleIds, consecutiveWorkingDaysIds, employeesPerShiftIds, shiftFollowupRestrictionIds, shiftPatternRequestIds] = await Promise.all([
       saveSpecificShiftRequests(shiftRequests),
       saveShiftPerScheduleRequests(shiftPerScheduleRequests),
       saveConsecutiveWorkingDaysRequests(consecutiveWorkingDaysRequests),
       saveEmployeesPerShiftRequests(employeesPerShiftRequests),
-      saveShiftFollowupRestrictionRequests(shiftFollowupRestrictionRequests)
+      saveShiftFollowupRestrictionRequests(shiftFollowupRestrictionRequests),
+      saveShiftPatternRequests(shiftPatternRequests)
     ])
     await PlannerConfigurationEndpoint.save({
       ...request!,
       constraintRequestInstances: [
         ...specificShiftIds.map(id => ({ requestType: ConstraintType.SPECIFIC_SHIFT_REQUEST, requestId: id })),
         ...shiftPerScheduleIds.map(id => ({ requestType: ConstraintType.SHIFT_PER_SCHEDULE, requestId: id })),
-        ...consecutiveWorkingDaysIds.map(id => ({ requestType: ConstraintType.CONSECUTIVE_WORKING_DAYS, requestId: id })),
+        ...consecutiveWorkingDaysIds.map(id => ({
+          requestType: ConstraintType.CONSECUTIVE_WORKING_DAYS,
+          requestId: id
+        })),
         ...employeesPerShiftIds.map(id => ({ requestType: ConstraintType.WORKERS_PER_SHIFT, requestId: id })),
-        ...shiftFollowupRestrictionIds.map(id => ({ requestType: ConstraintType.SHIFT_FOLLOW_UP_RESTRICTION, requestId: id }))
+        ...shiftFollowupRestrictionIds.map(id => ({
+          requestType: ConstraintType.SHIFT_FOLLOW_UP_RESTRICTION,
+          requestId: id
+        })),
+        ...shiftPatternRequestIds.map(id => ({
+          requestType: ConstraintType.SHIFT_PATTERN_POSITIVE_CONSTRAINT,
+          requestId: id
+        }))
       ]
     }).then(response => {
       handleConfigSelected(response)
@@ -161,18 +193,13 @@ export default function ScheduleView() {
           .filter(l => l.requestType === ConstraintType.SHIFT_FOLLOW_UP_RESTRICTION)
           .map(l => l.requestId)
       ).then(setShiftFollowupRestrictionRequests)
+      ConstraintEndpoint.findShiftPatternRequests(
+        configResponse.constraintRequestInstances
+          .filter(l => l.requestType === ConstraintType.SHIFT_PATTERN_POSITIVE_CONSTRAINT)
+          .map(l => l.requestId)
+      ).then(setShiftPatternRequests)
     })
     modeCtx.setMode(ScheduleMode.READONLY)
-  }
-
-  function handleAddEmployee(employee: EmployeeRecord) {
-    setRequest(prevState => {
-      if (!prevState) return undefined
-      return {
-        ...prevState,
-        workers: [...prevState.workers, { workerId: employee.workerId }]
-      }
-    })
   }
 
   function handleEmployeeConfigSave(config: EmployeeConfigModel) {
@@ -185,22 +212,33 @@ export default function ScheduleView() {
     setEmployeeConfigDialog({ isOpen: false })
   }
 
-  function handleEmployeeAction(action: EmployeeAction) {
+  function handleEmployeeAction(action: CrudAction<EmployeeRecord>) {
     switch (action.type) {
-      case EmployeeActionEnum.ADD:
-        setIsAddEmployeeDialogOpen(true)
-        break
-      case EmployeeActionEnum.DELETE:
+      case CRUDActions.CREATE:
         setRequest(prevState => {
           if (!prevState) return undefined
           return {
             ...prevState,
-            workers: prevState.workers.filter(w => w.workerId !== action.workerId)
+            workers: [...prevState.workers, { workerId: action.payload.workerId }]
           }
         })
         break
-      case EmployeeActionEnum.EDIT:
-        setEmployeeConfigDialog(() => ({ selectedEmployee: { workerId: action.workerId }, isOpen: true }))
+      case CRUDActions.DELETE:
+        setRequest(prevState => ({
+          ...prevState!,
+          workers: prevState!.workers.filter(w => w.workerId !== action.payload.workerId)
+        }))
+        break
+      case CRUDActions.UPDATE:
+        setEmployeeConfigDialog(() =>
+          ({ selectedEmployee: { workerId: action.payload.workerId }, isOpen: true })
+        )
+        break
+      case CRUDActions.READ:
+        setEmployeeConfigDialog({
+          selectedEmployee: { workerId: action.payload.workerId },
+          isOpen: true
+        })
         break
     }
   }
@@ -224,33 +262,28 @@ export default function ScheduleView() {
   }
 
   function handleStopCalculation() {
+    modeCtx.setMode(ScheduleMode.READONLY)
     if (resultSubscription) {
-      PlannerEndpoint.stop()
       resultSubscription.cancel()
-      setResultSubscription(() => undefined)
+      setResultSubscription(undefined)
     }
   }
 
   function handleStartCalculation() {
     if (resultSubscription) {
-      handleStopCalculation()
+      resultSubscription.cancel()
+      setResultSubscription(undefined)
     }
-    setTimeout(
-      () => {
-        if (resultSubscription) {
-          handleStopCalculation()
-          Notification.show("Casovy limit vyprsel.", {
-            position: "top-center",
-            duration: 5000,
-            theme: "success"
-          })
-        }
-      },
-      60 * 1000
-    )
+    modeCtx.setMode(ScheduleMode.CALCULATING)
     setResultSubscription(PlannerEndpoint.solve(request?.id, 60)
       .onNext(value => {
-        setResult(value)
+        setResultCache(prevState => {
+          const updatedResults = [...prevState.results, value].slice(-RESULT_CACHE_SIZE)
+          return {
+            results: updatedResults,
+            selectedIndex: updatedResults.length - 1
+          }
+        })
       }).onComplete(() => {
         Notification.show("Vypocet uspesne ukoncen!", {
           position: "top-center",
@@ -264,16 +297,79 @@ export default function ScheduleView() {
           duration: 5000,
           theme: "warning"
         })
-
       })
     )
   }
 
-  function handleScheduleConstraintSave(value: ScheduleConstraintDialogModel) {
-    setConsecutiveWorkingDaysRequests(value.consecutiveWorkingDaysRequests)
-    setEmployeesPerShiftRequests(value.employeesPerShiftRequests)
-    setShiftFollowupRestrictionRequests(value.shiftFollowupRestrictionRequests)
-    setIsScheduleConfigDialogOpen(false)
+  function handleResultSelect(offset: 1 | -1) {
+    setResultCache(prevState => ({
+      ...prevState,
+      selectedIndex: Math.min(RESULT_CACHE_SIZE - 1, Math.max(0, prevState.selectedIndex + offset))
+    }))
+  }
+
+  function handleEmployeePerShiftAction(action: CrudAction<EmployeesPerShiftRequestDTO>) {
+    switch (action.type) {
+      case CRUDActions.UPDATE:
+        setEmployeesPerShiftRequests(prevState =>
+          prevState.map(r => {
+            if (!areEmployeesPerShiftSame(action.payload, r)) return r
+            return action.payload
+          })
+        )
+        break
+      case CRUDActions.DELETE:
+        setEmployeesPerShiftRequests(prevState =>
+          prevState.filter(r => !areEmployeesPerShiftSame(r, action.payload))
+        )
+        break
+      case CRUDActions.CREATE:
+        setEmployeesPerShiftRequests(prevState => [...prevState, action.payload])
+    }
+  }
+
+  function handleShiftFollowupRestrictionAction(action: CrudAction<ShiftFollowupRestrictionRequestDTO>) {
+    switch (action.type) {
+      case CRUDActions.UPDATE:
+        setShiftFollowupRestrictionRequests(prevState =>
+          prevState.map(r => {
+            if (!areShiftFollowupRestrictionsSame(action.payload, r)) return r
+            return action.payload
+          })
+        )
+        break
+      case CRUDActions.DELETE:
+        setShiftFollowupRestrictionRequests(prevState =>
+          prevState.filter(r => !areShiftFollowupRestrictionsSame(r, action.payload))
+        )
+        break
+      case CRUDActions.CREATE:
+        setShiftFollowupRestrictionRequests(prevState =>
+          [...prevState, action.payload]
+        )
+    }
+  }
+
+  function handleConsecutiveWorkingDaysAction(action: CrudAction<ConsecutiveWorkingDaysRequestDTO>) {
+    switch (action.type) {
+      case CRUDActions.UPDATE:
+        setConsecutiveWorkingDaysRequests(prevState =>
+          prevState.map(r => {
+            if (!areConsecutiveWorkingDaysRequestsSame(action.payload, r)) return r
+            return action.payload
+          })
+        )
+        break
+      case CRUDActions.DELETE:
+        setConsecutiveWorkingDaysRequests(prevState =>
+          prevState.filter(r => !areConsecutiveWorkingDaysRequestsSame(r, action.payload))
+        )
+        break
+      case CRUDActions.CREATE:
+        setConsecutiveWorkingDaysRequests(prevState =>
+          [...prevState, action.payload]
+        )
+    }
   }
 
   function renderHeaderStrip() {
@@ -293,30 +389,55 @@ export default function ScheduleView() {
             </Button>
         }
         <ConfigSelectDialog onConfigSelected={value => handleConfigSelected(value.id)}/>
-        {isRequestLoaded && <Button disabled={modeCtx.mode === ScheduleMode.EDIT}
-                                    onClick={() => modeCtx.setMode(ScheduleMode.EDIT)}>Upravit</Button>}
-        {isRequestLoaded &&
-            <Button disabled={modeCtx.mode === ScheduleMode.EDIT} onClick={handleCopyConfig}>Zkopirovat</Button>}
-        {isRequestLoaded && <Button disabled={modeCtx.mode !== ScheduleMode.EDIT} theme={"secondary"}
-                                    onClick={handleSave}>Ulozit</Button>}
-        {isRequestLoaded && <Button disabled={modeCtx.mode !== ScheduleMode.EDIT} theme={"secondary"}
-                                    onClick={handleCancel}>Zrusit</Button>}
-        {result && <Button theme={"secondary"} onClick={() => setResult(undefined)}>Vycistit vysledky</Button>}
+        {isRequestLoaded && <Button
+            disabled={modeCtx.mode === ScheduleMode.EDIT || modeCtx.mode === ScheduleMode.CALCULATING}
+            onClick={() => modeCtx.setMode(ScheduleMode.EDIT)}>
+            Upravit</Button>
+        }
+        {isRequestLoaded && <Button
+            disabled={modeCtx.mode === ScheduleMode.EDIT || modeCtx.mode === ScheduleMode.CALCULATING}
+            onClick={handleCopyConfig}>
+            Zkopirovat</Button>
+        }
+        {isRequestLoaded && <Button
+            disabled={modeCtx.mode !== ScheduleMode.EDIT}
+            theme={"secondary"}
+            onClick={handleSave}>Ulozit</Button>
+        }
+        {isRequestLoaded && <Button
+            disabled={modeCtx.mode !== ScheduleMode.EDIT}
+            theme={"secondary"}
+            onClick={handleCancel}>Zrusit</Button>
+        }
+        {resultCache.results.length > 0 && !resultSubscription &&
+            <Button theme={"secondary"} onClick={() => setResultCache({ results: [], selectedIndex: 0 })}>
+                Vycistit vysledky</Button>}
       </HorizontalLayout>
     )
   }
 
   function renderResultStrip() {
-    if (!resultSubscription) return null
     return (
-      <VerticalLayout style={{ width: "100%" }}>
-        {<HorizontalLayout theme={"spacing"}>
-          <span>Reseni: {result ? result.resultIndex : "-"}</span>
-          <span>Skore: {result ? result.resultScore : "-"}</span>
-        </HorizontalLayout>}
-        {<ProgressBar indeterminate></ProgressBar>}
+      <VerticalLayout style={{ paddingTop: "10px", width: "100%" }}>
+        <HorizontalLayout theme={"spacing"} style={{ alignItems: "center" }}>
+          {!resultSubscription &&
+              <Button disabled={resultCache.selectedIndex === 0} onClick={() => handleResultSelect(-1)}
+                      theme={"small icon"}>
+                  <Icon style={{ transform: "rotate(180deg)" }} icon={"vaadin:play"}/>
+              </Button>
+          }
+          <span
+            style={{ userSelect: "none" }}>Reseni: {resultCache.results.length > 0 ? resultCache.results[resultCache.selectedIndex].resultIndex : "-"}</span>
+          <span
+            style={{ userSelect: "none" }}>Skore: {resultCache.results.length > 0 ? resultCache.results[resultCache.selectedIndex].resultScore : "-"}</span>
+          {!resultSubscription &&
+              <Button disabled={resultCache.selectedIndex === RESULT_CACHE_SIZE - 1}
+                      onClick={() => handleResultSelect(1)}
+                      theme={"small icon"}><Icon icon={"vaadin:play"}/></Button>
+          }
+        </HorizontalLayout>
+        {resultSubscription && <ProgressBar indeterminate></ProgressBar>}
       </VerticalLayout>
-
     )
   }
 
@@ -368,18 +489,24 @@ export default function ScheduleView() {
     <VerticalLayout theme={"spacing padding"}>
       <Card style={{ width: "100%" }}>
         {renderHeaderStrip()}
-        {renderResultStrip()}
+        {resultCache.results.length > 0 && renderResultStrip()}
       </Card>
       {request ? renderGridHeader() : <h2 style={{ marginTop: "30px", padding: "10px" }}>Vyberte rozvrh</h2>}
       {request &&
           <>
-              <ScheduleConstraintsDialog
+              <ScheduleSettingsDialog
                   isOpen={isScheduleConfigDialogOpen}
                   onOpenChanged={setIsScheduleConfigDialogOpen}
-                  consecutiveWorkingDaysRequests={consecutiveWorkingDaysRequests}
-                  employeesPerShiftRequests={employeesPerShiftRequests}
-                  shiftFollowupRestrictionRequests={shiftFollowupRestrictionRequests}
-                  onSave={handleScheduleConstraintSave}
+                  request={request}
+                  employees={employees}
+                  onEmployeeAction={handleEmployeeAction}
+                  employeesPerShift={employeesPerShiftRequests}
+                  onEmployeePerShiftAction={handleEmployeePerShiftAction}
+                  shiftFollowupRestriction={shiftFollowupRestrictionRequests}
+                  onShiftFollowupRestrictionAction={handleShiftFollowupRestrictionAction}
+                  consecutiveWorkingDays={consecutiveWorkingDaysRequests}
+                  onConsecutiveWorkingDaysAction={handleConsecutiveWorkingDaysAction}
+
               />
               <EmployeeRequestConfigDialog
                   key={employeeConfigDialog.selectedEmployee?.workerId}
@@ -392,13 +519,6 @@ export default function ScheduleView() {
                   shiftsPerScheduleRequests={shiftPerScheduleRequests.filter(r => r.owner.workerId === employeeConfigDialog.selectedEmployee?.workerId)}
                   onSave={handleEmployeeConfigSave}
                   readonly={modeCtx.mode !== ScheduleMode.EDIT}
-              />
-              <AddEmployeeDialog
-                  employees={employees}
-                  selectedWorkers={request.workers}
-                  onEmployeeSelected={handleAddEmployee}
-                  onOpenChanged={setIsAddEmployeeDialogOpen}
-                  isOpen={isAddEmployeeDialogOpen}
               />
               <Card
                   style={{
@@ -414,7 +534,7 @@ export default function ScheduleView() {
                       shiftPerScheduleRequests={shiftPerScheduleRequests}
                       onEmployeeAction={handleEmployeeAction}
                       onShiftRequestsChanged={handleShiftRequestsChanged}
-                      result={result}
+                      result={resultCache.results.length > 0 ? resultCache.results[resultCache.selectedIndex] : undefined}
                   />
               </Card>
           </>

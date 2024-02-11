@@ -1,10 +1,9 @@
-import { useContext, useState } from "react";
+import { useState } from "react";
 import WorkShifts from "Frontend/generated/com/cocroachden/planner/solver/schedule/WorkShifts";
 import EmployeeRecord from "Frontend/generated/com/cocroachden/planner/employee/EmployeeRecord";
-import { dateToString, dateToStupidDate, stupidDateToDate, stupidDateToString } from "Frontend/util/utils";
+import { CrudAction, dateToString, dateToStupidDate, stupidDateToDate, stupidDateToString } from "Frontend/util/utils";
 import { ScheduleGrid } from "Frontend/views/schedule/components/schedulegrid/ScheduleGrid";
 import { Cell } from "Frontend/views/schedule/components/schedulegrid/GridCell";
-import { EmployeeAction } from "Frontend/views/schedule/components/schedulegrid/GridNameCell";
 import PlannerConfigurationDTO
   from "Frontend/generated/com/cocroachden/planner/plannerconfiguration/PlannerConfigurationDTO";
 import SpecificShiftRequestDTO from "Frontend/generated/com/cocroachden/planner/constraint/SpecificShiftRequestDTO";
@@ -12,7 +11,7 @@ import ShiftsPerScheduleRequestDTO
   from "Frontend/generated/com/cocroachden/planner/constraint/ShiftsPerScheduleRequestDTO";
 import ConstraintType from "Frontend/generated/com/cocroachden/planner/lib/ConstraintType";
 import ScheduleResultDTO from "Frontend/generated/com/cocroachden/planner/solver/ScheduleResultDTO";
-import { ScheduleModeCtx } from "Frontend/views/schedule/ScheduleModeCtxProvider";
+import WorkerId from "Frontend/generated/com/cocroachden/planner/lib/WorkerId";
 
 export type Owner = string
 export type Index = number
@@ -28,7 +27,7 @@ type Props = {
   employees: EmployeeRecord[]
   shiftRequests: SpecificShiftRequestDTO[]
   shiftPerScheduleRequests: ShiftsPerScheduleRequestDTO[]
-  onEmployeeAction?: (action: EmployeeAction) => void
+  onEmployeeAction: (action: CrudAction<EmployeeRecord>) => void
   onShiftRequestsChanged?: (changedRequests: SpecificShiftRequestDTO[]) => void
   result?: ScheduleResultDTO
 }
@@ -99,7 +98,10 @@ export function ScheduleGridContainer(props: Props) {
       onCellChanged={handleShiftChange}
       onMouseOverCell={handleCellOnMouseOver}
       onLeftClick={handleCellLeftClick}
-      onEmployeeAction={props.onEmployeeAction}
+      onEmployeeAction={a => props.onEmployeeAction({
+        type: a.type,
+        payload: props.employees.find(e => e.workerId === a.payload.workerId)!
+      })}
     />
   );
 }
@@ -126,9 +128,9 @@ function createRows(
   const endDate = stupidDateToDate(request.endDate)
   const dayIndexes = getDistanceInDays(startDate, endDate)
   return request.workers
-    .map(w => {
+    .map(workerId => {
       let highLightIndexes: number[] = []
-      if (highlightInfo.originCell && highlightInfo.originCell.owner === w.workerId) {
+      if (highlightInfo.originCell && highlightInfo.originCell.owner === workerId.workerId) {
         highLightIndexes = getIndexesBetweenCells(highlightInfo.originCell, highlightInfo.lastCell!)
       }
       const cells = dayIndexes
@@ -136,44 +138,68 @@ function createRows(
           const cellDate = new Date(startDate)
           cellDate.setDate(startDate.getDate() + dayOffset)
           const relatedRequest = shiftRequests.find(r => {
-            return stupidDateToString(r.date) === dateToString(cellDate) && r.owner === w.workerId
+            return stupidDateToString(r.date) === dateToString(cellDate) && r.owner === workerId.workerId
           })
 
-          let cellShift: WorkShifts
-          if (results) {
-            const resultShift = results.assignments[w.workerId][dateToString(cellDate)]
-            if (resultShift === WorkShifts.OFF) {
-              cellShift = WorkShifts.ANY
-            } else {
-              cellShift = resultShift || WorkShifts.ANY
-            }
-          } else {
-            if (relatedRequest) {
-              cellShift = relatedRequest.requestedShift
-            } else {
-              cellShift = WorkShifts.ANY
-            }
-          }
+          const cellShift = getResultingShift(results, workerId, cellDate, relatedRequest);
+
           return {
             shift: cellShift,
             index: dayOffset,
-            owner: w.workerId,
+            owner: workerId.workerId,
             date: dateToStupidDate(cellDate),
             isHighlighted: highLightIndexes.find(i => i === dayOffset) !== undefined
           } as Cell
         })
-      const referencedEmployee = employees.find(e => e.workerId === w.workerId)!
-      const relatedShiftPerScheduleRequests = shiftPerSchedule.filter(r => r.owner.workerId === w.workerId)
+      const referencedEmployee = employees.find(e => e.workerId === workerId.workerId)!
+      const relatedShiftPerScheduleRequests = shiftPerSchedule.filter(r => r.owner.workerId === workerId.workerId)
       const displayShiftCount = relatedShiftPerScheduleRequests
         .map(r => Math.floor((r.softMin + r.softMax) / 2))
         .reduce((previousValue, currentValue) => previousValue + currentValue, 0)
 
+      const assignments = results ? Object.values(results?.assignments[workerId.workerId]!) : []
+
       return {
-        workerId: w.workerId,
-        displayName: referencedEmployee.lastName + " " + referencedEmployee.firstName + " (" + displayShiftCount + ")",
+        workerId: workerId.workerId,
+        displayName: getDisplayName(referencedEmployee, displayShiftCount, assignments),
         cells
       } as Row
     })
+}
+
+function getDisplayName(
+  referencedEmployee: EmployeeRecord,
+  displayShiftCount: number,
+  assignedWorkShifts: WorkShifts[]
+) {
+  let title = referencedEmployee.lastName + " " + referencedEmployee.firstName + " (" + displayShiftCount + ")"
+  if (assignedWorkShifts.length > 0) {
+    const workShifts = assignedWorkShifts.filter(s => s === WorkShifts.DAY || s === WorkShifts.NIGHT);
+    title = title + ";" + workShifts.length
+  }
+  return title;
+}
+
+function getResultingShift(
+  results: ScheduleResultDTO | undefined,
+  workerId: WorkerId,
+  cellDate: Date,
+  relatedRequest: SpecificShiftRequestDTO | undefined
+) {
+  if (results) {
+    const resultShift = results.assignments[workerId.workerId][dateToString(cellDate)]
+    if (resultShift === WorkShifts.OFF) {
+      return WorkShifts.ANY
+    } else {
+      return resultShift || WorkShifts.ANY
+    }
+  } else {
+    if (relatedRequest) {
+      return relatedRequest.requestedShift
+    } else {
+      return WorkShifts.ANY
+    }
+  }
 }
 
 function getIndexesBetweenCells(

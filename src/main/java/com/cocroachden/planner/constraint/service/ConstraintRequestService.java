@@ -4,6 +4,7 @@ import com.cocroachden.planner.constraint.repository.ConstraintRequestRecord;
 import com.cocroachden.planner.constraint.repository.ConstraintRequestRepository;
 import com.cocroachden.planner.solver.constraints.specific.consecutiveworkingdays.request.ConsecutiveWorkingDaysRequest;
 import com.cocroachden.planner.solver.constraints.specific.shiftfollowuprestriction.request.ShiftFollowUpRestrictionRequest;
+import com.cocroachden.planner.solver.constraints.specific.shiftpattern.request.ShiftPatternPositiveConstraintRequest;
 import com.cocroachden.planner.solver.constraints.specific.shiftperschedule.request.ShiftsPerScheduleRequest;
 import com.cocroachden.planner.solver.constraints.specific.workershiftrequest.request.SpecificShiftRequest;
 import com.cocroachden.planner.solver.constraints.specific.workerspershift.request.WorkersPerShiftRequest;
@@ -26,32 +27,38 @@ public class ConstraintRequestService {
   }
 
   public List<SpecificShiftRequest> getSpecificShiftRequests(List<UUID> uuids) {
-    return repository.findByIdIn(uuids).stream()
+    return this.getRecords(uuids).stream()
         .map(record -> (SpecificShiftRequest) record.getRequest())
         .toList();
   }
 
   public List<ShiftsPerScheduleRequest> getShiftsPerScheduleRequests(List<UUID> uuids) {
-    return repository.findByIdIn(uuids).stream()
+    return this.getRecords(uuids).stream()
         .map(record -> (ShiftsPerScheduleRequest) record.getRequest())
         .toList();
   }
 
   public List<ConsecutiveWorkingDaysRequest> getConsecutiveDayRequests(List<UUID> uuids) {
-    return repository.findByIdIn(uuids).stream()
+    return this.getRecords(uuids).stream()
         .map(record -> (ConsecutiveWorkingDaysRequest) record.getRequest())
         .toList();
   }
 
   public List<WorkersPerShiftRequest> getEmployeesPerShiftRequests(List<UUID> uuids) {
-    return repository.findByIdIn(uuids).stream()
+    return this.getRecords(uuids).stream()
         .map(record -> (WorkersPerShiftRequest) record.getRequest())
         .toList();
   }
 
   public List<ShiftFollowUpRestrictionRequest> getShiftFollowupRestrictionRequests(List<UUID> uuids) {
-    return repository.findByIdIn(uuids).stream()
+    return this.getRecords(uuids).stream()
         .map(record -> (ShiftFollowUpRestrictionRequest) record.getRequest())
+        .toList();
+  }
+
+  public List<ShiftPatternPositiveConstraintRequest> getShiftPatternRequests(List<UUID> uuids) {
+    return this.getRecords(uuids).stream()
+        .map(record -> (ShiftPatternPositiveConstraintRequest) record.getRequest())
         .toList();
   }
 

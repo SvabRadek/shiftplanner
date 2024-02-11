@@ -10,18 +10,22 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.util.UUID;
+
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
 public class SpecificShiftRequestDTO {
-  public static SpecificShiftRequestDTO from(SpecificShiftRequest request) {
+  public static SpecificShiftRequestDTO from(UUID id, SpecificShiftRequest request) {
     return new SpecificShiftRequestDTO(
+        id,
         SpecificShiftRequest.TYPE,
         request.getOwner().orElseThrow().getWorkerId(),
         StupidDate.fromDate(request.getDate()),
         request.getRequestedShift()
     );
   }
+  private UUID id;
   @Nonnull
   private ConstraintType type;
   @Nonnull

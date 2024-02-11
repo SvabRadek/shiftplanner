@@ -1,11 +1,12 @@
 import { Owner } from "Frontend/views/schedule/components/schedulegrid/ScheduleGridContainer";
 import { Cell, GridCell } from "Frontend/views/schedule/components/schedulegrid/GridCell";
 import { ReactNode, useContext } from "react";
-import { EmployeeAction, GridNameCell } from "Frontend/views/schedule/components/schedulegrid/GridNameCell";
+import { GridNameCell } from "Frontend/views/schedule/components/schedulegrid/GridNameCell";
 import { GridHeaderCell } from "Frontend/views/schedule/components/schedulegrid/GridHeaderCell";
-import { stupidDateToDate, stupidDateToString } from "Frontend/util/utils";
+import { CrudAction, stupidDateToDate, stupidDateToString } from "Frontend/util/utils";
 import StupidDate from "Frontend/generated/com/cocroachden/planner/lib/StupidDate";
 import { ScheduleMode, ScheduleModeCtx } from "Frontend/views/schedule/ScheduleModeCtxProvider";
+import EmployeeRecord from "Frontend/generated/com/cocroachden/planner/employee/EmployeeRecord";
 
 type Row = {
   workerId: Owner
@@ -13,13 +14,12 @@ type Row = {
   cells: Cell[]
 }
 
-
 type Props = {
   rows: Row[]
   onCellChanged?: (cell: Cell) => void
   onLeftClick?: (cell: Cell) => void
   onMouseOverCell?: (cell: Cell) => void
-  onEmployeeAction?: (action: EmployeeAction) => void
+  onEmployeeAction: (action: CrudAction<Pick<EmployeeRecord, "workerId">>) => void
 }
 
 function shadowIntensity(
@@ -57,6 +57,7 @@ export function ScheduleGrid(props: Props) {
       1,
       <GridNameCell
         workerId={row.workerId}
+        onEmployeeAction={props.onEmployeeAction}
         title={"Jmeno"}
         backgroundColor={cellColor(1, 1, modeCtx.mode)}
         disableContextMenu={true}

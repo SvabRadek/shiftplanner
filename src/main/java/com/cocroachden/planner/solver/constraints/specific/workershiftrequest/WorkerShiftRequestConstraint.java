@@ -20,7 +20,7 @@ public class WorkerShiftRequestConstraint implements Constraint {
       case NOT_DAY, NOT_NIGHT -> 0;
       default -> 1;
     };
-    model.addEquality(workDay.getShift(requestedShift), value);
+    workDay.getShifts(requestedShift).forEach(shift -> model.addEquality(shift, value));
   }
 
   @Override

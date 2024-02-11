@@ -6,10 +6,11 @@ import { ScheduleMode, ScheduleModeCtx } from "Frontend/views/schedule/ScheduleM
 import ShiftFollowupRestrictionRequestDTO
   from "Frontend/generated/com/cocroachden/planner/constraint/ShiftFollowupRestrictionRequestDTO";
 import { ShiftSelect } from "Frontend/components/ShiftSelect";
+import { CrudAction, CRUDActions } from "Frontend/util/utils";
 
 type Props = {
   request: ShiftFollowupRestrictionRequestDTO
-  onChange: (value: ShiftFollowupRestrictionRequestDTO) => void
+  onAction: (action: CrudAction<ShiftFollowupRestrictionRequestDTO>) => void
 }
 
 export function ShiftFollowupRestrictionForm(props: Props) {
@@ -17,17 +18,20 @@ export function ShiftFollowupRestrictionForm(props: Props) {
   const modeCtx = useContext(ScheduleModeCtx);
 
   function handleUpdate(value: Partial<ShiftFollowupRestrictionRequestDTO>) {
-    props.onChange({
-      ...props.request,
-      ...value
+    props.onAction({
+      type: CRUDActions.UPDATE,
+      payload: {
+        ...props.request,
+        ...value
+      }
     })
   }
 
   return (
     <Card>
-      <h6>Nastaveni zakazanych kombinaci smen</h6>
       <HorizontalLayout theme={"spacing"}>
         <ShiftSelect
+          theme={"small"}
           label={"Prvni smena"}
           selectedShift={props.request.firstShift}
           excludedShifts={[props.request.forbiddenFollowup]}
@@ -35,6 +39,7 @@ export function ShiftFollowupRestrictionForm(props: Props) {
             firstShift: e
           })}/>
         <ShiftSelect
+          theme={"small"}
           label={"Nasledujici smena"}
           selectedShift={props.request.forbiddenFollowup}
           excludedShifts={[props.request.firstShift]}
@@ -42,7 +47,9 @@ export function ShiftFollowupRestrictionForm(props: Props) {
             forbiddenFollowup: e
           })}/>
         <NumberField
-          label={"Pokuta (0 = zakazano)"}
+          theme={"small"}
+          style={{ width: "50px" }}
+          label={"Pokuta"}
           value={props.request.penalty.toString()}
           readonly={modeCtx.mode !== ScheduleMode.EDIT}
           onChange={e => handleUpdate({ penalty: Number.parseInt(e.target.value)})}

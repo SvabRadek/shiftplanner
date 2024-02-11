@@ -2,8 +2,9 @@ import { CSSProperties, ReactNode } from "react";
 import { VerticalLayout } from "@hilla/react-components/VerticalLayout";
 
 type Props = {
-  children: ReactNode
+  children?: ReactNode
   style?: CSSProperties
+  theme?: string
 }
 export function Card(props: Props) {
   return (
@@ -17,7 +18,7 @@ export function Card(props: Props) {
       }}
     >
       <VerticalLayout
-        theme={"spacing-xs padding"}
+        theme={props.theme ?? "spacing-xs padding"}
         style={{ width: "100%" }}
       >
         {props.children}

@@ -31,10 +31,10 @@ public class ShiftFollowUpConstraint implements Constraint {
 
   private void applyConstraint(CpModel model, Objectives objective, Map<LocalDate, WorkDay> assignments, ShiftFollowUpRestrictionRequest request, Integer weight) {
     assignments.forEach((date, workDay) -> {
-      var shift = workDay.getShift(request.getFirstShift());
+      var shift = workDay.getShifts(request.getFirstShift()).get(0);
       var nextDay = workDay.date().plusDays(1);
       if (assignments.containsKey(nextDay)) {
-        var forbiddenFollowUp = assignments.get(nextDay).getShift(request.getForbiddenFollowup());
+        var forbiddenFollowUp = assignments.get(nextDay).getShifts(request.getForbiddenFollowup()).get(0);
         var sum = LinearExpr.newBuilder().add(shift).add(forbiddenFollowUp);
         if (request.getPenalty() == 0) {
           model.addLessOrEqual(sum, 1);

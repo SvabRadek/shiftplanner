@@ -83,7 +83,6 @@ public class Example {
   public static List<ConstraintRequest> constraintRequests() {
     var allRequests = new ArrayList<ConstraintRequest>();
     allRequests.add(new ShiftsPerScheduleRequest(new WorkerId("0"), 11, 13, 1, 13, 1, 15));
-    allRequests.add(new ShiftsPerScheduleRequest(new WorkerId("0"), NIGHT, 1, 0, 0, 0, 0, 1));
     allRequests.add(new ShiftsPerScheduleRequest(new WorkerId("1"), 10, 12, 1, 12, 1, 14));
     allRequests.add(new ShiftsPerScheduleRequest(new WorkerId("2"), 5, 11, 1, 11, 1, 14));
     allRequests.add(new ShiftsPerScheduleRequest(new WorkerId("3"), 5, 10, 1, 10, 1, 14));
@@ -123,7 +122,7 @@ public class Example {
     allRequests.add(new WorkersPerShiftRequest(NIGHT, 3, 3, 0, 3, 0, 3));
     allRequests.add(new ShiftFollowUpRestrictionRequest(DAY, NIGHT, 0));
     allRequests.add(new OneShiftPerDayRequest());
-    allRequests.add(new ConsecutiveWorkingDaysRequest(0, 2, 3, 3, 10, 4));
+    allRequests.add(new ConsecutiveWorkingDaysRequest(WORKING_SHIFTS, 0, 2, 3, 3, 10, 4));
     allRequests.add(new ShiftPatternPositiveConstraintRequest(new WorkerId("0"), 1, Example.apolinarPattern()));
     allRequests.add(new ShiftPatternPositiveConstraintRequest(new WorkerId("0"), 1, Example.apolinarPattern2()));
     allRequests.add(new ShiftPatternPositiveConstraintRequest(1, Example.classicPattern()));
