@@ -7,6 +7,9 @@ import ShiftFollowupRestrictionRequestDTO
   from "Frontend/generated/com/cocroachden/planner/constraint/ShiftFollowupRestrictionRequestDTO";
 import { ShiftSelect } from "Frontend/components/ShiftSelect";
 import { CrudAction, CRUDActions } from "Frontend/util/utils";
+import { Icon } from "@hilla/react-components/Icon";
+import { Button } from "@hilla/react-components/Button";
+import { CardFooter } from "Frontend/components/CardFooter";
 
 type Props = {
   request: ShiftFollowupRestrictionRequestDTO
@@ -28,13 +31,12 @@ export function ShiftFollowupRestrictionForm(props: Props) {
   }
 
   return (
-    <Card>
+    <Card style={{ width: "100%" }}>
       <HorizontalLayout theme={"spacing"}>
         <ShiftSelect
           theme={"small"}
           label={"Prvni smena"}
           selectedShift={props.request.firstShift}
-          excludedShifts={[props.request.forbiddenFollowup]}
           onSelect={e => handleUpdate({
             firstShift: e
           })}/>
@@ -42,7 +44,6 @@ export function ShiftFollowupRestrictionForm(props: Props) {
           theme={"small"}
           label={"Nasledujici smena"}
           selectedShift={props.request.forbiddenFollowup}
-          excludedShifts={[props.request.firstShift]}
           onSelect={e => handleUpdate({
             forbiddenFollowup: e
           })}/>
@@ -52,9 +53,16 @@ export function ShiftFollowupRestrictionForm(props: Props) {
           label={"Pokuta"}
           value={props.request.penalty.toString()}
           readonly={modeCtx.mode !== ScheduleMode.EDIT}
-          onChange={e => handleUpdate({ penalty: Number.parseInt(e.target.value)})}
+          onChange={e => handleUpdate({ penalty: Number.parseInt(e.target.value) })}
         />
       </HorizontalLayout>
+      <CardFooter style={{ paddingTop: 0 }}>
+        <Button onClick={() => props.onAction({ type: CRUDActions.DELETE, payload: props.request })}
+                disabled={modeCtx.mode !== ScheduleMode.EDIT}
+                theme={"small icon"}>
+          <Icon icon={"vaadin:trash"}/>
+        </Button>
+      </CardFooter>
     </Card>
   );
 }

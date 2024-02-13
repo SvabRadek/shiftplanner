@@ -1,5 +1,5 @@
 import { Dialog } from "@hilla/react-components/Dialog";
-import { useState } from "react";
+import { CSSProperties, useState } from "react";
 import { Tab } from "@hilla/react-components/Tab";
 import { Tabs } from "@hilla/react-components/Tabs";
 import { EmployeeTab } from "Frontend/views/schedule/components/schedulesettings/EmployeeTab";
@@ -16,6 +16,7 @@ import ConsecutiveWorkingDaysRequestDTO
 import ShiftFollowupRestrictionRequestDTO
   from "Frontend/generated/com/cocroachden/planner/constraint/ShiftFollowupRestrictionRequestDTO";
 import { CrudAction } from "Frontend/util/utils";
+import { VerticalLayout } from "@hilla/react-components/VerticalLayout";
 
 type Props = {
   isOpen: boolean
@@ -34,33 +35,41 @@ type Props = {
 export function ScheduleSettingsDialog(props: Props) {
 
   const [selectedTab, setSelectedTab] = useState(0);
-
+  const tabContainerCss: CSSProperties = {
+    paddingLeft: 5,
+    paddingRight: 5,
+    width: "100%",
+    maxHeight: "75vh",
+    overflowY: "scroll"
+  }
   return (
     <Dialog
       headerTitle={"Konfigurace rozvrhu"}
       opened={props.isOpen}
       onOpenedChanged={e => props.onOpenChanged(e.detail.value)}
     >
-      <div style={{ minWidth: "50vw", minHeight: "75vh" }}>
+      <VerticalLayout style={{ width: "75vw", maxWidth: "800px", height: "75vh" }}>
         <Tabs style={{ width: "100%" }}>
           <Tab onClick={() => setSelectedTab(0)}>Zamestnanci</Tab>
           <Tab onClick={() => setSelectedTab(1)}>Globalni</Tab>
         </Tabs>
-        {selectedTab == 0 &&
-            <EmployeeTab onEmployeeAction={props.onEmployeeAction}
-                         request={props.request}
-                         employees={props.employees}/>
-        }
-        {selectedTab == 1 &&
-            <GlobalTab employeesPerShift={props.employeesPerShift}
-                       consecutiveWorkingDays={props.consecutiveWorkingDays}
-                       shiftFollowupRestriction={props.shiftFollowupRestriction}
-                       onEmployeePerShiftAction={props.onEmployeePerShiftAction}
-                       onShiftFollowupRestrictionAction={props.onShiftFollowupRestrictionAction}
-                       onConsecutiveWorkingDaysAction={props.onConsecutiveWorkingDaysAction}
-            />
-        }
-      </div>
+        <div style={tabContainerCss}>
+          {selectedTab == 0 &&
+              <EmployeeTab onEmployeeAction={props.onEmployeeAction}
+                           request={props.request}
+                           employees={props.employees}/>
+          }
+          {selectedTab == 1 &&
+              <GlobalTab employeesPerShift={props.employeesPerShift}
+                         consecutiveWorkingDays={props.consecutiveWorkingDays}
+                         shiftFollowupRestriction={props.shiftFollowupRestriction}
+                         onEmployeePerShiftAction={props.onEmployeePerShiftAction}
+                         onShiftFollowupRestrictionAction={props.onShiftFollowupRestrictionAction}
+                         onConsecutiveWorkingDaysAction={props.onConsecutiveWorkingDaysAction}
+              />
+          }
+        </div>
+      </VerticalLayout>
       <HorizontalLayout theme={"spacing"} style={{ paddingTop: "20px", justifyContent: "end" }}>
         <Button onClick={() => props.onOpenChanged(false)}>Zavrit</Button>
       </HorizontalLayout>

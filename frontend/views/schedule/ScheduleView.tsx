@@ -1,5 +1,5 @@
 import { DatePicker } from "@hilla/react-components/DatePicker";
-import { useContext, useEffect, useRef, useState } from "react";
+import { useCallback, useContext, useEffect, useRef, useState } from "react";
 import {
   ConstraintEndpoint,
   EmployeeService,
@@ -16,7 +16,7 @@ import { ScheduleGridContainer } from "./components/schedulegrid/ScheduleGridCon
 import {
   EmployeeConfigModel,
   EmployeeRequestConfigDialog
-} from "Frontend/views/schedule/components/employeeConstraints/EmployeeRequestConfigDialog";
+} from "Frontend/views/schedule/components/employeeSettings/EmployeeRequestConfigDialog";
 import PlannerConfigurationDTO
   from "Frontend/generated/com/cocroachden/planner/plannerconfiguration/PlannerConfigurationDTO";
 import SpecificShiftRequestDTO from "Frontend/generated/com/cocroachden/planner/constraint/SpecificShiftRequestDTO";
@@ -25,12 +25,10 @@ import ShiftsPerScheduleRequestDTO
 import WorkerId from "Frontend/generated/com/cocroachden/planner/lib/WorkerId";
 import ConstraintType from "Frontend/generated/com/cocroachden/planner/lib/ConstraintType";
 import {
-  areConsecutiveWorkingDaysRequestsSame,
-  areEmployeesPerShiftSame,
-  areShiftFollowupRestrictionsSame,
   areShiftRequestsSame,
   CrudAction,
-  CRUDActions, generateUUID,
+  CRUDActions,
+  generateUUID,
   localeDateToStupidDate,
   stupidDateToLocaleDate
 } from "Frontend/util/utils";
@@ -121,6 +119,17 @@ export default function ScheduleView() {
     }
   }, []);
 
+  const handleShiftPatternAction = useCallback((action: CrudAction<ShiftPatternRequestDTO>) => {
+    switch (action.type) {
+      case CRUDActions.CREATE:
+        setShiftPatternRequests(prevState => ([
+          ...prevState,
+          action.payload
+        ]))
+    }
+  }, []);
+
+
   function handleCancel() {
     isCopy.current = false
     handleConfigSelected(request?.id!)
@@ -199,16 +208,6 @@ export default function ScheduleView() {
       ).then(setShiftPatternRequests)
     })
     modeCtx.setMode(ScheduleMode.READONLY)
-  }
-
-  function handleEmployeeConfigSave(config: EmployeeConfigModel) {
-    setShiftPerScheduleRequests(prevState => {
-      return [
-        ...prevState.filter(previous => previous.owner.workerId !== config.workerId),
-        ...config.shiftsPerScheduleRequests
-      ]
-    })
-    setEmployeeConfigDialog({ isOpen: false })
   }
 
   function handleEmployeeAction(action: CrudAction<EmployeeRecord>) {
@@ -324,6 +323,7 @@ export default function ScheduleView() {
         break
       case CRUDActions.CREATE:
         setEmployeesPerShiftRequests(prevState => [...prevState, action.payload])
+        break
     }
   }
 
@@ -366,6 +366,28 @@ export default function ScheduleView() {
         break
       case CRUDActions.CREATE:
         setConsecutiveWorkingDaysRequests(prevState =>
+          [...prevState, action.payload]
+        )
+    }
+  }
+
+  function handleShiftPerScheduleAction(action: CrudAction<ShiftsPerScheduleRequestDTO>) {
+    switch (action.type) {
+      case CRUDActions.UPDATE:
+        setShiftPerScheduleRequests(prevState =>
+          prevState.map(r => {
+            if (action.payload.id !== r.id) return r
+            return action.payload
+          })
+        )
+        break
+      case CRUDActions.DELETE:
+        setShiftPerScheduleRequests(prevState =>
+          prevState.filter(r => r.id !== action.payload.id)
+        )
+        break
+      case CRUDActions.CREATE:
+        setShiftPerScheduleRequests(prevState =>
           [...prevState, action.payload]
         )
     }
@@ -511,12 +533,14 @@ export default function ScheduleView() {
                   key={employeeConfigDialog.selectedEmployee?.workerId}
                   employee={employees.find(w => w.workerId === employeeConfigDialog.selectedEmployee?.workerId)!}
                   isOpen={employeeConfigDialog.isOpen}
+                  onShiftPerScheduleAction={handleShiftPerScheduleAction}
+                  shiftsPerScheduleRequests={shiftPerScheduleRequests.filter(r => r.owner.workerId === employeeConfigDialog.selectedEmployee?.workerId)}
                   onOpenChanged={(newValue) => setEmployeeConfigDialog(prevState => ({
                     ...prevState,
                     isOpen: newValue
                   }))}
-                  shiftsPerScheduleRequests={shiftPerScheduleRequests.filter(r => r.owner.workerId === employeeConfigDialog.selectedEmployee?.workerId)}
-                  onSave={handleEmployeeConfigSave}
+                  shiftPatternRequests={shiftPatternRequests}
+                  onShiftPatternRequestsAction={handleShiftPatternAction}
                   readonly={modeCtx.mode !== ScheduleMode.EDIT}
               />
               <Card

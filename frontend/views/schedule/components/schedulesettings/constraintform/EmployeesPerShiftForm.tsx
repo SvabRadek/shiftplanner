@@ -8,6 +8,9 @@ import { useContext } from "react";
 import { ScheduleMode, ScheduleModeCtx } from "Frontend/views/schedule/ScheduleModeCtxProvider";
 import { ShiftSelect } from "Frontend/components/ShiftSelect";
 import { CrudAction, CRUDActions } from "Frontend/util/utils";
+import { Button } from "@hilla/react-components/Button";
+import { Icon } from "@hilla/react-components/Icon";
+import { CardFooter } from "Frontend/components/CardFooter";
 
 type Props = {
   request: EmployeesPerShiftRequestDTO
@@ -18,7 +21,6 @@ type Props = {
 export function EmployeesPerShiftForm(props: Props) {
 
   const modeCtx = useContext(ScheduleModeCtx);
-
   function handleUpdate(value: Partial<EmployeesPerShiftRequestDTO>) {
     props.onAction({
       type: CRUDActions.UPDATE,
@@ -30,7 +32,7 @@ export function EmployeesPerShiftForm(props: Props) {
   }
 
   return (
-    <Card>
+    <Card style={{ width: "100%" }}>
       <HorizontalLayout theme={"spacing"} style={{ alignItems: "center" }}>
         <ShiftSelect
           theme={"small"}
@@ -87,6 +89,13 @@ export function EmployeesPerShiftForm(props: Props) {
           onChange={e => handleUpdate({ maxPenalty: Number.parseInt(e.target.value) })}
         />
       </HorizontalLayout>
+      <CardFooter style={{ paddingTop: 0 }}>
+        <Button onClick={() => props.onAction({ type: CRUDActions.DELETE, payload: props.request })}
+                disabled={modeCtx.mode !== ScheduleMode.EDIT}
+                theme={"small icon"}>
+          <Icon icon={"vaadin:trash"}/>
+        </Button>
+      </CardFooter>
     </Card>
   );
 }

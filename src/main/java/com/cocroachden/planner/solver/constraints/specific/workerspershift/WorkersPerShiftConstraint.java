@@ -9,6 +9,8 @@ import com.cocroachden.planner.solver.schedule.SchedulePlan;
 import com.google.ortools.sat.BoolVar;
 import com.google.ortools.sat.CpModel;
 
+import java.util.Collection;
+
 public class WorkersPerShiftConstraint implements Constraint {
   @Override
   public void apply(SchedulePlan schedulePlan, CpModel model, Objectives objective, ConstraintRequest constraintRequest) {
@@ -17,6 +19,7 @@ public class WorkersPerShiftConstraint implements Constraint {
     assignmentsByDate.forEach((date, workDays) -> {
       var shiftAssignmentsInOneDay = workDays.stream()
           .map(workDay -> workDay.getShifts(request.getShift()))
+          .flatMap(Collection::stream)
           .toArray(BoolVar[]::new);
       MinMaxConstraint.apply(
           request,

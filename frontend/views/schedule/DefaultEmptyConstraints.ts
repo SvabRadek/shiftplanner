@@ -1,6 +1,6 @@
 import ConstraintType from "Frontend/generated/com/cocroachden/planner/lib/ConstraintType";
 import WorkShifts from "Frontend/generated/com/cocroachden/planner/solver/schedule/WorkShifts";
-import { dateToStupidDate } from "Frontend/util/utils";
+import { dateToStupidDate, generateUUID } from "Frontend/util/utils";
 
 
 export type Constraint = {

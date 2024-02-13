@@ -6,6 +6,10 @@ import { NumberField } from "@hilla/react-components/NumberField";
 import { useContext } from "react";
 import { ScheduleMode, ScheduleModeCtx } from "Frontend/views/schedule/ScheduleModeCtxProvider";
 import { CrudAction, CRUDActions } from "Frontend/util/utils";
+import { Button } from "@hilla/react-components/Button";
+import { Icon } from "@hilla/react-components/Icon";
+import { CardFooter } from "Frontend/components/CardFooter";
+import { ShiftSelect } from "Frontend/components/ShiftSelect";
 
 type Props = {
   request: ConsecutiveWorkingDaysRequestDTO
@@ -27,8 +31,12 @@ export function ConsecutiveWorkingDaysForm(props: Props) {
   }
 
   return (
-    <Card>
+    <Card style={{ width: "100%" }}>
       <HorizontalLayout theme={"spacing"}>
+        <ShiftSelect label={"Smena"}
+                     theme={"small"}
+                     selectedShift={props.request.targetShift}
+                     onSelect={e => handleUpdate({ targetShift: e })}/>
         <NumberField
           theme={"small"}
           readonly={modeCtx.mode !== ScheduleMode.EDIT}
@@ -78,6 +86,13 @@ export function ConsecutiveWorkingDaysForm(props: Props) {
           onChange={e => handleUpdate({ maxPenalty: Number.parseInt(e.target.value) })}
         />
       </HorizontalLayout>
+      <CardFooter style={{ paddingTop: 0 }}>
+        <Button onClick={() => props.onAction({ type: CRUDActions.DELETE, payload: props.request })}
+                disabled={modeCtx.mode !== ScheduleMode.EDIT}
+                theme={"small icon"}>
+          <Icon icon={"vaadin:trash"}/>
+        </Button>
+      </CardFooter>
     </Card>
   );
 }

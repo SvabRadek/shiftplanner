@@ -1,4 +1,3 @@
-import { Card } from "Frontend/components/Card";
 import { HorizontalLayout } from "@hilla/react-components/HorizontalLayout";
 import { Button } from "@hilla/react-components/Button";
 import EmployeeRecord from "Frontend/generated/com/cocroachden/planner/employee/EmployeeRecord";
@@ -6,8 +5,9 @@ import PlannerConfigurationDTO
   from "Frontend/generated/com/cocroachden/planner/plannerconfiguration/PlannerConfigurationDTO";
 import { Icon } from "@hilla/react-components/Icon";
 import { AddEmployeeDialog } from "Frontend/views/schedule/components/schedulesettings/AddEmployeeDialog";
-import { useState } from "react";
+import { useContext, useState } from "react";
 import { CrudAction, CRUDActions } from "Frontend/util/utils";
+import { ScheduleMode, ScheduleModeCtx } from "Frontend/views/schedule/ScheduleModeCtxProvider";
 
 type Props = {
   employees: EmployeeRecord[]
@@ -18,7 +18,7 @@ type Props = {
 export function EmployeeTab(props: Props) {
 
   const [isAddEmployeeDialogOpen, setIsAddEmployeeDialogOpen] = useState(false);
-
+  const { mode } = useContext(ScheduleModeCtx);
   const selectedWorkers = props.employees
     .filter(e => props.request.workers.some(w => w.workerId === e.workerId))
   const missingWorkers = props.employees
@@ -28,7 +28,7 @@ export function EmployeeTab(props: Props) {
     return (
       <div key={employee.workerId}
            style={{
-             width: "97%",
+             width: "100%",
              marginBottom: "5px",
              backgroundColor: "var(--lumo-shade-10pct)",
              padding: "5px",
@@ -46,14 +46,17 @@ export function EmployeeTab(props: Props) {
             {employee.firstName + " " + employee.lastName}
           </div>
           <HorizontalLayout theme={"spacing"}>
-            <Button theme={"small icon"} onClick={() =>
-              props.onEmployeeAction({ type: CRUDActions.READ, payload: employee })
-            }>
+            <Button theme={"small icon"}
+                    onClick={() =>
+                      props.onEmployeeAction({ type: CRUDActions.READ, payload: employee })
+                    }>
               <Icon icon={"vaadin:search"}/>
             </Button>
-            <Button theme={"icon small"} onClick={() =>
-              props.onEmployeeAction({ type: CRUDActions.CREATE, payload: employee })
-            }>
+            <Button theme={"icon small"}
+                    disabled={mode !== ScheduleMode.EDIT}
+                    onClick={() =>
+                      props.onEmployeeAction({ type: CRUDActions.DELETE, payload: employee })
+                    }>
               <Icon icon={"vaadin:trash"}/>
             </Button>
           </HorizontalLayout>
@@ -64,25 +67,32 @@ export function EmployeeTab(props: Props) {
 
 
   return (
-    <Card style={{ maxHeight: "75vh" }}>
-      <HorizontalLayout theme={"spacing"} style={{ width: "100%", justifyContent: "start" }}>
-        <div>
-          <AddEmployeeDialog employees={missingWorkers}
-                             onOpenChanged={setIsAddEmployeeDialogOpen}
-                             isOpen={isAddEmployeeDialogOpen}
-                             onEmployeeAdd={e =>
-                               props.onEmployeeAction({ type: CRUDActions.CREATE, payload: e })
-                             }
-          />
-          <Button onClick={() => setIsAddEmployeeDialogOpen(true)}>
-            <Icon icon={"vaadin:plus"} slot={"prefix"}></Icon>
-            Pridat
-          </Button>
-        </div>
+    <div>
+      <HorizontalLayout theme={"spacing"}
+                        style={{
+                          width: "100%",
+                          justifyContent: "start",
+                          alignItems: "center",
+                          paddingTop: 5,
+                          paddingBottom: 5
+                        }}>
+        <AddEmployeeDialog employees={missingWorkers}
+                           onOpenChanged={setIsAddEmployeeDialogOpen}
+                           isOpen={isAddEmployeeDialogOpen}
+                           onEmployeeAdd={e =>
+                             props.onEmployeeAction({ type: CRUDActions.CREATE, payload: e })
+                           }/>
+        <Button theme={"icon"}
+                disabled={mode !== ScheduleMode.EDIT}
+                onClick={() => setIsAddEmployeeDialogOpen(true)}>
+          <Icon icon={"vaadin:plus"}></Icon>
+        </Button>
+        <h6>Seznam zamestnancu</h6>
       </HorizontalLayout>
-      <div style={{ width: "100%", overflowY: "scroll" }}>
+      <div style={{ width: "98%" }}>
         {selectedWorkers.map(w => renderEmployeeCard(w))}
       </div>
-    </Card>
+    </div>
+
   );
 }
