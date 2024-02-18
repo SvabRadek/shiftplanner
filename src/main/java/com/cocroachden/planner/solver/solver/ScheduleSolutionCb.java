@@ -6,29 +6,28 @@ import com.cocroachden.planner.lib.WorkerId;
 import com.cocroachden.planner.solver.ScheduleResultDTO;
 import com.cocroachden.planner.solver.schedule.SchedulePlan;
 import com.cocroachden.planner.solver.schedule.WorkShifts;
-import com.cocroachden.planner.solver.solver.response.ResponseSchedule;
 import com.cocroachden.planner.solver.solver.response.ResponseWorkDay;
+import com.cocroachden.planner.solver.solver.response.ScheduleResult;
 import com.google.ortools.sat.CpSolverSolutionCallback;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
-import reactor.core.publisher.FluxSink;
 
 import java.util.*;
+import java.util.function.Consumer;
 
 @Slf4j
 public class ScheduleSolutionCb extends CpSolverSolutionCallback {
-  private final FluxSink<ScheduleResultDTO> fluxSink;
+  private final Consumer<ScheduleResultDTO> fluxSink;
   @Getter
   private Integer currentSolutionCount = 0;
   @Getter
-  private ResponseSchedule latestResponse;
+  private ScheduleResult latestResponse;
   private double bestObjectiveValue = Double.MAX_VALUE;
   private final Integer solutionLimit;
   private final SchedulePlan schedulePlan;
 
-
   public ScheduleSolutionCb(
-      FluxSink<ScheduleResultDTO> fluxSink,
+      Consumer<ScheduleResultDTO> fluxSink,
       SchedulePlan schedulePlan
   ) {
     this.fluxSink = fluxSink;
@@ -47,7 +46,7 @@ public class ScheduleSolutionCb extends CpSolverSolutionCallback {
     if (currentObjective > bestObjectiveValue) return;
     bestObjectiveValue = currentObjective;
     var response = createResponseSchedule();
-    var latestResponse = new ResponseSchedule(response);
+    var latestResponse = new ScheduleResult(response);
     this.printStatsHeader(currentObjective);
     this.latestResponse = latestResponse;
     var workerMap = new HashMap<String, Map<StupidDate, WorkShifts>>();
@@ -58,7 +57,7 @@ public class ScheduleSolutionCb extends CpSolverSolutionCallback {
       });
       workerMap.put(workerId.getWorkerId(), shiftMap);
     });
-    fluxSink.next(
+    fluxSink.accept(
         new ScheduleResultDTO(
             currentObjective,
             currentSolutionCount,
@@ -67,7 +66,6 @@ public class ScheduleSolutionCb extends CpSolverSolutionCallback {
     );
     currentSolutionCount++;
     if (currentSolutionCount >= solutionLimit) {
-      fluxSink.complete();
       stopSearch();
     }
   }

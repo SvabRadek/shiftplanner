@@ -15,19 +15,24 @@ import lombok.extern.slf4j.Slf4j;
 import reactor.core.publisher.FluxSink;
 
 import java.util.List;
+import java.util.function.Consumer;
 
 @RequiredArgsConstructor
 @Slf4j
 public class ScheduleSolver {
   private final GenericConstraintApplier constraintApplier;
   private ScheduleSolutionCb solutionCb;
+  private Thread solverThread;
+  private CpSolver cpSolver;
 
   public void solve(
-      FluxSink<ScheduleResultDTO> fluxSink,
+      Consumer<ScheduleResultDTO> fluxSink,
       SchedulePlanConfiguration schedulePlanConfiguration,
-      List<ConstraintRequest> constraintRequests,
-      int timeLimitInSeconds
+      List<ConstraintRequest> constraintRequests
   ) {
+    if (this.solverThread != null && this.solverThread.isAlive()) {
+      this.solverThread.interrupt();
+    }
     if (this.solutionCb != null) {
       this.solutionCb.stopSearch();
     }
@@ -36,31 +41,34 @@ public class ScheduleSolver {
     var objectives = new Objectives();
     var schedulePlan = SchedulePlanBuilder.create(schedulePlanConfiguration, model);
     constraintRequests.forEach(request -> constraintApplier.apply(schedulePlan, model, objectives, request));
-    var solver = new CpSolver();
-    solver.getParameters().setLinearizationLevel(0);
-    solver.getParameters().setEnumerateAllSolutions(true);
-    solver.getParameters().setRelativeGapLimit(0.05);
-    solver.getParameters().setMaxTimeInSeconds(timeLimitInSeconds);
+    this.cpSolver = new CpSolver();
+    this.cpSolver.getParameters().setLinearizationLevel(0);
+    this.cpSolver.getParameters().setEnumerateAllSolutions(true);
+    this.cpSolver.getParameters().setRelativeGapLimit(0.05);
     model.minimize(objectives.getObjectiveAsExpression());
     this.solutionCb = new ScheduleSolutionCb(
         fluxSink,
         schedulePlan
     );
-    log.debug("Initiating solution search...");
-    var status = solver.solve(model, this.solutionCb);
-    log.debug("Status: {}", status);
-    log.debug("{} solutions found.", this.solutionCb.getCurrentSolutionCount());
-    log.debug("Statistics");
-    log.debug("  conflicts: {}", solver.numConflicts());
-    log.debug("  branches : {}", solver.numBranches());
-    log.debug("  wall time: {}", solver.wallTime());
+    this.solverThread = new Thread(() -> {
+      var status = this.cpSolver.solve(model, this.solutionCb);
+      log.debug("Status: {}", status);
+      log.debug("{} solutions found.", this.solutionCb.getCurrentSolutionCount());
+      log.debug("Statistics");
+      log.debug("  conflicts: {}", this.cpSolver.numConflicts());
+      log.debug("  branches : {}", this.cpSolver.numBranches());
+      log.debug("  wall time: {}", this.cpSolver.wallTime());
+    });
+    this.solverThread.setName("solver-thread");
+    log.info("Starting solver thread...");
+    this.solverThread.start();
   }
 
   public void stop() {
-    if (this.solutionCb != null) {
-      this.solutionCb.stopSearch();
-      this.solutionCb = null;
+    if (this.cpSolver != null) {
+      this.cpSolver.stopSearch();
+      this.solverThread.interrupt();
+      log.info("Solver stopped.");
     }
-    log.debug("Stopped.");
   }
 }

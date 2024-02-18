@@ -48,6 +48,8 @@ import ShiftFollowupRestrictionRequestDTO
 import ShiftPatternRequestDTO from "Frontend/generated/com/cocroachden/planner/constraint/ShiftPatternRequestDTO";
 import { ScheduleSettingsDialog } from "Frontend/views/schedule/components/schedulesettings/ScheduleSettingsDialog";
 import { copyWorkboxLibraries } from "workbox-build";
+import { NumberField } from "@hilla/react-components/NumberField";
+import { StopWatch } from "Frontend/components/StopWatch";
 
 async function saveSpecificShiftRequests(requests: SpecificShiftRequestDTO[]): Promise<string[]> {
   return ConstraintEndpoint.saveAllSpecificShiftRequests(requests)
@@ -108,7 +110,6 @@ export default function ScheduleView() {
   const [consecutiveWorkingDaysRequests, setConsecutiveWorkingDaysRequests] = useState<ConsecutiveWorkingDaysRequestDTO[]>([]);
   const [employeesPerShiftRequests, setEmployeesPerShiftRequests] = useState<EmployeesPerShiftRequestDTO[]>([]);
   const [shiftFollowupRestrictionRequests, setShiftFollowupRestrictionRequests] = useState<ShiftFollowupRestrictionRequestDTO[]>([]);
-
   const [shiftPatternRequests, setShiftPatternRequests] = useState<ShiftPatternRequestDTO[]>([]);
 
   useEffect(() => {
@@ -286,7 +287,7 @@ export default function ScheduleView() {
       setResultSubscription(undefined)
     }
     modeCtx.setMode(ScheduleMode.CALCULATING)
-    setResultSubscription(PlannerEndpoint.solve(request?.id, 60)
+    setResultSubscription(PlannerEndpoint.solve(request?.id, 300)
       .onNext(value => {
         setResultCache(prevState => {
           const updatedResults = [...prevState.results, value].slice(-RESULT_CACHE_SIZE)
@@ -410,17 +411,17 @@ export default function ScheduleView() {
     const isRequestLoaded = request !== undefined
     return (
       <HorizontalLayout theme={"spacing"}>
-        {
-          resultSubscription ?
+        {resultSubscription ?
             <Button onClick={handleStopCalculation} theme={"primary"}>
               <Icon icon={"vaadin:stop"}></Icon>
               Stop
             </Button>
-            : <Button onClick={handleStartCalculation} disabled={modeCtx.mode === ScheduleMode.EDIT || !request}
+            : <Button onClick={handleStartCalculation}
+                      disabled={modeCtx.mode === ScheduleMode.EDIT || !request}
                       theme={"primary"}>
-              <Icon icon={"vaadin:play"}/>
-              Vypocitat
-            </Button>
+            <Icon icon={"vaadin:play"}/>
+            Vypocitat
+          </Button>
         }
         <ConfigSelectDialog onConfigSelected={value => handleConfigSelected(value.id)}/>
         {isRequestLoaded && <Button
@@ -445,32 +446,43 @@ export default function ScheduleView() {
         }
         {resultCache.results.length > 0 && !resultSubscription &&
             <Button theme={"secondary"} onClick={() => setResultCache({ results: [], selectedIndex: 0 })}>
-                Vycistit vysledky</Button>}
+                Vycistit vysledky
+            </Button>
+        }
       </HorizontalLayout>
     )
   }
 
   function renderResultStrip() {
     return (
-      <VerticalLayout style={{ paddingTop: "10px", width: "100%" }}>
+      <VerticalLayout style={{ paddingTop: 10, width: "100%" }}>
         <HorizontalLayout theme={"spacing"} style={{ alignItems: "center" }}>
           {!resultSubscription &&
-              <Button disabled={resultCache.selectedIndex === 0} onClick={() => handleResultSelect(-1)}
+              <Button disabled={resultCache.selectedIndex === 0}
+                      onClick={() => handleResultSelect(-1)}
                       theme={"small icon"}>
                   <Icon style={{ transform: "rotate(180deg)" }} icon={"vaadin:play"}/>
               </Button>
           }
           <span
-            style={{ userSelect: "none" }}>Reseni: {resultCache.results.length > 0 ? resultCache.results[resultCache.selectedIndex].resultIndex : "-"}</span>
+            style={{ userSelect: "none" }}>Reseni: {resultCache.results.length > 0 ? resultCache.results[resultCache.selectedIndex].resultIndex : "-"}
+          </span>
           <span
-            style={{ userSelect: "none" }}>Skore: {resultCache.results.length > 0 ? resultCache.results[resultCache.selectedIndex].resultScore : "-"}</span>
+            style={{ userSelect: "none" }}>Skore: {resultCache.results.length > 0 ? resultCache.results[resultCache.selectedIndex].resultScore : "-"}
+          </span>
           {!resultSubscription &&
               <Button disabled={resultCache.selectedIndex === RESULT_CACHE_SIZE - 1}
                       onClick={() => handleResultSelect(1)}
                       theme={"small icon"}><Icon icon={"vaadin:play"}/></Button>
           }
+          <StopWatch style={{
+            borderLeft: "solid",
+            paddingLeft: 10,
+            borderWidth: 1,
+            borderColor: "var(--lumo-contrast-20pct)"
+          }} isRunning={resultSubscription !== undefined}></StopWatch>
         </HorizontalLayout>
-        {resultSubscription && <ProgressBar indeterminate></ProgressBar>}
+        {resultSubscription && <ProgressBar style={{ marginBottom: 0 }} indeterminate></ProgressBar>}
       </VerticalLayout>
     )
   }
@@ -485,7 +497,7 @@ export default function ScheduleView() {
             onChange={e => setRequest({ ...request!, name: e.target.value })}
             readonly={modeCtx.mode !== ScheduleMode.EDIT}
             disabled={!request}
-            style={{ width: "385px" }}
+            style={{ width: 385 }}
           />
           <DatePicker
             label={"Od"}
@@ -511,7 +523,7 @@ export default function ScheduleView() {
             theme={"secondary"}
             onClick={() => setIsScheduleConfigDialogOpen(true)}
           >
-            <Icon style={{ marginRight: "5px" }} icon={"vaadin:cog"}/>
+            <Icon style={{ marginRight: 5 }} icon={"vaadin:cog"}/>
             Nastaveni
           </Button>
         </HorizontalLayout>
@@ -525,7 +537,7 @@ export default function ScheduleView() {
         {renderHeaderStrip()}
         {resultCache.results.length > 0 && renderResultStrip()}
       </Card>
-      {request ? renderGridHeader() : <h2 style={{ marginTop: "30px", padding: "10px" }}>Vyberte rozvrh</h2>}
+      {request ? renderGridHeader() : <h2 style={{ marginTop: 30, padding: 10 }}>Vyberte rozvrh</h2>}
       {request &&
           <>
               <ScheduleSettingsDialog
@@ -558,7 +570,7 @@ export default function ScheduleView() {
               <Card
                   style={{
                     maxWidth: "100%",
-                    borderWidth: "1px",
+                    borderWidth: 1,
                     borderColor: "var(--lumo-shade-70pct)"
                   }}
               >

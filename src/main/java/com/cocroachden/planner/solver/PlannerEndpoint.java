@@ -6,7 +6,6 @@ import com.cocroachden.planner.plannerconfiguration.repository.ConfigurationRequ
 import com.cocroachden.planner.plannerconfiguration.service.PlannerConfigurationService;
 import com.cocroachden.planner.solver.constraints.specific.shiftperday.request.OneShiftPerDayRequest;
 import com.cocroachden.planner.solver.schedule.ScheduleWorker;
-import com.cocroachden.planner.solver.solver.ScheduleSolutionCb;
 import com.cocroachden.planner.solver.solver.ScheduleSolver;
 import com.vaadin.flow.server.auth.AnonymousAllowed;
 import dev.hilla.BrowserCallable;
@@ -34,10 +33,7 @@ public class PlannerEndpoint {
   }
 
   @Transactional
-  public EndpointSubscription<@Nonnull ScheduleResultDTO> solve(
-      UUID configurationId,
-      Integer timeLimitInSec
-  ) {
+  public EndpointSubscription<@Nonnull ScheduleResultDTO> solve(UUID configurationId) {
     var config = plannerConfigurationService.getConfiguration(configurationId);
     var plannerConfig = new SchedulePlanConfiguration(
         config.getStartDate(),
@@ -59,10 +55,9 @@ public class PlannerEndpoint {
 
     var flux = Flux.<ScheduleResultDTO>create(fluxSink -> {
       scheduleSolver.solve(
-          fluxSink,
+          fluxSink::next,
           plannerConfig,
-          constraints,
-          timeLimitInSec
+          constraints
       );
     });
 

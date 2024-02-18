@@ -16,7 +16,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Map;
 
-public class ShiftPatternPositiveConstraint implements Constraint {
+public class ShiftPatternConstraint implements Constraint {
   @Override
   public void apply(SchedulePlan schedulePlan, CpModel model, Objectives objective, ConstraintRequest constraintRequest) {
     var request = (ShiftPatternConstraintRequest) constraintRequest;
@@ -40,22 +40,15 @@ public class ShiftPatternPositiveConstraint implements Constraint {
   ) {
     var pattern = request.getShiftPattern();
     var patternSize = request.getShiftPattern().length;
+    var startIndex = request.getStartDateIndex();
 
-    assignments.forEach((date, workDay) -> {
-      var shifts = new ArrayList<BoolVar>();
-      for (int i = 0; i < patternSize; i++) {
-        var patternDate = date.plusDays(i);
-        if (assignments.containsKey(patternDate)) {
-          shifts.addAll(assignments.get(patternDate).getShifts(pattern[i]));
-        }
-      }
-      var patternHits = model.newIntVar(0, patternSize, "");
-      model.addEquality(patternHits, LinearExpr.sum(shifts.toArray(new LinearArgument[]{})));
-      var expr = LinearExpr.newBuilder().add(patternHits).addTerm(model.newConstant(patternSize), -1).add(1);
-      var hit = model.newIntVar(0, 1, "");
-      model.addMaxEquality(hit, new LinearArgument[]{ expr, model.newConstant(0) });
-      objective.addIntCost(hit, request.getReward() * -1 * weight);
-    });
+    var workDays = assignments.values().stream().toList();
+    for (int i = 0; i < assignments.size(); i++) {
+      var adjustedIndex = (i + startIndex) % patternSize;
+      var shiftForGivenDay = pattern[adjustedIndex];
+      workDays.get(adjustedIndex).getShifts(shiftForGivenDay)
+          .forEach(s -> objective.addBoolCost(s, (request.getReward() * -1) * weight));
+    }
   }
 
   @Override

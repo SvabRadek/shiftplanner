@@ -170,6 +170,7 @@ public class ConstraintEndpoint {
             new ConstraintRequestRecord(
                 new ShiftPatternConstraintRequest(
                     requestDTO.getWorkerId(),
+                    requestDTO.getStartDayIndex(),
                     requestDTO.getReward(),
                     requestDTO.getShiftPattern().toArray(WorkShifts[]::new)
                 )

@@ -6,9 +6,9 @@ import com.cocroachden.planner.solver.schedule.WorkShifts;
 import java.util.ArrayList;
 
 public class ResponseSchedulePrinter {
-  public static String print(ResponseSchedule responseSchedule) {
+  public static String print(ScheduleResult scheduleResult) {
     var sb = new StringBuilder();
-    responseSchedule.workdays()
+    scheduleResult.workdays()
         .forEach((workerId, responseWorkDays) -> {
           var assignmentCount = new ArrayList<Integer>();
           sb.append("Worker ").append(workerId).append(" ");

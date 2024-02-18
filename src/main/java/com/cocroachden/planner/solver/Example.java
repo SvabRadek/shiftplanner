@@ -98,10 +98,7 @@ public class Example {
     allRequests.add(new ShiftFollowUpRestrictionRequest(DAY, NIGHT, 0));
     allRequests.add(new OneShiftPerDayRequest());
     allRequests.add(new ConsecutiveWorkingDaysRequest(WORKING_SHIFTS, 0, 2, 3, 3, 10, 4));
-    allRequests.add(new ShiftPatternConstraintRequest(new WorkerId("0"), 1, Example.apolinarPattern()));
-    allRequests.add(new ShiftPatternConstraintRequest(new WorkerId("0"), 1, Example.apolinarPattern2()));
-    allRequests.add(new ShiftPatternConstraintRequest(1, Example.classicPattern()));
-    allRequests.add(new ShiftPatternConstraintRequest(1, Example.classicPattern2()));
+    allRequests.add(new ShiftPatternConstraintRequest(new WorkerId("0"), 0, 1, Example.apolinarPattern()));
     return allRequests;
   }
 
