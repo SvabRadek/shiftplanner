@@ -172,7 +172,7 @@ export default function ScheduleView() {
           requestId: id
         })),
         ...shiftPatternRequestIds.map(id => ({
-          requestType: ConstraintType.SHIFT_PATTERN_POSITIVE_CONSTRAINT,
+          requestType: ConstraintType.SHIFT_PATTERN_CONSTRAINT,
           requestId: id
         }))
       ]
@@ -216,7 +216,7 @@ export default function ScheduleView() {
       ).then(setShiftFollowupRestrictionRequests)
       ConstraintEndpoint.findShiftPatternRequests(
         configResponse.constraintRequestInstances
-          .filter(l => l.requestType === ConstraintType.SHIFT_PATTERN_POSITIVE_CONSTRAINT)
+          .filter(l => l.requestType === ConstraintType.SHIFT_PATTERN_CONSTRAINT)
           .map(l => l.requestId)
       ).then(setShiftPatternRequests)
     })

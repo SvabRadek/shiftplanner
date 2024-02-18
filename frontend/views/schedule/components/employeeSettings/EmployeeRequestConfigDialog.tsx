@@ -18,7 +18,6 @@ import ShiftPatternRequestDTO from "Frontend/generated/com/cocroachden/planner/c
 import {
   ShiftPatternConstraintForm
 } from "Frontend/views/schedule/components/employeeSettings/constraintform/ShiftPatternConstraintForm";
-import { isBooleanSchema } from "@hilla/generator-typescript-core/Schema.js";
 
 type Props = {
   employee?: EmployeeRecord
@@ -131,7 +130,7 @@ function generateNewUniqueShiftsPerSchedule(workerId: string, excludeShifts: Wor
 
 function generateNewShiftPattern(workerId: string): ShiftPatternRequestDTO {
   return {
-    ...defaultConstraints.SHIFT_PATTERN_POSITIVE_CONSTRAINT.constraint as unknown as ShiftPatternRequestDTO,
+    ...defaultConstraints.SHIFT_PATTERN_CONSTRAINT.constraint as unknown as ShiftPatternRequestDTO,
     workerId: { workerId: workerId },
     id: generateUUID()
   }

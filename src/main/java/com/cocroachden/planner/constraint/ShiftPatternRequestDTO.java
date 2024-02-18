@@ -2,7 +2,7 @@ package com.cocroachden.planner.constraint;
 
 import com.cocroachden.planner.lib.ConstraintType;
 import com.cocroachden.planner.lib.WorkerId;
-import com.cocroachden.planner.solver.constraints.specific.shiftpattern.request.ShiftPatternPositiveConstraintRequest;
+import com.cocroachden.planner.solver.constraints.specific.shiftpattern.request.ShiftPatternConstraintRequest;
 import com.cocroachden.planner.solver.schedule.WorkShifts;
 import dev.hilla.Nonnull;
 import lombok.AccessLevel;
@@ -18,10 +18,10 @@ import java.util.UUID;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
 public class ShiftPatternRequestDTO {
-  public static ShiftPatternRequestDTO from(UUID id, ShiftPatternPositiveConstraintRequest request) {
+  public static ShiftPatternRequestDTO from(UUID id, ShiftPatternConstraintRequest request) {
     return new ShiftPatternRequestDTO(
         id,
-        ShiftPatternPositiveConstraintRequest.ID,
+        ShiftPatternConstraintRequest.ID,
         request.getOwner().orElse(null),
         Arrays.stream(request.getShiftPattern()).toList(),
         request.getReward(),

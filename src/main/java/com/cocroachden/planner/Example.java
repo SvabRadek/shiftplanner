@@ -6,7 +6,7 @@ import com.cocroachden.planner.solver.SchedulePlanConfiguration;
 import com.cocroachden.planner.solver.constraints.ConstraintRequest;
 import com.cocroachden.planner.solver.constraints.specific.consecutiveworkingdays.request.ConsecutiveWorkingDaysRequest;
 import com.cocroachden.planner.solver.constraints.specific.shiftfollowuprestriction.request.ShiftFollowUpRestrictionRequest;
-import com.cocroachden.planner.solver.constraints.specific.shiftpattern.request.ShiftPatternPositiveConstraintRequest;
+import com.cocroachden.planner.solver.constraints.specific.shiftpattern.request.ShiftPatternConstraintRequest;
 import com.cocroachden.planner.solver.constraints.specific.shiftperday.request.OneShiftPerDayRequest;
 import com.cocroachden.planner.solver.constraints.specific.shiftperschedule.request.ShiftsPerScheduleRequest;
 import com.cocroachden.planner.solver.constraints.specific.workershiftrequest.request.SpecificShiftRequest;
@@ -123,7 +123,7 @@ public class Example {
     allRequests.add(new ShiftFollowUpRestrictionRequest(NIGHT, DAY, 0));
     allRequests.add(new OneShiftPerDayRequest());
     allRequests.add(new ConsecutiveWorkingDaysRequest(WORKING_SHIFTS, 0, 2, 3, 3, 10, 4));
-    allRequests.add(new ShiftPatternPositiveConstraintRequest(new WorkerId("0"), 1, Example.apolinarPattern2()));
+    allRequests.add(new ShiftPatternConstraintRequest(new WorkerId("0"), 1, Example.apolinarPattern2()));
     return allRequests;
   }
 

@@ -121,11 +121,11 @@ export const defaultConstraints: DefaultConstraints = {
       type: ConstraintType.ONE_SHIFT_PER_DAY,
     }
   },
-  [ConstraintType.SHIFT_PATTERN_POSITIVE_CONSTRAINT]: {
-    type: ConstraintType.SHIFT_PATTERN_POSITIVE_CONSTRAINT,
+  [ConstraintType.SHIFT_PATTERN_CONSTRAINT]: {
+    type: ConstraintType.SHIFT_PATTERN_CONSTRAINT,
     label: "Vzor rozlozeni smen",
     constraint: {
-      type: ConstraintType.SHIFT_PATTERN_POSITIVE_CONSTRAINT,
+      type: ConstraintType.SHIFT_PATTERN_CONSTRAINT,
       shiftPattern: [],
       reward: 1,
       startDayIndex: 0

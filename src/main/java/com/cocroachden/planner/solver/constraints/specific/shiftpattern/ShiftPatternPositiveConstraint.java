@@ -2,7 +2,7 @@ package com.cocroachden.planner.solver.constraints.specific.shiftpattern;
 
 
 import com.cocroachden.planner.solver.constraints.ConstraintRequest;
-import com.cocroachden.planner.solver.constraints.specific.shiftpattern.request.ShiftPatternPositiveConstraintRequest;
+import com.cocroachden.planner.solver.constraints.specific.shiftpattern.request.ShiftPatternConstraintRequest;
 import com.cocroachden.planner.solver.schedule.Objectives;
 import com.cocroachden.planner.solver.schedule.SchedulePlan;
 import com.cocroachden.planner.solver.schedule.WorkDay;
@@ -19,7 +19,7 @@ import java.util.Map;
 public class ShiftPatternPositiveConstraint implements Constraint {
   @Override
   public void apply(SchedulePlan schedulePlan, CpModel model, Objectives objective, ConstraintRequest constraintRequest) {
-    var request = (ShiftPatternPositiveConstraintRequest) constraintRequest;
+    var request = (ShiftPatternConstraintRequest) constraintRequest;
     var owner = request.getOwner();
     if (owner.isEmpty()) {
       schedulePlan.assignments().forEach((workerId, assignments) -> {
@@ -35,7 +35,7 @@ public class ShiftPatternPositiveConstraint implements Constraint {
       CpModel model,
       Objectives objective,
       Map<LocalDate, WorkDay> assignments,
-      ShiftPatternPositiveConstraintRequest request,
+      ShiftPatternConstraintRequest request,
       Integer weight
   ) {
     var pattern = request.getShiftPattern();
@@ -60,6 +60,6 @@ public class ShiftPatternPositiveConstraint implements Constraint {
 
   @Override
   public boolean supports(ConstraintRequest request) {
-    return request instanceof ShiftPatternPositiveConstraintRequest;
+    return request instanceof ShiftPatternConstraintRequest;
   }
 }

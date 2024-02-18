@@ -5,7 +5,7 @@ import com.cocroachden.planner.constraint.service.ConstraintRequestService;
 import com.cocroachden.planner.lib.WorkerId;
 import com.cocroachden.planner.solver.constraints.specific.consecutiveworkingdays.request.ConsecutiveWorkingDaysRequest;
 import com.cocroachden.planner.solver.constraints.specific.shiftfollowuprestriction.request.ShiftFollowUpRestrictionRequest;
-import com.cocroachden.planner.solver.constraints.specific.shiftpattern.request.ShiftPatternPositiveConstraintRequest;
+import com.cocroachden.planner.solver.constraints.specific.shiftpattern.request.ShiftPatternConstraintRequest;
 import com.cocroachden.planner.solver.constraints.specific.shiftperschedule.request.ShiftsPerScheduleRequest;
 import com.cocroachden.planner.solver.constraints.specific.workershiftrequest.request.SpecificShiftRequest;
 import com.cocroachden.planner.solver.constraints.specific.workerspershift.request.WorkersPerShiftRequest;
@@ -159,7 +159,7 @@ public class ConstraintEndpoint {
       @Nonnull List<@Nonnull UUID> requestIds
   ) {
     return service.getRecords(requestIds).stream()
-        .map(r -> ShiftPatternRequestDTO.from(r.getId(), (ShiftPatternPositiveConstraintRequest) r.getRequest()))
+        .map(r -> ShiftPatternRequestDTO.from(r.getId(), (ShiftPatternConstraintRequest) r.getRequest()))
         .toList();
   }
 
@@ -168,7 +168,7 @@ public class ConstraintEndpoint {
   ) {
     return requestDTOs.stream().map(requestDTO ->
             new ConstraintRequestRecord(
-                new ShiftPatternPositiveConstraintRequest(
+                new ShiftPatternConstraintRequest(
                     requestDTO.getWorkerId(),
                     requestDTO.getReward(),
                     requestDTO.getShiftPattern().toArray(WorkShifts[]::new)

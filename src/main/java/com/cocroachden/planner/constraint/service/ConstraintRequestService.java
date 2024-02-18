@@ -4,7 +4,7 @@ import com.cocroachden.planner.constraint.repository.ConstraintRequestRecord;
 import com.cocroachden.planner.constraint.repository.ConstraintRequestRepository;
 import com.cocroachden.planner.solver.constraints.specific.consecutiveworkingdays.request.ConsecutiveWorkingDaysRequest;
 import com.cocroachden.planner.solver.constraints.specific.shiftfollowuprestriction.request.ShiftFollowUpRestrictionRequest;
-import com.cocroachden.planner.solver.constraints.specific.shiftpattern.request.ShiftPatternPositiveConstraintRequest;
+import com.cocroachden.planner.solver.constraints.specific.shiftpattern.request.ShiftPatternConstraintRequest;
 import com.cocroachden.planner.solver.constraints.specific.shiftperschedule.request.ShiftsPerScheduleRequest;
 import com.cocroachden.planner.solver.constraints.specific.workershiftrequest.request.SpecificShiftRequest;
 import com.cocroachden.planner.solver.constraints.specific.workerspershift.request.WorkersPerShiftRequest;
@@ -56,9 +56,9 @@ public class ConstraintRequestService {
         .toList();
   }
 
-  public List<ShiftPatternPositiveConstraintRequest> getShiftPatternRequests(List<UUID> uuids) {
+  public List<ShiftPatternConstraintRequest> getShiftPatternRequests(List<UUID> uuids) {
     return this.getRecords(uuids).stream()
-        .map(record -> (ShiftPatternPositiveConstraintRequest) record.getRequest())
+        .map(record -> (ShiftPatternConstraintRequest) record.getRequest())
         .toList();
   }
 
