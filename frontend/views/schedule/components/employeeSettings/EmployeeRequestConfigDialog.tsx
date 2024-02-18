@@ -12,15 +12,13 @@ import {
 import { Icon } from "@hilla/react-components/Icon";
 import { CrudAction, CRUDActions, generateUUID } from "Frontend/util/utils";
 import { Card } from "Frontend/components/Card";
-import { CardFooter } from "Frontend/components/CardFooter";
 import WorkShifts from "Frontend/generated/com/cocroachden/planner/solver/schedule/WorkShifts";
 import { defaultConstraints } from "Frontend/views/schedule/DefaultEmptyConstraints";
 import ShiftPatternRequestDTO from "Frontend/generated/com/cocroachden/planner/constraint/ShiftPatternRequestDTO";
-
-export type EmployeeConfigModel = {
-  workerId: string
-  shiftsPerScheduleRequests: ShiftsPerScheduleRequestDTO[]
-}
+import {
+  ShiftPatternConstraintForm
+} from "Frontend/views/schedule/components/employeeSettings/constraintform/ShiftPatternConstraintForm";
+import { isBooleanSchema } from "@hilla/generator-typescript-core/Schema.js";
 
 type Props = {
   employee?: EmployeeRecord
@@ -49,22 +47,24 @@ export function EmployeeRequestConfigDialog(props: Props) {
 
   function handleCreateNewShiftPattern() {
     props.onShiftPatternRequestsAction({
-      type: CRUDActions.CREATE,
-      payload: generateNewShiftPattern(props.employee?.workerId!)
-    }
-)  }
+        type: CRUDActions.CREATE,
+        payload: generateNewShiftPattern(props.employee?.workerId!)
+      }
+    )
+  }
 
   function renderSectionHeader(
     title: string,
     icon: string,
-    onClickCallback: () => void
+    onClickCallback: () => void,
+    disabled?: boolean
   ) {
     return (
       <HorizontalLayout theme={"spacing"} style={{ alignItems: "baseline" }}>
         <Button
           theme={"icon"}
           style={{ marginTop: "var(--lumo-size-xs)" }}
-          disabled={props.readonly}
+          disabled={props.readonly || disabled}
           onClick={onClickCallback}>
           <Icon icon={icon}/>
         </Button>
@@ -77,16 +77,16 @@ export function EmployeeRequestConfigDialog(props: Props) {
     <Dialog
       header-title={"Konfigurace zamestance"}
       opened={props.isOpen}
+      draggable
       onOpenedChanged={e => {
         props.onOpenChanged(e.detail.value)
       }}
     >
-      <VerticalLayout theme={"spacing"}
-                      style={{
-                        width: "75vw",
-                        maxWidth: "800px",
-                        maxHeight: "75vh"
-                      }}>
+      <VerticalLayout theme={"spacing"} style={{
+        width: "75vw",
+        maxWidth: "800px",
+        maxHeight: "75vh"
+      }}>
         <Card style={{ width: "100%" }}>
           <HorizontalLayout theme={"spacing"}>
             <TextField value={props.employee.firstName} readonly/>
@@ -103,11 +103,18 @@ export function EmployeeRequestConfigDialog(props: Props) {
             readonly={props.readonly}
           />
         ))}
-        {renderSectionHeader("Schema smen", "vaadin:plus", handleCreateNewShiftPattern)}
+        {renderSectionHeader("Schema smen", "vaadin:plus", handleCreateNewShiftPattern, props.shiftPatternRequests.length > 0)}
+        {props.shiftPatternRequests.map(request => (
+          <ShiftPatternConstraintForm
+            key={request.id}
+            request={request}
+            onAction={props.onShiftPatternRequestsAction}
+          />
+        ))}
+        <HorizontalLayout style={{ width: "100%", justifyContent: "end" }}>
+          <Button onClick={() => props.onOpenChanged(false)}>Zavrit</Button>
+        </HorizontalLayout>
       </VerticalLayout>
-      <CardFooter>
-        <Button onClick={() => props.onOpenChanged(false)}>Zavrit</Button>
-      </CardFooter>
     </Dialog>
   );
 }

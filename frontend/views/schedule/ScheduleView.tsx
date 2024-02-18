@@ -14,7 +14,6 @@ import { ConfigSelectDialog } from "Frontend/views/schedule/components/ConfigSel
 import EmployeeRecord from "Frontend/generated/com/cocroachden/planner/employee/EmployeeRecord";
 import { ScheduleGridContainer } from "./components/schedulegrid/ScheduleGridContainer";
 import {
-  EmployeeConfigModel,
   EmployeeRequestConfigDialog
 } from "Frontend/views/schedule/components/employeeSettings/EmployeeRequestConfigDialog";
 import PlannerConfigurationDTO
@@ -48,6 +47,7 @@ import ShiftFollowupRestrictionRequestDTO
   from "Frontend/generated/com/cocroachden/planner/constraint/ShiftFollowupRestrictionRequestDTO";
 import ShiftPatternRequestDTO from "Frontend/generated/com/cocroachden/planner/constraint/ShiftPatternRequestDTO";
 import { ScheduleSettingsDialog } from "Frontend/views/schedule/components/schedulesettings/ScheduleSettingsDialog";
+import { copyWorkboxLibraries } from "workbox-build";
 
 async function saveSpecificShiftRequests(requests: SpecificShiftRequestDTO[]): Promise<string[]> {
   return ConstraintEndpoint.saveAllSpecificShiftRequests(requests)
@@ -126,6 +126,19 @@ export default function ScheduleView() {
           ...prevState,
           action.payload
         ]))
+        break
+      case CRUDActions.UPDATE:
+        setShiftPatternRequests(prevState => (
+          prevState.map(r => {
+            if (r.id !== action.payload.id) return r
+            return action.payload
+          })
+        ))
+        break
+      case CRUDActions.DELETE:
+        setShiftPatternRequests(prevState => (
+          prevState.filter(r => r.id !== action.payload.id)
+        ))
     }
   }, []);
 
@@ -527,7 +540,6 @@ export default function ScheduleView() {
                   onShiftFollowupRestrictionAction={handleShiftFollowupRestrictionAction}
                   consecutiveWorkingDays={consecutiveWorkingDaysRequests}
                   onConsecutiveWorkingDaysAction={handleConsecutiveWorkingDaysAction}
-
               />
               <EmployeeRequestConfigDialog
                   key={employeeConfigDialog.selectedEmployee?.workerId}
@@ -539,7 +551,7 @@ export default function ScheduleView() {
                     ...prevState,
                     isOpen: newValue
                   }))}
-                  shiftPatternRequests={shiftPatternRequests}
+                  shiftPatternRequests={shiftPatternRequests.filter(r => r.workerId?.workerId === employeeConfigDialog.selectedEmployee?.workerId)}
                   onShiftPatternRequestsAction={handleShiftPatternAction}
                   readonly={modeCtx.mode !== ScheduleMode.EDIT}
               />
@@ -554,6 +566,7 @@ export default function ScheduleView() {
                       request={request}
                       employees={employees}
                       shiftRequests={shiftRequests}
+                      shiftPatterns={shiftPatternRequests}
                       shiftPerScheduleRequests={shiftPerScheduleRequests}
                       onEmployeeAction={handleEmployeeAction}
                       onShiftRequestsChanged={handleShiftRequestsChanged}

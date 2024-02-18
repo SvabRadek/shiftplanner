@@ -42,7 +42,7 @@ export function ShiftCountConstraintForm(props: Props) {
         width: "100%",
         alignItems: "baseline",
         justifyContent: "space-between"
-      }} theme={"spacing padding"}>
+      }} theme={"spacing"}>
         <HorizontalLayout theme={"spacing"}>
           <ShiftSelect
             theme={"small"}
@@ -105,6 +105,7 @@ export function ShiftCountConstraintForm(props: Props) {
           </NumberField>
         </HorizontalLayout>
         <Button theme={"small icon"}
+                style={{ alignSelf: "start" }}
                 onClick={handleRemove}
                 disabled={props.readonly}>
           <Icon icon={"vaadin:trash"}></Icon>

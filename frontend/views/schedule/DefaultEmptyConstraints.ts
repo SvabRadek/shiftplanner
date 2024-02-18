@@ -1,6 +1,6 @@
 import ConstraintType from "Frontend/generated/com/cocroachden/planner/lib/ConstraintType";
 import WorkShifts from "Frontend/generated/com/cocroachden/planner/solver/schedule/WorkShifts";
-import { dateToStupidDate, generateUUID } from "Frontend/util/utils";
+import { dateToStupidDate } from "Frontend/util/utils";
 
 
 export type Constraint = {
@@ -15,6 +15,67 @@ type ConstraintBinding = {
 }
 type DefaultConstraints = Record<ConstraintType, ConstraintBinding>
 
+export const apolinarPattern: WorkShifts[] = [
+  WorkShifts.DAY,
+  WorkShifts.DAY,
+  WorkShifts.NIGHT,
+  WorkShifts.OFF,
+  WorkShifts.OFF,
+  WorkShifts.DAY,
+  WorkShifts.NIGHT,
+  WorkShifts.OFF,
+  WorkShifts.OFF,
+  WorkShifts.DAY,
+  WorkShifts.NIGHT,
+  WorkShifts.OFF,
+  WorkShifts.OFF,
+  WorkShifts.DAY,
+  WorkShifts.NIGHT,
+  WorkShifts.NIGHT,
+  WorkShifts.OFF,
+  WorkShifts.OFF,
+  WorkShifts.DAY,
+  WorkShifts.NIGHT,
+  WorkShifts.OFF,
+  WorkShifts.OFF,
+  WorkShifts.OFF,
+  WorkShifts.OFF,
+  WorkShifts.DAY,
+  WorkShifts.NIGHT,
+  WorkShifts.OFF,
+  WorkShifts.OFF
+]
+
+export const classicPattern: WorkShifts[] = [
+  WorkShifts.DAY,
+  WorkShifts.DAY,
+  WorkShifts.DAY,
+  WorkShifts.OFF,
+  WorkShifts.OFF,
+  WorkShifts.NIGHT,
+  WorkShifts.NIGHT,
+  WorkShifts.OFF,
+  WorkShifts.OFF,
+  WorkShifts.OFF,
+  WorkShifts.DAY,
+  WorkShifts.DAY,
+  WorkShifts.OFF,
+  WorkShifts.OFF,
+  WorkShifts.NIGHT,
+  WorkShifts.NIGHT,
+  WorkShifts.NIGHT,
+  WorkShifts.OFF,
+  WorkShifts.OFF,
+  WorkShifts.DAY,
+  WorkShifts.DAY,
+  WorkShifts.OFF,
+  WorkShifts.OFF,
+  WorkShifts.OFF,
+  WorkShifts.NIGHT,
+  WorkShifts.NIGHT,
+  WorkShifts.OFF,
+  WorkShifts.OFF
+]
 export const defaultConstraints: DefaultConstraints = {
   [ConstraintType.CONSECUTIVE_WORKING_DAYS]: {
     type: ConstraintType.CONSECUTIVE_WORKING_DAYS,
@@ -23,10 +84,10 @@ export const defaultConstraints: DefaultConstraints = {
       type: ConstraintType.CONSECUTIVE_WORKING_DAYS,
       hardMin: 0,
       softMin: 0,
-      minPenalty: 0,
+      minPenalty: 1,
       softMax: 0,
       hardMax: 0,
-      maxPenalty: 0
+      maxPenalty: 1
     }
   },
   [ConstraintType.WORKERS_PER_SHIFT]: {
@@ -37,10 +98,10 @@ export const defaultConstraints: DefaultConstraints = {
       targetShift: WorkShifts.DAY,
       softMin: 0,
       hardMin: 0,
-      minPenalty: 0,
+      minPenalty: 1,
       softMax: 0,
       hardMax: 0,
-      maxPenalty: 0
+      maxPenalty: 1
     }
   },
   [ConstraintType.SHIFT_FOLLOW_UP_RESTRICTION]: {
@@ -66,7 +127,8 @@ export const defaultConstraints: DefaultConstraints = {
     constraint: {
       type: ConstraintType.SHIFT_PATTERN_POSITIVE_CONSTRAINT,
       shiftPattern: [],
-      reward: 0
+      reward: 1,
+      startDayIndex: 0
     }
   },
   [ConstraintType.SPECIFIC_SHIFT_REQUEST]: {
@@ -88,9 +150,9 @@ export const defaultConstraints: DefaultConstraints = {
       targetShift: WorkShifts.ANY,
       hardMin: 0,
       softMin: 0,
-      minPenalty: 0,
+      minPenalty: 1,
       softMax: 0,
-      maxPenalty: 0,
+      maxPenalty: 1,
       hardMax: 0
     }
   }

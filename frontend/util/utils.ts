@@ -8,6 +8,7 @@ import ShiftFollowupRestrictionRequestDTO
   from "Frontend/generated/com/cocroachden/planner/constraint/ShiftFollowupRestrictionRequestDTO";
 import ConsecutiveWorkingDaysRequestDTO
   from "Frontend/generated/com/cocroachden/planner/constraint/ConsecutiveWorkingDaysRequestDTO";
+import WorkShifts from "Frontend/generated/com/cocroachden/planner/solver/schedule/WorkShifts";
 
 export enum CRUDActions {
   CREATE,
@@ -134,4 +135,12 @@ function doubleDigit(num: number): string {
     minimumIntegerDigits: 2,
     useGrouping: false
   })
+}
+
+export function arePatternsSame(shifts1: WorkShifts[], shift2: WorkShifts[]): boolean {
+  if (shifts1.length !== shift2.length) return false
+  for (let i = 0; i < shifts1.length; i++) {
+    if (shifts1[i] !== shift2[i]) return false
+  }
+  return true
 }

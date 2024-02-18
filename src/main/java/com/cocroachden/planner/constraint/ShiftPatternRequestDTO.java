@@ -24,7 +24,8 @@ public class ShiftPatternRequestDTO {
         ShiftPatternPositiveConstraintRequest.ID,
         request.getOwner().orElse(null),
         Arrays.stream(request.getShiftPattern()).toList(),
-        request.getReward()
+        request.getReward(),
+        0
     );
   }
   @Nonnull
@@ -36,4 +37,6 @@ public class ShiftPatternRequestDTO {
   private List<@Nonnull WorkShifts> shiftPattern;
   @Nonnull
   private Integer reward;
+  @Nonnull
+  private Integer startDayIndex;
 }

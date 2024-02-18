@@ -2,8 +2,13 @@ import { ContextMenu, ContextMenuItem, ContextMenuItemSelectedEvent } from "@hil
 import StupidDate from "Frontend/generated/com/cocroachden/planner/lib/StupidDate";
 import WorkShifts from "Frontend/generated/com/cocroachden/planner/solver/schedule/WorkShifts";
 import { workShiftBindings } from "Frontend/views/schedule/WorkShiftBindigs";
-import { useContext } from "react";
-import { ScheduleModeCtx } from "Frontend/views/schedule/ScheduleModeCtxProvider";
+import { CSSProperties } from "react";
+
+export enum DisplayMode {
+  DEFAULT,
+  REQUEST,
+  PATTERN
+}
 
 export type Cell = {
   shift: WorkShifts
@@ -11,6 +16,7 @@ export type Cell = {
   owner: string
   date: StupidDate
   isHighlighted: boolean
+  displayMode?: DisplayMode
   requestId?: string
 }
 
@@ -20,6 +26,7 @@ type Props = {
   onLeftClick?: (cell: Cell) => void
   onMouseOverCell?: (cell: Cell) => void
   backgroundColor?: string
+  color?: string | undefined
   readonly?: boolean
 }
 
@@ -53,22 +60,25 @@ export function GridCell(props: Props) {
     props.onMouseOverCell?.(props.cell)
   }
 
+  const cellStyle: CSSProperties = {
+    display: "flex",
+    userSelect: "none",
+    width: 50,
+    height: 50,
+    border: "solid",
+    borderColor: "var(--lumo-tint-20pct)",
+    borderWidth: "1px",
+    justifyContent: "center",
+    alignItems: "center",
+    color: props.color,
+    backgroundColor: props.cell.isHighlighted
+      ? "var(--lumo-success-color-10pct)"
+      : props.backgroundColor || "var(--lumo-shade-5pct)"
+  }
+
   function renderCell() {
     return <div
-      style={{
-        display: "flex",
-        userSelect: "none",
-        width: 50,
-        height: 50,
-        border: "solid",
-        borderColor: "var(--lumo-tint-20pct)",
-        borderWidth: "1px",
-        justifyContent: "center",
-        alignItems: "center",
-        backgroundColor: props.cell.isHighlighted
-          ? "var(--lumo-success-color-10pct)"
-          : props.backgroundColor || "var(--lumo-shade-5pct)"
-      }}
+      style={cellStyle}
       onClick={handleLeftClick}
       onMouseOver={handleMouseOver}
     >

@@ -1,5 +1,5 @@
 import { Owner } from "Frontend/views/schedule/components/schedulegrid/ScheduleGridContainer";
-import { Cell, GridCell } from "Frontend/views/schedule/components/schedulegrid/GridCell";
+import { Cell, DisplayMode, GridCell } from "Frontend/views/schedule/components/schedulegrid/GridCell";
 import { ReactNode, useContext } from "react";
 import { GridNameCell } from "Frontend/views/schedule/components/schedulegrid/GridNameCell";
 import { GridHeaderCell } from "Frontend/views/schedule/components/schedulegrid/GridHeaderCell";
@@ -106,6 +106,10 @@ export function ScheduleGrid(props: Props) {
               onLeftClick={props.onLeftClick}
               backgroundColor={cellColor(rowIndex + 2, c.index + 2, modeCtx.mode, c.date)}
               readonly={modeCtx.mode !== ScheduleMode.EDIT}
+              color={c.displayMode === DisplayMode.PATTERN
+                ? "var(--lumo-contrast-30pct)"
+                : undefined
+            }
             />
           ));
         })
