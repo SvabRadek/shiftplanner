@@ -287,7 +287,7 @@ export default function ScheduleView() {
       setResultSubscription(undefined)
     }
     modeCtx.setMode(ScheduleMode.CALCULATING)
-    setResultSubscription(PlannerEndpoint.solve(request?.id, 300)
+    setResultSubscription(PlannerEndpoint.solve(request?.id)
       .onNext(value => {
         setResultCache(prevState => {
           const updatedResults = [...prevState.results, value].slice(-RESULT_CACHE_SIZE)
