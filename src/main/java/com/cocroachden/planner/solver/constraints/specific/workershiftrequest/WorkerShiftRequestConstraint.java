@@ -5,6 +5,7 @@ import com.cocroachden.planner.solver.constraints.ConstraintRequest;
 import com.cocroachden.planner.solver.constraints.specific.workershiftrequest.request.SpecificShiftRequest;
 import com.cocroachden.planner.solver.schedule.Objectives;
 import com.cocroachden.planner.solver.schedule.SchedulePlan;
+import com.cocroachden.planner.solver.schedule.WorkShifts;
 import com.google.ortools.sat.CpModel;
 
 public class WorkerShiftRequestConstraint implements Constraint {
@@ -16,11 +17,13 @@ public class WorkerShiftRequestConstraint implements Constraint {
         request.getDate()
     );
     var requestedShift = request.getRequestedShift();
-    var value = switch (requestedShift) {
-      case NOT_DAY, NOT_NIGHT -> 0;
-      default -> 1;
-    };
-    workDay.getShifts(requestedShift).forEach(shift -> model.addEquality(shift, value));
+    switch (requestedShift) {
+      case NOT_DAY -> workDay.getShifts(WorkShifts.DAY).forEach(s -> model.addEquality(s, 0));
+      case NOT_NIGHT -> workDay.getShifts(WorkShifts.NIGHT).forEach(s -> model.addEquality(s, 0));
+      case WORKING_SHIFTS -> workDay.getShifts(WorkShifts.OFF).forEach(s -> model.addEquality(s, 0));
+      case ANY -> { }
+      default -> model.addEquality(workDay.getShifts(requestedShift).get(0), 1);
+    }
   }
 
   @Override

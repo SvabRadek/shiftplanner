@@ -29,6 +29,15 @@ public record WorkDay(
       case WORKING_SHIFTS -> {
         return List.of(dayShiftAssignment, nightShiftAssignment);
       }
+      case NOT_NIGHT -> {
+        return List.of(dayShiftAssignment, offShiftAssignment);
+      }
+      case NOT_DAY -> {
+        return List.of(nightShiftAssignment, offShiftAssignment);
+      }
+      case ANY -> {
+        return List.of(dayShiftAssignment, nightShiftAssignment, offShiftAssignment);
+      }
       default -> throw new RuntimeException("Invalid shift index: " + index);
     }
   }

@@ -1,7 +1,6 @@
 import { FormLayout } from "@hilla/react-components/FormLayout";
 import { TextField } from "@hilla/react-components/TextField";
 import EmployeeRecord from "Frontend/generated/com/cocroachden/planner/employee/EmployeeRecord";
-import { IntegerField } from "@hilla/react-components/IntegerField";
 
 type Props = {
   employee: EmployeeRecord
@@ -23,17 +22,6 @@ export function EmployeeForm(props: Props) {
       <TextField label={"Prijmeni"}
                  value={props.employee.lastName}
                  {...{ colspan: 3 }}
-      />
-      <IntegerField label={"Pocet smen"}
-                    {...{ colspan: 2 }}
-      />
-      <IntegerField label={"Min"}
-                    {...{ colspan: 2 }}
-                    stepButtonsVisible
-      />
-      <IntegerField label={"Max"}
-                    {...{ colspan: 2 }}
-                    stepButtonsVisible
       />
     </FormLayout>
   );

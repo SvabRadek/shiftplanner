@@ -59,22 +59,99 @@ public class StartupService {
   }
 
   private void createEmployeeRecords(ApplicationContext context) {
-    List<String> firstNames = Arrays.asList(
-        "John", "Jane", "Alice", "Bob", "Charlie",
-        "David", "Eva", "Frank", "Grace", "Henry",
-        "Ivy", "Jack", "Kate", "Leo", "Mia"
-    );
-    List<String> lastNames = Arrays.asList(
-        "Anderson", "Brown", "Clark", "Davis", "Evans",
-        "Fisher", "Garcia", "Hill", "Irwin", "Jones",
-        "King", "Lee", "Miller", "Nelson", "Owens"
-    );
     var employeeRepo = context.getBean(EmployeeRepository.class);
-    Example.workers().stream()
-        .map(id -> new EmployeeRecord(
-            id.getWorkerId(),
-            firstNames.get(new Random().nextInt(firstNames.size())),
-            lastNames.get(new Random().nextInt(lastNames.size()))
-        )).forEach(employeeRepo::save);
+    var employees = List.of(
+        new EmployeeRecord(
+            "0",
+            "Martina",
+            "Kravariková"
+        ),
+        new EmployeeRecord(
+            "1",
+            "Vendula",
+            "Zajícová"
+        ),
+        new EmployeeRecord(
+            "2",
+            "Alena",
+            "Janáková"
+        ),
+        new EmployeeRecord(
+            "3",
+            "Simona",
+            "Holmanová"
+        ),
+        new EmployeeRecord(
+            "4",
+            "Jana",
+            "Zelenková"
+        ),
+        new EmployeeRecord(
+            "5",
+            "Jolana",
+            "Pálffyová"
+        ),
+        new EmployeeRecord(
+            "6",
+            "Nicola",
+            "Halbichová"
+        ),
+        new EmployeeRecord(
+            "7",
+            "Jana",
+            "Kesslerová"
+        ),
+        new EmployeeRecord(
+            "8",
+            "Eva",
+            "Dudek Premauer"
+        ),
+        new EmployeeRecord(
+            "9",
+            "Aneta",
+            "Dubská"
+        ),
+        new EmployeeRecord(
+            "10",
+            "Jindra",
+            "Labounková"
+        ),
+        new EmployeeRecord(
+            "11",
+            "Dana",
+            "Zachová"
+        ),
+        new EmployeeRecord(
+            "12",
+            "Iva",
+            "Najmanová"
+        ),
+        new EmployeeRecord(
+            "13",
+            "Barbora",
+            "Řeháková"
+        ),
+        new EmployeeRecord(
+            "14",
+            "Karolína",
+            "Vavrušková"
+        ),
+        new EmployeeRecord(
+            "15",
+            "Zuzana",
+            "Kučerová"
+        ),
+        new EmployeeRecord(
+            "16",
+            "Natálie",
+            "Vejvodová"
+        ),
+        new EmployeeRecord(
+            "17",
+            "Karolína",
+            "Hromířová"
+        )
+    );
+    employeeRepo.saveAll(employees);
   }
 }
