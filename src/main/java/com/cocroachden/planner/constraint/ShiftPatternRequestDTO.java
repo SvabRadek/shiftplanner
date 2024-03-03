@@ -17,7 +17,7 @@ import java.util.UUID;
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
-public class ShiftPatternRequestDTO {
+public class ShiftPatternRequestDTO implements ConstraintRequestDTO {
   public static ShiftPatternRequestDTO from(UUID id, ShiftPatternConstraintRequest request) {
     return new ShiftPatternRequestDTO(
         id,

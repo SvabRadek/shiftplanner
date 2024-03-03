@@ -17,7 +17,7 @@ import java.util.UUID;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
-public class EmployeesPerShiftRequestDTO {
+public class EmployeesPerShiftRequestDTO implements ConstraintRequestDTO {
   public static EmployeesPerShiftRequestDTO from(UUID id, WorkersPerShiftRequest request) {
     return new EmployeesPerShiftRequestDTO(
         id,

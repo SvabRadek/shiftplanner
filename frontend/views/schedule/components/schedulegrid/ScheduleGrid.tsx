@@ -7,11 +7,14 @@ import { CrudAction, stupidDateToDate, stupidDateToString } from "Frontend/util/
 import StupidDate from "Frontend/generated/com/cocroachden/planner/lib/StupidDate";
 import { ScheduleMode, ScheduleModeCtx } from "Frontend/views/schedule/ScheduleModeCtxProvider";
 import EmployeeRecord from "Frontend/generated/com/cocroachden/planner/employee/EmployeeRecord";
+import ValidatorIssue from "Frontend/generated/com/cocroachden/planner/solver/constraints/validator/ValidatorIssue";
+import IssueSeverity from "Frontend/generated/com/cocroachden/planner/solver/constraints/validator/IssueSeverity";
 
-type Row = {
+export type Row = {
   workerId: Owner
-  displayName: string,
+  displayName: string
   cells: Cell[]
+  issues?: ValidatorIssue[]
 }
 
 type Props = {
@@ -29,7 +32,7 @@ function shadowIntensity(
   date?: StupidDate
 ): number {
   let shadowIntensity = 10
-  if(date && isWeekend(date)) shadowIntensity += 10
+  if (date && isWeekend(date)) shadowIntensity += 10
   if (mode !== ScheduleMode.EDIT) shadowIntensity += 10
   if (row === 1) shadowIntensity += 30
   if (column === 1 && row > 1) shadowIntensity += 10
@@ -61,6 +64,7 @@ export function ScheduleGrid(props: Props) {
         title={"Jmeno"}
         backgroundColor={cellColor(1, 1, modeCtx.mode)}
         disableContextMenu={true}
+        issues={[]}
       />
     ))
     row.cells.forEach(c => {
@@ -83,6 +87,10 @@ export function ScheduleGrid(props: Props) {
       if (rowIndex === 0) {
         items.push(generateFirstRow(row))
       }
+      const issues = row.issues || []
+      const severity = issues.find(i => i.severity === IssueSeverity.ERROR)?.severity
+        || issues.find(i => i.severity === IssueSeverity.WARNING)?.severity
+        || IssueSeverity.OK
       items.push(renderCell(
         rowIndex + 2,
         1,
@@ -90,8 +98,14 @@ export function ScheduleGrid(props: Props) {
           title={row.displayName}
           workerId={row.workerId}
           onEmployeeAction={props.onEmployeeAction}
-          backgroundColor={cellColor(rowIndex +2, 1, modeCtx.mode)}
+          backgroundColor={
+            severity === IssueSeverity.WARNING
+              ? "var(--lumo-primary-color-50pct)"
+              : severity === IssueSeverity.ERROR
+                ? "var(--lumo-error-color-50pct)"
+                : cellColor(rowIndex + 2, 1, modeCtx.mode)}
           readonly={modeCtx.mode !== ScheduleMode.EDIT}
+          issues={issues}
         />
       ))
       return row.cells
@@ -109,7 +123,7 @@ export function ScheduleGrid(props: Props) {
               color={c.displayMode === DisplayMode.PATTERN
                 ? "var(--lumo-contrast-30pct)"
                 : undefined
-            }
+              }
             />
           ));
         })

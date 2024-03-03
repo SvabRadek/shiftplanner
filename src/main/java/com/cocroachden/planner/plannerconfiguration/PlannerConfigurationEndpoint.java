@@ -44,6 +44,8 @@ public class PlannerConfigurationEndpoint {
     return service.save(configurationDTO).getId();
   }
 
-
+  public void delete(@Nonnull UUID uuid) {
+    service.delete(uuid);
+  }
 
 }

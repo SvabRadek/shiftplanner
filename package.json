@@ -28,7 +28,8 @@
     "date-fns": "^3.0.6",
     "lit": "3.1.0",
     "react": "^18.2.0",
-    "react-dom": "^18.2.0"
+    "react-dom": "^18.2.0",
+    "xlsx": "https://cdn.sheetjs.com/xlsx-0.20.1/xlsx-0.20.1.tgz"
   },
   "devDependencies": {
     "@lit-labs/react": "^1.1.0",
@@ -121,6 +122,6 @@
       "workbox-core": "7.0.0",
       "workbox-precaching": "7.0.0"
     },
-    "hash": "e2ffb77de217a2b56b212150e9d6f0eae83fda7603d2320a4f7420bd27b95c90"
+    "hash": "2ec3e674f7962b984cb95d52545c6895b57c15666a49c01eed4bab02e7230af0"
   }
 }

@@ -3,18 +3,22 @@ package com.cocroachden.planner.constraint;
 import com.cocroachden.planner.constraint.repository.ConstraintRequestRecord;
 import com.cocroachden.planner.constraint.service.ConstraintRequestService;
 import com.cocroachden.planner.lib.WorkerId;
+import com.cocroachden.planner.plannerconfiguration.PlannerConfigurationDTO;
 import com.cocroachden.planner.solver.constraints.specific.consecutiveworkingdays.request.ConsecutiveWorkingDaysRequest;
 import com.cocroachden.planner.solver.constraints.specific.shiftfollowuprestriction.request.ShiftFollowUpRestrictionRequest;
 import com.cocroachden.planner.solver.constraints.specific.shiftpattern.request.ShiftPatternConstraintRequest;
 import com.cocroachden.planner.solver.constraints.specific.shiftperschedule.request.ShiftsPerScheduleRequest;
 import com.cocroachden.planner.solver.constraints.specific.workershiftrequest.request.SpecificShiftRequest;
 import com.cocroachden.planner.solver.constraints.specific.workerspershift.request.WorkersPerShiftRequest;
+import com.cocroachden.planner.solver.constraints.validator.ConstraintValidator;
+import com.cocroachden.planner.solver.constraints.validator.ValidatorResult;
 import com.cocroachden.planner.solver.schedule.WorkShifts;
 import com.vaadin.flow.server.auth.AnonymousAllowed;
 import dev.hilla.BrowserCallable;
 import dev.hilla.Nonnull;
 import lombok.AllArgsConstructor;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -23,6 +27,27 @@ import java.util.UUID;
 @AllArgsConstructor
 public class ConstraintEndpoint {
   private final ConstraintRequestService service;
+  private final ConstraintValidator validator;
+
+  public @Nonnull ValidatorResult validate(
+      @Nonnull PlannerConfigurationDTO configurationRecord,
+      @Nonnull List<@Nonnull SpecificShiftRequestDTO> constraints,
+      @Nonnull List<@Nonnull ShiftPatternRequestDTO> constraints1,
+      @Nonnull List<@Nonnull EmployeesPerShiftRequestDTO> constraints2,
+      @Nonnull List<@Nonnull ConsecutiveWorkingDaysRequestDTO> constraints3,
+      @Nonnull List<@Nonnull ShiftFollowupRestrictionRequestDTO> constraints4,
+      @Nonnull List<@Nonnull ShiftsPerScheduleRequestDTO> constraints5
+  ) {
+    var combined = new ArrayList<ConstraintRequestDTO>();
+    combined.addAll(constraints);
+    combined.addAll(constraints1);
+    combined.addAll(constraints2);
+    combined.addAll(constraints3);
+    combined.addAll(constraints4);
+    combined.addAll(constraints5);
+    return validator.validate(configurationRecord, combined);
+  }
+
 
   public @Nonnull List<@Nonnull SpecificShiftRequestDTO> findSpecificShiftRequests(
       @Nonnull List<@Nonnull UUID> requestIds

@@ -1,12 +1,15 @@
 import { ContextMenu, ContextMenuItem, ContextMenuItemSelectedEvent } from "@hilla/react-components/ContextMenu";
 import { CrudAction, CRUDActions } from "Frontend/util/utils";
 import EmployeeRecord from "Frontend/generated/com/cocroachden/planner/employee/EmployeeRecord";
+import ValidatorIssue from "Frontend/generated/com/cocroachden/planner/solver/constraints/validator/ValidatorIssue";
+import { Tooltip } from "@hilla/react-components/Tooltip";
 
 type Props = {
   workerId: string,
   title: string
   backgroundColor?: string
   onEmployeeAction: (action: CrudAction<Pick<EmployeeRecord, "workerId">>) => void
+  issues: ValidatorIssue[]
   readonly?: boolean
   disableContextMenu?: boolean
 }
@@ -45,7 +48,9 @@ export function GridNameCell(props: Props) {
 
   function renderCenter() {
     return (
-      <div style={{
+      <div
+        id={"headerCell" + props.workerId}
+        style={{
         display: "flex",
         userSelect: "none",
         width: 200,
@@ -64,6 +69,7 @@ export function GridNameCell(props: Props) {
             {p}
           </span>
         )}
+        {props.issues.length > 0 && <Tooltip for={"headerCell" + props.workerId} text={props.issues.map(i => i.issue).join("\n")} position={"top-end"}/>}
       </div>
     )
   }

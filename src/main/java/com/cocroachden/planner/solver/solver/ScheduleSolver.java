@@ -10,10 +10,12 @@ import com.cocroachden.planner.solver.schedule.SchedulePlanBuilder;
 import com.google.ortools.Loader;
 import com.google.ortools.sat.CpModel;
 import com.google.ortools.sat.CpSolver;
+import com.google.ortools.sat.CpSolverStatus;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import reactor.core.publisher.FluxSink;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.function.Consumer;
 
@@ -52,8 +54,14 @@ public class ScheduleSolver {
     );
     this.solverThread = new Thread(() -> {
       var status = this.cpSolver.solve(model, this.solutionCb);
-      log.debug("Status: {}", status);
-      log.debug("{} solutions found.", this.solutionCb.getCurrentSolutionCount());
+      if (status == CpSolverStatus.INFEASIBLE) {
+        fluxSink.accept(new ScheduleResultDTO(
+            Double.NaN,
+            -1,
+            new HashMap<>()
+        ));
+      }
+      log.info("Status: {}, Solutions: {}", status, this.solutionCb.getCurrentSolutionCount());
       log.debug("Statistics");
       log.debug("  conflicts: {}", this.cpSolver.numConflicts());
       log.debug("  branches : {}", this.cpSolver.numBranches());

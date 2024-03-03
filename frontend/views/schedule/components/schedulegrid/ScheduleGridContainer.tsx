@@ -1,8 +1,8 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import WorkShifts from "Frontend/generated/com/cocroachden/planner/solver/schedule/WorkShifts";
 import EmployeeRecord from "Frontend/generated/com/cocroachden/planner/employee/EmployeeRecord";
 import { CrudAction, dateToString, dateToStupidDate, stupidDateToDate, stupidDateToString } from "Frontend/util/utils";
-import { ScheduleGrid } from "Frontend/views/schedule/components/schedulegrid/ScheduleGrid";
+import { Row, ScheduleGrid } from "Frontend/views/schedule/components/schedulegrid/ScheduleGrid";
 import { Cell, DisplayMode } from "Frontend/views/schedule/components/schedulegrid/GridCell";
 import PlannerConfigurationDTO
   from "Frontend/generated/com/cocroachden/planner/plannerconfiguration/PlannerConfigurationDTO";
@@ -13,15 +13,10 @@ import ConstraintType from "Frontend/generated/com/cocroachden/planner/lib/Const
 import ScheduleResultDTO from "Frontend/generated/com/cocroachden/planner/solver/ScheduleResultDTO";
 import WorkerId from "Frontend/generated/com/cocroachden/planner/lib/WorkerId";
 import ShiftPatternRequestDTO from "Frontend/generated/com/cocroachden/planner/constraint/ShiftPatternRequestDTO";
+import ValidatorResult from "Frontend/generated/com/cocroachden/planner/solver/constraints/validator/ValidatorResult";
 
 export type Owner = string
 export type Index = number
-
-type Row = {
-  workerId: Owner
-  displayName: string,
-  cells: Cell[]
-}
 
 type Props = {
   request: PlannerConfigurationDTO
@@ -32,6 +27,7 @@ type Props = {
   onEmployeeAction: (action: CrudAction<EmployeeRecord>) => void
   onShiftRequestsChanged?: (changedRequests: Omit<SpecificShiftRequestDTO, "id">[]) => void
   result?: ScheduleResultDTO
+  validation?: ValidatorResult
 }
 
 type Highlight = {
@@ -87,16 +83,29 @@ export function ScheduleGridContainer(props: Props) {
     props.onShiftRequestsChanged?.(requests)
   }
 
+  const shiftRequestMap = useMemo(() => {
+    const map = new Map<string, SpecificShiftRequestDTO>()
+    props.shiftRequests.forEach(r => map.set(stupidDateToString(r.date) + r.owner, r))
+    return map
+  }, [props.shiftRequests])
+
+  const shiftPatternMap = useMemo(() => {
+    const map = new Map<string, ShiftPatternRequestDTO>()
+    props.shiftPatterns.forEach(r => map.set(r.workerId?.workerId || "", r))
+    return map
+  }, [props.shiftPatterns])
+
   return (
     <ScheduleGrid
       rows={createRows(
         props.request,
         props.employees,
-        props.shiftRequests,
-        props.shiftPatterns,
+        shiftRequestMap,
+        shiftPatternMap,
         props.shiftPerScheduleRequests,
         highlight,
-        props.result
+        props.result,
+        props.validation
       )}
       onCellChanged={handleShiftChange}
       onMouseOverCell={handleCellOnMouseOver}
@@ -122,11 +131,12 @@ function getDistanceInDays(startDate: Date, endDate: Date): Index[] {
 function createRows(
   request: PlannerConfigurationDTO,
   employees: EmployeeRecord[],
-  shiftRequests: SpecificShiftRequestDTO[],
-  shiftPatterns: ShiftPatternRequestDTO[],
+  shiftRequests: Map<string, SpecificShiftRequestDTO>,
+  shiftPatterns: Map<string, ShiftPatternRequestDTO>,
   shiftPerSchedule: ShiftsPerScheduleRequestDTO[],
   highlightInfo: Highlight,
-  results?: ScheduleResultDTO
+  results?: ScheduleResultDTO,
+  validation?: ValidatorResult
 ): Row[] {
   const startDate = stupidDateToDate(request.startDate)
   const endDate = stupidDateToDate(request.endDate)
@@ -137,14 +147,12 @@ function createRows(
       if (highlightInfo.originCell && highlightInfo.originCell.owner === workerId.workerId) {
         highLightIndexes = getIndexesBetweenCells(highlightInfo.originCell, highlightInfo.lastCell!)
       }
-      const relatedPattern = shiftPatterns.find(r => r.workerId?.workerId === workerId.workerId)
+      const relatedPattern = shiftPatterns.get(workerId.workerId)
       const cells = dayIndexes
         .map(dayOffset => {
           const cellDate = new Date(startDate)
           cellDate.setDate(startDate.getDate() + dayOffset)
-          const relatedRequest = shiftRequests.find(r => {
-            return stupidDateToString(r.date) === dateToString(cellDate) && r.owner === workerId.workerId
-          })
+          const relatedRequest = shiftRequests.get(dateToString(cellDate) + workerId.workerId)
           const cellShift = getResultingShift(
             results,
             workerId,
@@ -181,7 +189,8 @@ function createRows(
       return {
         workerId: workerId.workerId,
         displayName: getDisplayName(referencedEmployee, displayShiftCount, assignments),
-        cells
+        cells,
+        issues: validation?.issues.filter(i => i.owner === workerId.workerId)
       } as Row
     })
 }

@@ -11,12 +11,15 @@ import com.cocroachden.planner.solver.constraints.specific.shiftpattern.ShiftPat
 import com.cocroachden.planner.solver.constraints.specific.shiftperday.OneShiftPerDayConstraint;
 import com.cocroachden.planner.solver.constraints.specific.shiftperschedule.ShiftsPerScheduleConstraint;
 import com.cocroachden.planner.solver.constraints.specific.workershiftrequest.WorkerShiftRequestConstraint;
+import com.cocroachden.planner.solver.constraints.specific.workershiftrequest.validation.SpecificShiftRequestValidator;
 import com.cocroachden.planner.solver.constraints.specific.workerspershift.WorkersPerShiftConstraint;
+import com.cocroachden.planner.solver.constraints.validator.ConstraintValidator;
 import com.cocroachden.planner.solver.solver.ScheduleSolver;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 
+import java.util.List;
 import java.util.concurrent.Executor;
 
 @Configuration
@@ -31,6 +34,15 @@ public class ServiceConfiguration {
         new ShiftFollowUpConstraint(),
         new ConsecutiveWorkingDaysConstraint(),
         new ShiftPatternConstraint()
+    );
+  }
+
+  @Bean
+  public ConstraintValidator constraintValidator() {
+    return new ConstraintValidator(
+        List.of(
+            new SpecificShiftRequestValidator()
+        )
     );
   }
 
@@ -64,8 +76,9 @@ public class ServiceConfiguration {
 
   @Bean
   public PlannerConfigurationService plannerConfigurationService(
-      PlannerConfigurationRepository repository
+      PlannerConfigurationRepository repository,
+      ConstraintRequestService service
   ) {
-    return new PlannerConfigurationService(repository);
+    return new PlannerConfigurationService(repository, service);
   }
 }

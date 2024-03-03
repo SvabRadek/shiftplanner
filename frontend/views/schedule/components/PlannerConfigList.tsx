@@ -3,10 +3,14 @@ import { Grid } from "@hilla/react-components/Grid";
 import { GridColumn } from "@hilla/react-components/GridColumn";
 import PlannerConfigurationMetaDataDTO
   from "Frontend/generated/com/cocroachden/planner/plannerconfiguration/PlannerConfigurationMetaDataDTO";
+import { CrudAction, CRUDActions } from "Frontend/util/utils";
+import { Button } from "@hilla/react-components/Button";
+import { Icon } from "@hilla/react-components/Icon";
 
 type Props = {
   configList: PlannerConfigurationMetaDataDTO[]
   onSelectionChanged: (value: PlannerConfigurationMetaDataDTO) => void
+  onAction: (action: CrudAction<PlannerConfigurationMetaDataDTO>) => void
 }
 
 export function PlannerConfigList(props: Props) {
@@ -31,6 +35,15 @@ export function PlannerConfigList(props: Props) {
       <GridColumn header={"Od"} path={"startDate"}/>
       <GridColumn header={"Do"} path={"endDate"}/>
       <GridColumn header={"Id"} path={"id"}/>
+      <GridColumn header={"Akce"} flexGrow={0}>
+        {(row) =>
+          <Button theme={"small icon"} onClick={() => props.onAction({
+            type: CRUDActions.DELETE,
+            payload: row.item
+          })}>
+            <Icon icon={"vaadin:trash"}></Icon>
+          </Button>}
+      </GridColumn>
     </Grid>
   );
 }

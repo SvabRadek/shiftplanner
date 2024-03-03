@@ -14,7 +14,7 @@ import java.util.UUID;
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
-public class ConsecutiveWorkingDaysRequestDTO {
+public class ConsecutiveWorkingDaysRequestDTO implements ConstraintRequestDTO {
   public static ConsecutiveWorkingDaysRequestDTO from(UUID id, ConsecutiveWorkingDaysRequest request) {
     return new ConsecutiveWorkingDaysRequestDTO(
         id,

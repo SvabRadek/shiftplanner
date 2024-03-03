@@ -14,7 +14,7 @@ import java.util.UUID;
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
-public class ShiftFollowupRestrictionRequestDTO {
+public class ShiftFollowupRestrictionRequestDTO implements ConstraintRequestDTO {
   public static ShiftFollowupRestrictionRequestDTO from(UUID id, ShiftFollowUpRestrictionRequest request) {
     return new ShiftFollowupRestrictionRequestDTO(
         id,

@@ -47,16 +47,12 @@ export function EmployeeTab(props: Props) {
           </div>
           <HorizontalLayout theme={"spacing"}>
             <Button theme={"small icon"}
-                    onClick={() =>
-                      props.onEmployeeAction({ type: CRUDActions.READ, payload: employee })
-                    }>
+                    onClick={() => props.onEmployeeAction({ type: CRUDActions.READ, payload: employee })}>
               <Icon icon={"vaadin:search"}/>
             </Button>
             <Button theme={"icon small"}
                     disabled={mode !== ScheduleMode.EDIT}
-                    onClick={() =>
-                      props.onEmployeeAction({ type: CRUDActions.DELETE, payload: employee })
-                    }>
+                    onClick={() => props.onEmployeeAction({ type: CRUDActions.DELETE, payload: employee })}>
               <Icon icon={"vaadin:trash"}/>
             </Button>
           </HorizontalLayout>

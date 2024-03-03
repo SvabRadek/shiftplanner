@@ -48,6 +48,11 @@ import ShiftFollowupRestrictionRequestDTO
 import ShiftPatternRequestDTO from "Frontend/generated/com/cocroachden/planner/constraint/ShiftPatternRequestDTO";
 import { ScheduleSettingsDialog } from "Frontend/views/schedule/components/schedulesettings/ScheduleSettingsDialog";
 import { StopWatch } from "Frontend/components/StopWatch";
+import ValidatorResult from "Frontend/generated/com/cocroachden/planner/solver/constraints/validator/ValidatorResult";
+import IssueSeverity from "Frontend/generated/com/cocroachden/planner/solver/constraints/validator/IssueSeverity";
+import PlannerConfigurationMetaDataDTO
+  from "Frontend/generated/com/cocroachden/planner/plannerconfiguration/PlannerConfigurationMetaDataDTO";
+import { exportToExcel } from "Frontend/util/excel";
 
 async function saveSpecificShiftRequests(requests: SpecificShiftRequestDTO[]): Promise<string[]> {
   return ConstraintEndpoint.saveAllSpecificShiftRequests(requests)
@@ -94,12 +99,15 @@ export default function ScheduleView() {
   const modeCtx = useContext(ScheduleModeCtx);
   const isCopy = useRef(false);
   const [employees, setEmployees] = useState<EmployeeRecord[]>([])
+  const [configMetaData, setConfigMetaData] = useState<PlannerConfigurationMetaDataDTO[]>([]);
   const [employeeConfigDialog, setEmployeeConfigDialog] = useState<EmployeeConfigDialogParams>({ isOpen: false })
   const [isScheduleConfigDialogOpen, setIsScheduleConfigDialogOpen] = useState(false);
+  const [isConfigSelectDialogOpen, setIsConfigSelectDialogOpen] = useState(false);
   const [resultCache, setResultCache] = useState<ResultCache>({
     results: [],
     selectedIndex: 0
   });
+  const [validatorResult, setValidatorResult] = useState<ValidatorResult | undefined>(undefined);
 
   const [resultSubscription, setResultSubscription] = useState<Subscription<ScheduleResultDTO> | undefined>();
   const [request, setRequest] = useState<PlannerConfigurationDTO | undefined>();
@@ -112,11 +120,37 @@ export default function ScheduleView() {
 
   useEffect(() => {
     EmployeeService.getAllEmployees().then(setEmployees)
+    PlannerConfigurationEndpoint.getMetaData().then(setConfigMetaData)
     window.addEventListener("beforeunload", handleUnload)
     return () => {
       window.removeEventListener("beforeunload", handleUnload)
     }
   }, []);
+
+  useEffect(() => {
+    if (isConfigSelectDialogOpen) {
+      PlannerConfigurationEndpoint.getMetaData().then(setConfigMetaData)
+    }
+  }, [isConfigSelectDialogOpen]);
+
+  useEffect(() => {
+    if (validatorResult) {
+      if (validatorResult?.issues.filter(i => i.severity === IssueSeverity.ERROR).length > 0) {
+        Notification.show("V konfiguraci jsou konflikty!", {
+          position: "top-center",
+          duration: 5000,
+          theme: "error"
+        })
+      }
+      if (validatorResult?.issues.filter(i => i.severity === IssueSeverity.WARNING).length > 0) {
+        Notification.show("V konfiguraci jsou varovani!", {
+          position: "top-center",
+          duration: 5000,
+          theme: "warning"
+        })
+      }
+    }
+  }, [validatorResult]);
 
   const handleShiftPatternAction = useCallback((action: CrudAction<ShiftPatternRequestDTO>) => {
     switch (action.type) {
@@ -144,7 +178,7 @@ export default function ScheduleView() {
 
   function handleCancel() {
     isCopy.current = false
-    handleConfigSelected(request?.id!)
+    handleFetchConfig(request?.id!)
   }
 
   async function handleSave() {
@@ -176,7 +210,7 @@ export default function ScheduleView() {
         }))
       ]
     }).then(response => {
-      handleConfigSelected(response)
+      handleFetchConfig(response)
       Notification.show("Konfigurace uspesne ulozena!", {
         position: "top-center",
         duration: 5000,
@@ -185,9 +219,22 @@ export default function ScheduleView() {
     })
   }
 
-  function handleConfigSelected(configId: string) {
+  async function handleConfigAction(action: CrudAction<PlannerConfigurationMetaDataDTO>) {
+    switch (action.type) {
+      case CRUDActions.DELETE:
+        await PlannerConfigurationEndpoint.delete(action.payload.id)
+        PlannerConfigurationEndpoint.getMetaData().then(setConfigMetaData)
+        break
+      case CRUDActions.READ:
+        handleFetchConfig(action.payload.id)
+    }
+  }
+
+  function handleFetchConfig(configId: string) {
     PlannerConfigurationEndpoint.getConfiguration(configId).then(configResponse => {
       setRequest(configResponse)
+      setValidatorResult(undefined)
+      setResultCache({ selectedIndex: 0, results: [] })
       ConstraintEndpoint.findSpecificShiftRequests(
         configResponse.constraintRequestInstances
           .filter(l => l.requestType === ConstraintType.SPECIFIC_SHIFT_REQUEST)
@@ -279,36 +326,64 @@ export default function ScheduleView() {
     }
   }
 
+  async function validateRequest() {
+    const validation = await ConstraintEndpoint.validate(
+      request!,
+      shiftRequests,
+      shiftPatternRequests,
+      employeesPerShiftRequests,
+      consecutiveWorkingDaysRequests,
+      shiftFollowupRestrictionRequests,
+      shiftPerScheduleRequests
+    )
+    setValidatorResult(validation)
+    return validation
+  }
+
   function handleStartCalculation() {
     if (resultSubscription) {
       resultSubscription.cancel()
       setResultSubscription(undefined)
     }
-    modeCtx.setMode(ScheduleMode.CALCULATING)
-    setResultSubscription(PlannerEndpoint.solve(request?.id)
-      .onNext(value => {
-        setResultCache(prevState => {
-          const updatedResults = [...prevState.results, value].slice(-RESULT_CACHE_SIZE)
-          return {
-            results: updatedResults,
-            selectedIndex: updatedResults.length - 1
-          }
-        })
-      }).onComplete(() => {
-        Notification.show("Vypocet uspesne ukoncen!", {
-          position: "top-center",
-          duration: 5000,
-          theme: "success"
-        })
-        setResultSubscription(undefined)
-      }).onError(() => {
-        Notification.show("Ztrata spojeni!", {
-          position: "top-center",
-          duration: 5000,
-          theme: "warning"
-        })
+    validateRequest().then(validation => {
+        if (validation.issues.filter(i => i.severity === IssueSeverity.ERROR ).length > 0) {
+          return;
+        }
+        modeCtx.setMode(ScheduleMode.CALCULATING)
+        setResultSubscription(PlannerEndpoint.solve(request?.id)
+          .onNext(value => {
+            if (value.resultIndex == -1) {
+              Notification.show("Neresitelne zadani!", {
+                position: "top-center",
+                duration: 5000,
+                theme: "error"
+              })
+              handleStopCalculation()
+              return
+            }
+            setResultCache(prevState => {
+              const updatedResults = [...prevState.results, value].slice(-RESULT_CACHE_SIZE)
+              return {
+                results: updatedResults,
+                selectedIndex: updatedResults.length - 1
+              }
+            });
+          }).onComplete(() => {
+            Notification.show("Vypocet uspesne ukoncen!", {
+              position: "top-center",
+              duration: 5000,
+              theme: "success"
+            })
+            setResultSubscription(undefined)
+          }).onError(() => {
+            Notification.show("Ztrata spojeni!", {
+              position: "top-center",
+              duration: 5000,
+              theme: "warning"
+            })
+          })
+        )
       })
-    )
   }
 
   function handleResultSelect(offset: 1 | -1) {
@@ -421,7 +496,16 @@ export default function ScheduleView() {
             Vypocitat
           </Button>
         }
-        <ConfigSelectDialog onConfigSelected={value => handleConfigSelected(value.id)}/>
+        <Button theme={"icon primary"} onClick={() => setIsConfigSelectDialogOpen(true)}>
+          <Icon icon={"vaadin:cog"} slot={"prefix"}/>
+          Vybrat konfiguraci
+        </Button>
+        <ConfigSelectDialog
+          configMetaData={configMetaData}
+          onOpenChanged={value => setIsConfigSelectDialogOpen(value)}
+          isOpen={isConfigSelectDialogOpen}
+          onConfigAction={handleConfigAction}
+        />
         {isRequestLoaded && <Button
             disabled={modeCtx.mode === ScheduleMode.EDIT || modeCtx.mode === ScheduleMode.CALCULATING}
             onClick={() => modeCtx.setMode(ScheduleMode.EDIT)}>
@@ -431,6 +515,11 @@ export default function ScheduleView() {
             disabled={modeCtx.mode === ScheduleMode.EDIT || modeCtx.mode === ScheduleMode.CALCULATING}
             onClick={handleCopyConfig}>
             Zkopirovat</Button>
+        }
+        {isRequestLoaded && <Button
+            disabled={modeCtx.mode === ScheduleMode.CALCULATING}
+            onClick={validateRequest}>
+            Zkontrolovat</Button>
         }
         {isRequestLoaded && <Button
             disabled={modeCtx.mode !== ScheduleMode.EDIT}
@@ -479,6 +568,7 @@ export default function ScheduleView() {
             borderWidth: 1,
             borderColor: "var(--lumo-contrast-20pct)"
           }} isRunning={resultSubscription !== undefined}></StopWatch>
+          <Button theme={"small"} onClick={() => exportToExcel(employees, resultCache.results[resultCache.selectedIndex])}>Export</Button>
         </HorizontalLayout>
         {resultSubscription && <ProgressBar style={{ marginBottom: 0 }} indeterminate></ProgressBar>}
       </VerticalLayout>
@@ -533,7 +623,7 @@ export default function ScheduleView() {
     <VerticalLayout theme={"spacing padding"}>
       <Card style={{ width: "100%" }}>
         {renderHeaderStrip()}
-        {resultCache.results.length > 0 && renderResultStrip()}
+        {(resultSubscription || resultCache.results.length > 0) && renderResultStrip()}
       </Card>
       {request ? renderGridHeader() : <h2 style={{ marginTop: 30, padding: 10 }}>Vyberte rozvrh</h2>}
       {request &&
@@ -581,6 +671,7 @@ export default function ScheduleView() {
                       onEmployeeAction={handleEmployeeAction}
                       onShiftRequestsChanged={handleShiftRequestsChanged}
                       result={resultCache.results.length > 0 ? resultCache.results[resultCache.selectedIndex] : undefined}
+                      validation={validatorResult}
                   />
               </Card>
           </>

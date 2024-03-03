@@ -79,4 +79,8 @@ public class ConstraintRequestService {
     record.setId(UUID.randomUUID());
     return repository.save(record);
   }
+
+  public void deleteConstraints(List<UUID> uuids) {
+    repository.deleteAllById(uuids);
+  }
 }
