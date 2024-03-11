@@ -3,12 +3,13 @@ import { CrudAction, CRUDActions } from "Frontend/util/utils";
 import EmployeeRecord from "Frontend/generated/com/cocroachden/planner/employee/EmployeeRecord";
 import ValidatorIssue from "Frontend/generated/com/cocroachden/planner/solver/constraints/validator/ValidatorIssue";
 import { Tooltip } from "@hilla/react-components/Tooltip";
+import WorkerId from "Frontend/generated/com/cocroachden/planner/lib/WorkerId";
 
 type Props = {
-  workerId: string,
+  owner: WorkerId,
   title: string
   backgroundColor?: string
-  onEmployeeAction: (action: CrudAction<Pick<EmployeeRecord, "workerId">>) => void
+  onEmployeeAction: (action: CrudAction<Pick<EmployeeRecord, "id">>) => void
   issues: ValidatorIssue[]
   readonly?: boolean
   disableContextMenu?: boolean
@@ -33,13 +34,13 @@ export function GridNameCell(props: Props) {
       case "Odebrat":
         props.onEmployeeAction({
           type: CRUDActions.DELETE,
-          payload: { workerId: props.workerId }
+          payload: props.owner
         })
         break
       case "Detail":
         props.onEmployeeAction({
           type: CRUDActions.READ,
-          payload: { workerId: props.workerId }
+          payload: props.owner
         })
     }
   }
@@ -49,7 +50,7 @@ export function GridNameCell(props: Props) {
   function renderCenter() {
     return (
       <div
-        id={"headerCell" + props.workerId}
+        id={"headerCell" + props.owner}
         style={{
         display: "flex",
         userSelect: "none",
@@ -69,7 +70,7 @@ export function GridNameCell(props: Props) {
             {p}
           </span>
         )}
-        {props.issues.length > 0 && <Tooltip for={"headerCell" + props.workerId} text={props.issues.map(i => i.issue).join("\n")} position={"top-end"}/>}
+        {props.issues.length > 0 && <Tooltip for={"headerCell" + props.owner} text={props.issues.map(i => i.issue).join("\n")} position={"top-end"}/>}
       </div>
     )
   }

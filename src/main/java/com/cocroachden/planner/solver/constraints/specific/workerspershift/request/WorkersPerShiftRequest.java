@@ -1,6 +1,7 @@
 package com.cocroachden.planner.solver.constraints.specific.workerspershift.request;
 
 
+import com.cocroachden.planner.constraint.EmployeesPerShiftRequestDTO;
 import com.cocroachden.planner.lib.ConstraintType;
 import com.cocroachden.planner.solver.constraints.specific.AbstractMinMaxRequest;
 import com.cocroachden.planner.solver.schedule.WorkShifts;
@@ -14,6 +15,19 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class WorkersPerShiftRequest extends AbstractMinMaxRequest {
   public static final ConstraintType ID = ConstraintType.WORKERS_PER_SHIFT;
+
+  public static WorkersPerShiftRequest from(EmployeesPerShiftRequestDTO dto) {
+    return new WorkersPerShiftRequest(
+        dto.getTargetShift(),
+        dto.getHardMin(),
+        dto.getSoftMin(),
+        dto.getMinPenalty(),
+        dto.getSoftMax(),
+        dto.getMaxPenalty(),
+        dto.getHardMax()
+    );
+  }
+
   private WorkShifts shift;
   public WorkersPerShiftRequest(
       WorkShifts shift,

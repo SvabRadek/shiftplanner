@@ -53,30 +53,7 @@ import IssueSeverity from "Frontend/generated/com/cocroachden/planner/solver/con
 import PlannerConfigurationMetaDataDTO
   from "Frontend/generated/com/cocroachden/planner/plannerconfiguration/PlannerConfigurationMetaDataDTO";
 import { exportToExcel } from "Frontend/util/excel";
-
-async function saveSpecificShiftRequests(requests: SpecificShiftRequestDTO[]): Promise<string[]> {
-  return ConstraintEndpoint.saveAllSpecificShiftRequests(requests)
-}
-
-async function saveShiftPerScheduleRequests(requests: ShiftsPerScheduleRequestDTO[]): Promise<string[]> {
-  return ConstraintEndpoint.saveAllShiftsPerScheduleRequests(requests)
-}
-
-async function saveConsecutiveWorkingDaysRequests(requests: ConsecutiveWorkingDaysRequestDTO[]): Promise<string[]> {
-  return ConstraintEndpoint.saveAllConsecutiveWorkingDaysRequests(requests)
-}
-
-async function saveEmployeesPerShiftRequests(requests: EmployeesPerShiftRequestDTO[]): Promise<string[]> {
-  return ConstraintEndpoint.saveAllEmployeesPerShiftRequests(requests)
-}
-
-async function saveShiftFollowupRestrictionRequests(requests: ShiftFollowupRestrictionRequestDTO[]): Promise<string[]> {
-  return ConstraintEndpoint.saveShiftFollowupRestrictionRequests(requests)
-}
-
-async function saveShiftPatternRequests(requests: ShiftPatternRequestDTO[]): Promise<string[]> {
-  return ConstraintEndpoint.saveShiftPatternRequests(requests)
-}
+import SolutionStatus from "Frontend/generated/com/cocroachden/planner/solver/SolutionStatus";
 
 type EmployeeConfigDialogParams = {
   isOpen: boolean,
@@ -96,8 +73,8 @@ const RESULT_CACHE_SIZE = 5
 
 export default function ScheduleView() {
 
+  const isConfigNew = useRef(false);
   const modeCtx = useContext(ScheduleModeCtx);
-  const isCopy = useRef(false);
   const [employees, setEmployees] = useState<EmployeeRecord[]>([])
   const [configMetaData, setConfigMetaData] = useState<PlannerConfigurationMetaDataDTO[]>([]);
   const [employeeConfigDialog, setEmployeeConfigDialog] = useState<EmployeeConfigDialogParams>({ isOpen: false })
@@ -143,7 +120,7 @@ export default function ScheduleView() {
         })
       }
       if (validatorResult?.issues.filter(i => i.severity === IssueSeverity.WARNING).length > 0) {
-        Notification.show("V konfiguraci jsou varovani!", {
+        Notification.show("Konfigurace obsahuje varovani!", {
           position: "top-center",
           duration: 5000,
           theme: "warning"
@@ -177,46 +154,46 @@ export default function ScheduleView() {
 
 
   function handleCancel() {
-    isCopy.current = false
+    isConfigNew.current = false
     handleFetchConfig(request?.id!)
   }
 
   async function handleSave() {
-    const [specificShiftIds, shiftPerScheduleIds, consecutiveWorkingDaysIds, employeesPerShiftIds, shiftFollowupRestrictionIds, shiftPatternRequestIds] = await Promise.all([
-      saveSpecificShiftRequests(shiftRequests),
-      saveShiftPerScheduleRequests(shiftPerScheduleRequests),
-      saveConsecutiveWorkingDaysRequests(consecutiveWorkingDaysRequests),
-      saveEmployeesPerShiftRequests(employeesPerShiftRequests),
-      saveShiftFollowupRestrictionRequests(shiftFollowupRestrictionRequests),
-      saveShiftPatternRequests(shiftPatternRequests)
-    ])
-    await PlannerConfigurationEndpoint.save({
-      ...request!,
-      constraintRequestInstances: [
-        ...specificShiftIds.map(id => ({ requestType: ConstraintType.SPECIFIC_SHIFT_REQUEST, requestId: id })),
-        ...shiftPerScheduleIds.map(id => ({ requestType: ConstraintType.SHIFT_PER_SCHEDULE, requestId: id })),
-        ...consecutiveWorkingDaysIds.map(id => ({
-          requestType: ConstraintType.CONSECUTIVE_WORKING_DAYS,
-          requestId: id
-        })),
-        ...employeesPerShiftIds.map(id => ({ requestType: ConstraintType.WORKERS_PER_SHIFT, requestId: id })),
-        ...shiftFollowupRestrictionIds.map(id => ({
-          requestType: ConstraintType.SHIFT_FOLLOW_UP_RESTRICTION,
-          requestId: id
-        })),
-        ...shiftPatternRequestIds.map(id => ({
-          requestType: ConstraintType.SHIFT_PATTERN_CONSTRAINT,
-          requestId: id
-        }))
-      ]
-    }).then(response => {
-      handleFetchConfig(response)
-      Notification.show("Konfigurace uspesne ulozena!", {
-        position: "top-center",
-        duration: 5000,
-        theme: "success"
+    if (isConfigNew) {
+      await PlannerConfigurationEndpoint.save(
+        request!,
+        shiftRequests,
+        shiftPatternRequests,
+        employeesPerShiftRequests,
+        shiftFollowupRestrictionRequests,
+        shiftPerScheduleRequests,
+        consecutiveWorkingDaysRequests
+      ).then(response => {
+        handleFetchConfig(response)
+        Notification.show("Konfigurace uspesne ulozena!", {
+          position: "top-center",
+          duration: 5000,
+          theme: "success"
+        })
       })
-    })
+    } else {
+      await PlannerConfigurationEndpoint.update(
+        request!,
+        shiftRequests,
+        shiftPatternRequests,
+        employeesPerShiftRequests,
+        shiftFollowupRestrictionRequests,
+        shiftPerScheduleRequests,
+        consecutiveWorkingDaysRequests
+      ).then(response => {
+        handleFetchConfig(response)
+        Notification.show("Konfigurace uspesne upravena!", {
+          position: "top-center",
+          duration: 5000,
+          theme: "success"
+        })
+      })
+    }
   }
 
   async function handleConfigAction(action: CrudAction<PlannerConfigurationMetaDataDTO>) {
@@ -266,6 +243,7 @@ export default function ScheduleView() {
           .map(l => l.requestId)
       ).then(setShiftPatternRequests)
     })
+    isConfigNew.current = false
     modeCtx.setMode(ScheduleMode.READONLY)
   }
 
@@ -276,24 +254,24 @@ export default function ScheduleView() {
           if (!prevState) return undefined
           return {
             ...prevState,
-            workers: [...prevState.workers, { workerId: action.payload.workerId }]
+            workers: [...prevState.workers, { id: action.payload.id }]
           }
         })
         break
       case CRUDActions.DELETE:
         setRequest(prevState => ({
           ...prevState!,
-          workers: prevState!.workers.filter(w => w.workerId !== action.payload.workerId)
+          workers: prevState!.workers.filter(w => w.id !== action.payload.id)
         }))
         break
       case CRUDActions.UPDATE:
         setEmployeeConfigDialog(() =>
-          ({ selectedEmployee: { workerId: action.payload.workerId }, isOpen: true })
+          ({ selectedEmployee: { id: action.payload.id }, isOpen: true })
         )
         break
       case CRUDActions.READ:
         setEmployeeConfigDialog({
-          selectedEmployee: { workerId: action.payload.workerId },
+          selectedEmployee: { id: action.payload.id },
           isOpen: true
         })
         break
@@ -310,7 +288,7 @@ export default function ScheduleView() {
   }
 
   function handleCopyConfig() {
-    isCopy.current = true
+    isConfigNew.current = true
     setRequest(prevState => ({
       ...prevState!,
       name: ""
@@ -346,44 +324,44 @@ export default function ScheduleView() {
       setResultSubscription(undefined)
     }
     validateRequest().then(validation => {
-        if (validation.issues.filter(i => i.severity === IssueSeverity.ERROR ).length > 0) {
-          return;
-        }
-        modeCtx.setMode(ScheduleMode.CALCULATING)
-        setResultSubscription(PlannerEndpoint.solve(request?.id)
-          .onNext(value => {
-            if (value.resultIndex == -1) {
-              Notification.show("Neresitelne zadani!", {
-                position: "top-center",
-                duration: 5000,
-                theme: "error"
-              })
-              handleStopCalculation()
-              return
+      if (validation.issues.filter(i => i.severity === IssueSeverity.ERROR).length > 0) {
+        return;
+      }
+      modeCtx.setMode(ScheduleMode.CALCULATING)
+      setResultSubscription(PlannerEndpoint.solve(request?.id)
+        .onNext(value => {
+          if (value.solutionStatus !== SolutionStatus.OK) {
+            Notification.show("Neresitelne zadani!", {
+              position: "top-center",
+              duration: 5000,
+              theme: "error"
+            })
+            handleStopCalculation()
+            return
+          }
+          setResultCache(prevState => {
+            const updatedResults = [...prevState.results, value].slice(-RESULT_CACHE_SIZE)
+            return {
+              results: updatedResults,
+              selectedIndex: updatedResults.length - 1
             }
-            setResultCache(prevState => {
-              const updatedResults = [...prevState.results, value].slice(-RESULT_CACHE_SIZE)
-              return {
-                results: updatedResults,
-                selectedIndex: updatedResults.length - 1
-              }
-            });
-          }).onComplete(() => {
-            Notification.show("Vypocet uspesne ukoncen!", {
-              position: "top-center",
-              duration: 5000,
-              theme: "success"
-            })
-            setResultSubscription(undefined)
-          }).onError(() => {
-            Notification.show("Ztrata spojeni!", {
-              position: "top-center",
-              duration: 5000,
-              theme: "warning"
-            })
+          });
+        }).onComplete(() => {
+          Notification.show("Vypocet uspesne ukoncen!", {
+            position: "top-center",
+            duration: 5000,
+            theme: "success"
           })
-        )
-      })
+          setResultSubscription(undefined)
+        }).onError(() => {
+          Notification.show("Ztrata spojeni!", {
+            position: "top-center",
+            duration: 5000,
+            theme: "warning"
+          })
+        })
+      )
+    })
   }
 
   function handleResultSelect(offset: 1 | -1) {
@@ -485,13 +463,13 @@ export default function ScheduleView() {
     return (
       <HorizontalLayout theme={"spacing"}>
         {resultSubscription ?
-            <Button onClick={handleStopCalculation} theme={"primary"}>
-              <Icon icon={"vaadin:stop"}></Icon>
-              Stop
-            </Button>
-            : <Button onClick={handleStartCalculation}
-                      disabled={modeCtx.mode === ScheduleMode.EDIT || !request}
-                      theme={"primary"}>
+          <Button onClick={handleStopCalculation} theme={"primary"}>
+            <Icon icon={"vaadin:stop"}></Icon>
+            Stop
+          </Button>
+          : <Button onClick={handleStartCalculation}
+                    disabled={modeCtx.mode === ScheduleMode.EDIT || !request}
+                    theme={"primary"}>
             <Icon icon={"vaadin:play"}/>
             Vypocitat
           </Button>
@@ -568,7 +546,8 @@ export default function ScheduleView() {
             borderWidth: 1,
             borderColor: "var(--lumo-contrast-20pct)"
           }} isRunning={resultSubscription !== undefined}></StopWatch>
-          <Button theme={"small"} onClick={() => exportToExcel(employees, resultCache.results[resultCache.selectedIndex])}>Export</Button>
+          <Button theme={"small"}
+                  onClick={() => exportToExcel(employees, resultCache.results[resultCache.selectedIndex])}>Export</Button>
         </HorizontalLayout>
         {resultSubscription && <ProgressBar style={{ marginBottom: 0 }} indeterminate></ProgressBar>}
       </VerticalLayout>
@@ -642,16 +621,16 @@ export default function ScheduleView() {
                   onConsecutiveWorkingDaysAction={handleConsecutiveWorkingDaysAction}
               />
               <EmployeeRequestConfigDialog
-                  key={employeeConfigDialog.selectedEmployee?.workerId}
-                  employee={employees.find(w => w.workerId === employeeConfigDialog.selectedEmployee?.workerId)!}
+                  key={employeeConfigDialog.selectedEmployee?.id}
+                  employee={employees.find(w => w.id === employeeConfigDialog.selectedEmployee?.id)!}
                   isOpen={employeeConfigDialog.isOpen}
                   onShiftPerScheduleAction={handleShiftPerScheduleAction}
-                  shiftsPerScheduleRequests={shiftPerScheduleRequests.filter(r => r.owner.workerId === employeeConfigDialog.selectedEmployee?.workerId)}
+                  shiftsPerScheduleRequests={shiftPerScheduleRequests.filter(r => r.owner.id === employeeConfigDialog.selectedEmployee?.id)}
                   onOpenChanged={(newValue) => setEmployeeConfigDialog(prevState => ({
                     ...prevState,
                     isOpen: newValue
                   }))}
-                  shiftPatternRequests={shiftPatternRequests.filter(r => r.workerId?.workerId === employeeConfigDialog.selectedEmployee?.workerId)}
+                  shiftPatternRequests={shiftPatternRequests.filter(r => r.owner!.id === employeeConfigDialog.selectedEmployee?.id)}
                   onShiftPatternRequestsAction={handleShiftPatternAction}
                   readonly={modeCtx.mode !== ScheduleMode.EDIT}
               />

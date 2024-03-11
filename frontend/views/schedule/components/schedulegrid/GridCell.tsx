@@ -3,6 +3,7 @@ import StupidDate from "Frontend/generated/com/cocroachden/planner/lib/StupidDat
 import WorkShifts from "Frontend/generated/com/cocroachden/planner/solver/schedule/WorkShifts";
 import { workShiftBindings } from "Frontend/views/schedule/WorkShiftBindigs";
 import { CSSProperties } from "react";
+import WorkerId from "Frontend/generated/com/cocroachden/planner/lib/WorkerId";
 
 export enum DisplayMode {
   DEFAULT,
@@ -13,11 +14,13 @@ export enum DisplayMode {
 export type Cell = {
   shift: WorkShifts
   index: number
-  owner: string
+  owner: WorkerId
   date: StupidDate
   isHighlighted: boolean
   displayMode?: DisplayMode
   requestId?: string
+  backgroundColor?: string
+  color?: string
 }
 
 type Props = {

@@ -20,13 +20,13 @@ export function EmployeeTab(props: Props) {
   const [isAddEmployeeDialogOpen, setIsAddEmployeeDialogOpen] = useState(false);
   const { mode } = useContext(ScheduleModeCtx);
   const selectedWorkers = props.employees
-    .filter(e => props.request.workers.some(w => w.workerId === e.workerId))
+    .filter(e => props.request.workers.some(w => w.id === e.id))
   const missingWorkers = props.employees
-    .filter(e => !props.request.workers.some(w => w.workerId === e.workerId))
+    .filter(e => !props.request.workers.some(w => w.id === e.id))
 
   function renderEmployeeCard(employee: EmployeeRecord) {
     return (
-      <div key={employee.workerId}
+      <div key={employee.id}
            style={{
              width: "100%",
              marginBottom: "5px",

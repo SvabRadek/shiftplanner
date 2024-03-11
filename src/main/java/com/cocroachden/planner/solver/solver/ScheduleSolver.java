@@ -3,6 +3,7 @@ package com.cocroachden.planner.solver.solver;
 
 import com.cocroachden.planner.solver.SchedulePlanConfiguration;
 import com.cocroachden.planner.solver.ScheduleResultDTO;
+import com.cocroachden.planner.solver.SolutionStatus;
 import com.cocroachden.planner.solver.constraints.ConstraintRequest;
 import com.cocroachden.planner.solver.constraints.GenericConstraintApplier;
 import com.cocroachden.planner.solver.schedule.Objectives;
@@ -46,8 +47,10 @@ public class ScheduleSolver {
     this.cpSolver = new CpSolver();
     this.cpSolver.getParameters().setLinearizationLevel(0);
     this.cpSolver.getParameters().setEnumerateAllSolutions(true);
+    this.cpSolver.getParameters().setNumWorkers(8);
     this.cpSolver.getParameters().setRelativeGapLimit(0.05);
     model.minimize(objectives.getObjectiveAsExpression());
+    log.info("Validation: {}", model.validate());
     this.solutionCb = new ScheduleSolutionCb(
         fluxSink,
         schedulePlan
@@ -56,8 +59,17 @@ public class ScheduleSolver {
       var status = this.cpSolver.solve(model, this.solutionCb);
       if (status == CpSolverStatus.INFEASIBLE) {
         fluxSink.accept(new ScheduleResultDTO(
-            Double.NaN,
-            -1,
+            SolutionStatus.INFEASIBLE,
+            0d,
+            0,
+            new HashMap<>()
+        ));
+      }
+      if (status == CpSolverStatus.MODEL_INVALID) {
+        fluxSink.accept(new ScheduleResultDTO(
+            SolutionStatus.MODEL_INVALID,
+            0d,
+            0,
             new HashMap<>()
         ));
       }

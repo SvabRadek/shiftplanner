@@ -1,4 +1,4 @@
-import EmployeeView from 'Frontend/views/contacts/EmployeeView';
+import EmployeeView from 'Frontend/views/employees/EmployeeView';
 import MainLayout from 'Frontend/views/MainLayout.js';
 import { createBrowserRouter, RouteObject } from 'react-router-dom';
 import { HomeView } from "Frontend/views/home/HomeView";

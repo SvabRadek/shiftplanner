@@ -1,6 +1,7 @@
 package com.cocroachden.planner.solver.constraints.specific.shiftfollowuprestriction.request;
 
 
+import com.cocroachden.planner.constraint.ShiftFollowupRestrictionRequestDTO;
 import com.cocroachden.planner.lib.ConstraintType;
 import com.cocroachden.planner.lib.WorkerId;
 import com.cocroachden.planner.solver.constraints.specific.AbstractConstraintRequest;
@@ -15,6 +16,16 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class ShiftFollowUpRestrictionRequest extends AbstractConstraintRequest {
   public static final ConstraintType ID = ConstraintType.SHIFT_FOLLOW_UP_RESTRICTION;
+
+  public static ShiftFollowUpRestrictionRequest from(ShiftFollowupRestrictionRequestDTO dto) {
+    return new ShiftFollowUpRestrictionRequest(
+        dto.getFirstShift(),
+        dto.getForbiddenFollowup(),
+        dto.getPenalty()
+    );
+
+  }
+
   private WorkShifts firstShift;
   private WorkShifts forbiddenFollowup;
   private Integer penalty;

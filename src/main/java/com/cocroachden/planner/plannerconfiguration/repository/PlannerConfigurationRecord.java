@@ -6,6 +6,7 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
@@ -17,6 +18,7 @@ import java.util.UUID;
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
+@Setter
 @Entity
 @Table(name = "planner_configurations")
 public class PlannerConfigurationRecord {
@@ -41,7 +43,22 @@ public class PlannerConfigurationRecord {
     );
   }
 
-  @Id @GeneratedValue
+  public PlannerConfigurationRecord(
+      String name,
+      LocalDate startDate,
+      LocalDate endDate,
+      List<WorkerId> workers,
+      List<ConfigurationRequestLink> constraintRequestInstances
+  ) {
+    this.name = name;
+    this.startDate = startDate;
+    this.endDate = endDate;
+    this.workers = workers;
+    this.constraintRequestInstances = constraintRequestInstances;
+  }
+
+  @Id
+  @GeneratedValue
   private UUID id;
   private String name;
   @CreationTimestamp

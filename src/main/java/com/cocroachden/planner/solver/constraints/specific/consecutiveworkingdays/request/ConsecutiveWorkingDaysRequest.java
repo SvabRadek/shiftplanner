@@ -1,6 +1,7 @@
 package com.cocroachden.planner.solver.constraints.specific.consecutiveworkingdays.request;
 
 
+import com.cocroachden.planner.constraint.ConsecutiveWorkingDaysRequestDTO;
 import com.cocroachden.planner.lib.ConstraintType;
 import com.cocroachden.planner.lib.WorkerId;
 import com.cocroachden.planner.solver.constraints.specific.AbstractMinMaxRequest;
@@ -15,7 +16,21 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class ConsecutiveWorkingDaysRequest extends AbstractMinMaxRequest {
   public static final ConstraintType CONSTRAINT_TYPE = ConstraintType.CONSECUTIVE_WORKING_DAYS;
+
+  public static ConsecutiveWorkingDaysRequest from(ConsecutiveWorkingDaysRequestDTO dto) {
+    return new ConsecutiveWorkingDaysRequest(
+        dto.getTargetShift(),
+        dto.getHardMin(),
+        dto.getSoftMin(),
+        dto.getMinPenalty(),
+        dto.getSoftMax(),
+        dto.getMaxPenalty(),
+        dto.getHardMax()
+    );
+  }
+
   private WorkShifts targetShift;
+
   public ConsecutiveWorkingDaysRequest(
       WorkerId owner,
       WorkShifts targetShift,

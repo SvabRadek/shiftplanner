@@ -15,11 +15,11 @@ import java.util.Optional;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @JsonTypeName("AbstractConstraintRequest")
 public abstract class AbstractConstraintRequest implements ConstraintRequest {
-  private ConstraintType id;
+  private ConstraintType type;
   private WorkerId owner;
   @Override
   public ConstraintType getType() {
-    return this.id;
+    return this.type;
   }
 
   public Optional<WorkerId> getOwner() {

@@ -18,5 +18,5 @@ public class WorkerId implements Serializable {
   private static final long serialVersionUID = -3136703610267018121L;
   @Column(name = "worker_id", nullable = false)
   @Nonnull
-  private String workerId;
+  private Long id;
 }

@@ -14,10 +14,14 @@ import com.cocroachden.planner.solver.constraints.specific.workerspershift.reque
 import com.cocroachden.planner.solver.schedule.ScheduleWorker;
 import com.cocroachden.planner.solver.schedule.WorkShifts;
 import com.cocroachden.planner.solver.schedule.request.ScheduleRequest;
+import org.apache.commons.lang3.Range;
+import org.apache.commons.lang3.StringUtils;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.DoubleStream;
+import java.util.stream.IntStream;
 
 import static com.cocroachden.planner.solver.schedule.WorkShifts.*;
 
@@ -26,48 +30,31 @@ public class Example {
   private static final LocalDate LAST_DAY = LocalDate.of(2023, 11, 30);
 
   public static List<WorkerId> workers() {
-    return List.of(
-        new WorkerId("0"),
-        new WorkerId("1"),
-        new WorkerId("2"),
-        new WorkerId("3"),
-        new WorkerId("4"),
-        new WorkerId("5"),
-        new WorkerId("6"),
-        new WorkerId("7"),
-        new WorkerId("8"),
-        new WorkerId("9"),
-        new WorkerId("10"),
-        new WorkerId("11"),
-        new WorkerId("12"),
-        new WorkerId("13"),
-        new WorkerId("14"),
-        new WorkerId("15"),
-        new WorkerId("16"),
-        new WorkerId("17")
-    );
+    return IntStream.rangeClosed(1, 18).asLongStream()
+        .mapToObj(WorkerId::new)
+        .toList();
   }
 
   public static List<ConstraintRequest> constraintRequests() {
     var allRequests = new ArrayList<ConstraintRequest>();
-    allRequests.add(new ShiftsPerScheduleRequest(new WorkerId("0"), 13, 14, 1, 14, 1, 15));
-    allRequests.add(new ShiftsPerScheduleRequest(new WorkerId("1"), 13, 14, 1, 14, 1, 15));
-    allRequests.add(new ShiftsPerScheduleRequest(new WorkerId("2"), 13, 14, 1, 14, 1, 15));
-    allRequests.add(new ShiftsPerScheduleRequest(new WorkerId("3"), 13, 14, 1, 14, 1, 15));
-    allRequests.add(new ShiftsPerScheduleRequest(new WorkerId("4"), 13, 14, 1, 14, 1, 15));
-    allRequests.add(new ShiftsPerScheduleRequest(new WorkerId("5"), 13, 14, 1, 14, 1, 15));
-    allRequests.add(new ShiftsPerScheduleRequest(new WorkerId("6"), 13, 14, 1, 14, 1, 15));
-    allRequests.add(new ShiftsPerScheduleRequest(new WorkerId("7"), 13, 14, 1, 14, 1, 15));
-    allRequests.add(new ShiftsPerScheduleRequest(new WorkerId("8"), 13, 14, 1, 14, 1, 15));
-    allRequests.add(new ShiftsPerScheduleRequest(new WorkerId("9"), 13, 14, 1, 14, 1, 15));
-    allRequests.add(new ShiftsPerScheduleRequest(new WorkerId("10"), 13, 14, 1, 14, 1, 15));
-    allRequests.add(new ShiftsPerScheduleRequest(new WorkerId("11"), 13, 14, 1, 14, 1, 15));
-    allRequests.add(new ShiftsPerScheduleRequest(new WorkerId("12"), 13, 14, 1, 14, 1, 15));
-    allRequests.add(new ShiftsPerScheduleRequest(new WorkerId("13"), 13, 14, 1, 14, 1, 15));
-    allRequests.add(new ShiftsPerScheduleRequest(new WorkerId("14"), 13, 14, 1, 14, 1, 15));
-    allRequests.add(new ShiftsPerScheduleRequest(new WorkerId("15"), 13, 14, 1, 14, 1, 15));
-    allRequests.add(new ShiftsPerScheduleRequest(new WorkerId("16"), 13, 14, 1, 14, 1, 15));
-    allRequests.add(new ShiftsPerScheduleRequest(new WorkerId("17"), 13, 14, 1, 14, 1, 15));
+    allRequests.add(new ShiftsPerScheduleRequest(new WorkerId(1L), 13, 14, 1, 14, 1, 15));
+    allRequests.add(new ShiftsPerScheduleRequest(new WorkerId(2L), 13, 14, 1, 14, 1, 15));
+    allRequests.add(new ShiftsPerScheduleRequest(new WorkerId(3L), 13, 14, 1, 14, 1, 15));
+    allRequests.add(new ShiftsPerScheduleRequest(new WorkerId(4L), 13, 14, 1, 14, 1, 15));
+    allRequests.add(new ShiftsPerScheduleRequest(new WorkerId(5L), 13, 14, 1, 14, 1, 15));
+    allRequests.add(new ShiftsPerScheduleRequest(new WorkerId(6L), 13, 14, 1, 14, 1, 15));
+    allRequests.add(new ShiftsPerScheduleRequest(new WorkerId(7L), 13, 14, 1, 14, 1, 15));
+    allRequests.add(new ShiftsPerScheduleRequest(new WorkerId(8L), 13, 14, 1, 14, 1, 15));
+    allRequests.add(new ShiftsPerScheduleRequest(new WorkerId(9L), 13, 14, 1, 14, 1, 15));
+    allRequests.add(new ShiftsPerScheduleRequest(new WorkerId(10L), 13, 14, 1, 14, 1, 15));
+    allRequests.add(new ShiftsPerScheduleRequest(new WorkerId(11L), 13, 14, 1, 14, 1, 15));
+    allRequests.add(new ShiftsPerScheduleRequest(new WorkerId(12L), 13, 14, 1, 14, 1, 15));
+    allRequests.add(new ShiftsPerScheduleRequest(new WorkerId(13L), 13, 14, 1, 14, 1, 15));
+    allRequests.add(new ShiftsPerScheduleRequest(new WorkerId(14L), 13, 14, 1, 14, 1, 15));
+    allRequests.add(new ShiftsPerScheduleRequest(new WorkerId(15L), 13, 14, 1, 14, 1, 15));
+    allRequests.add(new ShiftsPerScheduleRequest(new WorkerId(16L), 13, 14, 1, 14, 1, 15));
+    allRequests.add(new ShiftsPerScheduleRequest(new WorkerId(17L), 13, 14, 1, 14, 1, 15));
+    allRequests.add(new ShiftsPerScheduleRequest(new WorkerId(18L), 13, 14, 1, 14, 1, 15));
     allRequests.add(new WorkersPerShiftRequest(DAY, 4, 4, 0, 4, 0, 4));
     allRequests.add(new WorkersPerShiftRequest(NIGHT, 3, 3, 0, 3, 0, 3));
     allRequests.add(new ShiftFollowUpRestrictionRequest(NIGHT, DAY, 0));

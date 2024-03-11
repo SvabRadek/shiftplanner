@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
 public class ValidatorIssue {
-  private @Nonnull String owner;
+  private @Nonnull Long owner;
   private @Nonnull IssueSeverity severity;
   private @Nonnull String issue;
 }

@@ -1,6 +1,7 @@
 package com.cocroachden.planner;
 
 import com.cocroachden.planner.constraint.repository.ConstraintRequestRecord;
+import com.cocroachden.planner.constraint.repository.ConstraintRequestRepository;
 import com.cocroachden.planner.constraint.service.ConstraintRequestService;
 import com.cocroachden.planner.lib.StupidDate;
 import com.cocroachden.planner.plannerconfiguration.ConfigurationRequestLinkDTO;
@@ -8,7 +9,6 @@ import com.cocroachden.planner.plannerconfiguration.PlannerConfigurationDTO;
 import com.cocroachden.planner.plannerconfiguration.service.PlannerConfigurationService;
 import com.cocroachden.planner.employee.EmployeeRecord;
 import com.cocroachden.planner.employee.EmployeeRepository;
-import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.context.event.ApplicationStartedEvent;
 import org.springframework.context.ApplicationContext;
@@ -16,9 +16,7 @@ import org.springframework.context.event.EventListener;
 
 import java.time.Instant;
 import java.time.LocalDate;
-import java.util.Arrays;
 import java.util.List;
-import java.util.Random;
 import java.util.UUID;
 
 @Slf4j
@@ -33,12 +31,12 @@ public class StartupService {
 
   private void createConfigurations(ApplicationContext context) {
     var configService = context.getBean(PlannerConfigurationService.class);
-    var requestService = context.getBean(ConstraintRequestService.class);
+    var constraintRequestRepository = context.getBean(ConstraintRequestRepository.class);
     if (configService.findAll().isEmpty()) {
       var configId = UUID.randomUUID();
       var requestLinks = Example.constraintRequests().stream()
           .map(ConstraintRequestRecord::new)
-          .map(requestService::saveAsNew)
+          .map(constraintRequestRepository::save)
           .map(record -> new ConfigurationRequestLinkDTO(
               record.getType(),
               record.getId()
@@ -61,97 +59,27 @@ public class StartupService {
   private void createEmployeeRecords(ApplicationContext context) {
     var employeeRepo = context.getBean(EmployeeRepository.class);
     var employees = List.of(
-        new EmployeeRecord(
-            "0",
-            "Martina",
-            "Kravariková"
-        ),
-        new EmployeeRecord(
-            "1",
-            "Vendula",
-            "Zajícová"
-        ),
-        new EmployeeRecord(
-            "2",
-            "Alena",
-            "Janáková"
-        ),
-        new EmployeeRecord(
-            "3",
-            "Simona",
-            "Holmanová"
-        ),
-        new EmployeeRecord(
-            "4",
-            "Jana",
-            "Zelenková"
-        ),
-        new EmployeeRecord(
-            "5",
-            "Jolana",
-            "Pálffyová"
-        ),
-        new EmployeeRecord(
-            "6",
-            "Nicola",
-            "Halbichová"
-        ),
-        new EmployeeRecord(
-            "7",
-            "Jana",
-            "Kesslerová"
-        ),
-        new EmployeeRecord(
-            "8",
-            "Eva",
-            "Dudek Premauer"
-        ),
-        new EmployeeRecord(
-            "9",
-            "Aneta",
-            "Dubská"
-        ),
-        new EmployeeRecord(
-            "10",
-            "Jindra",
-            "Labounková"
-        ),
-        new EmployeeRecord(
-            "11",
-            "Dana",
-            "Zachová"
-        ),
-        new EmployeeRecord(
-            "12",
-            "Iva",
-            "Najmanová"
-        ),
-        new EmployeeRecord(
-            "13",
-            "Barbora",
-            "Řeháková"
-        ),
-        new EmployeeRecord(
-            "14",
-            "Karolína",
-            "Vavrušková"
-        ),
-        new EmployeeRecord(
-            "15",
-            "Zuzana",
-            "Kučerová"
-        ),
-        new EmployeeRecord(
-            "16",
-            "Natálie",
-            "Vejvodová"
-        ),
-        new EmployeeRecord(
-            "17",
-            "Karolína",
-            "Hromířová"
-        )
+        new EmployeeRecord(1L, "Martina", "Kravariková"),
+        new EmployeeRecord(2L, "Vendula", "Zajícová"),
+        new EmployeeRecord(3L, "Alena", "Janáková"),
+        new EmployeeRecord(4L, "Simona", "Holmanová"),
+        new EmployeeRecord(5L,"Jana","Zelenková"),
+        new EmployeeRecord(6L,"Jolana","Pálffyová"),
+        new EmployeeRecord(7L,"Nicola","Halbichová"),
+        new EmployeeRecord(8L,"Jana","Kesslerová"),
+        new EmployeeRecord(9L,"Eva","Dudek Premauer"),
+        new EmployeeRecord(10L,"Aneta","Dubská"),
+        new EmployeeRecord(11L,"Jindra","Labounková"),
+        new EmployeeRecord(12L,"Dana","Zachová"),
+        new EmployeeRecord(13L,"Iva","Najmanová"),
+        new EmployeeRecord(14L,"Barbora","Řeháková"),
+        new EmployeeRecord(15L,"Karolína","Vavrušková"),
+        new EmployeeRecord(16L,"Zuzana","Kučerová"),
+        new EmployeeRecord(17L,"Natálie","Vejvodová"),
+        new EmployeeRecord(18L, "Karolína", "Hromířová")
     );
-    employeeRepo.saveAll(employees);
+    employees.stream()
+        .filter(e -> !employeeRepo.existsById(e.getId()))
+        .forEach(employeeRepo::save);
   }
 }

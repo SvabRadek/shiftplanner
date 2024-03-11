@@ -84,7 +84,7 @@ export function areShiftPerScheduleSame(
   r1: IdentifiableShiftsPerScheduleRequestDTO,
   r2: IdentifiableShiftsPerScheduleRequestDTO
 ): boolean {
-  return (r1.owner.workerId + r1.targetShift.toString()) === (r2.owner.workerId + r2.targetShift.toString())
+  return (r1.owner.id + r1.targetShift.toString()) === (r2.owner.id + r2.targetShift.toString())
 }
 
 type IdentifiableEmployeesPerShiftRequestDTO = Pick<EmployeesPerShiftRequestDTO, "targetShift">

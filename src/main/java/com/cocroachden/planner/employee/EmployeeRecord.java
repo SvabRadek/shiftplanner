@@ -5,9 +5,11 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.NotEmpty;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @NoArgsConstructor
 @Getter
+@Setter
 @Entity
 @Table(name = "employees")
 public final class EmployeeRecord {
@@ -15,9 +17,6 @@ public final class EmployeeRecord {
   @GeneratedValue(strategy = GenerationType.SEQUENCE)
   @Nonnull
   private Long id;
-  @Nonnull
-  @NotEmpty(message = "Pracovnik musi mit id")
-  private String workerId;
   @NotEmpty(message = "Jmeno nemuze by prazdne")
   @Nonnull
   private String firstName;
@@ -25,12 +24,8 @@ public final class EmployeeRecord {
   @Nonnull
   private String lastName;
 
-  public EmployeeRecord(
-      String workerId,
-      String firstName,
-      String lastName
-  ) {
-    this.workerId = workerId;
+  public EmployeeRecord(@Nonnull Long id, @Nonnull String firstName, @Nonnull String lastName) {
+    this.id = id;
     this.firstName = firstName;
     this.lastName = lastName;
   }

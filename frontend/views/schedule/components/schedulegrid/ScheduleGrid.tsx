@@ -1,4 +1,3 @@
-import { Owner } from "Frontend/views/schedule/components/schedulegrid/ScheduleGridContainer";
 import { Cell, DisplayMode, GridCell } from "Frontend/views/schedule/components/schedulegrid/GridCell";
 import { ReactNode, useContext } from "react";
 import { GridNameCell } from "Frontend/views/schedule/components/schedulegrid/GridNameCell";
@@ -9,9 +8,10 @@ import { ScheduleMode, ScheduleModeCtx } from "Frontend/views/schedule/ScheduleM
 import EmployeeRecord from "Frontend/generated/com/cocroachden/planner/employee/EmployeeRecord";
 import ValidatorIssue from "Frontend/generated/com/cocroachden/planner/solver/constraints/validator/ValidatorIssue";
 import IssueSeverity from "Frontend/generated/com/cocroachden/planner/solver/constraints/validator/IssueSeverity";
+import WorkerId from "Frontend/generated/com/cocroachden/planner/lib/WorkerId";
 
 export type Row = {
-  workerId: Owner
+  owner: WorkerId
   displayName: string
   cells: Cell[]
   issues?: ValidatorIssue[]
@@ -22,7 +22,7 @@ type Props = {
   onCellChanged?: (cell: Cell) => void
   onLeftClick?: (cell: Cell) => void
   onMouseOverCell?: (cell: Cell) => void
-  onEmployeeAction: (action: CrudAction<Pick<EmployeeRecord, "workerId">>) => void
+  onEmployeeAction: (action: CrudAction<Pick<EmployeeRecord, "id">>) => void
 }
 
 function shadowIntensity(
@@ -59,7 +59,7 @@ export function ScheduleGrid(props: Props) {
       1,
       1,
       <GridNameCell
-        workerId={row.workerId}
+        owner={row.owner}
         onEmployeeAction={props.onEmployeeAction}
         title={"Jmeno"}
         backgroundColor={cellColor(1, 1, modeCtx.mode)}
@@ -96,7 +96,7 @@ export function ScheduleGrid(props: Props) {
         1,
         <GridNameCell
           title={row.displayName}
-          workerId={row.workerId}
+          owner={row.owner}
           onEmployeeAction={props.onEmployeeAction}
           backgroundColor={
             severity === IssueSeverity.WARNING

@@ -14,9 +14,11 @@ import java.util.Map;
 @Getter
 public class ScheduleResultDTO {
   @Nonnull
+  private SolutionStatus solutionStatus;
+  @Nonnull
   private Double resultScore;
   @Nonnull
   private Integer resultIndex;
   @Nonnull
-  private Map<@Nonnull String, @Nonnull Map<@Nonnull StupidDate,@Nonnull WorkShifts>> assignments;
+  private Map<@Nonnull Long, @Nonnull Map<@Nonnull StupidDate,@Nonnull WorkShifts>> assignments;
 }

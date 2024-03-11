@@ -28,11 +28,12 @@ public class ShiftPatternRequestDTO implements ConstraintRequestDTO {
         0
     );
   }
+
   @Nonnull
   private UUID id;
   @Nonnull
   private ConstraintType type;
-  private WorkerId workerId;
+  private WorkerId owner;
   @Nonnull
   private List<@Nonnull WorkShifts> shiftPattern;
   @Nonnull

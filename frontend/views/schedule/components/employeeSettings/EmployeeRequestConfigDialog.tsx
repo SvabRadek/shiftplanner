@@ -18,6 +18,7 @@ import ShiftPatternRequestDTO from "Frontend/generated/com/cocroachden/planner/c
 import {
   ShiftPatternConstraintForm
 } from "Frontend/views/schedule/components/employeeSettings/constraintform/ShiftPatternConstraintForm";
+import WorkerId from "Frontend/generated/com/cocroachden/planner/lib/WorkerId";
 
 type Props = {
   employee?: EmployeeRecord
@@ -38,7 +39,7 @@ export function EmployeeRequestConfigDialog(props: Props) {
     props.onShiftPerScheduleAction({
       type: CRUDActions.CREATE,
       payload: generateNewUniqueShiftsPerSchedule(
-        props.employee?.workerId!,
+        props.employee!,
         props.shiftsPerScheduleRequests.map(r => r.targetShift)
       )
     });
@@ -47,7 +48,7 @@ export function EmployeeRequestConfigDialog(props: Props) {
   function handleCreateNewShiftPattern() {
     props.onShiftPatternRequestsAction({
         type: CRUDActions.CREATE,
-        payload: generateNewShiftPattern(props.employee?.workerId!)
+        payload: generateNewShiftPattern(props.employee!)
       }
     )
   }
@@ -95,7 +96,7 @@ export function EmployeeRequestConfigDialog(props: Props) {
         {renderSectionHeader("Pocet smen na rozvrh", "vaadin:plus", handleCreateNewShiftPerSchedule)}
         {props.shiftsPerScheduleRequests.map(request => (
           <ShiftCountConstraintForm
-            key={request.owner.workerId + request.targetShift}
+            key={request.owner.id + request.targetShift}
             request={request}
             onShiftCountAction={props.onShiftPerScheduleAction}
             excludedShifts={props.shiftsPerScheduleRequests.map(r => r.targetShift)}
@@ -118,20 +119,20 @@ export function EmployeeRequestConfigDialog(props: Props) {
   );
 }
 
-function generateNewUniqueShiftsPerSchedule(workerId: string, excludeShifts: WorkShifts[]): ShiftsPerScheduleRequestDTO {
+function generateNewUniqueShiftsPerSchedule(workerId: WorkerId, excludeShifts: WorkShifts[]): ShiftsPerScheduleRequestDTO {
   const allowedShifts = Object.values(WorkShifts).filter(val => !excludeShifts.some(s => s === val))
   return {
     ...defaultConstraints.SHIFT_PER_SCHEDULE.constraint as unknown as ShiftsPerScheduleRequestDTO,
     targetShift: allowedShifts[0],
-    owner: { workerId: workerId },
+    owner: workerId,
     id: generateUUID()
   }
 }
 
-function generateNewShiftPattern(workerId: string): ShiftPatternRequestDTO {
+function generateNewShiftPattern(workerId: WorkerId): ShiftPatternRequestDTO {
   return {
     ...defaultConstraints.SHIFT_PATTERN_CONSTRAINT.constraint as unknown as ShiftPatternRequestDTO,
-    workerId: { workerId: workerId },
+    owner: workerId,
     id: generateUUID()
   }
 }

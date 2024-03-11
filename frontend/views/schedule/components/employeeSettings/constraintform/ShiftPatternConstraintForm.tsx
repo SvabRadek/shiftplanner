@@ -150,7 +150,7 @@ export function ShiftPatternConstraintForm(props: Props) {
                     cell={{
                       shift: shift,
                       index: index,
-                      owner: props.request.workerId?.workerId!,
+                      owner: props.request.owner!,
                       date: { day: 0, month: 0, year: 0 },
                       requestId: props.request.id,
                       isHighlighted: index === props.request.startDayIndex,

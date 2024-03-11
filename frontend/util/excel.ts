@@ -6,7 +6,7 @@ import EmployeeRecord from "Frontend/generated/com/cocroachden/planner/employee/
 export function exportToExcel(employees: EmployeeRecord[], result: ScheduleResultDTO) {
   const rows = Object.keys(result.assignments).map(owner => {
     const row: Record<string, string> = {}
-    const employee = employees.find(e => e.workerId === owner)
+    const employee = employees.find(e => e.id.toString() === owner)
     row["Jmeno"] = employee?.lastName + " " + employee?.firstName
     Object.keys(result.assignments[owner]).forEach(date => {
       const shift = result.assignments[owner][date]

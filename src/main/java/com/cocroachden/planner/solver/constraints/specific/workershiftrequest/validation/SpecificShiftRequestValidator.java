@@ -41,21 +41,21 @@ public class SpecificShiftRequestValidator implements SpecificConstraintValidato
           .filter(r -> r.getRequestedShift().equals(WorkShifts.OFF))
           .toList();
       int minimumShiftsToAssign = shiftsPerScheduleRequests.stream()
-          .filter(r -> r.getOwner().getWorkerId().equals(owner))
+          .filter(r -> r.getOwner().equals(owner))
           .map(ShiftsPerScheduleRequestDTO::getHardMin)
           .reduce(Integer::sum)
           .orElse(0);
       long workableDays = daysInSchedule - offDays.size();
       if (minimumShiftsToAssign > workableDays) {
        issues.add(new ValidatorIssue(
-           owner,
+           owner.getId(),
            IssueSeverity.ERROR,
            "Požadované směny v rozvrhu jsou v konfliktu s požadovaným počtem směn na rozvrh. Není kam přiřadit požadovaný počet směn."
        ));
       }
       if (minimumShiftsToAssign < workableDays && workableDays - minimumShiftsToAssign < 5) {
         issues.add(new ValidatorIssue(
-            owner,
+            owner.getId(),
             IssueSeverity.WARNING,
             "Požadované směny v rozvrhu nenechávají přiliš prostoru pro řešení. Toto může ovlivnit čas pořebný k nalezení řešení."
         ));

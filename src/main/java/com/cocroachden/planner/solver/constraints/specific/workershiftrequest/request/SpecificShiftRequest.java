@@ -1,6 +1,8 @@
 package com.cocroachden.planner.solver.constraints.specific.workershiftrequest.request;
 
 
+import com.cocroachden.planner.constraint.SpecificShiftRequestDTO;
+import com.cocroachden.planner.constraint.repository.ConstraintRequestRecord;
 import com.cocroachden.planner.lib.ConstraintType;
 import com.cocroachden.planner.lib.WorkerId;
 import com.cocroachden.planner.solver.constraints.specific.AbstractConstraintRequest;
@@ -18,6 +20,16 @@ import java.time.LocalDate;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class SpecificShiftRequest extends AbstractConstraintRequest {
   public static final ConstraintType TYPE = ConstraintType.SPECIFIC_SHIFT_REQUEST;
+
+  public static SpecificShiftRequest from(SpecificShiftRequestDTO dto) {
+    return new SpecificShiftRequest(
+        dto.getOwner(),
+        dto.getDate().toDate(),
+        dto.getRequestedShift()
+    );
+  }
+
+
   @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd/MM/yyyy")
   private LocalDate date;
   private WorkShifts requestedShift;

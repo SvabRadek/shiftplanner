@@ -1,6 +1,7 @@
 package com.cocroachden.planner.solver.constraints.specific.shiftpattern.request;
 
 
+import com.cocroachden.planner.constraint.ShiftPatternRequestDTO;
 import com.cocroachden.planner.lib.ConstraintType;
 import com.cocroachden.planner.lib.WorkerId;
 import com.cocroachden.planner.solver.constraints.specific.AbstractConstraintRequest;
@@ -15,6 +16,16 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class ShiftPatternConstraintRequest extends AbstractConstraintRequest {
   public static final ConstraintType ID = ConstraintType.SHIFT_PATTERN_CONSTRAINT;
+
+  public static ShiftPatternConstraintRequest from(ShiftPatternRequestDTO dto) {
+    return new ShiftPatternConstraintRequest(
+        dto.getOwner(),
+        dto.getStartDayIndex(),
+        dto.getReward(),
+        dto.getShiftPattern().toArray(WorkShifts[]::new)
+    );
+  }
+
   private Integer startDateIndex;
   private WorkShifts[] shiftPattern;
   private Integer reward;

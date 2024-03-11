@@ -4,6 +4,7 @@ package com.cocroachden.planner.solver.solver;
 import com.cocroachden.planner.lib.StupidDate;
 import com.cocroachden.planner.lib.WorkerId;
 import com.cocroachden.planner.solver.ScheduleResultDTO;
+import com.cocroachden.planner.solver.SolutionStatus;
 import com.cocroachden.planner.solver.schedule.SchedulePlan;
 import com.cocroachden.planner.solver.schedule.WorkShifts;
 import com.cocroachden.planner.solver.solver.response.ResponseWorkDay;
@@ -49,16 +50,17 @@ public class ScheduleSolutionCb extends CpSolverSolutionCallback {
     var latestResponse = new ScheduleResult(response);
     this.printStatsHeader(currentObjective);
     this.latestResponse = latestResponse;
-    var workerMap = new HashMap<String, Map<StupidDate, WorkShifts>>();
+    var workerMap = new HashMap<Long, Map<StupidDate, WorkShifts>>();
     latestResponse.workdays().forEach((workerId, responseWorkDays) -> {
       var shiftMap = new HashMap<StupidDate, WorkShifts>();
       responseWorkDays.forEach(responseWorkDay -> {
         shiftMap.put(StupidDate.fromDate(responseWorkDay.date()), responseWorkDay.assignedShift());
       });
-      workerMap.put(workerId.getWorkerId(), shiftMap);
+      workerMap.put(workerId.getId(), shiftMap);
     });
     fluxSink.accept(
         new ScheduleResultDTO(
+            SolutionStatus.OK,
             currentObjective,
             currentSolutionCount,
             workerMap
@@ -76,7 +78,7 @@ public class ScheduleSolutionCb extends CpSolverSolutionCallback {
     var response = new HashMap<WorkerId, List<ResponseWorkDay>>();
     schedulePlan.assignments()
         .entrySet().stream()
-        .sorted(Comparator.comparingInt(value -> Integer.parseInt(value.getKey().getWorkerId())))
+        .sorted(Comparator.comparingLong(value -> value.getKey().getId()))
         .forEach(entry -> {
           var workerId = entry.getKey();
           var assignments = entry.getValue();

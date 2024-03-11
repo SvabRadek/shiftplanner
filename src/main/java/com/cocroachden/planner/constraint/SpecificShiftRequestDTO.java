@@ -2,6 +2,7 @@ package com.cocroachden.planner.constraint;
 
 import com.cocroachden.planner.lib.ConstraintType;
 import com.cocroachden.planner.lib.StupidDate;
+import com.cocroachden.planner.lib.WorkerId;
 import com.cocroachden.planner.solver.constraints.specific.workershiftrequest.request.SpecificShiftRequest;
 import com.cocroachden.planner.solver.schedule.WorkShifts;
 import dev.hilla.Nonnull;
@@ -20,7 +21,7 @@ public class SpecificShiftRequestDTO implements ConstraintRequestDTO {
     return new SpecificShiftRequestDTO(
         id,
         SpecificShiftRequest.TYPE,
-        request.getOwner().orElseThrow().getWorkerId(),
+        request.getOwner().orElseThrow(),
         StupidDate.fromDate(request.getDate()),
         request.getRequestedShift()
     );
@@ -30,7 +31,7 @@ public class SpecificShiftRequestDTO implements ConstraintRequestDTO {
   @Nonnull
   private ConstraintType type;
   @Nonnull
-  private String owner;
+  private WorkerId owner;
   @Nonnull
   private StupidDate date;
   @Nonnull
