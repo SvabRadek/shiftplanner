@@ -32,7 +32,7 @@ import {
   stupidDateToLocaleDate
 } from "Frontend/util/utils";
 import WorkShifts from "Frontend/generated/com/cocroachden/planner/solver/schedule/WorkShifts";
-import { Notification } from "@hilla/react-components/Notification";
+import { Notification, ShowOptions } from "@hilla/react-components/Notification";
 import { Card } from "Frontend/components/Card";
 import { Icon } from "@hilla/react-components/Icon";
 import { Subscription } from "@hilla/frontend";
@@ -120,7 +120,7 @@ export default function ScheduleView() {
         })
       }
       if (validatorResult?.issues.filter(i => i.severity === IssueSeverity.WARNING).length > 0) {
-        Notification.show("Konfigurace obsahuje varovani!", {
+        Notification.show("Konfigurace obsahuje varování!", {
           position: "top-center",
           duration: 5000,
           theme: "warning"
@@ -159,41 +159,41 @@ export default function ScheduleView() {
   }
 
   async function handleSave() {
-    if (isConfigNew) {
-      await PlannerConfigurationEndpoint.save(
-        request!,
-        shiftRequests,
-        shiftPatternRequests,
-        employeesPerShiftRequests,
-        shiftFollowupRestrictionRequests,
-        shiftPerScheduleRequests,
-        consecutiveWorkingDaysRequests
-      ).then(response => {
-        handleFetchConfig(response)
-        Notification.show("Konfigurace uspesne ulozena!", {
-          position: "top-center",
-          duration: 5000,
-          theme: "success"
-        })
+    await PlannerConfigurationEndpoint.save(
+      request!,
+      shiftRequests,
+      shiftPatternRequests,
+      employeesPerShiftRequests,
+      shiftFollowupRestrictionRequests,
+      shiftPerScheduleRequests,
+      consecutiveWorkingDaysRequests
+    ).then(response => {
+      handleFetchConfig(response)
+      Notification.show("Konfigurace úspěšně uložena!", {
+        position: "top-center",
+        duration: 5000,
+        theme: "success"
       })
-    } else {
-      await PlannerConfigurationEndpoint.update(
-        request!,
-        shiftRequests,
-        shiftPatternRequests,
-        employeesPerShiftRequests,
-        shiftFollowupRestrictionRequests,
-        shiftPerScheduleRequests,
-        consecutiveWorkingDaysRequests
-      ).then(response => {
-        handleFetchConfig(response)
-        Notification.show("Konfigurace uspesne upravena!", {
-          position: "top-center",
-          duration: 5000,
-          theme: "success"
-        })
+    })
+  }
+
+  async function handleUpdate() {
+    await PlannerConfigurationEndpoint.update(
+      request!,
+      shiftRequests,
+      shiftPatternRequests,
+      employeesPerShiftRequests,
+      shiftFollowupRestrictionRequests,
+      shiftPerScheduleRequests,
+      consecutiveWorkingDaysRequests
+    ).then(response => {
+      handleFetchConfig(response)
+      Notification.show("Konfigurace úuspěšně upravena!", {
+        position: "top-center",
+        duration: 5000,
+        theme: "success"
       })
-    }
+    })
   }
 
   async function handleConfigAction(action: CrudAction<PlannerConfigurationMetaDataDTO>) {
@@ -287,15 +287,6 @@ export default function ScheduleView() {
     })
   }
 
-  function handleCopyConfig() {
-    isConfigNew.current = true
-    setRequest(prevState => ({
-      ...prevState!,
-      name: ""
-    }));
-    modeCtx.setMode(ScheduleMode.EDIT)
-  }
-
   function handleStopCalculation() {
     modeCtx.setMode(ScheduleMode.READONLY)
     if (resultSubscription) {
@@ -315,6 +306,17 @@ export default function ScheduleView() {
       shiftPerScheduleRequests
     )
     setValidatorResult(validation)
+    if (validation.issues.length > 0) {
+      Notification.show(
+        "Nalezeny problémy!",
+        { position: "top-center", theme: "error" }
+      )
+    } else {
+      Notification.show(
+        "Vše se zdá v pořádku.",
+        { position: "top-center", theme: "success" }
+      )
+    }
     return validation
   }
 
@@ -331,7 +333,7 @@ export default function ScheduleView() {
       setResultSubscription(PlannerEndpoint.solve(request?.id)
         .onNext(value => {
           if (value.solutionStatus !== SolutionStatus.OK) {
-            Notification.show("Neresitelne zadani!", {
+            Notification.show("Neřešitelné zadání!", {
               position: "top-center",
               duration: 5000,
               theme: "error"
@@ -347,14 +349,14 @@ export default function ScheduleView() {
             }
           });
         }).onComplete(() => {
-          Notification.show("Vypocet uspesne ukoncen!", {
+          Notification.show("Výpočet úspěšně ukončen!", {
             position: "top-center",
             duration: 5000,
             theme: "success"
           })
           setResultSubscription(undefined)
         }).onError(() => {
-          Notification.show("Ztrata spojeni!", {
+          Notification.show("Ztráta spojení!", {
             position: "top-center",
             duration: 5000,
             theme: "warning"
@@ -471,7 +473,7 @@ export default function ScheduleView() {
                     disabled={modeCtx.mode === ScheduleMode.EDIT || !request}
                     theme={"primary"}>
             <Icon icon={"vaadin:play"}/>
-            Vypocitat
+            Vypočítat
           </Button>
         }
         <Button theme={"icon primary"} onClick={() => setIsConfigSelectDialogOpen(true)}>
@@ -486,13 +488,11 @@ export default function ScheduleView() {
         />
         {isRequestLoaded && <Button
             disabled={modeCtx.mode === ScheduleMode.EDIT || modeCtx.mode === ScheduleMode.CALCULATING}
-            onClick={() => modeCtx.setMode(ScheduleMode.EDIT)}>
+            onClick={() => {
+              isConfigNew.current = false
+              modeCtx.setMode(ScheduleMode.EDIT)
+            }}>
             Upravit</Button>
-        }
-        {isRequestLoaded && <Button
-            disabled={modeCtx.mode === ScheduleMode.EDIT || modeCtx.mode === ScheduleMode.CALCULATING}
-            onClick={handleCopyConfig}>
-            Zkopirovat</Button>
         }
         {isRequestLoaded && <Button
             disabled={modeCtx.mode === ScheduleMode.CALCULATING}
@@ -502,16 +502,21 @@ export default function ScheduleView() {
         {isRequestLoaded && <Button
             disabled={modeCtx.mode !== ScheduleMode.EDIT}
             theme={"secondary"}
-            onClick={handleSave}>Ulozit</Button>
+            onClick={handleUpdate}>Uložit</Button>
         }
         {isRequestLoaded && <Button
             disabled={modeCtx.mode !== ScheduleMode.EDIT}
             theme={"secondary"}
-            onClick={handleCancel}>Zrusit</Button>
+            onClick={handleSave}>Uložit jako nový</Button>
+        }
+        {isRequestLoaded && <Button
+            disabled={modeCtx.mode !== ScheduleMode.EDIT}
+            theme={"secondary"}
+            onClick={handleCancel}>Zrušit</Button>
         }
         {resultCache.results.length > 0 && !resultSubscription &&
             <Button theme={"secondary"} onClick={() => setResultCache({ results: [], selectedIndex: 0 })}>
-                Vycistit vysledky
+                Vyčistit výsledky
             </Button>
         }
       </HorizontalLayout>
@@ -530,10 +535,10 @@ export default function ScheduleView() {
               </Button>
           }
           <span
-            style={{ userSelect: "none" }}>Reseni: {resultCache.results.length > 0 ? resultCache.results[resultCache.selectedIndex].resultIndex : "-"}
+            style={{ userSelect: "none" }}>Řešení: {resultCache.results.length > 0 ? resultCache.results[resultCache.selectedIndex].resultIndex : "-"}
           </span>
           <span
-            style={{ userSelect: "none" }}>Skore: {resultCache.results.length > 0 ? resultCache.results[resultCache.selectedIndex].resultScore : "-"}
+            style={{ userSelect: "none" }}>Skóre: {resultCache.results.length > 0 ? resultCache.results[resultCache.selectedIndex].resultScore : "-"}
           </span>
           {!resultSubscription &&
               <Button disabled={resultCache.selectedIndex === RESULT_CACHE_SIZE - 1}
@@ -559,7 +564,7 @@ export default function ScheduleView() {
       <Card style={{ width: "100%" }}>
         <HorizontalLayout theme={"spacing"} style={{ alignItems: "end" }}>
           <TextField
-            label={"Nazev"}
+            label={"Název"}
             value={request?.name}
             onChange={e => setRequest({ ...request!, name: e.target.value })}
             readonly={modeCtx.mode !== ScheduleMode.EDIT}

@@ -18,13 +18,10 @@ export default function MainLayout() {
           <h1 className="text-l m-0">Planovac</h1>
           <nav>
             <NavLink className={navLinkClasses} to="/">
-              Domu
+              Rozvrh
             </NavLink>
             <NavLink className={navLinkClasses} to="/zamestnanci">
-              Zamestnanci
-            </NavLink>
-            <NavLink className={navLinkClasses} to="/rozvrh">
-              Rozvrh
+              Zaměstnanci
             </NavLink>
           </nav>
         </header>
