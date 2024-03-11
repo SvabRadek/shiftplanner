@@ -7,7 +7,6 @@ import com.cocroachden.planner.lib.ConstraintType;
 import com.cocroachden.planner.plannerconfiguration.repository.ConfigurationRequestLink;
 import com.cocroachden.planner.plannerconfiguration.repository.PlannerConfigurationRecord;
 import com.cocroachden.planner.plannerconfiguration.repository.PlannerConfigurationRepository;
-import com.cocroachden.planner.plannerconfiguration.service.PlannerConfigurationService;
 import com.cocroachden.planner.solver.constraints.specific.consecutiveworkingdays.request.ConsecutiveWorkingDaysRequest;
 import com.cocroachden.planner.solver.constraints.specific.shiftfollowuprestriction.request.ShiftFollowUpRestrictionRequest;
 import com.cocroachden.planner.solver.constraints.specific.shiftpattern.request.ShiftPatternConstraintRequest;
@@ -22,12 +21,12 @@ import lombok.AllArgsConstructor;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.StreamSupport;
 
 @BrowserCallable
 @AnonymousAllowed
 @AllArgsConstructor
 public class PlannerConfigurationEndpoint {
-  private final PlannerConfigurationService service;
   private ConstraintRequestRepository constraintRequestRepository;
   private PlannerConfigurationRepository plannerConfigurationRepository;
 
@@ -113,21 +112,21 @@ public class PlannerConfigurationEndpoint {
 
   @Nonnull
   public List<@Nonnull PlannerConfigurationMetaDataDTO> getMetaData() {
-    return service.findAll().stream()
+    return StreamSupport.stream(plannerConfigurationRepository.findAll().spliterator(), false)
         .map(PlannerConfigurationMetaDataDTO::from)
         .toList();
   }
 
   @Nonnull
   public List<@Nonnull PlannerConfigurationDTO> findAll() {
-    return service.findAll().stream()
+    return StreamSupport.stream(plannerConfigurationRepository.findAll().spliterator(), false)
         .map(PlannerConfigurationDTO::from)
         .toList();
   }
 
   @Nonnull
   public PlannerConfigurationDTO getConfiguration(@Nonnull UUID uuid) {
-    return PlannerConfigurationDTO.from(service.getConfiguration(uuid));
+    return PlannerConfigurationDTO.from(plannerConfigurationRepository.getById(uuid));
   }
 
   public void delete(@Nonnull UUID uuid) {

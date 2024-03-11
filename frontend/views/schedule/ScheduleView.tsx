@@ -2,7 +2,7 @@ import { DatePicker } from "@hilla/react-components/DatePicker";
 import { useCallback, useContext, useEffect, useRef, useState } from "react";
 import {
   ConstraintEndpoint,
-  EmployeeService,
+  EmployeeEndpoint,
   PlannerConfigurationEndpoint,
   PlannerEndpoint
 } from "Frontend/generated/endpoints";
@@ -96,7 +96,7 @@ export default function ScheduleView() {
   const [shiftPatternRequests, setShiftPatternRequests] = useState<ShiftPatternRequestDTO[]>([]);
 
   useEffect(() => {
-    EmployeeService.getAllEmployees().then(setEmployees)
+    EmployeeEndpoint.getAllEmployees().then(setEmployees)
     PlannerConfigurationEndpoint.getMetaData().then(setConfigMetaData)
     window.addEventListener("beforeunload", handleUnload)
     return () => {

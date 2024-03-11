@@ -1,4 +1,4 @@
-import { EmployeeService } from "Frontend/generated/endpoints";
+import { EmployeeEndpoint } from "Frontend/generated/endpoints";
 import { VerticalLayout } from "@hilla/react-components/VerticalLayout";
 import { AutoCrud } from "@hilla/react-crud";
 import EmployeeRecordModel from "Frontend/generated/com/cocroachden/planner/employee/EmployeeRecordModel";
@@ -9,7 +9,7 @@ export default function EmployeeView() {
       <VerticalLayout theme={"spacing padding"}>
         <AutoCrud
           style={{ width: "100%" }}
-          service={EmployeeService}
+          service={EmployeeEndpoint}
           model={EmployeeRecordModel}
         />
       </VerticalLayout>

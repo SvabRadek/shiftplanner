@@ -1,6 +1,7 @@
 package com.cocroachden.planner.constraint;
 
-import com.cocroachden.planner.constraint.service.ConstraintRequestService;
+import com.cocroachden.planner.constraint.repository.ConstraintRequestRecord;
+import com.cocroachden.planner.constraint.repository.ConstraintRequestRepository;
 import com.cocroachden.planner.plannerconfiguration.PlannerConfigurationDTO;
 import com.cocroachden.planner.solver.constraints.specific.consecutiveworkingdays.request.ConsecutiveWorkingDaysRequest;
 import com.cocroachden.planner.solver.constraints.specific.shiftfollowuprestriction.request.ShiftFollowUpRestrictionRequest;
@@ -18,12 +19,13 @@ import lombok.AllArgsConstructor;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.StreamSupport;
 
 @BrowserCallable
 @AnonymousAllowed
 @AllArgsConstructor
 public class ConstraintEndpoint {
-  private final ConstraintRequestService service;
+  private final ConstraintRequestRepository constraintRequestRepository;
   private final ConstraintValidator validator;
 
   public @Nonnull ValidatorResult validate(
@@ -48,7 +50,7 @@ public class ConstraintEndpoint {
   public @Nonnull List<@Nonnull SpecificShiftRequestDTO> findSpecificShiftRequests(
       @Nonnull List<@Nonnull UUID> requestIds
   ) {
-    return service.getRecords(requestIds).stream()
+    return this.getRecords(requestIds).stream()
         .map(r -> SpecificShiftRequestDTO.from(r.getId(), (SpecificShiftRequest) r.getRequest()))
         .toList();
   }
@@ -56,7 +58,7 @@ public class ConstraintEndpoint {
   public @Nonnull List<@Nonnull ShiftsPerScheduleRequestDTO> findShiftsPerScheduleRequests(
       @Nonnull List<@Nonnull UUID> requestIds
   ) {
-    return service.getRecords(requestIds).stream()
+    return this.getRecords(requestIds).stream()
         .map(r -> ShiftsPerScheduleRequestDTO.from(r.getId(), (ShiftsPerScheduleRequest) r.getRequest()))
         .toList();
   }
@@ -64,7 +66,7 @@ public class ConstraintEndpoint {
   public @Nonnull List<@Nonnull ConsecutiveWorkingDaysRequestDTO> findConsecutiveWorkingDaysRequests(
       @Nonnull List<@Nonnull UUID> requestIds
   ) {
-    return service.getRecords(requestIds).stream()
+    return this.getRecords(requestIds).stream()
         .map(r -> ConsecutiveWorkingDaysRequestDTO.from(r.getId(), (ConsecutiveWorkingDaysRequest) r.getRequest()))
         .toList();
   }
@@ -72,7 +74,7 @@ public class ConstraintEndpoint {
   public @Nonnull List<@Nonnull EmployeesPerShiftRequestDTO> findEmployeesPerShiftRequests(
       @Nonnull List<@Nonnull UUID> requestIds
   ) {
-    return service.getRecords(requestIds).stream()
+    return this.getRecords(requestIds).stream()
         .map(r -> EmployeesPerShiftRequestDTO.from(r.getId(), (WorkersPerShiftRequest) r.getRequest()))
         .toList();
   }
@@ -80,7 +82,7 @@ public class ConstraintEndpoint {
   public @Nonnull List<@Nonnull ShiftFollowupRestrictionRequestDTO> findShiftFollowupRestrictionRequests(
       @Nonnull List<@Nonnull UUID> requestIds
   ) {
-    return service.getRecords(requestIds).stream()
+    return this.getRecords(requestIds).stream()
         .map(r -> ShiftFollowupRestrictionRequestDTO.from(r.getId(), (ShiftFollowUpRestrictionRequest) r.getRequest()))
         .toList();
   }
@@ -88,8 +90,15 @@ public class ConstraintEndpoint {
   public @Nonnull List<@Nonnull ShiftPatternRequestDTO> findShiftPatternRequests(
       @Nonnull List<@Nonnull UUID> requestIds
   ) {
-    return service.getRecords(requestIds).stream()
+    return this.getRecords(requestIds).stream()
         .map(r -> ShiftPatternRequestDTO.from(r.getId(), (ShiftPatternConstraintRequest) r.getRequest()))
         .toList();
+  }
+
+  public List<ConstraintRequestRecord> getRecords(List<UUID> constraintIds) {
+    return StreamSupport.stream(
+        constraintRequestRepository.findAllById(constraintIds).spliterator(),
+        false
+    ).toList();
   }
 }

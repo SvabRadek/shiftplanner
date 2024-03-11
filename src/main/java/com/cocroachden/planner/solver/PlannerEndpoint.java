@@ -1,9 +1,9 @@
 package com.cocroachden.planner.solver;
 
 import com.cocroachden.planner.constraint.repository.ConstraintRequestRecord;
-import com.cocroachden.planner.constraint.service.ConstraintRequestService;
+import com.cocroachden.planner.constraint.repository.ConstraintRequestRepository;
 import com.cocroachden.planner.plannerconfiguration.repository.ConfigurationRequestLink;
-import com.cocroachden.planner.plannerconfiguration.service.PlannerConfigurationService;
+import com.cocroachden.planner.plannerconfiguration.repository.PlannerConfigurationRepository;
 import com.cocroachden.planner.solver.constraints.specific.shiftperday.request.OneShiftPerDayRequest;
 import com.cocroachden.planner.solver.schedule.ScheduleWorker;
 import com.cocroachden.planner.solver.solver.ScheduleSolver;
@@ -18,6 +18,7 @@ import reactor.core.publisher.Flux;
 
 import java.util.UUID;
 import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 @BrowserCallable
 @AnonymousAllowed
@@ -25,8 +26,8 @@ import java.util.stream.Collectors;
 @AllArgsConstructor
 public class PlannerEndpoint {
   private final ScheduleSolver scheduleSolver;
-  private final PlannerConfigurationService plannerConfigurationService;
-  private final ConstraintRequestService constraintRequestService;
+  private final PlannerConfigurationRepository plannerConfigurationRepository;
+  private final ConstraintRequestRepository constraintRequestRepository;
 
   public void stop() {
     this.scheduleSolver.stop();
@@ -34,7 +35,7 @@ public class PlannerEndpoint {
 
   @Transactional
   public EndpointSubscription<@Nonnull ScheduleResultDTO> solve(UUID configurationId) {
-    var config = plannerConfigurationService.getConfiguration(configurationId);
+    var config = plannerConfigurationRepository.getById(configurationId);
     var plannerConfig = new SchedulePlanConfiguration(
         config.getStartDate(),
         config.getEndDate(),
@@ -42,24 +43,24 @@ public class PlannerEndpoint {
             .map(workerId -> new ScheduleWorker(workerId, 1))
             .toList()
     );
-    var constraints = constraintRequestService.getRecords(
-            config.getConstraintRequestInstances().stream()
-                .map(ConfigurationRequestLink::getRequestId)
-                .toList()
-        ).stream()
+    var constraints = StreamSupport.stream(
+            constraintRequestRepository.findAllById(
+                config.getConstraintRequestInstances().stream()
+                    .map(ConfigurationRequestLink::getRequestId)
+                    .toList()
+            ).spliterator(), false)
         .map(ConstraintRequestRecord::getRequest)
         .collect(Collectors.toList());
     if (constraints.stream().noneMatch(r -> r instanceof OneShiftPerDayRequest)) {
       constraints.add(new OneShiftPerDayRequest());
     }
 
-    var flux = Flux.<ScheduleResultDTO>create(fluxSink -> {
-      scheduleSolver.solve(
-          fluxSink::next,
-          plannerConfig,
-          constraints
-      );
-    });
+    var flux = Flux.<ScheduleResultDTO>create(fluxSink ->
+        scheduleSolver.solve(
+            fluxSink::next,
+            plannerConfig,
+            constraints
+        ));
 
     return EndpointSubscription.of(
         flux,
