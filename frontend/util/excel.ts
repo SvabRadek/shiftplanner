@@ -13,7 +13,7 @@ export function exportToExcel(employees: EmployeeRecord[], result: ScheduleResul
       row[date] = shift === WorkShifts.OFF ? "" : shift.charAt(0)
     })
     return row
-  })
+  });
   const sheet = utils.json_to_sheet(rows)
   const wb = utils.book_new()
   utils.book_append_sheet(wb, sheet, "rozvrh")

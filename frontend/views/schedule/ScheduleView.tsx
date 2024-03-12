@@ -1,5 +1,5 @@
 import { DatePicker } from "@hilla/react-components/DatePicker";
-import { useCallback, useContext, useEffect, useRef, useState } from "react";
+import { Fragment, useCallback, useContext, useEffect, useState } from "react";
 import {
   ConstraintEndpoint,
   EmployeeEndpoint,
@@ -10,7 +10,6 @@ import { Button } from "@hilla/react-components/Button";
 import { HorizontalLayout } from "@hilla/react-components/HorizontalLayout";
 import { TextField } from "@hilla/react-components/TextField";
 import { VerticalLayout } from "@hilla/react-components/VerticalLayout";
-import { ConfigSelectDialog } from "Frontend/views/schedule/components/ConfigSelectDialog";
 import EmployeeRecord from "Frontend/generated/com/cocroachden/planner/employee/EmployeeRecord";
 import { ScheduleGridContainer } from "./components/schedulegrid/ScheduleGridContainer";
 import {
@@ -32,12 +31,11 @@ import {
   stupidDateToLocaleDate
 } from "Frontend/util/utils";
 import WorkShifts from "Frontend/generated/com/cocroachden/planner/solver/schedule/WorkShifts";
-import { Notification, ShowOptions } from "@hilla/react-components/Notification";
+import { Notification } from "@hilla/react-components/Notification";
 import { Card } from "Frontend/components/Card";
 import { Icon } from "@hilla/react-components/Icon";
 import { Subscription } from "@hilla/frontend";
 import ScheduleResultDTO from "Frontend/generated/com/cocroachden/planner/solver/ScheduleResultDTO";
-import { ProgressBar } from "@hilla/react-components/ProgressBar.js";
 import { ScheduleMode, ScheduleModeCtx } from "Frontend/views/schedule/ScheduleModeCtxProvider";
 import ConsecutiveWorkingDaysRequestDTO
   from "Frontend/generated/com/cocroachden/planner/constraint/ConsecutiveWorkingDaysRequestDTO";
@@ -47,20 +45,21 @@ import ShiftFollowupRestrictionRequestDTO
   from "Frontend/generated/com/cocroachden/planner/constraint/ShiftFollowupRestrictionRequestDTO";
 import ShiftPatternRequestDTO from "Frontend/generated/com/cocroachden/planner/constraint/ShiftPatternRequestDTO";
 import { ScheduleSettingsDialog } from "Frontend/views/schedule/components/schedulesettings/ScheduleSettingsDialog";
-import { StopWatch } from "Frontend/components/StopWatch";
 import ValidatorResult from "Frontend/generated/com/cocroachden/planner/solver/constraints/validator/ValidatorResult";
 import IssueSeverity from "Frontend/generated/com/cocroachden/planner/solver/constraints/validator/IssueSeverity";
 import PlannerConfigurationMetaDataDTO
   from "Frontend/generated/com/cocroachden/planner/plannerconfiguration/PlannerConfigurationMetaDataDTO";
 import { exportToExcel } from "Frontend/util/excel";
 import SolutionStatus from "Frontend/generated/com/cocroachden/planner/solver/SolutionStatus";
+import { ResultSubHeaderStrip } from "Frontend/views/schedule/ResultSubHeaderStrip";
+import { HeaderStrip } from "Frontend/views/schedule/HeaderStrip";
 
 type EmployeeConfigDialogParams = {
   isOpen: boolean,
   selectedEmployee?: WorkerId
 }
 
-type ResultCache = {
+export type ResultCache = {
   results: ScheduleResultDTO[]
   selectedIndex: number
 }
@@ -73,13 +72,11 @@ const RESULT_CACHE_SIZE = 5
 
 export default function ScheduleView() {
 
-  const isConfigNew = useRef(false);
   const modeCtx = useContext(ScheduleModeCtx);
   const [employees, setEmployees] = useState<EmployeeRecord[]>([])
   const [configMetaData, setConfigMetaData] = useState<PlannerConfigurationMetaDataDTO[]>([]);
   const [employeeConfigDialog, setEmployeeConfigDialog] = useState<EmployeeConfigDialogParams>({ isOpen: false })
   const [isScheduleConfigDialogOpen, setIsScheduleConfigDialogOpen] = useState(false);
-  const [isConfigSelectDialogOpen, setIsConfigSelectDialogOpen] = useState(false);
   const [resultCache, setResultCache] = useState<ResultCache>({
     results: [],
     selectedIndex: 0
@@ -103,12 +100,6 @@ export default function ScheduleView() {
       window.removeEventListener("beforeunload", handleUnload)
     }
   }, []);
-
-  useEffect(() => {
-    if (isConfigSelectDialogOpen) {
-      PlannerConfigurationEndpoint.getMetaData().then(setConfigMetaData)
-    }
-  }, [isConfigSelectDialogOpen]);
 
   useEffect(() => {
     if (validatorResult) {
@@ -154,7 +145,6 @@ export default function ScheduleView() {
 
 
   function handleCancel() {
-    isConfigNew.current = false
     handleFetchConfig(request?.id!)
   }
 
@@ -243,7 +233,6 @@ export default function ScheduleView() {
           .map(l => l.requestId)
       ).then(setShiftPatternRequests)
     })
-    isConfigNew.current = false
     modeCtx.setMode(ScheduleMode.READONLY)
   }
 
@@ -366,7 +355,7 @@ export default function ScheduleView() {
     })
   }
 
-  function handleResultSelect(offset: 1 | -1) {
+  function handleResultSelectionChanged(offset: 1 | -1) {
     setResultCache(prevState => ({
       ...prevState,
       selectedIndex: Math.min(RESULT_CACHE_SIZE - 1, Math.max(0, prevState.selectedIndex + offset))
@@ -460,105 +449,6 @@ export default function ScheduleView() {
     }
   }
 
-  function renderHeaderStrip() {
-    const isRequestLoaded = request !== undefined
-    return (
-      <HorizontalLayout theme={"spacing"}>
-        {resultSubscription ?
-          <Button onClick={handleStopCalculation} theme={"primary"}>
-            <Icon icon={"vaadin:stop"}></Icon>
-            Stop
-          </Button>
-          : <Button onClick={handleStartCalculation}
-                    disabled={modeCtx.mode === ScheduleMode.EDIT || !request}
-                    theme={"primary"}>
-            <Icon icon={"vaadin:play"}/>
-            Vypočítat
-          </Button>
-        }
-        <Button theme={"icon primary"} onClick={() => setIsConfigSelectDialogOpen(true)}>
-          <Icon icon={"vaadin:cog"} slot={"prefix"}/>
-          Vybrat konfiguraci
-        </Button>
-        <ConfigSelectDialog
-          configMetaData={configMetaData}
-          onOpenChanged={value => setIsConfigSelectDialogOpen(value)}
-          isOpen={isConfigSelectDialogOpen}
-          onConfigAction={handleConfigAction}
-        />
-        {isRequestLoaded && <Button
-            disabled={modeCtx.mode === ScheduleMode.EDIT || modeCtx.mode === ScheduleMode.CALCULATING}
-            onClick={() => {
-              isConfigNew.current = false
-              modeCtx.setMode(ScheduleMode.EDIT)
-            }}>
-            Upravit</Button>
-        }
-        {isRequestLoaded && <Button
-            disabled={modeCtx.mode === ScheduleMode.CALCULATING}
-            onClick={validateRequest}>
-            Zkontrolovat</Button>
-        }
-        {isRequestLoaded && <Button
-            disabled={modeCtx.mode !== ScheduleMode.EDIT}
-            theme={"secondary"}
-            onClick={handleUpdate}>Uložit</Button>
-        }
-        {isRequestLoaded && <Button
-            disabled={modeCtx.mode !== ScheduleMode.EDIT}
-            theme={"secondary"}
-            onClick={handleSave}>Uložit jako nový</Button>
-        }
-        {isRequestLoaded && <Button
-            disabled={modeCtx.mode !== ScheduleMode.EDIT}
-            theme={"secondary"}
-            onClick={handleCancel}>Zrušit</Button>
-        }
-        {resultCache.results.length > 0 && !resultSubscription &&
-            <Button theme={"secondary"} onClick={() => setResultCache({ results: [], selectedIndex: 0 })}>
-                Vyčistit výsledky
-            </Button>
-        }
-      </HorizontalLayout>
-    )
-  }
-
-  function renderResultStrip() {
-    return (
-      <VerticalLayout style={{ paddingTop: 10, width: "100%" }}>
-        <HorizontalLayout theme={"spacing"} style={{ alignItems: "center" }}>
-          {!resultSubscription &&
-              <Button disabled={resultCache.selectedIndex === 0}
-                      onClick={() => handleResultSelect(-1)}
-                      theme={"small icon"}>
-                  <Icon style={{ transform: "rotate(180deg)" }} icon={"vaadin:play"}/>
-              </Button>
-          }
-          <span
-            style={{ userSelect: "none" }}>Řešení: {resultCache.results.length > 0 ? resultCache.results[resultCache.selectedIndex].resultIndex : "-"}
-          </span>
-          <span
-            style={{ userSelect: "none" }}>Skóre: {resultCache.results.length > 0 ? resultCache.results[resultCache.selectedIndex].resultScore : "-"}
-          </span>
-          {!resultSubscription &&
-              <Button disabled={resultCache.selectedIndex === RESULT_CACHE_SIZE - 1}
-                      onClick={() => handleResultSelect(1)}
-                      theme={"small icon"}><Icon icon={"vaadin:play"}/></Button>
-          }
-          <StopWatch style={{
-            borderLeft: "solid",
-            paddingLeft: 10,
-            borderWidth: 1,
-            borderColor: "var(--lumo-contrast-20pct)"
-          }} isRunning={resultSubscription !== undefined}></StopWatch>
-          <Button theme={"small"}
-                  onClick={() => exportToExcel(employees, resultCache.results[resultCache.selectedIndex])}>Export</Button>
-        </HorizontalLayout>
-        {resultSubscription && <ProgressBar style={{ marginBottom: 0 }} indeterminate></ProgressBar>}
-      </VerticalLayout>
-    )
-  }
-
   function renderGridHeader() {
     return (
       <Card style={{ width: "100%" }}>
@@ -596,7 +486,7 @@ export default function ScheduleView() {
             onClick={() => setIsScheduleConfigDialogOpen(true)}
           >
             <Icon style={{ marginRight: 5 }} icon={"vaadin:cog"}/>
-            Nastaveni
+            Nastavení
           </Button>
         </HorizontalLayout>
       </Card>
@@ -605,13 +495,25 @@ export default function ScheduleView() {
 
   return (
     <VerticalLayout theme={"spacing padding"}>
-      <Card style={{ width: "100%" }}>
-        {renderHeaderStrip()}
-        {(resultSubscription || resultCache.results.length > 0) && renderResultStrip()}
-      </Card>
+      <HeaderStrip
+        onStopCalculation={handleStopCalculation}
+        onStartCalculation={handleStartCalculation}
+        resultSubscription={resultSubscription}
+        onConfigAction={handleConfigAction}
+        request={request}
+        onValidateRequest={validateRequest}
+        resultCache={resultCache}
+        onSave={handleSave}
+        onUpdate={handleUpdate}
+        onCancel={handleCancel}
+        onClearCache={() => setResultCache({ results: [], selectedIndex: 0 })}
+        onExportToExcel={() => exportToExcel(employees, resultCache.results[resultCache.selectedIndex])}
+        cacheSize={RESULT_CACHE_SIZE}
+        onResultSelectionChanged={handleResultSelectionChanged}
+      />
       {request ? renderGridHeader() : <h2 style={{ marginTop: 30, padding: 10 }}>Vyberte rozvrh</h2>}
       {request &&
-          <>
+          <Fragment>
               <ScheduleSettingsDialog
                   isOpen={isScheduleConfigDialogOpen}
                   onOpenChanged={setIsScheduleConfigDialogOpen}
@@ -641,29 +543,27 @@ export default function ScheduleView() {
               />
               <Card
                   style={{
-                    maxWidth: "100%",
                     borderWidth: 1,
-                    borderColor: "var(--lumo-shade-70pct)"
+                    borderColor: "var(--lumo-shade-70pct)",
+                    height: "570px",
+                    width: "100%",
+                    overflow: "scroll"
                   }}
               >
-                  <div style={{ height: "540px", width: "100%", overflow: "scroll" }}>
-                      <ScheduleGridContainer
-                          request={request}
-                          employees={employees}
-                          shiftRequests={shiftRequests}
-                          shiftPatterns={shiftPatternRequests}
-                          shiftPerScheduleRequests={shiftPerScheduleRequests}
-                          onEmployeeAction={handleEmployeeAction}
-                          onShiftRequestsChanged={handleShiftRequestsChanged}
-                          result={resultCache.results.length > 0 ? resultCache.results[resultCache.selectedIndex] : undefined}
-                          validation={validatorResult}
-                      />
-                  </div>
+                  <ScheduleGridContainer
+                      request={request}
+                      employees={employees}
+                      shiftRequests={shiftRequests}
+                      shiftPatterns={shiftPatternRequests}
+                      shiftPerScheduleRequests={shiftPerScheduleRequests}
+                      onEmployeeAction={handleEmployeeAction}
+                      onShiftRequestsChanged={handleShiftRequestsChanged}
+                      result={resultCache.results.length > 0 ? resultCache.results[resultCache.selectedIndex] : undefined}
+                      validation={validatorResult}
+                  />
               </Card>
-          </>
+          </Fragment>
       }
-      <HorizontalLayout theme={"spacing"}>
-      </HorizontalLayout>
     </VerticalLayout>
   )
 }
