@@ -646,17 +646,19 @@ export default function ScheduleView() {
                     borderColor: "var(--lumo-shade-70pct)"
                   }}
               >
-                  <ScheduleGridContainer
-                      request={request}
-                      employees={employees}
-                      shiftRequests={shiftRequests}
-                      shiftPatterns={shiftPatternRequests}
-                      shiftPerScheduleRequests={shiftPerScheduleRequests}
-                      onEmployeeAction={handleEmployeeAction}
-                      onShiftRequestsChanged={handleShiftRequestsChanged}
-                      result={resultCache.results.length > 0 ? resultCache.results[resultCache.selectedIndex] : undefined}
-                      validation={validatorResult}
-                  />
+                  <div style={{ height: "540px", width: "100%", overflow: "scroll" }}>
+                      <ScheduleGridContainer
+                          request={request}
+                          employees={employees}
+                          shiftRequests={shiftRequests}
+                          shiftPatterns={shiftPatternRequests}
+                          shiftPerScheduleRequests={shiftPerScheduleRequests}
+                          onEmployeeAction={handleEmployeeAction}
+                          onShiftRequestsChanged={handleShiftRequestsChanged}
+                          result={resultCache.results.length > 0 ? resultCache.results[resultCache.selectedIndex] : undefined}
+                          validation={validatorResult}
+                      />
+                  </div>
               </Card>
           </>
       }

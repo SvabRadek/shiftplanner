@@ -1,5 +1,5 @@
 import { Cell, DisplayMode, GridCell } from "Frontend/views/schedule/components/schedulegrid/GridCell";
-import { ReactNode, useContext } from "react";
+import { Fragment, ReactNode, useContext } from "react";
 import { GridNameCell } from "Frontend/views/schedule/components/schedulegrid/GridNameCell";
 import { GridHeaderCell } from "Frontend/views/schedule/components/schedulegrid/GridHeaderCell";
 import { CrudAction, stupidDateToDate, stupidDateToString } from "Frontend/util/utils";
@@ -25,6 +25,16 @@ type Props = {
   onEmployeeAction: (action: CrudAction<Pick<EmployeeRecord, "id">>) => void
 }
 
+const dayVocabulary: Record<number, string> = {
+  1: "Po",
+  2: "Út",
+  3: "St",
+  4: "Čt",
+  5: "Pá",
+  6: "So",
+  0: "Ne"
+}
+
 function shadowIntensity(
   row: number,
   column: number,
@@ -32,7 +42,7 @@ function shadowIntensity(
   date?: StupidDate
 ): number {
   let shadowIntensity = 10
-  if (date && isWeekend(date)) shadowIntensity += 10
+  if (date && isWeekend(date)) shadowIntensity += 20
   if (mode !== ScheduleMode.EDIT) shadowIntensity += 10
   if (row === 1) shadowIntensity += 30
   if (column === 1 && row > 1) shadowIntensity += 10
@@ -73,7 +83,7 @@ export function ScheduleGrid(props: Props) {
         c.index + 2,
         <GridHeaderCell
           title={c.date.day.toString()}
-          hint={stupidDateToString(c.date) + ", " + stupidDateToDate(c.date).getDay()}
+          hint={stupidDateToString(c.date) + ", " + dayVocabulary[stupidDateToDate(c.date).getDay()]}
           backgroundColor={cellColor(1, c.index + 2, modeCtx.mode, c.date)}
         />
       ))
@@ -135,7 +145,6 @@ export function ScheduleGrid(props: Props) {
     <div style={{
       display: "grid",
       width: "100%",
-      overflow: "scroll",
       justifyContent: "start"
     }}>
       {items}
