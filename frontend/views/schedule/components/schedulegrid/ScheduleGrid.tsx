@@ -1,5 +1,5 @@
 import { Cell, DisplayMode, GridCell } from "Frontend/views/schedule/components/schedulegrid/GridCell";
-import { Fragment, ReactNode, useContext } from "react";
+import { ReactNode, useContext } from "react";
 import { GridNameCell } from "Frontend/views/schedule/components/schedulegrid/GridNameCell";
 import { GridHeaderCell } from "Frontend/views/schedule/components/schedulegrid/GridHeaderCell";
 import { CrudAction, stupidDateToDate, stupidDateToString } from "Frontend/util/utils";
@@ -9,6 +9,7 @@ import EmployeeRecord from "Frontend/generated/com/cocroachden/planner/employee/
 import ValidatorIssue from "Frontend/generated/com/cocroachden/planner/solver/constraints/validator/ValidatorIssue";
 import IssueSeverity from "Frontend/generated/com/cocroachden/planner/solver/constraints/validator/IssueSeverity";
 import WorkerId from "Frontend/generated/com/cocroachden/planner/lib/WorkerId";
+import { ValidationContext } from "Frontend/views/schedule/components/validation/ScheduleValidationCtxProvider";
 
 export type Row = {
   owner: WorkerId
@@ -61,6 +62,8 @@ function cellColor(
 export function ScheduleGrid(props: Props) {
 
   const modeCtx = useContext(ScheduleModeCtx)
+  const validationCtx = useContext(ValidationContext)
+
   const items = mapToGridCells(props.rows);
 
   function generateFirstRow(row: Row): ReactNode[] {
@@ -78,15 +81,23 @@ export function ScheduleGrid(props: Props) {
       />
     ))
     row.cells.forEach(c => {
-      items.push(renderCell(
-        1,
-        c.index + 2,
-        <GridHeaderCell
-          title={c.date.day.toString()}
-          hint={stupidDateToString(c.date) + ", " + dayVocabulary[stupidDateToDate(c.date).getDay()]}
-          backgroundColor={cellColor(1, c.index + 2, modeCtx.mode, c.date)}
-        />
-      ))
+      const issues = validationCtx.dayIssueMap.get(stupidDateToString(c.date)) || []
+      const severity = validationCtx.getSeverityOfIssues(issues)
+      items.push(
+        renderCell(
+          1,
+          c.index + 2,
+          <GridHeaderCell
+            title={c.date.day.toString()}
+            hint={stupidDateToString(c.date) + ", " + dayVocabulary[stupidDateToDate(c.date).getDay()]}
+            backgroundColor={
+            severity === IssueSeverity.ERROR ? "var(--lumo-error-color-50pct)"
+              : severity === IssueSeverity.WARNING ? "var(--lumo-primary-color)"
+                : cellColor(1, c.index + 2, modeCtx.mode, c.date)
+            }
+            issues={issues}
+          />
+        ))
     })
     return items
   }
@@ -97,11 +108,9 @@ export function ScheduleGrid(props: Props) {
       if (rowIndex === 0) {
         items.push(generateFirstRow(row))
       }
-      const issues = row.issues || []
-      const severity = issues.find(i => i.severity === IssueSeverity.ERROR)?.severity
-        || issues.find(i => i.severity === IssueSeverity.WARNING)?.severity
-        || IssueSeverity.OK
-      items.push(renderCell(
+      const workerIssues = validationCtx.workerIssueMap.get(row.owner.id) || []
+      const severity = validationCtx.getSeverityOfIssues(workerIssues)
+        items.push(renderCell(
         rowIndex + 2,
         1,
         <GridNameCell
@@ -109,13 +118,11 @@ export function ScheduleGrid(props: Props) {
           owner={row.owner}
           onEmployeeAction={props.onEmployeeAction}
           backgroundColor={
-            severity === IssueSeverity.WARNING
-              ? "var(--lumo-primary-color-50pct)"
-              : severity === IssueSeverity.ERROR
-                ? "var(--lumo-error-color-50pct)"
+            severity === IssueSeverity.ERROR ? "var(--lumo-error-color-50pct)"
+            : severity === IssueSeverity.WARNING ? "var(--lumo-primary-color-50pct)"
                 : cellColor(rowIndex + 2, 1, modeCtx.mode)}
           readonly={modeCtx.mode !== ScheduleMode.EDIT}
-          issues={issues}
+          issues={workerIssues}
         />
       ))
       return row.cells

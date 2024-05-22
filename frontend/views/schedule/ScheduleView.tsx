@@ -1,5 +1,5 @@
 import { DatePicker } from "@hilla/react-components/DatePicker";
-import { Fragment, useCallback, useContext, useEffect, useState } from "react";
+import { Fragment, useContext, useEffect, useState } from "react";
 import {
   ConstraintEndpoint,
   EmployeeEndpoint,
@@ -14,12 +14,9 @@ import EmployeeRecord from "Frontend/generated/com/cocroachden/planner/employee/
 import { ScheduleGridContainer } from "./components/schedulegrid/ScheduleGridContainer";
 import {
   EmployeeRequestConfigDialog
-} from "Frontend/views/schedule/components/employeeSettings/EmployeeRequestConfigDialog";
+} from "Frontend/views/schedule/components/employeesettings/EmployeeRequestConfigDialog";
 import PlannerConfigurationDTO
   from "Frontend/generated/com/cocroachden/planner/plannerconfiguration/PlannerConfigurationDTO";
-import SpecificShiftRequestDTO from "Frontend/generated/com/cocroachden/planner/constraint/SpecificShiftRequestDTO";
-import ShiftsPerScheduleRequestDTO
-  from "Frontend/generated/com/cocroachden/planner/constraint/ShiftsPerScheduleRequestDTO";
 import WorkerId from "Frontend/generated/com/cocroachden/planner/lib/WorkerId";
 import ConstraintType from "Frontend/generated/com/cocroachden/planner/lib/ConstraintType";
 import {
@@ -38,21 +35,24 @@ import { Subscription } from "@hilla/frontend";
 import ScheduleResultDTO from "Frontend/generated/com/cocroachden/planner/solver/ScheduleResultDTO";
 import { ScheduleMode, ScheduleModeCtx } from "Frontend/views/schedule/ScheduleModeCtxProvider";
 import ConsecutiveWorkingDaysRequestDTO
-  from "Frontend/generated/com/cocroachden/planner/constraint/ConsecutiveWorkingDaysRequestDTO";
+  from "Frontend/generated/com/cocroachden/planner/constraint/api/ConsecutiveWorkingDaysRequestDTO";
 import EmployeesPerShiftRequestDTO
-  from "Frontend/generated/com/cocroachden/planner/constraint/EmployeesPerShiftRequestDTO";
+  from "Frontend/generated/com/cocroachden/planner/constraint/api/EmployeesPerShiftRequestDTO";
 import ShiftFollowupRestrictionRequestDTO
-  from "Frontend/generated/com/cocroachden/planner/constraint/ShiftFollowupRestrictionRequestDTO";
-import ShiftPatternRequestDTO from "Frontend/generated/com/cocroachden/planner/constraint/ShiftPatternRequestDTO";
+  from "Frontend/generated/com/cocroachden/planner/constraint/api/ShiftFollowupRestrictionRequestDTO";
+import ShiftPatternRequestDTO from "Frontend/generated/com/cocroachden/planner/constraint/api/ShiftPatternRequestDTO";
 import { ScheduleSettingsDialog } from "Frontend/views/schedule/components/schedulesettings/ScheduleSettingsDialog";
-import ValidatorResult from "Frontend/generated/com/cocroachden/planner/solver/constraints/validator/ValidatorResult";
-import IssueSeverity from "Frontend/generated/com/cocroachden/planner/solver/constraints/validator/IssueSeverity";
-import PlannerConfigurationMetaDataDTO
-  from "Frontend/generated/com/cocroachden/planner/plannerconfiguration/PlannerConfigurationMetaDataDTO";
 import { exportToExcel } from "Frontend/util/excel";
 import SolutionStatus from "Frontend/generated/com/cocroachden/planner/solver/SolutionStatus";
-import { ResultSubHeaderStrip } from "Frontend/views/schedule/ResultSubHeaderStrip";
 import { HeaderStrip } from "Frontend/views/schedule/HeaderStrip";
+import SpecificShiftRequestDTO from "Frontend/generated/com/cocroachden/planner/constraint/api/SpecificShiftRequestDTO";
+import ShiftsPerScheduleRequestDTO
+  from "Frontend/generated/com/cocroachden/planner/constraint/api/ShiftsPerScheduleRequestDTO";
+import DayValidationIssue from "Frontend/generated/com/cocroachden/planner/constraint/validations/DayValidationIssue";
+import WorkerValidationIssue
+  from "Frontend/generated/com/cocroachden/planner/constraint/validations/WorkerValidationIssue";
+import ConstraintRequestDTO from "Frontend/generated/com/cocroachden/planner/constraint/api/ConstraintRequestDTO";
+import { ValidationContext } from "Frontend/views/schedule/components/validation/ScheduleValidationCtxProvider";
 
 type EmployeeConfigDialogParams = {
   isOpen: boolean,
@@ -64,6 +64,11 @@ export type ResultCache = {
   selectedIndex: number
 }
 
+export type NewValidationResult = {
+  dayIssues: DayValidationIssue[],
+  workIssues: WorkerValidationIssue[]
+}
+
 function handleUnload(e: Event) {
   e.preventDefault()
 }
@@ -73,15 +78,11 @@ const RESULT_CACHE_SIZE = 5
 export default function ScheduleView() {
 
   const modeCtx = useContext(ScheduleModeCtx);
+  const validationCtx = useContext(ValidationContext)
   const [employees, setEmployees] = useState<EmployeeRecord[]>([])
-  const [configMetaData, setConfigMetaData] = useState<PlannerConfigurationMetaDataDTO[]>([]);
   const [employeeConfigDialog, setEmployeeConfigDialog] = useState<EmployeeConfigDialogParams>({ isOpen: false })
   const [isScheduleConfigDialogOpen, setIsScheduleConfigDialogOpen] = useState(false);
-  const [resultCache, setResultCache] = useState<ResultCache>({
-    results: [],
-    selectedIndex: 0
-  });
-  const [validatorResult, setValidatorResult] = useState<ValidatorResult | undefined>(undefined);
+  const [resultCache, setResultCache] = useState<ResultCache>({ results: [], selectedIndex: 0 });
 
   const [resultSubscription, setResultSubscription] = useState<Subscription<ScheduleResultDTO> | undefined>();
   const [request, setRequest] = useState<PlannerConfigurationDTO | undefined>();
@@ -94,55 +95,15 @@ export default function ScheduleView() {
 
   useEffect(() => {
     EmployeeEndpoint.getAllEmployees().then(setEmployees)
-    PlannerConfigurationEndpoint.getMetaData().then(setConfigMetaData)
     window.addEventListener("beforeunload", handleUnload)
     return () => {
       window.removeEventListener("beforeunload", handleUnload)
     }
   }, []);
 
-  useEffect(() => {
-    if (validatorResult) {
-      if (validatorResult?.issues.filter(i => i.severity === IssueSeverity.ERROR).length > 0) {
-        Notification.show("V konfiguraci jsou konflikty!", {
-          position: "top-center",
-          duration: 5000,
-          theme: "error"
-        })
-      }
-      if (validatorResult?.issues.filter(i => i.severity === IssueSeverity.WARNING).length > 0) {
-        Notification.show("Konfigurace obsahuje varování!", {
-          position: "top-center",
-          duration: 5000,
-          theme: "warning"
-        })
-      }
-    }
-  }, [validatorResult]);
-
-  const handleShiftPatternAction = useCallback((action: CrudAction<ShiftPatternRequestDTO>) => {
-    switch (action.type) {
-      case CRUDActions.CREATE:
-        setShiftPatternRequests(prevState => ([
-          ...prevState,
-          action.payload
-        ]))
-        break
-      case CRUDActions.UPDATE:
-        setShiftPatternRequests(prevState => (
-          prevState.map(r => {
-            if (r.id !== action.payload.id) return r
-            return action.payload
-          })
-        ))
-        break
-      case CRUDActions.DELETE:
-        setShiftPatternRequests(prevState => (
-          prevState.filter(r => r.id !== action.payload.id)
-        ))
-    }
-  }, []);
-
+  function handleShiftPatternAction(action: CrudAction<ShiftPatternRequestDTO>) {
+    updateList(action, shiftPatternRequests)
+  }
 
   function handleCancel() {
     handleFetchConfig(request?.id!)
@@ -186,21 +147,10 @@ export default function ScheduleView() {
     })
   }
 
-  async function handleConfigAction(action: CrudAction<PlannerConfigurationMetaDataDTO>) {
-    switch (action.type) {
-      case CRUDActions.DELETE:
-        await PlannerConfigurationEndpoint.delete(action.payload.id)
-        PlannerConfigurationEndpoint.getMetaData().then(setConfigMetaData)
-        break
-      case CRUDActions.READ:
-        handleFetchConfig(action.payload.id)
-    }
-  }
-
   function handleFetchConfig(configId: string) {
     PlannerConfigurationEndpoint.getConfiguration(configId).then(configResponse => {
       setRequest(configResponse)
-      setValidatorResult(undefined)
+      validationCtx.clear()
       setResultCache({ selectedIndex: 0, results: [] })
       ConstraintEndpoint.findSpecificShiftRequests(
         configResponse.constraintRequestInstances
@@ -284,29 +234,16 @@ export default function ScheduleView() {
     }
   }
 
-  async function validateRequest() {
-    const validation = await ConstraintEndpoint.validate(
-      request!,
-      shiftRequests,
-      shiftPatternRequests,
-      employeesPerShiftRequests,
-      consecutiveWorkingDaysRequests,
-      shiftFollowupRestrictionRequests,
-      shiftPerScheduleRequests
-    )
-    setValidatorResult(validation)
-    if (validation.issues.length > 0) {
-      Notification.show(
-        "Nalezeny problémy!",
-        { position: "top-center", theme: "error" }
-      )
-    } else {
-      Notification.show(
-        "Vše se zdá v pořádku.",
-        { position: "top-center", theme: "success" }
-      )
-    }
-    return validation
+  function validateRequest() {
+    const combinedList: ConstraintRequestDTO[] = [
+      ...shiftRequests,
+      ...shiftPatternRequests,
+      ...employeesPerShiftRequests,
+      ...consecutiveWorkingDaysRequests,
+      ...shiftFollowupRestrictionRequests,
+      ...shiftPerScheduleRequests
+    ]
+    validationCtx.validate(request!, combinedList)
   }
 
   function handleStartCalculation() {
@@ -314,45 +251,40 @@ export default function ScheduleView() {
       resultSubscription.cancel()
       setResultSubscription(undefined)
     }
-    validateRequest().then(validation => {
-      if (validation.issues.filter(i => i.severity === IssueSeverity.ERROR).length > 0) {
-        return;
-      }
-      modeCtx.setMode(ScheduleMode.CALCULATING)
-      setResultSubscription(PlannerEndpoint.solve(request?.id)
-        .onNext(value => {
-          if (value.solutionStatus !== SolutionStatus.OK) {
-            Notification.show("Neřešitelné zadání!", {
-              position: "top-center",
-              duration: 5000,
-              theme: "error"
-            })
-            handleStopCalculation()
-            return
+    modeCtx.setMode(ScheduleMode.CALCULATING)
+    setResultSubscription(PlannerEndpoint.solve(request?.id)
+      .onNext(value => {
+        if (value.solutionStatus !== SolutionStatus.OK) {
+          Notification.show("Neřešitelné zadání!", {
+            position: "top-center",
+            duration: 5000,
+            theme: "error"
+          })
+          handleStopCalculation()
+          return
+        }
+        setResultCache(prevState => {
+          const updatedResults = [...prevState.results, value].slice(-RESULT_CACHE_SIZE)
+          return {
+            results: updatedResults,
+            selectedIndex: updatedResults.length - 1
           }
-          setResultCache(prevState => {
-            const updatedResults = [...prevState.results, value].slice(-RESULT_CACHE_SIZE)
-            return {
-              results: updatedResults,
-              selectedIndex: updatedResults.length - 1
-            }
-          });
-        }).onComplete(() => {
-          Notification.show("Výpočet úspěšně ukončen!", {
-            position: "top-center",
-            duration: 5000,
-            theme: "success"
-          })
-          setResultSubscription(undefined)
-        }).onError(() => {
-          Notification.show("Ztráta spojení!", {
-            position: "top-center",
-            duration: 5000,
-            theme: "warning"
-          })
+        });
+      }).onComplete(() => {
+        Notification.show("Výpočet úspěšně ukončen!", {
+          position: "top-center",
+          duration: 5000,
+          theme: "success"
         })
-      )
-    })
+        setResultSubscription(undefined)
+      }).onError(() => {
+        Notification.show("Ztráta spojení!", {
+          position: "top-center",
+          duration: 5000,
+          theme: "warning"
+        })
+      })
+    )
   }
 
   function handleResultSelectionChanged(offset: 1 | -1) {
@@ -363,90 +295,19 @@ export default function ScheduleView() {
   }
 
   function handleEmployeePerShiftAction(action: CrudAction<EmployeesPerShiftRequestDTO>) {
-    switch (action.type) {
-      case CRUDActions.UPDATE:
-        setEmployeesPerShiftRequests(prevState =>
-          prevState.map(r => {
-            if (action.payload.id !== r.id) return r
-            return action.payload
-          })
-        )
-        break
-      case CRUDActions.DELETE:
-        setEmployeesPerShiftRequests(prevState =>
-          prevState.filter(r => r.id !== action.payload.id)
-        )
-        break
-      case CRUDActions.CREATE:
-        setEmployeesPerShiftRequests(prevState => [...prevState, action.payload])
-        break
-    }
+    setEmployeesPerShiftRequests(prevState => updateList(action, prevState))
   }
 
   function handleShiftFollowupRestrictionAction(action: CrudAction<ShiftFollowupRestrictionRequestDTO>) {
-    switch (action.type) {
-      case CRUDActions.UPDATE:
-        setShiftFollowupRestrictionRequests(prevState =>
-          prevState.map(r => {
-            if (action.payload.id !== r.id) return r
-            return action.payload
-          })
-        )
-        break
-      case CRUDActions.DELETE:
-        setShiftFollowupRestrictionRequests(prevState =>
-          prevState.filter(r => r.id !== action.payload.id)
-        )
-        break
-      case CRUDActions.CREATE:
-        setShiftFollowupRestrictionRequests(prevState =>
-          [...prevState, action.payload]
-        )
-    }
+    setShiftFollowupRestrictionRequests(prevState => updateList(action, prevState))
   }
 
   function handleConsecutiveWorkingDaysAction(action: CrudAction<ConsecutiveWorkingDaysRequestDTO>) {
-    switch (action.type) {
-      case CRUDActions.UPDATE:
-        setConsecutiveWorkingDaysRequests(prevState =>
-          prevState.map(r => {
-            if (action.payload.id !== r.id) return r
-            return action.payload
-          })
-        )
-        break
-      case CRUDActions.DELETE:
-        setConsecutiveWorkingDaysRequests(prevState =>
-          prevState.filter(r => r.id !== action.payload.id)
-        )
-        break
-      case CRUDActions.CREATE:
-        setConsecutiveWorkingDaysRequests(prevState =>
-          [...prevState, action.payload]
-        )
-    }
+    setConsecutiveWorkingDaysRequests(prevState => updateList(action, prevState))
   }
 
   function handleShiftPerScheduleAction(action: CrudAction<ShiftsPerScheduleRequestDTO>) {
-    switch (action.type) {
-      case CRUDActions.UPDATE:
-        setShiftPerScheduleRequests(prevState =>
-          prevState.map(r => {
-            if (action.payload.id !== r.id) return r
-            return action.payload
-          })
-        )
-        break
-      case CRUDActions.DELETE:
-        setShiftPerScheduleRequests(prevState =>
-          prevState.filter(r => r.id !== action.payload.id)
-        )
-        break
-      case CRUDActions.CREATE:
-        setShiftPerScheduleRequests(prevState =>
-          [...prevState, action.payload]
-        )
-    }
+    setShiftPerScheduleRequests(prevState => updateList(action, prevState))
   }
 
   function renderGridHeader() {
@@ -499,8 +360,8 @@ export default function ScheduleView() {
         onStopCalculation={handleStopCalculation}
         onStartCalculation={handleStartCalculation}
         resultSubscription={resultSubscription}
-        onConfigAction={handleConfigAction}
         request={request}
+        onConfigSelected={handleFetchConfig}
         onValidateRequest={validateRequest}
         resultCache={resultCache}
         onSave={handleSave}
@@ -559,7 +420,6 @@ export default function ScheduleView() {
                       onEmployeeAction={handleEmployeeAction}
                       onShiftRequestsChanged={handleShiftRequestsChanged}
                       result={resultCache.results.length > 0 ? resultCache.results[resultCache.selectedIndex] : undefined}
-                      validation={validatorResult}
                   />
               </Card>
           </Fragment>
@@ -568,3 +428,18 @@ export default function ScheduleView() {
   )
 }
 
+function updateList<T extends { id: string }>(action: CrudAction<T>, requests: T[]): T[] {
+  switch (action.type) {
+    case CRUDActions.UPDATE:
+      return requests.map(r => {
+        if (action.payload.id !== r.id) return r
+        return action.payload
+      })
+    case CRUDActions.DELETE:
+      return requests.filter(r => r.id !== action.payload.id)
+    case CRUDActions.CREATE:
+      return [...requests, action.payload]
+    default:
+      return requests
+  }
+}

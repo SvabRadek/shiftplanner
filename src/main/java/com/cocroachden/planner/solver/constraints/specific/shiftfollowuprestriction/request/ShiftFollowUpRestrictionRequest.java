@@ -1,7 +1,7 @@
 package com.cocroachden.planner.solver.constraints.specific.shiftfollowuprestriction.request;
 
 
-import com.cocroachden.planner.constraint.ShiftFollowupRestrictionRequestDTO;
+import com.cocroachden.planner.constraint.api.ShiftFollowupRestrictionRequestDTO;
 import com.cocroachden.planner.lib.ConstraintType;
 import com.cocroachden.planner.lib.WorkerId;
 import com.cocroachden.planner.solver.constraints.specific.AbstractConstraintRequest;
@@ -44,4 +44,16 @@ public class ShiftFollowUpRestrictionRequest extends AbstractConstraintRequest {
     this.forbiddenFollowup = forbiddenFollowup;
     this.penalty = penalty;
   }
+
+
+  @Override
+  public String toString() {
+    return "{ " +
+        "type: " + this.getType() +
+        ", firstShift: " + firstShift +
+        ", forbiddenFollowup: " + forbiddenFollowup +
+        ", penalty: " + penalty +
+        " }";
+  }
+
 }

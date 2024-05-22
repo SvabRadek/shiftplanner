@@ -6,14 +6,13 @@ import { Row, ScheduleGrid } from "Frontend/views/schedule/components/schedulegr
 import { Cell, DisplayMode } from "Frontend/views/schedule/components/schedulegrid/GridCell";
 import PlannerConfigurationDTO
   from "Frontend/generated/com/cocroachden/planner/plannerconfiguration/PlannerConfigurationDTO";
-import SpecificShiftRequestDTO from "Frontend/generated/com/cocroachden/planner/constraint/SpecificShiftRequestDTO";
+import SpecificShiftRequestDTO from "Frontend/generated/com/cocroachden/planner/constraint/api/SpecificShiftRequestDTO";
 import ShiftsPerScheduleRequestDTO
-  from "Frontend/generated/com/cocroachden/planner/constraint/ShiftsPerScheduleRequestDTO";
+  from "Frontend/generated/com/cocroachden/planner/constraint/api/ShiftsPerScheduleRequestDTO";
 import ConstraintType from "Frontend/generated/com/cocroachden/planner/lib/ConstraintType";
 import ScheduleResultDTO from "Frontend/generated/com/cocroachden/planner/solver/ScheduleResultDTO";
 import WorkerId from "Frontend/generated/com/cocroachden/planner/lib/WorkerId";
-import ShiftPatternRequestDTO from "Frontend/generated/com/cocroachden/planner/constraint/ShiftPatternRequestDTO";
-import ValidatorResult from "Frontend/generated/com/cocroachden/planner/solver/constraints/validator/ValidatorResult";
+import ShiftPatternRequestDTO from "Frontend/generated/com/cocroachden/planner/constraint/api/ShiftPatternRequestDTO";
 
 export type PlainWorkerId = number
 export type Index = number
@@ -27,7 +26,6 @@ type Props = {
   onEmployeeAction: (action: CrudAction<EmployeeRecord>) => void
   onShiftRequestsChanged?: (changedRequests: Omit<SpecificShiftRequestDTO, "id">[]) => void
   result?: ScheduleResultDTO
-  validation?: ValidatorResult
 }
 
 type Highlight = {
@@ -85,7 +83,7 @@ export function ScheduleGridContainer(props: Props) {
 
   const shiftRequestMap = useMemo(() => {
     const map = new Map<string, SpecificShiftRequestDTO>()
-    props.shiftRequests.forEach(r => map.set(stupidDateToString(r.date) + r.owner, r))
+    props.shiftRequests.forEach(r => map.set(stupidDateToString(r.date) + r.owner.id, r))
     return map
   }, [props.shiftRequests])
 
@@ -97,16 +95,17 @@ export function ScheduleGridContainer(props: Props) {
 
   return (
     <ScheduleGrid
-      rows={createRows(
-        props.request,
-        props.employees,
-        shiftRequestMap,
-        shiftPatternMap,
-        props.shiftPerScheduleRequests,
-        highlight,
-        props.result,
-        props.validation
-      )}
+      rows={
+        createRows(
+          props.request,
+          props.employees,
+          shiftRequestMap,
+          shiftPatternMap,
+          props.shiftPerScheduleRequests,
+          highlight,
+          props.result
+        )
+      }
       onCellChanged={handleShiftChange}
       onMouseOverCell={handleCellOnMouseOver}
       onLeftClick={handleCellLeftClick}
@@ -135,8 +134,7 @@ function createRows(
   shiftPatterns: Map<PlainWorkerId, ShiftPatternRequestDTO>,
   shiftPerSchedule: ShiftsPerScheduleRequestDTO[],
   highlightInfo: Highlight,
-  results?: ScheduleResultDTO,
-  validation?: ValidatorResult
+  results?: ScheduleResultDTO
 ): Row[] {
   const startDate = stupidDateToDate(request.startDate)
   const endDate = stupidDateToDate(request.endDate)
@@ -190,7 +188,7 @@ function createRows(
         owner: workerId,
         displayName: getDisplayName(referencedEmployee, displayShiftCount, assignments),
         cells,
-        issues: validation?.issues.filter(i => i.owner === workerId.id)
+        issues: []
       } as Row
     })
 }

@@ -2,6 +2,7 @@ package com.cocroachden.planner.solver.schedule;
 
 
 import com.cocroachden.planner.lib.WorkerId;
+import lombok.SneakyThrows;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -14,6 +15,7 @@ public record SchedulePlan(
     Map<WorkerId, ScheduleWorker> workers
 ) {
   public WorkDay getSpecificDay(WorkerId workerId, LocalDate date) {
+    this.ensureSchedulePlanContainsWorkerId(workerId);
     return assignments.get(workerId).get(date);
   }
 
@@ -22,6 +24,7 @@ public record SchedulePlan(
   }
 
   public List<WorkDay> getAllDaysForWorker(WorkerId workerId) {
+    this.ensureSchedulePlanContainsWorkerId(workerId);
     return assignments.get(workerId).values().stream().toList();
   }
 
@@ -39,5 +42,43 @@ public record SchedulePlan(
       });
     });
     return workDaysByDate;
+  }
+
+  @Override
+  public String toString() {
+    StringBuilder builder = new StringBuilder("SchedulePlan:\n").append("\tAssignments:\n");
+    this.assignments.forEach((workerId, workDaysMap) -> {
+      builder.append("  Worker: ").append(workerId).append("\n");
+      workDaysMap.forEach((date, workDay) -> {
+        builder.append("    Date: ").append(date).append("\n");
+        builder.append("    Work Day: ").append(workDay).append("\n");
+      });
+      builder.append("\n");
+    });
+
+    builder.append("Workers:\n");
+    this.workers.forEach((workerId, worker) -> {
+      builder.append("  Worker ID: ").append(workerId).append("\n");
+      builder.append("  Worker: ").append(worker).append("\n");
+    });
+
+    return builder.toString();
+  }
+
+  @SneakyThrows
+  private void ensureSchedulePlanContainsWorkerId(WorkerId workerId) {
+    if (!this.assignments.containsKey(workerId)) {
+      throw SchedulePlanException.becauseWorkerIsNotPresent(workerId);
+    }
+  }
+
+  public static class SchedulePlanException extends Exception {
+    private SchedulePlanException(String message) {
+      super(message);
+    }
+
+    public static SchedulePlanException becauseWorkerIsNotPresent(WorkerId workerId) {
+      return new SchedulePlanException("Schedule plan does not contain workerId [%s]".formatted(workerId.toString()));
+    }
   }
 }

@@ -1,7 +1,7 @@
 package com.cocroachden.planner.solver.constraints.specific.workerspershift.request;
 
 
-import com.cocroachden.planner.constraint.EmployeesPerShiftRequestDTO;
+import com.cocroachden.planner.constraint.api.EmployeesPerShiftRequestDTO;
 import com.cocroachden.planner.lib.ConstraintType;
 import com.cocroachden.planner.solver.constraints.specific.AbstractMinMaxRequest;
 import com.cocroachden.planner.solver.schedule.WorkShifts;
@@ -40,5 +40,20 @@ public class WorkersPerShiftRequest extends AbstractMinMaxRequest {
   ) {
     super(ID, null, hardMin, softMin, minPenalty, softMax, maxPenalty, hardMax);
     this.shift = shift;
+  }
+
+
+  @Override
+  public String toString() {
+    return "{ " +
+        "type: " + this.getType() +
+        ", shift: " + shift +
+        ", softMin: " + this.getSoftMin() +
+        ", minPenalty: " + this.getMinPenalty() +
+        ", hardMin: " + this.getHardMin() +
+        ", softMax: " + this.getSoftMax() +
+        ", maxPenalty: " + this.getMaxPenalty() +
+        ", hardMax: " + this.getHardMax() +
+        " }";
   }
 }

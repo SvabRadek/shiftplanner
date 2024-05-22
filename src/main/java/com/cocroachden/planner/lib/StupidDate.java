@@ -3,13 +3,16 @@ package com.cocroachden.planner.lib;
 
 import dev.hilla.Nonnull;
 import jakarta.validation.constraints.Max;
+import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
 import java.util.Objects;
 
 @AllArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
 public class StupidDate {
 

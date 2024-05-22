@@ -14,7 +14,6 @@ import com.google.ortools.sat.CpSolver;
 import com.google.ortools.sat.CpSolverStatus;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import reactor.core.publisher.FluxSink;
 
 import java.util.HashMap;
 import java.util.List;
@@ -34,9 +33,11 @@ public class ScheduleSolver {
       List<ConstraintRequest> constraintRequests
   ) {
     if (this.solverThread != null && this.solverThread.isAlive()) {
+      log.debug("Interrupting running solver thread.");
       this.solverThread.interrupt();
     }
     if (this.solutionCb != null) {
+      log.debug("Calling stop on an existing solution callback.");
       this.solutionCb.stopSearch();
     }
     Loader.loadNativeLibraries();
@@ -46,11 +47,10 @@ public class ScheduleSolver {
     constraintRequests.forEach(request -> constraintApplier.apply(schedulePlan, model, objectives, request));
     this.cpSolver = new CpSolver();
     this.cpSolver.getParameters().setLinearizationLevel(0);
-    this.cpSolver.getParameters().setEnumerateAllSolutions(true);
     this.cpSolver.getParameters().setNumWorkers(8);
     this.cpSolver.getParameters().setRelativeGapLimit(0.05);
+    this.cpSolver.getParameters().setLogSearchProgress(true);
     model.minimize(objectives.getObjectiveAsExpression());
-    log.info("Validation: {}", model.validate());
     this.solutionCb = new ScheduleSolutionCb(
         fluxSink,
         schedulePlan
@@ -58,21 +58,25 @@ public class ScheduleSolver {
     this.solverThread = new Thread(() -> {
       var status = this.cpSolver.solve(model, this.solutionCb);
       if (status == CpSolverStatus.INFEASIBLE) {
-        fluxSink.accept(new ScheduleResultDTO(
-            SolutionStatus.INFEASIBLE,
-            0d,
-            0,
-            new HashMap<>()
-        ));
+        fluxSink.accept(
+            new ScheduleResultDTO(
+                SolutionStatus.INFEASIBLE,
+                0d,
+                0,
+                new HashMap<>()
+            ));
       }
       if (status == CpSolverStatus.MODEL_INVALID) {
-        fluxSink.accept(new ScheduleResultDTO(
-            SolutionStatus.MODEL_INVALID,
-            0d,
-            0,
-            new HashMap<>()
-        ));
+        fluxSink.accept(
+            new ScheduleResultDTO(
+                SolutionStatus.MODEL_INVALID,
+                0d,
+                0,
+                new HashMap<>()
+            ));
       }
+      log.info(model.modelStats());
+      log.info(model.validate());
       log.info("Status: {}, Solutions: {}", status, this.solutionCb.getCurrentSolutionCount());
       log.debug("Statistics");
       log.debug("  conflicts: {}", this.cpSolver.numConflicts());

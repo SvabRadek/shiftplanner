@@ -1,16 +1,20 @@
 package com.cocroachden.planner;
 
+import com.cocroachden.planner.constraint.api.ConstraintRequestDTO;
+import com.cocroachden.planner.lib.ConstraintRequestDTODeserializer;
 import com.cocroachden.planner.solver.constraints.GenericConstraintApplier;
-import com.cocroachden.planner.solver.constraints.specific.consecutiveworkingdays.ConsecutiveWorkingDaysConstraint;
-import com.cocroachden.planner.solver.constraints.specific.shiftfollowuprestriction.ShiftFollowUpConstraint;
-import com.cocroachden.planner.solver.constraints.specific.shiftpattern.ShiftPatternConstraint;
-import com.cocroachden.planner.solver.constraints.specific.shiftperday.OneShiftPerDayConstraint;
-import com.cocroachden.planner.solver.constraints.specific.shiftperschedule.ShiftsPerScheduleConstraint;
-import com.cocroachden.planner.solver.constraints.specific.workershiftrequest.WorkerShiftRequestConstraint;
-import com.cocroachden.planner.solver.constraints.specific.workershiftrequest.validation.SpecificShiftRequestValidator;
-import com.cocroachden.planner.solver.constraints.specific.workerspershift.WorkersPerShiftConstraint;
+import com.cocroachden.planner.solver.constraints.specific.consecutiveworkingdays.ConsecutiveWorkingDaysConstraintApplier;
+import com.cocroachden.planner.solver.constraints.specific.shiftfollowuprestriction.ShiftFollowUpConstraintApplier;
+import com.cocroachden.planner.solver.constraints.specific.shiftpattern.ShiftPatternConstraintApplier;
+import com.cocroachden.planner.solver.constraints.specific.shiftperday.OneShiftPerDayConstraintApplier;
+import com.cocroachden.planner.solver.constraints.specific.shiftperschedule.ShiftsPerScheduleConstraintApplier;
+import com.cocroachden.planner.solver.constraints.specific.workershiftrequest.WorkerShiftRequestConstraintApplier;
+import com.cocroachden.planner.solver.constraints.validator.specific.SpecificShiftRequestValidator;
+import com.cocroachden.planner.solver.constraints.specific.workerspershift.WorkersPerShiftConstraintApplier;
 import com.cocroachden.planner.solver.constraints.validator.ConstraintValidator;
 import com.cocroachden.planner.solver.solver.ScheduleSolver;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.module.SimpleModule;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
@@ -23,13 +27,13 @@ public class ServiceConfiguration {
   @Bean
   public GenericConstraintApplier genericConstraintApplier() {
     return new GenericConstraintApplier(
-        new OneShiftPerDayConstraint(),
-        new ShiftsPerScheduleConstraint(),
-        new WorkerShiftRequestConstraint(),
-        new WorkersPerShiftConstraint(),
-        new ShiftFollowUpConstraint(),
-        new ConsecutiveWorkingDaysConstraint(),
-        new ShiftPatternConstraint()
+        new OneShiftPerDayConstraintApplier(),
+        new ShiftsPerScheduleConstraintApplier(),
+        new WorkerShiftRequestConstraintApplier(),
+        new WorkersPerShiftConstraintApplier(),
+        new ShiftFollowUpConstraintApplier(),
+        new ConsecutiveWorkingDaysConstraintApplier(),
+        new ShiftPatternConstraintApplier()
     );
   }
 

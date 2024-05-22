@@ -11,15 +11,17 @@ import PlannerConfigurationDTO
 import { ResultCache } from "Frontend/views/schedule/ScheduleView";
 import PlannerConfigurationMetaDataDTO
   from "Frontend/generated/com/cocroachden/planner/plannerconfiguration/PlannerConfigurationMetaDataDTO";
-import { CrudAction } from "Frontend/util/utils";
+import { CrudAction, CRUDActions } from "Frontend/util/utils";
 import { PlannerConfigurationEndpoint } from "Frontend/generated/endpoints";
 import { Card } from "Frontend/components/Card";
 import { ResultSubHeaderStrip } from "Frontend/views/schedule/ResultSubHeaderStrip";
+import { ValidationIssuesDialog } from "Frontend/views/schedule/components/validation/ValidationIssuesDialog";
+import { Tooltip } from "@hilla/react-components/Tooltip";
+import { ValidationContext } from "Frontend/views/schedule/components/validation/ScheduleValidationCtxProvider";
 
 type Props = {
   onStopCalculation: () => void
   onStartCalculation: () => void
-  onConfigAction: (action: CrudAction<PlannerConfigurationMetaDataDTO>) => void
   onValidateRequest: () => void
   onSave: () => void
   onUpdate: () => void
@@ -27,6 +29,7 @@ type Props = {
   onClearCache: () => void
   onExportToExcel: () => void
   onResultSelectionChanged: (value: 1 | -1) => void
+  onConfigSelected: (id: string) => void
   cacheSize: number
   resultSubscription: Subscription<ScheduleResultDTO> | undefined
   request: PlannerConfigurationDTO | undefined
@@ -36,7 +39,9 @@ type Props = {
 export function HeaderStrip(props: Props) {
   const [configMetaData, setConfigMetaData] = useState<PlannerConfigurationMetaDataDTO[]>([]);
   const [isConfigSelectDialogOpen, setIsConfigSelectDialogOpen] = useState(false);
+  const [isIssuesDialogOpen, setIsIssuesDialogOpen] = useState(false);
   const modeCtx = useContext(ScheduleModeCtx);
+  const validationCtx = useContext(ValidationContext);
 
   useEffect(() => {
     if (isConfigSelectDialogOpen) {
@@ -44,9 +49,30 @@ export function HeaderStrip(props: Props) {
     }
   }, [isConfigSelectDialogOpen])
 
+  async function handleConfigAction(action: CrudAction<PlannerConfigurationMetaDataDTO>) {
+    switch (action.type) {
+      case CRUDActions.DELETE:
+        await PlannerConfigurationEndpoint.delete(action.payload.id)
+        PlannerConfigurationEndpoint.getMetaData().then(setConfigMetaData)
+        break
+      case CRUDActions.READ:
+        props.onConfigSelected(action.payload.id)
+    }
+  }
+
   return (
     <Card style={{ width: "100%" }}>
       <HorizontalLayout theme={"spacing"}>
+        <ValidationIssuesDialog
+          isOpen={isIssuesDialogOpen}
+          onOpenChanged={setIsIssuesDialogOpen}
+        />
+        {validationCtx.containsIssues &&
+            <Button onClick={() => setIsIssuesDialogOpen(true)} theme={"error primary icon"}>
+                <Tooltip slot={"tooltip"} text={"Zadání obsahuje chyby!"}/>
+                <Icon icon={"vaadin:exclamation"}/>
+            </Button>
+        }
         {props.resultSubscription ?
           <Button onClick={props.onStopCalculation} theme={"primary"}>
             <Icon icon={"vaadin:stop"}></Icon>
@@ -67,7 +93,7 @@ export function HeaderStrip(props: Props) {
           configMetaData={configMetaData}
           onOpenChanged={value => setIsConfigSelectDialogOpen(value)}
           isOpen={isConfigSelectDialogOpen}
-          onConfigAction={props.onConfigAction}
+          onConfigAction={handleConfigAction}
         />
         {props.request && <Button
             disabled={modeCtx.mode === ScheduleMode.EDIT || modeCtx.mode === ScheduleMode.CALCULATING}

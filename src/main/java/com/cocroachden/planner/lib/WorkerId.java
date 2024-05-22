@@ -19,4 +19,9 @@ public class WorkerId implements Serializable {
   @Column(name = "worker_id", nullable = false)
   @Nonnull
   private Long id;
+
+  @Override
+  public String toString() {
+    return id.toString();
+  }
 }

@@ -19,4 +19,9 @@ public record ScheduleWorker(
     }
     return false;
   }
+
+  @Override
+  public String toString() {
+    return this.workerId.getId().toString();
+  }
 }

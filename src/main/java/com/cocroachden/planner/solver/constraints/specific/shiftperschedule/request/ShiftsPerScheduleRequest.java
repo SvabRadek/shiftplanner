@@ -1,7 +1,7 @@
 package com.cocroachden.planner.solver.constraints.specific.shiftperschedule.request;
 
 
-import com.cocroachden.planner.constraint.ShiftsPerScheduleRequestDTO;
+import com.cocroachden.planner.constraint.api.ShiftsPerScheduleRequestDTO;
 import com.cocroachden.planner.lib.ConstraintType;
 import com.cocroachden.planner.lib.WorkerId;
 import com.cocroachden.planner.solver.constraints.specific.AbstractMinMaxRequest;
@@ -31,6 +31,7 @@ public class ShiftsPerScheduleRequest extends AbstractMinMaxRequest {
   }
 
   private WorkShifts targetShift;
+
   public ShiftsPerScheduleRequest(
       WorkerId owner,
       Integer hardMin,
@@ -55,5 +56,21 @@ public class ShiftsPerScheduleRequest extends AbstractMinMaxRequest {
   ) {
     super(ID, owner, hardMin, softMin, minPenalty, softMax, maxPenalty, hardMax);
     this.targetShift = targetShift;
+  }
+
+  @Override
+  public String toString() {
+    return "{ type: %s, owner: %s, targetShift: %s, hardMin: %s, softMin: %s, minPenalty: %s, softMax: %s, maxPenalty: %s, hardMax: %s }"
+        .formatted(
+            this.getType(),
+            this.getOwner().isPresent() ? getOwner().get().getId() : "null",
+            this.getTargetShift().getSymbol(),
+            this.getHardMin(),
+            this.getSoftMin(),
+            this.getMinPenalty(),
+            this.getSoftMax(),
+            this.getMaxPenalty(),
+            this.getHardMax()
+        );
   }
 }

@@ -1,7 +1,7 @@
 package com.cocroachden.planner.solver.constraints.specific.consecutiveworkingdays.request;
 
 
-import com.cocroachden.planner.constraint.ConsecutiveWorkingDaysRequestDTO;
+import com.cocroachden.planner.constraint.api.ConsecutiveWorkingDaysRequestDTO;
 import com.cocroachden.planner.lib.ConstraintType;
 import com.cocroachden.planner.lib.WorkerId;
 import com.cocroachden.planner.solver.constraints.specific.AbstractMinMaxRequest;
@@ -55,4 +55,20 @@ public class ConsecutiveWorkingDaysRequest extends AbstractMinMaxRequest {
       Integer hardMax) {
     this(null, targetShift, hardMin, softMin, minPenalty, softMax, maxPenalty, hardMax);
   }
+
+  @Override
+  public String toString() {
+    return "{ " +
+        "type: " + this.getType().toString() +
+        ", targetShift: " + targetShift.getSymbol() +
+        ", softMin: " + this.getSoftMin() +
+        ", minPenalty: " + this.getMinPenalty() +
+        ", hardMin: " + this.getHardMin() +
+        ", softMax: " + this.getSoftMax() +
+        ", maxPenalty: " + this.getMaxPenalty() +
+        ", hardMax: " + this.getHardMax() +
+        ", owner: " + (this.getOwner().isPresent() ? this.getOwner().get() : "none") +
+        " }";
+  }
 }
+

@@ -32,4 +32,5 @@ import java.io.Serializable;
 })
 public interface ConstraintRequest extends Serializable {
   ConstraintType getType();
+  String toString();
 }

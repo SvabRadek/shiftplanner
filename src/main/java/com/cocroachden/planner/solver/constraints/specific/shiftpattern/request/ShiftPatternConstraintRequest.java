@@ -1,7 +1,7 @@
 package com.cocroachden.planner.solver.constraints.specific.shiftpattern.request;
 
 
-import com.cocroachden.planner.constraint.ShiftPatternRequestDTO;
+import com.cocroachden.planner.constraint.api.ShiftPatternRequestDTO;
 import com.cocroachden.planner.lib.ConstraintType;
 import com.cocroachden.planner.lib.WorkerId;
 import com.cocroachden.planner.solver.constraints.specific.AbstractConstraintRequest;
@@ -46,5 +46,16 @@ public class ShiftPatternConstraintRequest extends AbstractConstraintRequest {
 
   public ShiftPatternConstraintRequest(Integer reward, Integer startDateIndex, WorkShifts... shiftPattern) {
     this(null, startDateIndex, reward, shiftPattern);
+  }
+
+
+  @Override
+  public String toString() {
+    return "{ " +
+        "type: " + this.getType() +
+        ", startDateIndex: " + startDateIndex +
+        ", shiftPattern: HIDDEN" +
+        ", reward: " + reward +
+        " }";
   }
 }

@@ -5,6 +5,7 @@ import dev.hilla.Nonnull;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
+import java.time.Instant;
 import java.time.LocalDate;
 import java.util.UUID;
 
@@ -15,6 +16,7 @@ public class PlannerConfigurationMetaDataDTO {
     return new PlannerConfigurationMetaDataDTO(
         record.getName(),
         record.getId(),
+        record.getCreatedAt(),
         record.getStartDate(),
         record.getEndDate()
     );
@@ -23,6 +25,8 @@ public class PlannerConfigurationMetaDataDTO {
   private String name;
   @Nonnull
   private UUID id;
+  @Nonnull
+  private Instant createdAt;
   @Nonnull
   private LocalDate startDate;
   @Nonnull

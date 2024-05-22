@@ -12,10 +12,10 @@ import java.util.List;
 @AllArgsConstructor
 @Slf4j
 public class GenericConstraintApplier {
-  private final List<Constraint> constraintList;
+  private final List<ConstraintApplier> constraintApplierList;
 
-  public GenericConstraintApplier(Constraint... constraintList) {
-    this.constraintList = Arrays.stream(constraintList).toList();
+  public GenericConstraintApplier(ConstraintApplier... constraintApplierList) {
+    this.constraintApplierList = Arrays.stream(constraintApplierList).toList();
   }
 
   public void apply(
@@ -28,8 +28,8 @@ public class GenericConstraintApplier {
       this.getSupportingConstraint(request).apply(schedulePlan, model, objectives, request);
   }
 
-  private Constraint getSupportingConstraint(ConstraintRequest request) {
-    var supportingConstraints = this.constraintList.stream()
+  private ConstraintApplier getSupportingConstraint(ConstraintRequest request) {
+    var supportingConstraints = this.constraintApplierList.stream()
         .filter(constraint -> constraint.supports(request))
         .toList();
     if (supportingConstraints.isEmpty()) {

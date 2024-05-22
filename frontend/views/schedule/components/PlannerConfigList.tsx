@@ -34,6 +34,7 @@ export function PlannerConfigList(props: Props) {
       <GridColumn header={"Jmeno"} path={"name"}/>
       <GridColumn header={"Od"} path={"startDate"}/>
       <GridColumn header={"Do"} path={"endDate"}/>
+      <GridColumn header={"Vytvořeno"} path={"createdAt"}/>
       <GridColumn header={"Id"} path={"id"}/>
       <GridColumn header={"Akce"} flexGrow={0}>
         {(row) =>

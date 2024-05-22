@@ -15,4 +15,16 @@ public enum WorkShifts {
   ANY(6, " ");
   private final Integer code;
   private final String symbol;
+
+  public boolean isSameAs(WorkShifts other) {
+    return switch (other) {
+      case DAY -> this.equals(other) || this.equals(WORKING_SHIFTS);
+      case NIGHT -> this.equals(other) || this.equals(WORKING_SHIFTS);
+      case WORKING_SHIFTS ->
+          this.equals(other)
+              || this.equals(DAY)
+              || this.equals(NIGHT);
+      default -> this.equals(other);
+    };
+  }
 }

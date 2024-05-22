@@ -1,6 +1,6 @@
 package com.cocroachden.planner.plannerconfiguration;
 
-import com.cocroachden.planner.constraint.*;
+import com.cocroachden.planner.constraint.api.*;
 import com.cocroachden.planner.constraint.repository.ConstraintRequestRecord;
 import com.cocroachden.planner.constraint.repository.ConstraintRequestRepository;
 import com.cocroachden.planner.lib.ConstraintType;
@@ -19,6 +19,7 @@ import dev.hilla.Nonnull;
 import lombok.AllArgsConstructor;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.StreamSupport;
@@ -39,13 +40,16 @@ public class PlannerConfigurationEndpoint {
       @Nonnull List<@Nonnull ShiftsPerScheduleRequestDTO> shiftsPerScheduleRequestDTOS,
       @Nonnull List<@Nonnull ConsecutiveWorkingDaysRequestDTO> consecutiveWorkingDaysRequestDTOS
   ) {
+    var workers = new HashSet<>(plannerConfigurationDTO.getWorkers());
     var constraintLinks = new ArrayList<ConfigurationRequestLink>();
     specificShiftRequestDTOS.stream()
+        .filter(r -> workers.contains(r.getOwner()))
         .map(dto -> new ConstraintRequestRecord(SpecificShiftRequest.from(dto)))
         .map(record -> constraintRequestRepository.save(record).getId())
         .map(id -> new ConfigurationRequestLink(ConstraintType.SPECIFIC_SHIFT_REQUEST, id))
         .forEach(constraintLinks::add);
     shiftPatternRequestDTOS.stream()
+        .filter(r -> workers.contains(r.getOwner()))
         .map(dto -> new ConstraintRequestRecord(ShiftPatternConstraintRequest.from(dto)))
         .map(record -> constraintRequestRepository.save(record).getId())
         .map(id -> new ConfigurationRequestLink(ConstraintType.SHIFT_PATTERN_CONSTRAINT, id))
@@ -61,6 +65,7 @@ public class PlannerConfigurationEndpoint {
         .map(id -> new ConfigurationRequestLink(ConstraintType.SHIFT_FOLLOW_UP_RESTRICTION, id))
         .forEach(constraintLinks::add);
     shiftsPerScheduleRequestDTOS.stream()
+        .filter(r -> workers.contains(r.getOwner()))
         .map(dto -> new ConstraintRequestRecord(ShiftsPerScheduleRequest.from(dto)))
         .map(record -> constraintRequestRepository.save(record).getId())
         .map(id -> new ConfigurationRequestLink(ConstraintType.SHIFT_PER_SCHEDULE, id))
