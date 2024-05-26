@@ -6,16 +6,14 @@ import { CrudAction, stupidDateToDate, stupidDateToString } from "Frontend/util/
 import StupidDate from "Frontend/generated/com/cocroachden/planner/lib/StupidDate";
 import { ScheduleMode, ScheduleModeCtx } from "Frontend/views/schedule/ScheduleModeCtxProvider";
 import EmployeeRecord from "Frontend/generated/com/cocroachden/planner/employee/EmployeeRecord";
-import ValidatorIssue from "Frontend/generated/com/cocroachden/planner/solver/constraints/validator/ValidatorIssue";
-import IssueSeverity from "Frontend/generated/com/cocroachden/planner/solver/constraints/validator/IssueSeverity";
 import WorkerId from "Frontend/generated/com/cocroachden/planner/lib/WorkerId";
 import { ValidationContext } from "Frontend/views/schedule/components/validation/ScheduleValidationCtxProvider";
+import IssueSeverity from "Frontend/generated/com/cocroachden/planner/constraint/validations/IssueSeverity";
 
 export type Row = {
   owner: WorkerId
   displayName: string
   cells: Cell[]
-  issues?: ValidatorIssue[]
 }
 
 type Props = {

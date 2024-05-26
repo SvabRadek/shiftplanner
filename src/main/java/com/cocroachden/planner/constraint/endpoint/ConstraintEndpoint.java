@@ -3,22 +3,19 @@ package com.cocroachden.planner.constraint.endpoint;
 import com.cocroachden.planner.constraint.api.*;
 import com.cocroachden.planner.constraint.repository.ConstraintRequestRecord;
 import com.cocroachden.planner.constraint.repository.ConstraintRequestRepository;
-import com.cocroachden.planner.plannerconfiguration.PlannerConfigurationDTO;
 import com.cocroachden.planner.solver.constraints.specific.consecutiveworkingdays.request.ConsecutiveWorkingDaysRequest;
 import com.cocroachden.planner.solver.constraints.specific.shiftfollowuprestriction.request.ShiftFollowUpRestrictionRequest;
 import com.cocroachden.planner.solver.constraints.specific.shiftpattern.request.ShiftPatternConstraintRequest;
 import com.cocroachden.planner.solver.constraints.specific.shiftperschedule.request.ShiftsPerScheduleRequest;
 import com.cocroachden.planner.solver.constraints.specific.workershiftrequest.request.SpecificShiftRequest;
 import com.cocroachden.planner.solver.constraints.specific.workerspershift.request.WorkersPerShiftRequest;
-import com.cocroachden.planner.solver.constraints.validator.ConstraintValidator;
-import com.cocroachden.planner.solver.constraints.validator.ValidatorResult;
 import com.vaadin.flow.server.auth.AnonymousAllowed;
 import dev.hilla.BrowserCallable;
 import dev.hilla.Nonnull;
 import lombok.AllArgsConstructor;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
 import java.util.stream.StreamSupport;
 
@@ -27,25 +24,12 @@ import java.util.stream.StreamSupport;
 @AllArgsConstructor
 public class ConstraintEndpoint {
   private final ConstraintRequestRepository constraintRequestRepository;
-  private final ConstraintValidator validator;
 
-  public @Nonnull ValidatorResult validate(
-      @Nonnull PlannerConfigurationDTO configurationRecord,
-      @Nonnull List<@Nonnull SpecificShiftRequestDTO> constraints,
-      @Nonnull List<@Nonnull ShiftPatternRequestDTO> constraints1,
-      @Nonnull List<@Nonnull EmployeesPerShiftRequestDTO> constraints2,
-      @Nonnull List<@Nonnull ConsecutiveWorkingDaysRequestDTO> constraints3,
-      @Nonnull List<@Nonnull ShiftFollowupRestrictionRequestDTO> constraints4,
-      @Nonnull List<@Nonnull ShiftsPerScheduleRequestDTO> constraints5
-  ) {
-    var combined = new ArrayList<ConstraintRequestDTO>();
-    combined.addAll(constraints);
-    combined.addAll(constraints1);
-    combined.addAll(constraints2);
-    combined.addAll(constraints3);
-    combined.addAll(constraints4);
-    combined.addAll(constraints5);
-    return validator.validate(configurationRecord, combined);
+  public @Nonnull List<@Nonnull ConstraintRequestDTO> findRequests(@Nonnull List<@Nonnull UUID> requestIds) {
+    return this.getRecords(requestIds).stream()
+        .map(this::convertToDto)
+        .filter(Objects::nonNull)
+        .toList();
   }
 
   public @Nonnull List<@Nonnull SpecificShiftRequestDTO> findSpecificShiftRequests(
@@ -101,5 +85,35 @@ public class ConstraintEndpoint {
         constraintRequestRepository.findAllById(constraintIds).spliterator(),
         false
     ).toList();
+  }
+
+  private ConstraintRequestDTO convertToDto(ConstraintRequestRecord record) {
+    return switch (record.getType()) {
+      case SPECIFIC_SHIFT_REQUEST -> SpecificShiftRequestDTO.from(
+          record.getId(),
+          (SpecificShiftRequest) record.getRequest()
+      );
+      case SHIFT_PER_SCHEDULE -> ShiftsPerScheduleRequestDTO.from(
+          record.getId(),
+          (ShiftsPerScheduleRequest) record.getRequest()
+      );
+      case CONSECUTIVE_WORKING_DAYS -> ConsecutiveWorkingDaysRequestDTO.from(
+          record.getId(),
+          (ConsecutiveWorkingDaysRequest) record.getRequest()
+      );
+      case SHIFT_FOLLOW_UP_RESTRICTION -> ShiftFollowupRestrictionRequestDTO.from(
+          record.getId(),
+          (ShiftFollowUpRestrictionRequest) record.getRequest()
+      );
+      case SHIFT_PATTERN_CONSTRAINT -> ShiftPatternRequestDTO.from(
+          record.getId(),
+          (ShiftPatternConstraintRequest) record.getRequest()
+      );
+      case WORKERS_PER_SHIFT -> EmployeesPerShiftRequestDTO.from(
+          record.getId(),
+          (WorkersPerShiftRequest) record.getRequest()
+      );
+      case ONE_SHIFT_PER_DAY -> null;
+    };
   }
 }

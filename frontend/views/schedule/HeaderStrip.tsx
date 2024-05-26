@@ -128,13 +128,14 @@ export function HeaderStrip(props: Props) {
             </Button>
         }
       </HorizontalLayout>
-      {props.resultSubscription && <ResultSubHeaderStrip
-          onExportToExcel={props.onExportToExcel}
-          resultCache={props.resultCache}
-          cacheSize={props.cacheSize}
-          resultSubscription={props.resultSubscription}
-          resultSelectionChanged={props.onResultSelectionChanged}
-      />}
+      {(props.resultSubscription || props.resultCache.results.length > 0)
+        && <ResultSubHeaderStrip
+              onExportToExcel={props.onExportToExcel}
+              resultCache={props.resultCache}
+              cacheSize={props.cacheSize}
+              resultSubscription={props.resultSubscription}
+              resultSelectionChanged={props.onResultSelectionChanged}
+          />}
     </Card>
 
   );

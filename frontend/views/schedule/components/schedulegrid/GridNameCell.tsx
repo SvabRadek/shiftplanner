@@ -1,7 +1,6 @@
 import { ContextMenu, ContextMenuItem, ContextMenuItemSelectedEvent } from "@hilla/react-components/ContextMenu";
 import { CrudAction, CRUDActions } from "Frontend/util/utils";
 import EmployeeRecord from "Frontend/generated/com/cocroachden/planner/employee/EmployeeRecord";
-import ValidatorIssue from "Frontend/generated/com/cocroachden/planner/solver/constraints/validator/ValidatorIssue";
 import { Tooltip } from "@hilla/react-components/Tooltip";
 import WorkerId from "Frontend/generated/com/cocroachden/planner/lib/WorkerId";
 import WorkerValidationIssue

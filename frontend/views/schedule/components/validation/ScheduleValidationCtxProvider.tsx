@@ -7,7 +7,7 @@ import PlannerConfigurationDTO
 import ConstraintRequestDTO from "Frontend/generated/com/cocroachden/planner/constraint/api/ConstraintRequestDTO";
 import { ConstraintValidationEndpoint } from "Frontend/generated/endpoints";
 import { stupidDateToString } from "Frontend/util/utils";
-import IssueSeverity from "Frontend/generated/com/cocroachden/planner/solver/constraints/validator/IssueSeverity";
+import IssueSeverity from "Frontend/generated/com/cocroachden/planner/constraint/validations/IssueSeverity";
 
 type ScheduleValidationCtxType = {
   dayIssues: DayValidationIssue[]

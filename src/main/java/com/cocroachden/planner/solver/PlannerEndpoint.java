@@ -62,18 +62,19 @@ public class PlannerEndpoint {
         "Constraints: [\n{}\n]",
         StringUtils.join(constraints.stream().map(ConstraintRequest::toString).toArray(), ",\n")
     );
-    var flux = Flux.<ScheduleResultDTO>create(fluxSink ->
-        scheduleSolver.solve(
+    var flux = Flux.<ScheduleResultDTO>create(
+        fluxSink -> scheduleSolver.solve(
             fluxSink::next,
             plannerConfig,
             constraints
-        ));
-
+        )
+    );
+//        .takeWhile(result -> result.getSolutionStatus().equals(SolutionStatus.OK));
     return EndpointSubscription.of(
         flux,
         () -> {
           scheduleSolver.stop();
-          log.info("Disconnected!");
+          log.info("Subscription disconnected!");
         }
     );
   }

@@ -51,7 +51,6 @@ export function dateToLocaleDate(date: Date): string {
 }
 
 export function localeDateToStupidDate(date: string): StupidDate {
-  console.log(date)
   const dateArray = date.split("-")
   return {
     year: Number.parseInt(dateArray[0]),

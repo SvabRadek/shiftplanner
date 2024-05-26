@@ -1,4 +1,4 @@
-package com.cocroachden.planner.solver.constraints.validator;
+package com.cocroachden.planner.constraint.validations;
 
 public enum IssueSeverity {
   OK,

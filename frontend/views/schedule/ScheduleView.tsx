@@ -48,9 +48,6 @@ import { HeaderStrip } from "Frontend/views/schedule/HeaderStrip";
 import SpecificShiftRequestDTO from "Frontend/generated/com/cocroachden/planner/constraint/api/SpecificShiftRequestDTO";
 import ShiftsPerScheduleRequestDTO
   from "Frontend/generated/com/cocroachden/planner/constraint/api/ShiftsPerScheduleRequestDTO";
-import DayValidationIssue from "Frontend/generated/com/cocroachden/planner/constraint/validations/DayValidationIssue";
-import WorkerValidationIssue
-  from "Frontend/generated/com/cocroachden/planner/constraint/validations/WorkerValidationIssue";
 import ConstraintRequestDTO from "Frontend/generated/com/cocroachden/planner/constraint/api/ConstraintRequestDTO";
 import { ValidationContext } from "Frontend/views/schedule/components/validation/ScheduleValidationCtxProvider";
 
@@ -62,11 +59,6 @@ type EmployeeConfigDialogParams = {
 export type ResultCache = {
   results: ScheduleResultDTO[]
   selectedIndex: number
-}
-
-export type NewValidationResult = {
-  dayIssues: DayValidationIssue[],
-  workIssues: WorkerValidationIssue[]
 }
 
 function handleUnload(e: Event) {
@@ -83,8 +75,8 @@ export default function ScheduleView() {
   const [employeeConfigDialog, setEmployeeConfigDialog] = useState<EmployeeConfigDialogParams>({ isOpen: false })
   const [isScheduleConfigDialogOpen, setIsScheduleConfigDialogOpen] = useState(false);
   const [resultCache, setResultCache] = useState<ResultCache>({ results: [], selectedIndex: 0 });
-
   const [resultSubscription, setResultSubscription] = useState<Subscription<ScheduleResultDTO> | undefined>();
+
   const [request, setRequest] = useState<PlannerConfigurationDTO | undefined>();
   const [shiftRequests, setShiftRequests] = useState<SpecificShiftRequestDTO[]>([])
   const [shiftPerScheduleRequests, setShiftPerScheduleRequests] = useState<ShiftsPerScheduleRequestDTO[]>([])
@@ -260,7 +252,6 @@ export default function ScheduleView() {
             duration: 5000,
             theme: "error"
           })
-          handleStopCalculation()
           return
         }
         setResultCache(prevState => {
@@ -278,11 +269,12 @@ export default function ScheduleView() {
         })
         setResultSubscription(undefined)
       }).onError(() => {
-        Notification.show("Ztráta spojení!", {
+        Notification.show("Neřešitelné zadání!", {
           position: "top-center",
           duration: 5000,
-          theme: "warning"
+          theme: "error"
         })
+        setResultSubscription(undefined)
       })
     )
   }

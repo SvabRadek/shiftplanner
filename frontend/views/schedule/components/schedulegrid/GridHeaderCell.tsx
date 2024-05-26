@@ -16,7 +16,6 @@ export function GridHeaderCell(props: Props) {
   if (clippedSecTitle && clippedSecTitle.length > 9) {
     clippedSecTitle = clippedSecTitle.substring(0, 8) + "..."
   }
-  console.log(cellId + " " + props.backgroundColor)
   return (
     <div
       id={cellId}

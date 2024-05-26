@@ -17,24 +17,25 @@ type Props = {
 }
 
 export function ResultSubHeaderStrip(props: Props) {
+  const areSomeResultsCached = props.resultCache.results.length > 0
   return (
     <VerticalLayout style={{ paddingTop: 10, width: "100%" }}>
       <HorizontalLayout theme={"spacing"} style={{ alignItems: "center" }}>
-        {!props.resultSubscription &&
+        {areSomeResultsCached &&
             <Button disabled={props.resultCache.selectedIndex === 0}
                     onClick={() => props.resultSelectionChanged(-1)}
                     theme={"small icon"}>
                 <Icon style={{ transform: "rotate(180deg)" }} icon={"vaadin:play"}/>
             </Button>
         }
-        <span
-          style={{ userSelect: "none" }}>Řešení: {props.resultCache.results.length > 0 ? props.resultCache.results[props.resultCache.selectedIndex].resultIndex : "-"}
+        <span style={{ userSelect: "none" }}>
+          Řešení: {areSomeResultsCached ? props.resultCache.results[props.resultCache.selectedIndex].resultIndex : "-"}
           </span>
         <span
-          style={{ userSelect: "none" }}>Skóre: {props.resultCache.results.length > 0 ? props.resultCache.results[props.resultCache.selectedIndex].resultScore : "-"}
+          style={{ userSelect: "none" }}>Skóre: {areSomeResultsCached ? props.resultCache.results[props.resultCache.selectedIndex].resultScore : "-"}
           </span>
-        {!props.resultSubscription &&
-            <Button disabled={props.resultCache.selectedIndex === props.cacheSize - 1}
+        {areSomeResultsCached &&
+            <Button disabled={props.resultCache.selectedIndex >= props.resultCache.results.length - 1}
                     onClick={() => props.resultSelectionChanged(1)}
                     theme={"small icon"}><Icon icon={"vaadin:play"}/></Button>
         }
@@ -45,7 +46,7 @@ export function ResultSubHeaderStrip(props: Props) {
           borderColor: "var(--lumo-contrast-20pct)"
         }} isRunning={props.resultSubscription !== undefined}></StopWatch>
         <Button theme={"small"}
-                disabled={props.resultCache.results.length < 1}
+                disabled={!areSomeResultsCached}
                 onClick={props.onExportToExcel}>Export</Button>
       </HorizontalLayout>
       {props.resultSubscription && <ProgressBar style={{ marginBottom: 0 }} indeterminate></ProgressBar>}

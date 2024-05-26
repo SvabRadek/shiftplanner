@@ -5,7 +5,6 @@ import com.cocroachden.planner.constraint.api.ConstraintRequestDTO;
 import com.cocroachden.planner.constraint.api.ShiftsPerScheduleRequestDTO;
 import com.cocroachden.planner.constraint.api.SpecificShiftRequestDTO;
 import com.cocroachden.planner.plannerconfiguration.PlannerConfigurationDTO;
-import com.cocroachden.planner.solver.constraints.validator.IssueSeverity;
 import com.cocroachden.planner.solver.schedule.WorkShifts;
 
 import java.util.*;

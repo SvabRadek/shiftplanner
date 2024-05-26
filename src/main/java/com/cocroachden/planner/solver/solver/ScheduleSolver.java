@@ -73,7 +73,8 @@ public class ScheduleSolver {
                 0d,
                 0,
                 new HashMap<>()
-            ));
+            )
+        );
       }
       log.info(model.modelStats());
       log.info(model.validate());
