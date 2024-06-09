@@ -1,7 +1,7 @@
 import { Cell, DisplayMode, GridCell } from "Frontend/views/schedule/components/schedulegrid/GridCell";
-import { ReactNode, useContext } from "react";
-import { GridNameCell } from "Frontend/views/schedule/components/schedulegrid/GridNameCell";
-import { GridHeaderCell } from "Frontend/views/schedule/components/schedulegrid/GridHeaderCell";
+import { CSSProperties, ReactNode, useContext } from "react";
+import { FirstColumnCell } from "Frontend/views/schedule/components/schedulegrid/FirstColumnCell";
+import { FirstRowCell } from "Frontend/views/schedule/components/schedulegrid/FirstRowCell";
 import { CrudAction, stupidDateToDate, stupidDateToString } from "Frontend/util/utils";
 import StupidDate from "Frontend/generated/com/cocroachden/planner/lib/StupidDate";
 import { ScheduleMode, ScheduleModeCtx } from "Frontend/views/schedule/ScheduleModeCtxProvider";
@@ -12,7 +12,7 @@ import IssueSeverity from "Frontend/generated/com/cocroachden/planner/constraint
 
 export type Row = {
   owner: WorkerId
-  displayName: string
+  rowTitle: ReactNode
   cells: Cell[]
 }
 
@@ -34,29 +34,6 @@ const dayVocabulary: Record<number, string> = {
   0: "Ne"
 }
 
-function shadowIntensity(
-  row: number,
-  column: number,
-  mode: ScheduleMode,
-  date?: StupidDate
-): number {
-  let shadowIntensity = 10
-  if (date && isWeekend(date)) shadowIntensity += 20
-  if (mode !== ScheduleMode.EDIT) shadowIntensity += 10
-  if (row === 1) shadowIntensity += 30
-  if (column === 1 && row > 1) shadowIntensity += 10
-  return shadowIntensity
-}
-
-function cellColor(
-  row: number,
-  column: number,
-  mode: ScheduleMode,
-  date?: StupidDate
-) {
-  return "var(--lumo-shade-" + shadowIntensity(row, column, mode, date) + "pct)"
-}
-
 export function ScheduleGrid(props: Props) {
 
   const modeCtx = useContext(ScheduleModeCtx)
@@ -69,12 +46,12 @@ export function ScheduleGrid(props: Props) {
     items.push(renderCell(
       1,
       1,
-      <GridNameCell
+      <FirstColumnCell
         owner={row.owner}
-        onEmployeeAction={props.onEmployeeAction}
+        onEmployeeAction={() => {
+        }}
         title={"Jmeno"}
-        backgroundColor={cellColor(1, 1, modeCtx.mode)}
-        disableContextMenu={true}
+        style={{ backgroundColor: cellColor(1, 1, modeCtx.mode) }}
         issues={[]}
       />
     ))
@@ -85,14 +62,16 @@ export function ScheduleGrid(props: Props) {
         renderCell(
           1,
           c.index + 2,
-          <GridHeaderCell
+          <FirstRowCell
             title={c.date.day.toString()}
             hint={stupidDateToString(c.date) + ", " + dayVocabulary[stupidDateToDate(c.date).getDay()]}
-            backgroundColor={
-            severity === IssueSeverity.ERROR ? "var(--lumo-error-color-50pct)"
-              : severity === IssueSeverity.WARNING ? "var(--lumo-primary-color)"
-                : cellColor(1, c.index + 2, modeCtx.mode, c.date)
-            }
+            style={{
+              backgroundColor: severity === IssueSeverity.ERROR ? "var(--lumo-error-color-50pct)"
+                : severity === IssueSeverity.WARNING ? "var(--lumo-primary-color)"
+                  : cellColor(1, c.index + 2, modeCtx.mode, c.date),
+              position: "sticky",
+              left: 0
+            }}
             issues={issues}
           />
         ))
@@ -108,17 +87,18 @@ export function ScheduleGrid(props: Props) {
       }
       const workerIssues = validationCtx.workerIssueMap.get(row.owner.id) || []
       const severity = validationCtx.getSeverityOfIssues(workerIssues)
-        items.push(renderCell(
+      items.push(renderCell(
         rowIndex + 2,
         1,
-        <GridNameCell
-          title={row.displayName}
+        <FirstColumnCell
+          title={row.rowTitle}
           owner={row.owner}
           onEmployeeAction={props.onEmployeeAction}
-          backgroundColor={
-            severity === IssueSeverity.ERROR ? "var(--lumo-error-color-50pct)"
-            : severity === IssueSeverity.WARNING ? "var(--lumo-primary-color-50pct)"
-                : cellColor(rowIndex + 2, 1, modeCtx.mode)}
+          style={{
+            backgroundColor: severity === IssueSeverity.ERROR ? "var(--lumo-error-color-50pct)"
+              : severity === IssueSeverity.WARNING ? "var(--lumo-primary-color-50pct)"
+                : cellColor(rowIndex + 2, 1, modeCtx.mode)
+          }}
           readonly={modeCtx.mode !== ScheduleMode.EDIT}
           issues={workerIssues}
         />
@@ -150,11 +130,33 @@ export function ScheduleGrid(props: Props) {
     <div style={{
       display: "grid",
       width: "100%",
-      justifyContent: "start"
     }}>
       {items}
     </div>
   )
+}
+
+function shadowIntensity(
+  row: number,
+  column: number,
+  mode: ScheduleMode,
+  date?: StupidDate
+): number {
+  let shadowIntensity = 10
+  if (date && isWeekend(date)) shadowIntensity += 20
+  if (mode !== ScheduleMode.EDIT) shadowIntensity += 10
+  if (row === 1) shadowIntensity += 30
+  if (column === 1 && row > 1) shadowIntensity += 10
+  return shadowIntensity
+}
+
+function cellColor(
+  row: number,
+  column: number,
+  mode: ScheduleMode,
+  date?: StupidDate
+) {
+  return "var(--lumo-shade-" + shadowIntensity(row, column, mode, date) + "pct)"
 }
 
 function renderCell(
@@ -162,14 +164,36 @@ function renderCell(
   column: number,
   content: ReactNode
 ) {
+
+  const cellStyle: CSSProperties = { gridRow: row, gridColumn: column }
+
+  if (row == 1 && column == 1) {
+    cellStyle["position"] = "sticky"
+    cellStyle["top"] = 0
+    cellStyle["left"] = 0
+    cellStyle["backgroundColor"] = "var(--lumo-base-color)"
+    cellStyle["zIndex"] = 3
+  } else if (row === 1) {
+    cellStyle["position"] = "sticky"
+    cellStyle["zIndex"] = 2
+    cellStyle["top"] = 0
+    cellStyle["backgroundColor"] = "var(--lumo-base-color)"
+  } else if (column == 1) {
+    cellStyle["position"] = "sticky"
+    cellStyle["zIndex"] = 1
+    cellStyle["left"] = 0
+    cellStyle["backgroundColor"] = "var(--lumo-base-color)"
+  }
+
   return (
     <div
       key={"r" + row.toString() + "c" + column.toString()}
-      style={{ gridRow: row, gridColumn: column }}
+      style={cellStyle}
+      className={(column == 1 && row > 1) ? "hoverable" : undefined}
     >
       {content}
     </div>
-  )
+  );
 }
 
 function isWeekend(stupidDate: StupidDate): boolean {

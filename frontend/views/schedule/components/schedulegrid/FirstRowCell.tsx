@@ -1,36 +1,42 @@
 import { VerticalLayout } from "@hilla/react-components/VerticalLayout";
 import { Tooltip } from "@hilla/react-components/Tooltip";
 import DayValidationIssue from "Frontend/generated/com/cocroachden/planner/constraint/validations/DayValidationIssue";
+import { CSSProperties } from "react";
 
 type Props = {
   title: string
   secondaryTitle?: string,
   hint?: string,
-  backgroundColor?: string
+  style?: CSSProperties
   issues: DayValidationIssue[]
 }
 
-export function GridHeaderCell(props: Props) {
+export function FirstRowCell(props: Props) {
   const cellId = "headercell" + props.title
   let clippedSecTitle = props.secondaryTitle
   if (clippedSecTitle && clippedSecTitle.length > 9) {
     clippedSecTitle = clippedSecTitle.substring(0, 8) + "..."
   }
+
+  const defaultStyle: CSSProperties = {
+    display: "flex",
+    userSelect: "none",
+    width: 50,
+    height: 50,
+    border: "solid",
+    borderColor: "var(--lumo-tint-20pct)",
+    borderWidth: "1px",
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "var(--lumo-shade-5pct)"
+  }
+
+  const cellStyle = Object.assign({}, defaultStyle, props.style)
+
   return (
     <div
       id={cellId}
-      style={{
-        display: "flex",
-        userSelect: "none",
-        width: 50,
-        height: 50,
-        border: "solid",
-        borderColor: "var(--lumo-tint-20pct)",
-        borderWidth: "1px",
-        justifyContent: "center",
-        alignItems: "center",
-        backgroundColor: props.backgroundColor || "var(--lumo-shade-5pct)"
-      }}>
+      style={cellStyle}>
       <VerticalLayout
         style={{
           justifyContent: "center",

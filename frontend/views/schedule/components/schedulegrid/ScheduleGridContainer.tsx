@@ -13,6 +13,8 @@ import ConstraintType from "Frontend/generated/com/cocroachden/planner/lib/Const
 import ScheduleResultDTO from "Frontend/generated/com/cocroachden/planner/solver/ScheduleResultDTO";
 import WorkerId from "Frontend/generated/com/cocroachden/planner/lib/WorkerId";
 import ShiftPatternRequestDTO from "Frontend/generated/com/cocroachden/planner/constraint/api/ShiftPatternRequestDTO";
+import { HorizontalLayout } from "@hilla/react-components/HorizontalLayout";
+import { VerticalLayout } from "@hilla/react-components/VerticalLayout";
 
 export type PlainWorkerId = number
 export type Index = number
@@ -181,29 +183,36 @@ function createRows(
       const displayShiftCount = relatedShiftPerScheduleRequests
         .map(r => Math.floor((r.softMin + r.softMax) / 2))
         .reduce((previousValue, currentValue) => previousValue + currentValue, 0)
+      const allowedDeviation = Math.floor(relatedShiftPerScheduleRequests
+        .map(r => (r.hardMax - r.softMax))
+        .reduce((previousValue, currentValue) => previousValue + currentValue, 0)
+      / relatedShiftPerScheduleRequests.length)
 
       const assignments = results ? Object.values(results?.assignments[workerId.id]!) : []
 
       return {
         owner: workerId,
-        displayName: getDisplayName(referencedEmployee, displayShiftCount, assignments),
+        rowTitle: createRowTitle(referencedEmployee, displayShiftCount, allowedDeviation, assignments),
         cells,
         issues: []
       } as Row
     })
 }
 
-function getDisplayName(
+function createRowTitle(
   referencedEmployee: EmployeeRecord,
   displayShiftCount: number,
+  allowedDeviation: number,
   assignedWorkShifts: WorkShifts[]
 ) {
-  let title = referencedEmployee.lastName + " " + referencedEmployee.firstName + " (" + displayShiftCount + ")"
-  if (assignedWorkShifts.length > 0) {
-    const workShifts = assignedWorkShifts.filter(s => s === WorkShifts.DAY || s === WorkShifts.NIGHT);
-    title = title + ";" + workShifts.length
-  }
-  return title;
+  let title = referencedEmployee.lastName + " " + referencedEmployee.firstName + " (" + displayShiftCount
+  const assignedWorkShiftCount = assignedWorkShifts.filter(s => s === WorkShifts.DAY || s === WorkShifts.NIGHT).length
+  return (
+    <HorizontalLayout theme={"spacing"} style={{ justifyContent: "space-between", width: "100%", alignItems: "baseline" }}>
+      <p>{title}<sup> ~{allowedDeviation}</sup>)</p>
+      <p>{assignedWorkShiftCount}</p>
+    </HorizontalLayout>
+  )
 }
 
 function getResultingShift(
