@@ -6,6 +6,22 @@ import WorkerValidationIssue
   from "Frontend/generated/com/cocroachden/planner/constraint/validations/WorkerValidationIssue";
 import { CSSProperties, ReactNode } from "react";
 
+const defaultStyle: CSSProperties = {
+  cursor: "pointer",
+  display: "flex",
+  userSelect: "none",
+  width: 250,
+  height: 50,
+  border: "solid",
+  borderColor: "var(--lumo-tint-20pct)",
+  borderWidth: "1px",
+  justifyContent: "space-between",
+  alignItems: "center",
+  backgroundColor: "var(--lumo-shade-5pct)",
+  paddingLeft: 10,
+  paddingRight: 10,
+}
+
 type Props = {
   owner: WorkerId,
   title: ReactNode
@@ -16,22 +32,6 @@ type Props = {
 }
 
 export function FirstColumnCell(props: Props) {
-
-  const defaultStyle: CSSProperties = {
-    cursor: "pointer",
-    display: "flex",
-    userSelect: "none",
-    width: 250,
-    height: 50,
-    border: "solid",
-    borderColor: "var(--lumo-tint-20pct)",
-    borderWidth: "1px",
-    justifyContent: "space-between",
-    alignItems: "center",
-    backgroundColor: "var(--lumo-shade-5pct)",
-    paddingLeft: 10,
-    paddingRight: 10,
-  }
 
   const cellStyle = Object.assign({}, defaultStyle, props.style)
 
@@ -46,7 +46,8 @@ export function FirstColumnCell(props: Props) {
     <div
       id={"headerCell" + props.owner}
       onClick={handleLeftClick}
-      style={cellStyle}>
+      style={cellStyle}
+    >
       {props.title}
       {props.issues.length > 0
         && <Tooltip

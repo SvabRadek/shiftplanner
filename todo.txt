@@ -1,6 +1,4 @@
-Add small digits to indicate allowed deviation from assigned shift count
 Make client disconnect when solution is INFEASIBLE or OPTIMAL
-Make schedule table 1st row and 1st column frozen
 Add constraint to limit 3day work shifts to overlap with weekends only
 Add constraints to make one weekend on and one off
 

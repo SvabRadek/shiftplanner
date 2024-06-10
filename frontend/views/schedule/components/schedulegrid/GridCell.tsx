@@ -31,6 +31,7 @@ type Props = {
   backgroundColor?: string
   color?: string | undefined
   readonly?: boolean
+  style?: CSSProperties
 }
 
 function generateCellContextMenuItems(selectedShift: WorkShifts): ContextMenuItem[] {
@@ -63,7 +64,7 @@ export function GridCell(props: Props) {
     props.onMouseOverCell?.(props.cell)
   }
 
-  const cellStyle: CSSProperties = {
+  const defaultStyle: CSSProperties = {
     display: "flex",
     userSelect: "none",
     width: 50,
@@ -78,6 +79,8 @@ export function GridCell(props: Props) {
       ? "var(--lumo-success-color-10pct)"
       : props.backgroundColor || "var(--lumo-shade-5pct)"
   }
+
+  const cellStyle = Object.assign({}, defaultStyle, props.style)
 
   function renderCell() {
     return <div

@@ -65,8 +65,6 @@ html {
     --lumo-error-color: hsl(0, 81%, 50%);
     --lumo-success-color: hsl(159, 76%, 57%);
     --lumo-success-contrast-color: hsl(159, 29%, 10%);
-    --hover-color: rgb(0, 0, 0);
-    --hover-opacity: rgb(0, 0, 0);
 }
 
 .hoverable:hover {

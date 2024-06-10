@@ -10,6 +10,16 @@ import WorkerId from "Frontend/generated/com/cocroachden/planner/lib/WorkerId";
 import { ValidationContext } from "Frontend/views/schedule/components/validation/ScheduleValidationCtxProvider";
 import IssueSeverity from "Frontend/generated/com/cocroachden/planner/constraint/validations/IssueSeverity";
 
+const dayVocabulary: Record<number, string> = {
+  1: "Po",
+  2: "Út",
+  3: "St",
+  4: "Čt",
+  5: "Pá",
+  6: "So",
+  0: "Ne"
+}
+
 export type Row = {
   owner: WorkerId
   rowTitle: ReactNode
@@ -24,60 +34,11 @@ type Props = {
   onEmployeeAction: (action: CrudAction<Pick<EmployeeRecord, "id">>) => void
 }
 
-const dayVocabulary: Record<number, string> = {
-  1: "Po",
-  2: "Út",
-  3: "St",
-  4: "Čt",
-  5: "Pá",
-  6: "So",
-  0: "Ne"
-}
-
 export function ScheduleGrid(props: Props) {
 
   const modeCtx = useContext(ScheduleModeCtx)
   const validationCtx = useContext(ValidationContext)
-
   const items = mapToGridCells(props.rows);
-
-  function generateFirstRow(row: Row): ReactNode[] {
-    const items: ReactNode[] = []
-    items.push(renderCell(
-      1,
-      1,
-      <FirstColumnCell
-        owner={row.owner}
-        onEmployeeAction={() => {
-        }}
-        title={"Jmeno"}
-        style={{ backgroundColor: cellColor(1, 1, modeCtx.mode) }}
-        issues={[]}
-      />
-    ))
-    row.cells.forEach(c => {
-      const issues = validationCtx.dayIssueMap.get(stupidDateToString(c.date)) || []
-      const severity = validationCtx.getSeverityOfIssues(issues)
-      items.push(
-        renderCell(
-          1,
-          c.index + 2,
-          <FirstRowCell
-            title={c.date.day.toString()}
-            hint={stupidDateToString(c.date) + ", " + dayVocabulary[stupidDateToDate(c.date).getDay()]}
-            style={{
-              backgroundColor: severity === IssueSeverity.ERROR ? "var(--lumo-error-color-50pct)"
-                : severity === IssueSeverity.WARNING ? "var(--lumo-primary-color)"
-                  : cellColor(1, c.index + 2, modeCtx.mode, c.date),
-              position: "sticky",
-              left: 0
-            }}
-            issues={issues}
-          />
-        ))
-    })
-    return items
-  }
 
   function mapToGridCells(rows: Row[]): ReactNode[] {
     const items: ReactNode[] = []
@@ -122,6 +83,44 @@ export function ScheduleGrid(props: Props) {
             />
           ));
         })
+    })
+    return items
+  }
+
+  function generateFirstRow(row: Row): ReactNode[] {
+    const items: ReactNode[] = []
+    items.push(renderCell(
+      1,
+      1,
+      <FirstColumnCell
+        owner={row.owner}
+        onEmployeeAction={() => {
+        }}
+        title={"Jmeno"}
+        style={{ backgroundColor: cellColor(1, 1, modeCtx.mode) }}
+        issues={[]}
+      />
+    ))
+    row.cells.forEach(c => {
+      const issues = validationCtx.dayIssueMap.get(stupidDateToString(c.date)) || []
+      const severity = validationCtx.getSeverityOfIssues(issues)
+      items.push(
+        renderCell(
+          1,
+          c.index + 2,
+          <FirstRowCell
+            title={c.date.day.toString()}
+            hint={stupidDateToString(c.date) + ", " + dayVocabulary[stupidDateToDate(c.date).getDay()]}
+            style={{
+              backgroundColor: severity === IssueSeverity.ERROR ? "var(--lumo-error-color-50pct)"
+                : severity === IssueSeverity.WARNING ? "var(--lumo-primary-color)"
+                  : cellColor(1, c.index + 2, modeCtx.mode, c.date),
+              position: "sticky",
+              left: 0
+            }}
+            issues={issues}
+          />
+        ))
     })
     return items
   }
@@ -194,6 +193,10 @@ function renderCell(
       {content}
     </div>
   );
+}
+
+function firstRowCell(): ReactNode {
+  return null
 }
 
 function isWeekend(stupidDate: StupidDate): boolean {
