@@ -17,6 +17,7 @@ import java.util.Optional;
 public abstract class AbstractConstraintRequest implements ConstraintRequest {
   private ConstraintType type;
   private WorkerId owner;
+
   @Override
   public ConstraintType getType() {
     return this.type;

@@ -14,6 +14,19 @@ public record SchedulePlan(
     Map<WorkerId, Map<LocalDate, WorkDay>> assignments,
     Map<WorkerId, ScheduleWorker> workers
 ) {
+
+  public LocalDate getStartDate() {
+    return assignments.values().stream().toList()
+        .get(0).values().stream().toList()
+        .get(0).date();
+  }
+
+  public LocalDate getLastDate() {
+    var days = assignments.values().stream().toList().get(0);
+    return days.values().stream().toList()
+        .get(days.size() - 1).date();
+  }
+
   public WorkDay getSpecificDay(WorkerId workerId, LocalDate date) {
     this.ensureSchedulePlanContainsWorkerId(workerId);
     return assignments.get(workerId).get(date);
