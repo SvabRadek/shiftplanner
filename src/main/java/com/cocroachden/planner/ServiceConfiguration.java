@@ -6,15 +6,14 @@ import com.cocroachden.planner.solver.constraints.specific.shiftfollowuprestrict
 import com.cocroachden.planner.solver.constraints.specific.shiftpattern.ShiftPatternConstraintApplier;
 import com.cocroachden.planner.solver.constraints.specific.shiftperday.OneShiftPerDayConstraintApplier;
 import com.cocroachden.planner.solver.constraints.specific.shiftperschedule.ShiftsPerScheduleConstraintApplier;
+import com.cocroachden.planner.solver.constraints.specific.tripleshift.TripleShiftConstraintApplier;
 import com.cocroachden.planner.solver.constraints.specific.workershiftrequest.WorkerShiftRequestConstraintApplier;
 import com.cocroachden.planner.solver.constraints.specific.workerspershift.WorkersPerShiftConstraintApplier;
 import com.cocroachden.planner.solver.solver.ScheduleSolver;
-import jakarta.validation.ConstraintValidator;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 
-import java.util.List;
 import java.util.concurrent.Executor;
 
 @Configuration
@@ -28,7 +27,8 @@ public class ServiceConfiguration {
         new WorkersPerShiftConstraintApplier(),
         new ShiftFollowUpConstraintApplier(),
         new ConsecutiveWorkingDaysConstraintApplier(),
-        new ShiftPatternConstraintApplier()
+        new ShiftPatternConstraintApplier(),
+        new TripleShiftConstraintApplier()
     );
   }
 

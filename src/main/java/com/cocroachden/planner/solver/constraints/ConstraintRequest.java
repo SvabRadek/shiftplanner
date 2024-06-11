@@ -8,6 +8,7 @@ import com.cocroachden.planner.solver.constraints.specific.shiftfollowuprestrict
 import com.cocroachden.planner.solver.constraints.specific.shiftpattern.request.ShiftPatternConstraintRequest;
 import com.cocroachden.planner.solver.constraints.specific.shiftperday.request.OneShiftPerDayRequest;
 import com.cocroachden.planner.solver.constraints.specific.shiftperschedule.request.ShiftsPerScheduleRequest;
+import com.cocroachden.planner.solver.constraints.specific.tripleshift.request.TripleShiftConstraintRequest;
 import com.cocroachden.planner.solver.constraints.specific.workershiftrequest.request.SpecificShiftRequest;
 import com.cocroachden.planner.solver.constraints.specific.workerspershift.request.WorkersPerShiftRequest;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
@@ -28,7 +29,8 @@ import java.io.Serializable;
     @JsonSubTypes.Type(value = WorkersPerShiftRequest.class, name = "WorkersPerShiftRequest"),
     @JsonSubTypes.Type(value = AbstractConstraintRequest.class, name = "AbstractConstraintRequest"),
     @JsonSubTypes.Type(value = AbstractMinMaxRequest.class, name = "AbstractMinMaxRequest"),
-    @JsonSubTypes.Type(value = ConsecutiveWorkingDaysRequest.class, name = "ConsecutiveWorkingDaysRequest")
+    @JsonSubTypes.Type(value = ConsecutiveWorkingDaysRequest.class, name = "ConsecutiveWorkingDaysRequest"),
+    @JsonSubTypes.Type(value = TripleShiftConstraintRequest.class, name = "TripleShiftConstraintRequest")
 })
 public interface ConstraintRequest extends Serializable {
   ConstraintType getType();

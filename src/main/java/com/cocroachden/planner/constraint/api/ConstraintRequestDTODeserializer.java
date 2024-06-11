@@ -23,6 +23,7 @@ public class ConstraintRequestDTODeserializer extends JsonDeserializer<Constrain
     DESERIALIZATION_MAP.put(ConstraintType.WORKERS_PER_SHIFT, EmployeesPerShiftRequestDTO.class);
     DESERIALIZATION_MAP.put(ConstraintType.SHIFT_FOLLOW_UP_RESTRICTION, ShiftFollowupRestrictionRequestDTO.class);
     DESERIALIZATION_MAP.put(ConstraintType.SHIFT_PER_SCHEDULE, ShiftsPerScheduleRequestDTO.class);
+    DESERIALIZATION_MAP.put(ConstraintType.TRIPLE_SHIFTS_CONSTRAINT, TripleShiftConstraintRequestDTO.class);
   }
 
   @Override

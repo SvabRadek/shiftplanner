@@ -155,5 +155,13 @@ export const defaultConstraints: DefaultConstraints = {
       maxPenalty: 1,
       hardMax: 0
     }
+  },
+  [ConstraintType.TRIPLE_SHIFTS_CONSTRAINT]: {
+    type: ConstraintType.TRIPLE_SHIFTS_CONSTRAINT,
+    label: "Nastaveni trojitych smen",
+    constraint: {
+      type: ConstraintType.TRIPLE_SHIFTS_CONSTRAINT,
+      penaltyForShiftTripletOutsideWeekend: 0
+    }
   }
 }

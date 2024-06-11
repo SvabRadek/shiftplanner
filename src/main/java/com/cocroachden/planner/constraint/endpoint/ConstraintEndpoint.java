@@ -7,6 +7,7 @@ import com.cocroachden.planner.solver.constraints.specific.consecutiveworkingday
 import com.cocroachden.planner.solver.constraints.specific.shiftfollowuprestriction.request.ShiftFollowUpRestrictionRequest;
 import com.cocroachden.planner.solver.constraints.specific.shiftpattern.request.ShiftPatternConstraintRequest;
 import com.cocroachden.planner.solver.constraints.specific.shiftperschedule.request.ShiftsPerScheduleRequest;
+import com.cocroachden.planner.solver.constraints.specific.tripleshift.request.TripleShiftConstraintRequest;
 import com.cocroachden.planner.solver.constraints.specific.workershiftrequest.request.SpecificShiftRequest;
 import com.cocroachden.planner.solver.constraints.specific.workerspershift.request.WorkersPerShiftRequest;
 import com.vaadin.flow.server.auth.AnonymousAllowed;
@@ -112,6 +113,10 @@ public class ConstraintEndpoint {
       case WORKERS_PER_SHIFT -> EmployeesPerShiftRequestDTO.from(
           record.getId(),
           (WorkersPerShiftRequest) record.getRequest()
+      );
+      case TRIPLE_SHIFTS_CONSTRAINT -> TripleShiftConstraintRequestDTO.from(
+          record.getId(),
+          (TripleShiftConstraintRequest) record.getRequest()
       );
       case ONE_SHIFT_PER_DAY -> null;
     };
