@@ -1,10 +1,10 @@
 import { CrudAction, CRUDActions } from "Frontend/util/utils";
 import { Tooltip } from "@hilla/react-components/Tooltip";
 import { CSSProperties, ReactNode } from "react";
-import WorkerId from "Frontend/generated/com/cocroachden/planner/core/identity/WorkerId";
 import EmployeeRecord from "Frontend/generated/com/cocroachden/planner/employee/repository/EmployeeRecord";
-import WorkerValidationIssue
-  from "Frontend/generated/com/cocroachden/planner/constraint/validations/worker/WorkerValidationIssue";
+import EmployeeId from "Frontend/generated/com/cocroachden/planner/employee/api/EmployeeId";
+import EmployeeValidationIssue
+  from "Frontend/generated/com/cocroachden/planner/constraint/validations/employee/EmployeeValidationIssue";
 
 const defaultStyle: CSSProperties = {
   cursor: "pointer",
@@ -23,10 +23,10 @@ const defaultStyle: CSSProperties = {
 }
 
 type Props = {
-  owner: WorkerId,
+  owner: EmployeeId,
   title: ReactNode
   onEmployeeAction: (action: CrudAction<Pick<EmployeeRecord, "id">>) => void
-  issues: WorkerValidationIssue[]
+  issues: EmployeeValidationIssue[]
   readonly?: boolean
   style?: CSSProperties
 }

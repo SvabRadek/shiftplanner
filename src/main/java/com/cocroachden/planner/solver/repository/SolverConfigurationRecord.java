@@ -1,7 +1,7 @@
 package com.cocroachden.planner.solver.repository;
 
 import com.cocroachden.planner.constraint.repository.ConstraintRequestRecord;
-import com.cocroachden.planner.core.identity.WorkerId;
+import com.cocroachden.planner.employee.api.EmployeeId;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -35,7 +35,7 @@ public class SolverConfigurationRecord {
   private LocalDate endDate;
   @ElementCollection
   @OrderColumn(name = "list_index")
-  private List<WorkerId> workers;
+  private List<EmployeeId> workers;
   @OneToMany(mappedBy = "parent", cascade = CascadeType.ALL, orphanRemoval = true)
   private List<ConstraintRequestRecord> constraintRequestRecords = new ArrayList<>();
 

@@ -1,11 +1,11 @@
-package com.cocroachden.planner.solver.solver.solution;
+package com.cocroachden.planner.solver.service.solution;
 
 
 import com.cocroachden.planner.core.StupidDate;
-import com.cocroachden.planner.core.identity.WorkerId;
+import com.cocroachden.planner.employee.api.EmployeeId;
 import com.cocroachden.planner.solver.api.SolverSolutionDTO;
 import com.cocroachden.planner.solver.api.SolutionStatus;
-import com.cocroachden.planner.solver.solver.schedule.SchedulePlan;
+import com.cocroachden.planner.solver.service.schedule.SchedulePlan;
 import com.cocroachden.planner.solver.api.WorkShifts;
 import com.google.ortools.sat.CpSolverSolutionCallback;
 import lombok.Getter;
@@ -72,8 +72,8 @@ public class SolverSolutionCallback extends CpSolverSolutionCallback {
 
 
 
-  private HashMap<WorkerId, List<SolutionWorkDay>> createResponseSchedule() {
-    var response = new HashMap<WorkerId, List<SolutionWorkDay>>();
+  private HashMap<EmployeeId, List<SolutionWorkDay>> createResponseSchedule() {
+    var response = new HashMap<EmployeeId, List<SolutionWorkDay>>();
     schedulePlan.getAssignments()
         .entrySet().stream()
         .sorted(Comparator.comparingLong(value -> value.getKey().getId()))

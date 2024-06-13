@@ -3,9 +3,9 @@ package com.cocroachden.planner.solver.constraints.specific.shiftpattern;
 
 import com.cocroachden.planner.solver.constraints.ConstraintRequest;
 import com.cocroachden.planner.solver.constraints.specific.shiftpattern.request.ShiftPatternConstraintRequest;
-import com.cocroachden.planner.solver.solver.Objectives;
-import com.cocroachden.planner.solver.solver.schedule.SchedulePlan;
-import com.cocroachden.planner.solver.solver.schedule.WorkDay;
+import com.cocroachden.planner.solver.service.SolutionObjectives;
+import com.cocroachden.planner.solver.service.schedule.SchedulePlan;
+import com.cocroachden.planner.solver.service.schedule.ScheduleDay;
 import com.google.ortools.sat.CpModel;
 import com.cocroachden.planner.solver.constraints.ConstraintApplier;
 
@@ -14,7 +14,7 @@ import java.util.Map;
 
 public class ShiftPatternConstraintApplier implements ConstraintApplier {
   @Override
-  public void apply(SchedulePlan schedulePlan, CpModel model, Objectives objective, ConstraintRequest constraintRequest) {
+  public void apply(SchedulePlan schedulePlan, CpModel model, SolutionObjectives objective, ConstraintRequest constraintRequest) {
     var request = (ShiftPatternConstraintRequest) constraintRequest;
     var owner = request.getOwner();
     if (owner.isEmpty()) {
@@ -29,8 +29,8 @@ public class ShiftPatternConstraintApplier implements ConstraintApplier {
 
   private void applyConstraint(
       CpModel model,
-      Objectives objective,
-      Map<LocalDate, WorkDay> assignments,
+      SolutionObjectives objective,
+      Map<LocalDate, ScheduleDay> assignments,
       ShiftPatternConstraintRequest request,
       Integer weight
   ) {

@@ -2,22 +2,24 @@ package com.cocroachden.planner.constraint.validations.day;
 
 import com.cocroachden.planner.constraint.api.ConstraintRequestDTO;
 import com.cocroachden.planner.constraint.api.EmployeesPerShiftRequestDTO;
-import com.cocroachden.planner.constraint.api.SpecificShiftRequestDTO;
+import com.cocroachden.planner.constraint.api.EmployeeShiftRequestDTO;
 import com.cocroachden.planner.constraint.validations.IssueSeverity;
 import com.cocroachden.planner.core.StupidDate;
 import com.cocroachden.planner.solver.api.SolverConfigurationDTO;
 import com.cocroachden.planner.solver.api.WorkShifts;
 
 import java.time.LocalDate;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 import java.util.stream.IntStream;
 
 public class ConstraintDayValidator {
   public static List<DayValidationIssue> validate(
-      SolverConfigurationDTO configurationRecord,
-      List<ConstraintRequestDTO> constraints
+      SolverConfigurationDTO configurationRecord
   ) {
     var issues = new ArrayList<DayValidationIssue>();
+    var constraints = configurationRecord.getConstraints();
     constraints.stream()
         .filter(c -> c instanceof EmployeesPerShiftRequestDTO)
         .map(c -> (EmployeesPerShiftRequestDTO) c)
@@ -37,8 +39,8 @@ public class ConstraintDayValidator {
         .mapToObj(startDate::plusDays)
         .map(day -> {
           var shiftRequestsForGivenDay = constraints.stream()
-              .filter(c -> c instanceof SpecificShiftRequestDTO)
-              .map(c -> (SpecificShiftRequestDTO) c)
+              .filter(c -> c instanceof EmployeeShiftRequestDTO)
+              .map(c -> (EmployeeShiftRequestDTO) c)
               .filter(c -> c.getDate().equals(StupidDate.fromDate(day)))
               .toList();
           return evaluateGivenDay(configurationRecord, perShiftRequestDTO, day, shiftRequestsForGivenDay);
@@ -50,7 +52,7 @@ public class ConstraintDayValidator {
       SolverConfigurationDTO configurationDTO,
       EmployeesPerShiftRequestDTO employeesPerShiftRequestDTO,
       LocalDate day,
-      List<SpecificShiftRequestDTO> requests
+      List<EmployeeShiftRequestDTO> requests
   ) {
     var issues = new ArrayList<DayValidationIssue>();
     var peopleInSchedule = configurationDTO.getWorkers().size();

@@ -8,8 +8,8 @@ import com.cocroachden.planner.solver.constraints.specific.shiftfollowuprestrict
 import com.cocroachden.planner.solver.constraints.specific.shiftpattern.request.ShiftPatternConstraintRequest;
 import com.cocroachden.planner.solver.constraints.specific.shiftperschedule.request.ShiftsPerScheduleRequest;
 import com.cocroachden.planner.solver.constraints.specific.tripleshift.request.TripleShiftConstraintRequest;
-import com.cocroachden.planner.solver.constraints.specific.workershiftrequest.request.SpecificShiftRequest;
-import com.cocroachden.planner.solver.constraints.specific.workerspershift.request.WorkersPerShiftRequest;
+import com.cocroachden.planner.solver.constraints.specific.employeeshiftrequest.request.EmployeeShiftRequest;
+import com.cocroachden.planner.solver.constraints.specific.employeespershift.request.EmployeesPerShiftRequest;
 import com.vaadin.flow.server.auth.AnonymousAllowed;
 import dev.hilla.BrowserCallable;
 import dev.hilla.Nonnull;
@@ -35,11 +35,11 @@ public class ConstraintEndpoint {
         .toList();
   }
 
-  public @Nonnull List<@Nonnull SpecificShiftRequestDTO> findSpecificShiftRequests(
+  public @Nonnull List<@Nonnull EmployeeShiftRequestDTO> findSpecificShiftRequests(
       @Nonnull List<@Nonnull UUID> requestIds
   ) {
     return this.getRecords(requestIds).stream()
-        .map(r -> SpecificShiftRequestDTO.from(r.getId(), (SpecificShiftRequest) r.getRequest()))
+        .map(r -> EmployeeShiftRequestDTO.from(r.getId(), (EmployeeShiftRequest) r.getRequest()))
         .toList();
   }
 
@@ -63,7 +63,7 @@ public class ConstraintEndpoint {
       @Nonnull List<@Nonnull UUID> requestIds
   ) {
     return this.getRecords(requestIds).stream()
-        .map(r -> EmployeesPerShiftRequestDTO.from(r.getId(), (WorkersPerShiftRequest) r.getRequest()))
+        .map(r -> EmployeesPerShiftRequestDTO.from(r.getId(), (EmployeesPerShiftRequest) r.getRequest()))
         .toList();
   }
 
@@ -100,9 +100,9 @@ public class ConstraintEndpoint {
 
   private ConstraintRequestDTO convertToDto(ConstraintRequestRecord record) {
     return switch (record.getType()) {
-      case SPECIFIC_SHIFT_REQUEST -> SpecificShiftRequestDTO.from(
+      case EMPLOYEE_SHIFT_REQUEST -> EmployeeShiftRequestDTO.from(
           record.getId(),
-          (SpecificShiftRequest) record.getRequest()
+          (EmployeeShiftRequest) record.getRequest()
       );
       case SHIFT_PER_SCHEDULE -> ShiftsPerScheduleRequestDTO.from(
           record.getId(),
@@ -120,9 +120,9 @@ public class ConstraintEndpoint {
           record.getId(),
           (ShiftPatternConstraintRequest) record.getRequest()
       );
-      case WORKERS_PER_SHIFT -> EmployeesPerShiftRequestDTO.from(
+      case EMPLOYEES_PER_SHIFT -> EmployeesPerShiftRequestDTO.from(
           record.getId(),
-          (WorkersPerShiftRequest) record.getRequest()
+          (EmployeesPerShiftRequest) record.getRequest()
       );
       case TRIPLE_SHIFTS_CONSTRAINT -> TripleShiftConstraintRequestDTO.from(
           record.getId(),

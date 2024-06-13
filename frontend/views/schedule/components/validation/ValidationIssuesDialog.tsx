@@ -35,7 +35,7 @@ export function ValidationIssuesDialog(props: Props) {
           )}
         {validationCtx.workerIssues
           .map(issue => <ValidationWorkerIssueCard
-            key={issue.issue + issue.workerId.id}
+            key={issue.issue + issue.employeeId.id}
             issue={issue!}/>
           )}
         <HorizontalLayout style={{ width: "100%", justifyContent: "end" }}>

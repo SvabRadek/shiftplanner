@@ -7,9 +7,9 @@ import com.cocroachden.planner.solver.constraints.specific.shiftpattern.ShiftPat
 import com.cocroachden.planner.solver.constraints.specific.shiftperday.OneShiftPerDayConstraintApplier;
 import com.cocroachden.planner.solver.constraints.specific.shiftperschedule.ShiftsPerScheduleConstraintApplier;
 import com.cocroachden.planner.solver.constraints.specific.tripleshift.TripleShiftConstraintApplier;
-import com.cocroachden.planner.solver.constraints.specific.workershiftrequest.WorkerShiftRequestConstraintApplier;
-import com.cocroachden.planner.solver.constraints.specific.workerspershift.WorkersPerShiftConstraintApplier;
-import com.cocroachden.planner.solver.solver.Solver;
+import com.cocroachden.planner.solver.constraints.specific.employeeshiftrequest.EmployeeShiftRequestConstraintApplier;
+import com.cocroachden.planner.solver.constraints.specific.employeespershift.EmployeesPerShiftConstraintApplier;
+import com.cocroachden.planner.solver.service.SolverService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
@@ -23,8 +23,8 @@ public class ServiceConfiguration {
     return new GenericConstraintApplier(
         new OneShiftPerDayConstraintApplier(),
         new ShiftsPerScheduleConstraintApplier(),
-        new WorkerShiftRequestConstraintApplier(),
-        new WorkersPerShiftConstraintApplier(),
+        new EmployeeShiftRequestConstraintApplier(),
+        new EmployeesPerShiftConstraintApplier(),
         new ShiftFollowUpConstraintApplier(),
         new ConsecutiveWorkingDaysConstraintApplier(),
         new ShiftPatternConstraintApplier(),
@@ -33,8 +33,8 @@ public class ServiceConfiguration {
   }
 
   @Bean
-  public Solver alternativeSolver(GenericConstraintApplier constraintApplier) {
-    return new Solver(constraintApplier);
+  public SolverService alternativeSolver(GenericConstraintApplier constraintApplier) {
+    return new SolverService(constraintApplier);
   }
 
   @Bean

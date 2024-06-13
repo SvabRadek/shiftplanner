@@ -1,6 +1,6 @@
 package com.cocroachden.planner.constraint.api;
 
-import com.cocroachden.planner.core.identity.WorkerId;
+import com.cocroachden.planner.employee.api.EmployeeId;
 import com.cocroachden.planner.solver.constraints.specific.tripleshift.request.TripleShiftConstraintRequest;
 import dev.hilla.Nonnull;
 import lombok.AccessLevel;
@@ -28,7 +28,7 @@ public class TripleShiftConstraintRequestDTO implements ConstraintRequestDTO {
   @Nonnull
   private ConstraintType type;
   @Nonnull
-  private WorkerId owner;
+  private EmployeeId owner;
   @Nonnull
   private Integer penaltyForShiftTripletOutsideWeekend;
 }

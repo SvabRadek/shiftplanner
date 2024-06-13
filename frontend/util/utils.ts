@@ -1,4 +1,3 @@
-import SpecificShiftRequestDTO from "Frontend/generated/com/cocroachden/planner/constraint/api/SpecificShiftRequestDTO";
 import ShiftsPerScheduleRequestDTO
   from "Frontend/generated/com/cocroachden/planner/constraint/api/ShiftsPerScheduleRequestDTO";
 import EmployeesPerShiftRequestDTO
@@ -9,6 +8,7 @@ import ConsecutiveWorkingDaysRequestDTO
   from "Frontend/generated/com/cocroachden/planner/constraint/api/ConsecutiveWorkingDaysRequestDTO";
 import StupidDate from "Frontend/generated/com/cocroachden/planner/core/StupidDate";
 import WorkShifts from "Frontend/generated/com/cocroachden/planner/solver/api/WorkShifts";
+import EmployeeShiftRequestDTO from "Frontend/generated/com/cocroachden/planner/constraint/api/EmployeeShiftRequestDTO";
 
 export enum CRUDActions {
   CREATE,
@@ -72,7 +72,7 @@ export function getDistanceInDaysNumeric(startDate: Date, endDate: Date): number
   return diffTimeInMillis / (1000 * 60 * 60 * 24)
 }
 
-type IdentifiableSpecificShiftRequestDTO = Pick<SpecificShiftRequestDTO, "owner" | "date">
+type IdentifiableSpecificShiftRequestDTO = Pick<EmployeeShiftRequestDTO, "owner" | "date">
 
 export function areShiftRequestsSame(r1: IdentifiableSpecificShiftRequestDTO, r2: IdentifiableSpecificShiftRequestDTO): boolean {
   return [r1.owner.id, stupidDateToString(r1.date)].join() === [r2.owner.id, stupidDateToString(r2.date)].join()

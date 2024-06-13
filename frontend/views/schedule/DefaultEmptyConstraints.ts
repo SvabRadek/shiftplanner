@@ -2,7 +2,6 @@ import { dateToStupidDate } from "Frontend/util/utils";
 import ConstraintType from "Frontend/generated/com/cocroachden/planner/constraint/api/ConstraintType";
 import WorkShifts from "Frontend/generated/com/cocroachden/planner/solver/api/WorkShifts";
 import ShiftPatternRequestDTO from "Frontend/generated/com/cocroachden/planner/constraint/api/ShiftPatternRequestDTO";
-import SpecificShiftRequestDTO from "Frontend/generated/com/cocroachden/planner/constraint/api/SpecificShiftRequestDTO";
 import TripleShiftConstraintRequestDTO
   from "Frontend/generated/com/cocroachden/planner/constraint/api/TripleShiftConstraintRequestDTO";
 import ConsecutiveWorkingDaysRequestDTO
@@ -13,6 +12,7 @@ import ShiftsPerScheduleRequestDTO
   from "Frontend/generated/com/cocroachden/planner/constraint/api/ShiftsPerScheduleRequestDTO";
 import EmployeesPerShiftRequestDTO
   from "Frontend/generated/com/cocroachden/planner/constraint/api/EmployeesPerShiftRequestDTO";
+import EmployeeShiftRequestDTO from "Frontend/generated/com/cocroachden/planner/constraint/api/EmployeeShiftRequestDTO";
 
 type ConstraintBinding<T> = {
   label: string
@@ -21,12 +21,12 @@ type ConstraintBinding<T> = {
 
 type DefaultConstraints = {
   [ConstraintType.SHIFT_PATTERN_CONSTRAINT]: ConstraintBinding<ShiftPatternRequestDTO>
-  [ConstraintType.SPECIFIC_SHIFT_REQUEST]: ConstraintBinding<SpecificShiftRequestDTO>
+  [ConstraintType.EMPLOYEE_SHIFT_REQUEST]: ConstraintBinding<EmployeeShiftRequestDTO>
   [ConstraintType.TRIPLE_SHIFTS_CONSTRAINT]: ConstraintBinding<TripleShiftConstraintRequestDTO>
   [ConstraintType.CONSECUTIVE_WORKING_DAYS]: ConstraintBinding<ConsecutiveWorkingDaysRequestDTO>
   [ConstraintType.SHIFT_FOLLOW_UP_RESTRICTION]: ConstraintBinding<ShiftFollowupRestrictionRequestDTO>
   [ConstraintType.SHIFT_PER_SCHEDULE]: ConstraintBinding<ShiftsPerScheduleRequestDTO>
-  [ConstraintType.WORKERS_PER_SHIFT]: ConstraintBinding<EmployeesPerShiftRequestDTO>
+  [ConstraintType.EMPLOYEES_PER_SHIFT]: ConstraintBinding<EmployeesPerShiftRequestDTO>
 }
 
 export const apolinarPattern: WorkShifts[] = [
@@ -105,10 +105,10 @@ export const defaultConstraints: DefaultConstraints = {
       maxPenalty: 1
     }
   },
-  [ConstraintType.WORKERS_PER_SHIFT]: {
+  [ConstraintType.EMPLOYEES_PER_SHIFT]: {
     label: "Pocet pracovniku na smenu",
     constraint: {
-      type: ConstraintType.WORKERS_PER_SHIFT,
+      type: ConstraintType.EMPLOYEES_PER_SHIFT,
       id: "new-constraint",
       targetShift: WorkShifts.DAY,
       softMin: 0,
@@ -140,10 +140,10 @@ export const defaultConstraints: DefaultConstraints = {
       startDayIndex: 0
     }
   },
-  [ConstraintType.SPECIFIC_SHIFT_REQUEST]: {
+  [ConstraintType.EMPLOYEE_SHIFT_REQUEST]: {
     label: "Specificka smena na dane datum",
     constraint: {
-      type: ConstraintType.SPECIFIC_SHIFT_REQUEST,
+      type: ConstraintType.EMPLOYEE_SHIFT_REQUEST,
       id: "new-constraint",
       owner: { id: 0 },
       date: dateToStupidDate(new Date()),

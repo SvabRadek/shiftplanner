@@ -3,7 +3,7 @@ package com.cocroachden.planner.solver.constraints.specific.consecutiveworkingda
 
 import com.cocroachden.planner.constraint.api.ConsecutiveWorkingDaysRequestDTO;
 import com.cocroachden.planner.constraint.api.ConstraintType;
-import com.cocroachden.planner.core.identity.WorkerId;
+import com.cocroachden.planner.employee.api.EmployeeId;
 import com.cocroachden.planner.solver.constraints.specific.AbstractMinMaxRequest;
 import com.cocroachden.planner.solver.api.WorkShifts;
 import com.fasterxml.jackson.annotation.JsonTypeName;
@@ -32,7 +32,7 @@ public class ConsecutiveWorkingDaysRequest extends AbstractMinMaxRequest {
   private WorkShifts targetShift;
 
   public ConsecutiveWorkingDaysRequest(
-      WorkerId owner,
+      EmployeeId owner,
       WorkShifts targetShift,
       Integer hardMin,
       Integer softMin,

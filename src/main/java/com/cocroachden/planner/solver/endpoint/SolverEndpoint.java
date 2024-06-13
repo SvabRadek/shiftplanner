@@ -1,13 +1,12 @@
 package com.cocroachden.planner.solver.endpoint;
 
 import com.cocroachden.planner.constraint.repository.ConstraintRequestRecord;
-import com.cocroachden.planner.constraint.repository.ConstraintRequestRepository;
 import com.cocroachden.planner.solver.api.SolutionStatus;
 import com.cocroachden.planner.solver.api.SolverSolutionDTO;
 import com.cocroachden.planner.solver.repository.SolverConfigurationRepository;
-import com.cocroachden.planner.solver.solver.Solver;
-import com.cocroachden.planner.solver.solver.SolverConfiguration;
-import com.cocroachden.planner.solver.solver.schedule.ScheduleWorker;
+import com.cocroachden.planner.solver.service.SolverService;
+import com.cocroachden.planner.solver.service.SolverConfiguration;
+import com.cocroachden.planner.solver.service.schedule.ScheduleEmployee;
 import com.vaadin.flow.server.auth.AnonymousAllowed;
 import dev.hilla.BrowserCallable;
 import dev.hilla.EndpointSubscription;
@@ -23,39 +22,38 @@ import java.util.UUID;
 @AnonymousAllowed
 @Slf4j
 @AllArgsConstructor
-public class PlannerEndpoint {
-  private final Solver solver;
-  private final SolverConfigurationRepository plannerConfigurationRepository;
-  private final ConstraintRequestRepository constraintRequestRepository;
+public class SolverEndpoint {
+  private final SolverService solverService;
+  private final SolverConfigurationRepository solverConfigurationRepository;
 
   @Transactional
   public EndpointSubscription<@Nonnull SolverSolutionDTO> solve(UUID configurationId) {
     log.debug("Solving configuration: {}", configurationId.toString());
-    var solverConfigRecord = plannerConfigurationRepository.getById(configurationId);
+    var solverConfigRecord = solverConfigurationRepository.getById(configurationId);
     var solverConfig = new SolverConfiguration(
         solverConfigRecord.getStartDate(),
         solverConfigRecord.getEndDate(),
         solverConfigRecord.getWorkers().stream()
-            .map(workerId -> new ScheduleWorker(workerId, 1))
+            .map(workerId -> new ScheduleEmployee(workerId, 1))
             .toList(),
         solverConfigRecord.getConstraintRequestRecords().stream()
             .map(ConstraintRequestRecord::getRequest)
             .toList()
     );
     var flux = Flux
-        .<SolverSolutionDTO>create(fluxSink -> solver.solve(solverConfig, fluxSink::next))
+        .<SolverSolutionDTO>create(fluxSink -> solverService.solve(solverConfig, fluxSink::next))
         .takeWhile(solution -> solution.getSolutionStatus().equals(SolutionStatus.OK));
 
     return EndpointSubscription.of(
         flux,
         () -> {
-          solver.stop();
+          solverService.stop();
           log.info("Subscription disconnected!");
         }
     );
   }
 
   public void stop() {
-    this.solver.stop();
+    this.solverService.stop();
   }
 }

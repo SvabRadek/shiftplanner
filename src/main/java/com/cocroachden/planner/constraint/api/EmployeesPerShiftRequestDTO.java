@@ -1,7 +1,7 @@
 package com.cocroachden.planner.constraint.api;
 
 
-import com.cocroachden.planner.solver.constraints.specific.workerspershift.request.WorkersPerShiftRequest;
+import com.cocroachden.planner.solver.constraints.specific.employeespershift.request.EmployeesPerShiftRequest;
 import com.cocroachden.planner.solver.api.WorkShifts;
 import dev.hilla.Nonnull;
 import lombok.AccessLevel;
@@ -15,7 +15,7 @@ import java.util.UUID;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 public class EmployeesPerShiftRequestDTO implements ConstraintRequestDTO {
-  public static EmployeesPerShiftRequestDTO from(UUID id, WorkersPerShiftRequest request) {
+  public static EmployeesPerShiftRequestDTO from(UUID id, EmployeesPerShiftRequest request) {
     return new EmployeesPerShiftRequestDTO(
         id,
         request.getType(),

@@ -4,9 +4,9 @@ package com.cocroachden.planner.solver.constraints.specific.shiftfollowuprestric
 import com.cocroachden.planner.solver.constraints.ConstraintApplier;
 import com.cocroachden.planner.solver.constraints.ConstraintRequest;
 import com.cocroachden.planner.solver.constraints.specific.shiftfollowuprestriction.request.ShiftFollowUpRestrictionRequest;
-import com.cocroachden.planner.solver.solver.Objectives;
-import com.cocroachden.planner.solver.solver.schedule.SchedulePlan;
-import com.cocroachden.planner.solver.solver.schedule.WorkDay;
+import com.cocroachden.planner.solver.service.SolutionObjectives;
+import com.cocroachden.planner.solver.service.schedule.SchedulePlan;
+import com.cocroachden.planner.solver.service.schedule.ScheduleDay;
 import com.google.ortools.sat.CpModel;
 import com.google.ortools.sat.LinearArgument;
 import com.google.ortools.sat.LinearExpr;
@@ -16,7 +16,7 @@ import java.util.Map;
 
 public class ShiftFollowUpConstraintApplier implements ConstraintApplier {
   @Override
-  public void apply(SchedulePlan schedulePlan, CpModel model, Objectives objective, ConstraintRequest constraintRequest) {
+  public void apply(SchedulePlan schedulePlan, CpModel model, SolutionObjectives objective, ConstraintRequest constraintRequest) {
     var request = (ShiftFollowUpRestrictionRequest) constraintRequest;
     var owner = request.getOwner();
     if (owner.isEmpty()) {
@@ -29,7 +29,7 @@ public class ShiftFollowUpConstraintApplier implements ConstraintApplier {
     }
   }
 
-  private void applyConstraint(CpModel model, Objectives objective, Map<LocalDate, WorkDay> assignments, ShiftFollowUpRestrictionRequest request, Integer weight) {
+  private void applyConstraint(CpModel model, SolutionObjectives objective, Map<LocalDate, ScheduleDay> assignments, ShiftFollowUpRestrictionRequest request, Integer weight) {
     assignments.forEach((date, workDay) -> {
       var shift = workDay.getShifts(request.getFirstShift()).get(0);
       var nextDay = workDay.date().plusDays(1);

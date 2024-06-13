@@ -1,6 +1,6 @@
 package com.cocroachden.planner.constraint.api;
 
-import com.cocroachden.planner.core.identity.WorkerId;
+import com.cocroachden.planner.employee.api.EmployeeId;
 import com.cocroachden.planner.solver.constraints.specific.shiftpattern.request.ShiftPatternConstraintRequest;
 import com.cocroachden.planner.solver.api.WorkShifts;
 import dev.hilla.Nonnull;
@@ -32,7 +32,7 @@ public class ShiftPatternRequestDTO implements ConstraintRequestDTO {
   private UUID id;
   @Nonnull
   private ConstraintType type;
-  private WorkerId owner;
+  private EmployeeId owner;
   @Nonnull
   private List<@Nonnull WorkShifts> shiftPattern;
   @Nonnull

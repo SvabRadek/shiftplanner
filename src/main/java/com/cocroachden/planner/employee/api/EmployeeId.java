@@ -1,4 +1,4 @@
-package com.cocroachden.planner.core.identity;
+package com.cocroachden.planner.employee.api;
 
 import dev.hilla.Nonnull;
 import jakarta.persistence.Column;
@@ -13,10 +13,10 @@ import java.io.Serializable;
 @Getter
 @Embeddable
 @EqualsAndHashCode
-public class WorkerId implements Serializable {
+public class EmployeeId implements Serializable {
   @Serial
   private static final long serialVersionUID = -3136703610267018121L;
-  @Column(name = "worker_id", nullable = false)
+  @Column(name = "employee_id", nullable = false)
   @Nonnull
   private Long id;
 

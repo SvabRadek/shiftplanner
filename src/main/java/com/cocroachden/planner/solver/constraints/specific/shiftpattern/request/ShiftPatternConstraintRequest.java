@@ -3,7 +3,7 @@ package com.cocroachden.planner.solver.constraints.specific.shiftpattern.request
 
 import com.cocroachden.planner.constraint.api.ShiftPatternRequestDTO;
 import com.cocroachden.planner.constraint.api.ConstraintType;
-import com.cocroachden.planner.core.identity.WorkerId;
+import com.cocroachden.planner.employee.api.EmployeeId;
 import com.cocroachden.planner.solver.constraints.specific.AbstractEmployeeSpecificConstraint;
 import com.cocroachden.planner.solver.api.WorkShifts;
 import com.fasterxml.jackson.annotation.JsonTypeName;
@@ -30,14 +30,14 @@ public class ShiftPatternConstraintRequest extends AbstractEmployeeSpecificConst
   private WorkShifts[] shiftPattern;
   private Integer reward;
 
-  public ShiftPatternConstraintRequest(WorkerId owner, Integer startDateIndex, Integer reward, WorkShifts... shiftPattern) {
+  public ShiftPatternConstraintRequest(EmployeeId owner, Integer startDateIndex, Integer reward, WorkShifts... shiftPattern) {
     super(ID, owner);
     this.startDateIndex = startDateIndex;
     this.shiftPattern = shiftPattern;
     this.reward = reward;
   }
 
-  public ShiftPatternConstraintRequest(WorkerId owner, Integer startDateIndex, WorkShifts[] shiftPattern, Integer reward) {
+  public ShiftPatternConstraintRequest(EmployeeId owner, Integer startDateIndex, WorkShifts[] shiftPattern, Integer reward) {
     super(ID, owner);
     this.startDateIndex = startDateIndex;
     this.shiftPattern = shiftPattern;

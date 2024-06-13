@@ -5,8 +5,8 @@ import com.cocroachden.planner.solver.constraints.ConstraintApplier;
 import com.cocroachden.planner.solver.constraints.ConstraintRequest;
 import com.cocroachden.planner.solver.constraints.specific.MinMaxConstraint;
 import com.cocroachden.planner.solver.constraints.specific.shiftperschedule.request.ShiftsPerScheduleRequest;
-import com.cocroachden.planner.solver.solver.Objectives;
-import com.cocroachden.planner.solver.solver.schedule.SchedulePlan;
+import com.cocroachden.planner.solver.service.SolutionObjectives;
+import com.cocroachden.planner.solver.service.schedule.SchedulePlan;
 import com.google.ortools.sat.BoolVar;
 import com.google.ortools.sat.CpModel;
 import lombok.extern.slf4j.Slf4j;
@@ -16,7 +16,7 @@ import java.util.ArrayList;
 @Slf4j
 public class ShiftsPerScheduleConstraintApplier implements ConstraintApplier {
   @Override
-  public void apply(SchedulePlan schedulePlan, CpModel model, Objectives objective, ConstraintRequest constraintRequest) {
+  public void apply(SchedulePlan schedulePlan, CpModel model, SolutionObjectives objective, ConstraintRequest constraintRequest) {
     var request = (ShiftsPerScheduleRequest) constraintRequest;
     log.debug("Applying constraint: {}", request.toString());
     var targetShift = request.getTargetShift();

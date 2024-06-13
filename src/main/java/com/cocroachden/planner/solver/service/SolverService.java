@@ -1,12 +1,12 @@
-package com.cocroachden.planner.solver.solver;
+package com.cocroachden.planner.solver.service;
 
 
 import com.cocroachden.planner.solver.api.SolverSolutionDTO;
 import com.cocroachden.planner.solver.api.SolutionStatus;
 import com.cocroachden.planner.solver.constraints.GenericConstraintApplier;
 import com.cocroachden.planner.solver.constraints.specific.shiftperday.request.OneShiftPerDayRequest;
-import com.cocroachden.planner.solver.solver.schedule.SchedulePlan;
-import com.cocroachden.planner.solver.solver.solution.SolverSolutionCallback;
+import com.cocroachden.planner.solver.service.schedule.SchedulePlan;
+import com.cocroachden.planner.solver.service.solution.SolverSolutionCallback;
 import com.google.ortools.Loader;
 import com.google.ortools.sat.CpModel;
 import com.google.ortools.sat.CpSolver;
@@ -19,7 +19,7 @@ import java.util.function.Consumer;
 
 @RequiredArgsConstructor
 @Slf4j
-public class Solver {
+public class SolverService {
   private final GenericConstraintApplier constraintApplier;
   private SolverSolutionCallback solutionCb;
   private Thread solverThread;
@@ -39,7 +39,7 @@ public class Solver {
     }
     Loader.loadNativeLibraries();
     var model = new CpModel();
-    var objectives = new Objectives();
+    var objectives = new SolutionObjectives();
     var schedulePlan = new SchedulePlan(solverConfiguration, model);
     solverConfiguration.constraintRequests().forEach(request ->
         constraintApplier.apply(schedulePlan, model, objectives, request)

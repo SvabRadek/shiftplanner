@@ -1,7 +1,7 @@
 package com.cocroachden.planner.constraint.api;
 
 
-import com.cocroachden.planner.core.identity.WorkerId;
+import com.cocroachden.planner.employee.api.EmployeeId;
 import com.cocroachden.planner.solver.constraints.specific.shiftperschedule.request.ShiftsPerScheduleRequest;
 import com.cocroachden.planner.solver.api.WorkShifts;
 import dev.hilla.Nonnull;
@@ -33,7 +33,7 @@ public class ShiftsPerScheduleRequestDTO implements ConstraintRequestDTO {
   @Nonnull
   private UUID id;
   @Nonnull
-  private WorkerId owner;
+  private EmployeeId owner;
   @Nonnull
   private ConstraintType type;
   @Nonnull

@@ -1,8 +1,8 @@
-package com.cocroachden.planner.solver.solver.schedule;
+package com.cocroachden.planner.solver.service.schedule;
 
 
-import com.cocroachden.planner.core.identity.WorkerId;
-import com.cocroachden.planner.solver.solver.SolverConfiguration;
+import com.cocroachden.planner.employee.api.EmployeeId;
+import com.cocroachden.planner.solver.service.SolverConfiguration;
 import com.google.ortools.sat.CpModel;
 import lombok.Getter;
 import lombok.SneakyThrows;
@@ -17,22 +17,22 @@ import java.util.stream.Collectors;
 @Getter
 public class SchedulePlan {
 
-  private final Map<WorkerId, Map<LocalDate, WorkDay>> assignments;
-  private final Map<WorkerId, ScheduleWorker> workers;
+  private final Map<EmployeeId, Map<LocalDate, ScheduleDay>> assignments;
+  private final Map<EmployeeId, ScheduleEmployee> workers;
 
   public SchedulePlan(SolverConfiguration configuration, CpModel model) {
     var endDateExclusive = configuration.endDate().plusDays(1);
-    var assignments = new HashMap<WorkerId, Map<LocalDate, WorkDay>>();
-    configuration.scheduleWorkers().forEach(worker -> {
-      var days = new HashMap<LocalDate, WorkDay>();
+    var assignments = new HashMap<EmployeeId, Map<LocalDate, ScheduleDay>>();
+    configuration.scheduleEmployees().forEach(worker -> {
+      var days = new HashMap<LocalDate, ScheduleDay>();
       configuration.startDate().datesUntil(endDateExclusive).forEach(date -> {
-        var workDay = this.createWorkDay(model, worker.workerId(), date);
+        var workDay = this.createWorkDay(model, worker.employeeId(), date);
         days.put(date, workDay);
       });
-      assignments.put(worker.workerId(), days);
+      assignments.put(worker.employeeId(), days);
     });
-    var workersAsMap = configuration.scheduleWorkers().stream()
-        .collect(Collectors.toMap(ScheduleWorker::workerId, scheduleWorker -> scheduleWorker));
+    var workersAsMap = configuration.scheduleEmployees().stream()
+        .collect(Collectors.toMap(ScheduleEmployee::employeeId, scheduleEmployee -> scheduleEmployee));
     this.assignments = assignments;
     this.workers = workersAsMap;
   }
@@ -49,28 +49,28 @@ public class SchedulePlan {
         .get(days.size() - 1).date();
   }
 
-  public WorkDay getSpecificDay(WorkerId workerId, LocalDate date) {
-    this.ensureSchedulePlanContainsWorkerId(workerId);
-    return assignments.get(workerId).get(date);
+  public ScheduleDay getSpecificDay(EmployeeId employeeId, LocalDate date) {
+    this.ensureSchedulePlanContainsWorkerId(employeeId);
+    return assignments.get(employeeId).get(date);
   }
 
-  public Integer getWeightForWorker(WorkerId workerId) {
-    return this.workers.get(workerId).weight();
+  public Integer getWeightForWorker(EmployeeId employeeId) {
+    return this.workers.get(employeeId).weight();
   }
 
-  public List<WorkDay> getAllDaysForWorker(WorkerId workerId) {
-    this.ensureSchedulePlanContainsWorkerId(workerId);
-    return assignments.get(workerId).values().stream().toList();
+  public List<ScheduleDay> getAllDaysForWorker(EmployeeId employeeId) {
+    this.ensureSchedulePlanContainsWorkerId(employeeId);
+    return assignments.get(employeeId).values().stream().toList();
   }
 
-  public Map<LocalDate, List<WorkDay>> getAllAssignmentsByDate() {
-    var workDaysByDate = new HashMap<LocalDate, List<WorkDay>>();
+  public Map<LocalDate, List<ScheduleDay>> getAllAssignmentsByDate() {
+    var workDaysByDate = new HashMap<LocalDate, List<ScheduleDay>>();
     this.assignments.forEach((workerId, workDays) -> {
       workDays.forEach((date, workDay) -> {
         if (workDaysByDate.containsKey(date)) {
           workDaysByDate.get(date).add(workDay);
         } else {
-          var list = new ArrayList<WorkDay>();
+          var list = new ArrayList<ScheduleDay>();
           list.add(workDay);
           workDaysByDate.put(date, list);
         }
@@ -101,9 +101,9 @@ public class SchedulePlan {
   }
 
   @SneakyThrows
-  private void ensureSchedulePlanContainsWorkerId(WorkerId workerId) {
-    if (!this.assignments.containsKey(workerId)) {
-      throw SchedulePlanException.becauseWorkerIsNotPresent(workerId);
+  private void ensureSchedulePlanContainsWorkerId(EmployeeId employeeId) {
+    if (!this.assignments.containsKey(employeeId)) {
+      throw SchedulePlanException.becauseWorkerIsNotPresent(employeeId);
     }
   }
 
@@ -112,14 +112,14 @@ public class SchedulePlan {
       super(message);
     }
 
-    public static SchedulePlanException becauseWorkerIsNotPresent(WorkerId workerId) {
-      return new SchedulePlanException("Schedule plan does not contain workerId [%s]".formatted(workerId.toString()));
+    public static SchedulePlanException becauseWorkerIsNotPresent(EmployeeId employeeId) {
+      return new SchedulePlanException("Schedule plan does not contain workerId [%s]".formatted(employeeId.toString()));
     }
   }
 
-  private WorkDay createWorkDay(CpModel model, WorkerId owner, LocalDate day) {
+  private ScheduleDay createWorkDay(CpModel model, EmployeeId owner, LocalDate day) {
     var dayVarName = "W%sD%sS".formatted(owner, day.toEpochDay());
-    return new WorkDay(
+    return new ScheduleDay(
         owner,
         day,
         model.newBoolVar(dayVarName + 0),

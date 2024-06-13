@@ -3,7 +3,7 @@ package com.cocroachden.planner.solver.constraints.specific.shiftfollowuprestric
 
 import com.cocroachden.planner.constraint.api.ShiftFollowupRestrictionRequestDTO;
 import com.cocroachden.planner.constraint.api.ConstraintType;
-import com.cocroachden.planner.core.identity.WorkerId;
+import com.cocroachden.planner.employee.api.EmployeeId;
 import com.cocroachden.planner.solver.constraints.specific.AbstractEmployeeSpecificConstraint;
 import com.cocroachden.planner.solver.api.WorkShifts;
 import com.fasterxml.jackson.annotation.JsonTypeName;
@@ -38,7 +38,7 @@ public class ShiftFollowUpRestrictionRequest extends AbstractEmployeeSpecificCon
     this(null, firstShift, forbiddenFollowup, penalty);
   }
 
-  public ShiftFollowUpRestrictionRequest(WorkerId owner, WorkShifts firstShift, WorkShifts forbiddenFollowup, Integer penalty) {
+  public ShiftFollowUpRestrictionRequest(EmployeeId owner, WorkShifts firstShift, WorkShifts forbiddenFollowup, Integer penalty) {
     super(ID, owner);
     this.firstShift = firstShift;
     this.forbiddenFollowup = forbiddenFollowup;

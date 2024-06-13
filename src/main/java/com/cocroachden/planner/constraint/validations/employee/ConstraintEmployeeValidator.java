@@ -1,9 +1,9 @@
-package com.cocroachden.planner.constraint.validations.worker;
+package com.cocroachden.planner.constraint.validations.employee;
 
 import com.cocroachden.planner.constraint.api.ConsecutiveWorkingDaysRequestDTO;
 import com.cocroachden.planner.constraint.api.ConstraintRequestDTO;
 import com.cocroachden.planner.constraint.api.ShiftsPerScheduleRequestDTO;
-import com.cocroachden.planner.constraint.api.SpecificShiftRequestDTO;
+import com.cocroachden.planner.constraint.api.EmployeeShiftRequestDTO;
 import com.cocroachden.planner.constraint.validations.IssueSeverity;
 import com.cocroachden.planner.solver.api.SolverConfigurationDTO;
 import com.cocroachden.planner.solver.api.WorkShifts;
@@ -12,32 +12,32 @@ import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-public class ConstraintWorkerValidator {
-  public static List<WorkerValidationIssue> validate(
-      SolverConfigurationDTO configurationRecord,
-      List<ConstraintRequestDTO> constraints
+public class ConstraintEmployeeValidator {
+  public static List<EmployeeValidationIssue> validate(
+      SolverConfigurationDTO solverConfig
   ) {
-    var issues = new ArrayList<WorkerValidationIssue>();
+    var issues = new ArrayList<EmployeeValidationIssue>();
+    var constraints = solverConfig.getConstraints();
     issues.addAll(constraints.stream()
         .filter(c -> c instanceof ShiftsPerScheduleRequestDTO)
         .map(c -> (ShiftsPerScheduleRequestDTO) c)
-        .map(r -> validateShiftsPerSchedule(r, configurationRecord, constraints))
+        .map(r -> validateShiftsPerSchedule(r, solverConfig, constraints))
         .flatMap(Collection::stream)
         .toList());
-    issues.addAll(validateConsecutiveWorkingDays(configurationRecord, constraints));
+    issues.addAll(validateConsecutiveWorkingDays(solverConfig, constraints));
     return issues;
   }
 
-  private static List<WorkerValidationIssue> validateShiftsPerSchedule(
+  private static List<EmployeeValidationIssue> validateShiftsPerSchedule(
       ShiftsPerScheduleRequestDTO shiftPerSchedule,
       SolverConfigurationDTO configuration,
       List<ConstraintRequestDTO> constraints
   ) {
-    var issues = new ArrayList<WorkerValidationIssue>();
+    var issues = new ArrayList<EmployeeValidationIssue>();
     var daysInSchedule = configuration.getStartDate().toDate().datesUntil(configuration.getEndDate().toDate()).count();
     var workersSpecificRequests = constraints.stream()
-        .filter(r -> r instanceof SpecificShiftRequestDTO)
-        .map(r -> (SpecificShiftRequestDTO) r)
+        .filter(r -> r instanceof EmployeeShiftRequestDTO)
+        .map(r -> (EmployeeShiftRequestDTO) r)
         .filter(r -> r.getOwner().equals(shiftPerSchedule.getOwner()))
         .toList();
     var requestedDaysOff = workersSpecificRequests.stream()
@@ -48,14 +48,14 @@ public class ConstraintWorkerValidator {
         .count();
     var optimisticCountOfAvailableDaysForWorkAssignments = daysInSchedule - requestedDaysOff;
     if (requestedWorkingShifts > shiftPerSchedule.getHardMax()) {
-      issues.add(new WorkerValidationIssue(
+      issues.add(new EmployeeValidationIssue(
           shiftPerSchedule.getOwner(),
           IssueSeverity.ERROR,
           "Pracovník vyžaduje více směn, než je nastavený maximální limit pro počet směn na rozvrh."
       ));
     }
     if (optimisticCountOfAvailableDaysForWorkAssignments < shiftPerSchedule.getHardMin()) {
-      issues.add(new WorkerValidationIssue(
+      issues.add(new EmployeeValidationIssue(
           shiftPerSchedule.getOwner(),
           IssueSeverity.ERROR,
           "Pracovník nemá dostatek dní, kdy by mohl pracovat, aby splnil požadavek na minimální počet přiřazených směn."
@@ -64,7 +64,7 @@ public class ConstraintWorkerValidator {
     return issues;
   }
 
-  private static List<WorkerValidationIssue> validateConsecutiveWorkingDays(
+  private static List<EmployeeValidationIssue> validateConsecutiveWorkingDays(
       SolverConfigurationDTO configuration,
       List<ConstraintRequestDTO> constraints
   ) {
@@ -81,8 +81,8 @@ public class ConstraintWorkerValidator {
           return configuration.getWorkers().stream()
               .map(w -> {
                 var datesOfWorkRequests = constraints.stream()
-                    .filter(c1 -> c1 instanceof SpecificShiftRequestDTO)
-                    .map(c1 -> (SpecificShiftRequestDTO) c1)
+                    .filter(c1 -> c1 instanceof EmployeeShiftRequestDTO)
+                    .map(c1 -> (EmployeeShiftRequestDTO) c1)
                     .filter(c1 -> c1.getOwner().equals(w))
                     .filter(c1 -> c1.getRequestedShift().isSameAs(WorkShifts.WORKING_SHIFTS))
                     .map(c1 -> c1.getDate().toDate())
@@ -98,7 +98,7 @@ public class ConstraintWorkerValidator {
                       return true;
                     });
                 if (isOverLimit) {
-                  return new WorkerValidationIssue(
+                  return new EmployeeValidationIssue(
                       w,
                       IssueSeverity.ERROR,
                       "Pracovnik zada vic smen v rade, nez je povolene maximum!"

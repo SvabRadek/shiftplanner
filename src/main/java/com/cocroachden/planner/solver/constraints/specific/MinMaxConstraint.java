@@ -1,7 +1,7 @@
 package com.cocroachden.planner.solver.constraints.specific;
 
 
-import com.cocroachden.planner.solver.solver.Objectives;
+import com.cocroachden.planner.solver.service.SolutionObjectives;
 import com.google.ortools.sat.BoolVar;
 import com.google.ortools.sat.CpModel;
 import com.google.ortools.sat.LinearArgument;
@@ -14,7 +14,7 @@ public class MinMaxConstraint {
       BoolVar[] shifts,
       Integer maxExcess,
       CpModel model,
-      Objectives objectives,
+      SolutionObjectives solutionObjectives,
       Integer weight
   ) {
     var softMax = minMaxRequest.getSoftMax();
@@ -34,7 +34,7 @@ public class MinMaxConstraint {
       model.addEquality(delta, expr);
       var excess = model.newIntVar(0, maxExcess, "");
       model.addMaxEquality(excess, new LinearArgument[]{ delta, zero });
-      objectives.addIntCost(excess, maxPenalty * weight);
+      solutionObjectives.addIntCost(excess, maxPenalty * weight);
     }
 
     if (minPenalty > 0 && softMin > hardMin) {
@@ -43,7 +43,7 @@ public class MinMaxConstraint {
       model.addEquality(delta, expr);
       var excess = model.newIntVar(0, maxExcess, "");
       model.addMaxEquality(excess, new LinearArgument[]{ delta, zero });
-      objectives.addIntCost(excess, minPenalty * weight);
+      solutionObjectives.addIntCost(excess, minPenalty * weight);
     }
   }
 }

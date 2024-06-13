@@ -22,8 +22,8 @@ import {
   TripleShiftConstraintForm
 } from "Frontend/views/schedule/components/employeesettings/constraintform/TripleShiftConstraintForm";
 import EmployeeRecord from "Frontend/generated/com/cocroachden/planner/employee/repository/EmployeeRecord";
-import WorkerId from "Frontend/generated/com/cocroachden/planner/core/identity/WorkerId";
 import WorkShifts from "Frontend/generated/com/cocroachden/planner/solver/api/WorkShifts";
+import EmployeeId from "Frontend/generated/com/cocroachden/planner/employee/api/EmployeeId";
 
 type Props = {
   employee?: EmployeeRecord
@@ -137,7 +137,7 @@ export function EmployeeRequestConfigDialog(props: Props) {
   );
 }
 
-function generateNewUniqueShiftsPerSchedule(workerId: WorkerId, excludeShifts: WorkShifts[]): ShiftsPerScheduleRequestDTO {
+function generateNewUniqueShiftsPerSchedule(workerId: EmployeeId, excludeShifts: WorkShifts[]): ShiftsPerScheduleRequestDTO {
   const allowedShifts = Object.values(WorkShifts).filter(val => !excludeShifts.some(s => s === val))
   return {
     ...defaultConstraints.SHIFT_PER_SCHEDULE.constraint as unknown as ShiftsPerScheduleRequestDTO,
@@ -147,7 +147,7 @@ function generateNewUniqueShiftsPerSchedule(workerId: WorkerId, excludeShifts: W
   }
 }
 
-function generateNewShiftPattern(workerId: WorkerId): ShiftPatternRequestDTO {
+function generateNewShiftPattern(workerId: EmployeeId): ShiftPatternRequestDTO {
   return {
     ...defaultConstraints.SHIFT_PATTERN_CONSTRAINT.constraint as unknown as ShiftPatternRequestDTO,
     owner: workerId,
@@ -155,7 +155,7 @@ function generateNewShiftPattern(workerId: WorkerId): ShiftPatternRequestDTO {
   }
 }
 
-function generateNewTripleShiftConstraintRequest(workerId: WorkerId): TripleShiftConstraintRequestDTO {
+function generateNewTripleShiftConstraintRequest(workerId: EmployeeId): TripleShiftConstraintRequestDTO {
   return {
     ...defaultConstraints.TRIPLE_SHIFTS_CONSTRAINT.constraint as unknown as TripleShiftConstraintRequestDTO,
     owner: { id: workerId.id }

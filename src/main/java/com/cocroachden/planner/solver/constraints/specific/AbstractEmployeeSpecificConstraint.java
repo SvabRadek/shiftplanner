@@ -2,7 +2,7 @@ package com.cocroachden.planner.solver.constraints.specific;
 
 
 import com.cocroachden.planner.constraint.api.ConstraintType;
-import com.cocroachden.planner.core.identity.WorkerId;
+import com.cocroachden.planner.employee.api.EmployeeId;
 import com.cocroachden.planner.solver.constraints.ConstraintRequest;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import lombok.AccessLevel;
@@ -16,14 +16,14 @@ import java.util.Optional;
 @JsonTypeName("AbstractEmployeeSpecificConstraint")
 public abstract class AbstractEmployeeSpecificConstraint implements ConstraintRequest {
   private ConstraintType type;
-  private WorkerId owner;
+  private EmployeeId owner;
 
   @Override
   public ConstraintType getType() {
     return this.type;
   }
 
-  public Optional<WorkerId> getOwner() {
+  public Optional<EmployeeId> getOwner() {
     return Optional.ofNullable(this.owner);
   }
 }

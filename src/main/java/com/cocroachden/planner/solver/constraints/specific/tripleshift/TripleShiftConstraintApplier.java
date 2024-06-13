@@ -3,9 +3,9 @@ package com.cocroachden.planner.solver.constraints.specific.tripleshift;
 import com.cocroachden.planner.solver.constraints.ConstraintApplier;
 import com.cocroachden.planner.solver.constraints.ConstraintRequest;
 import com.cocroachden.planner.solver.constraints.specific.tripleshift.request.TripleShiftConstraintRequest;
-import com.cocroachden.planner.solver.solver.Objectives;
-import com.cocroachden.planner.solver.solver.schedule.SchedulePlan;
-import com.cocroachden.planner.solver.solver.schedule.WorkDay;
+import com.cocroachden.planner.solver.service.SolutionObjectives;
+import com.cocroachden.planner.solver.service.schedule.SchedulePlan;
+import com.cocroachden.planner.solver.service.schedule.ScheduleDay;
 import com.cocroachden.planner.solver.api.WorkShifts;
 import com.google.ortools.sat.BoolVar;
 import com.google.ortools.sat.CpModel;
@@ -18,7 +18,7 @@ import java.util.Map;
 
 public class TripleShiftConstraintApplier implements ConstraintApplier {
   @Override
-  public void apply(SchedulePlan schedulePlan, CpModel model, Objectives objective, ConstraintRequest constraintRequest) {
+  public void apply(SchedulePlan schedulePlan, CpModel model, SolutionObjectives objective, ConstraintRequest constraintRequest) {
     //detect tripleshift, middle shift has to be on weekend -> otherwise apply penalty
     var tripletRequest = (TripleShiftConstraintRequest) constraintRequest;
     tripletRequest.getOwner()
@@ -37,9 +37,9 @@ public class TripleShiftConstraintApplier implements ConstraintApplier {
   private void applyConstraint(
       SchedulePlan schedulePlan,
       CpModel model,
-      Objectives objective,
+      SolutionObjectives objective,
       Integer weight,
-      Map<LocalDate, WorkDay> days,
+      Map<LocalDate, ScheduleDay> days,
       TripleShiftConstraintRequest tripletRequest
   ) {
     schedulePlan.getStartDate().plusDays(1).datesUntil(schedulePlan.getLastDate())

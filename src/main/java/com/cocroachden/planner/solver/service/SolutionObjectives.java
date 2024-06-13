@@ -1,4 +1,4 @@
-package com.cocroachden.planner.solver.solver;
+package com.cocroachden.planner.solver.service;
 
 import com.google.ortools.sat.BoolVar;
 import com.google.ortools.sat.IntVar;
@@ -11,13 +11,13 @@ import java.util.List;
 import java.util.stream.IntStream;
 
 @Getter
-public class Objectives {
+public class SolutionObjectives {
   private final List<IntVar> objectiveIntVars;
   private final List<Integer> objectiveIntCoefficients;
   private final List<BoolVar> objectiveBoolVars;
   private final List<Integer> objectiveBoolCoefficients;
 
-  public Objectives() {
+  public SolutionObjectives() {
     this.objectiveBoolVars = new ArrayList<>();
     this.objectiveBoolCoefficients = new ArrayList<>();
     this.objectiveIntVars = new ArrayList<>();

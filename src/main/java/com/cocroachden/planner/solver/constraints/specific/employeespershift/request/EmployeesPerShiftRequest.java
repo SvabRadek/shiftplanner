@@ -1,4 +1,4 @@
-package com.cocroachden.planner.solver.constraints.specific.workerspershift.request;
+package com.cocroachden.planner.solver.constraints.specific.employeespershift.request;
 
 
 import com.cocroachden.planner.constraint.api.EmployeesPerShiftRequestDTO;
@@ -11,13 +11,13 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Getter
-@JsonTypeName("WorkersPerShiftRequest")
+@JsonTypeName("EmployeesPerShiftRequest")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class WorkersPerShiftRequest extends AbstractMinMaxRequest {
-  public static final ConstraintType ID = ConstraintType.WORKERS_PER_SHIFT;
+public class EmployeesPerShiftRequest extends AbstractMinMaxRequest {
+  public static final ConstraintType ID = ConstraintType.EMPLOYEES_PER_SHIFT;
 
-  public static WorkersPerShiftRequest from(EmployeesPerShiftRequestDTO dto) {
-    return new WorkersPerShiftRequest(
+  public static EmployeesPerShiftRequest from(EmployeesPerShiftRequestDTO dto) {
+    return new EmployeesPerShiftRequest(
         dto.getTargetShift(),
         dto.getHardMin(),
         dto.getSoftMin(),
@@ -29,7 +29,7 @@ public class WorkersPerShiftRequest extends AbstractMinMaxRequest {
   }
 
   private WorkShifts shift;
-  public WorkersPerShiftRequest(
+  public EmployeesPerShiftRequest(
       WorkShifts shift,
       Integer hardMin,
       Integer softMin,

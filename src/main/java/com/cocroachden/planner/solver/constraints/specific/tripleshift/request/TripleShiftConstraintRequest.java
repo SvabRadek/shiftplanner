@@ -2,7 +2,7 @@ package com.cocroachden.planner.solver.constraints.specific.tripleshift.request;
 
 import com.cocroachden.planner.constraint.api.TripleShiftConstraintRequestDTO;
 import com.cocroachden.planner.constraint.api.ConstraintType;
-import com.cocroachden.planner.core.identity.WorkerId;
+import com.cocroachden.planner.employee.api.EmployeeId;
 import com.cocroachden.planner.solver.constraints.specific.AbstractEmployeeSpecificConstraint;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import lombok.Getter;
@@ -25,7 +25,7 @@ public class TripleShiftConstraintRequest extends AbstractEmployeeSpecificConstr
   }
 
   public TripleShiftConstraintRequest(
-      WorkerId owner,
+      EmployeeId owner,
       Integer penaltyForShiftTripletOutsideWeekend
   ) {
     super(ConstraintType.TRIPLE_SHIFTS_CONSTRAINT, owner);

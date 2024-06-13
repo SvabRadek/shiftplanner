@@ -1,13 +1,13 @@
-package com.cocroachden.planner.constraint.validations.worker;
+package com.cocroachden.planner.constraint.validations.employee;
 
 import com.cocroachden.planner.constraint.validations.IssueSeverity;
-import com.cocroachden.planner.core.identity.WorkerId;
+import com.cocroachden.planner.employee.api.EmployeeId;
 import dev.hilla.Nonnull;
 
 import java.io.Serializable;
 
-public record WorkerValidationIssue(
-    @Nonnull WorkerId workerId,
+public record EmployeeValidationIssue(
+    @Nonnull EmployeeId employeeId,
     @Nonnull IssueSeverity severity,
     @Nonnull String issue
 ) implements Serializable {

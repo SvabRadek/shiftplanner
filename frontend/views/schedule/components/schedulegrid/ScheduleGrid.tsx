@@ -6,9 +6,9 @@ import { CrudAction, stupidDateToDate, stupidDateToString } from "Frontend/util/
 import { ScheduleMode, ScheduleModeCtx } from "Frontend/views/schedule/ScheduleModeCtxProvider";
 import { ValidationContext } from "Frontend/views/schedule/components/validation/ScheduleValidationCtxProvider";
 import IssueSeverity from "Frontend/generated/com/cocroachden/planner/constraint/validations/IssueSeverity";
-import WorkerId from "Frontend/generated/com/cocroachden/planner/core/identity/WorkerId";
 import EmployeeRecord from "Frontend/generated/com/cocroachden/planner/employee/repository/EmployeeRecord";
 import StupidDate from "Frontend/generated/com/cocroachden/planner/core/StupidDate";
+import EmployeeId from "Frontend/generated/com/cocroachden/planner/employee/api/EmployeeId";
 
 const dayVocabulary: Record<number, string> = {
   1: "Po",
@@ -21,7 +21,7 @@ const dayVocabulary: Record<number, string> = {
 }
 
 export type Row = {
-  owner: WorkerId
+  owner: EmployeeId
   rowTitle: ReactNode
   cells: Cell[]
 }

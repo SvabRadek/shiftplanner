@@ -1,9 +1,9 @@
-package com.cocroachden.planner.solver.constraints.specific.workershiftrequest.request;
+package com.cocroachden.planner.solver.constraints.specific.employeeshiftrequest.request;
 
 
-import com.cocroachden.planner.constraint.api.SpecificShiftRequestDTO;
+import com.cocroachden.planner.constraint.api.EmployeeShiftRequestDTO;
 import com.cocroachden.planner.constraint.api.ConstraintType;
-import com.cocroachden.planner.core.identity.WorkerId;
+import com.cocroachden.planner.employee.api.EmployeeId;
 import com.cocroachden.planner.solver.constraints.specific.AbstractEmployeeSpecificConstraint;
 import com.cocroachden.planner.solver.api.WorkShifts;
 import com.fasterxml.jackson.annotation.JsonFormat;
@@ -15,13 +15,13 @@ import lombok.NoArgsConstructor;
 import java.time.LocalDate;
 
 @Getter
-@JsonTypeName("SpecificShiftRequest")
+@JsonTypeName("EmployeeShiftRequest")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class SpecificShiftRequest extends AbstractEmployeeSpecificConstraint {
-  public static final ConstraintType TYPE = ConstraintType.SPECIFIC_SHIFT_REQUEST;
+public class EmployeeShiftRequest extends AbstractEmployeeSpecificConstraint {
+  public static final ConstraintType TYPE = ConstraintType.EMPLOYEE_SHIFT_REQUEST;
 
-  public static SpecificShiftRequest from(SpecificShiftRequestDTO dto) {
-    return new SpecificShiftRequest(
+  public static EmployeeShiftRequest from(EmployeeShiftRequestDTO dto) {
+    return new EmployeeShiftRequest(
         dto.getOwner(),
         dto.getDate().toDate(),
         dto.getRequestedShift()
@@ -32,7 +32,7 @@ public class SpecificShiftRequest extends AbstractEmployeeSpecificConstraint {
   private LocalDate date;
   private WorkShifts requestedShift;
 
-  public SpecificShiftRequest(WorkerId owner, LocalDate date, WorkShifts requestedShift) {
+  public EmployeeShiftRequest(EmployeeId owner, LocalDate date, WorkShifts requestedShift) {
     super(TYPE, owner);
     this.date = date;
     this.requestedShift = requestedShift;

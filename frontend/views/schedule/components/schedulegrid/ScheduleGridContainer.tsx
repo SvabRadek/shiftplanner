@@ -2,7 +2,6 @@ import { useMemo, useState } from "react";
 import { CrudAction, dateToString, dateToStupidDate, stupidDateToDate, stupidDateToString } from "Frontend/util/utils";
 import { Row, ScheduleGrid } from "Frontend/views/schedule/components/schedulegrid/ScheduleGrid";
 import { Cell, DisplayMode } from "Frontend/views/schedule/components/schedulegrid/GridCell";
-import SpecificShiftRequestDTO from "Frontend/generated/com/cocroachden/planner/constraint/api/SpecificShiftRequestDTO";
 import ShiftsPerScheduleRequestDTO
   from "Frontend/generated/com/cocroachden/planner/constraint/api/ShiftsPerScheduleRequestDTO";
 import ShiftPatternRequestDTO from "Frontend/generated/com/cocroachden/planner/constraint/api/ShiftPatternRequestDTO";
@@ -11,8 +10,9 @@ import EmployeeRecord from "Frontend/generated/com/cocroachden/planner/employee/
 import SolverConfigurationDTO from "Frontend/generated/com/cocroachden/planner/solver/api/SolverConfigurationDTO";
 import SolverSolutionDTO from "Frontend/generated/com/cocroachden/planner/solver/api/SolverSolutionDTO";
 import WorkShifts from "Frontend/generated/com/cocroachden/planner/solver/api/WorkShifts";
-import WorkerId from "Frontend/generated/com/cocroachden/planner/core/identity/WorkerId";
 import ConstraintType from "Frontend/generated/com/cocroachden/planner/constraint/api/ConstraintType";
+import EmployeeShiftRequestDTO from "Frontend/generated/com/cocroachden/planner/constraint/api/EmployeeShiftRequestDTO";
+import EmployeeId from "Frontend/generated/com/cocroachden/planner/employee/api/EmployeeId";
 
 export type PlainWorkerId = number
 export type Index = number
@@ -21,10 +21,10 @@ type Props = {
   request: SolverConfigurationDTO
   employees: EmployeeRecord[]
   shiftPatterns: ShiftPatternRequestDTO[]
-  shiftRequests: SpecificShiftRequestDTO[]
+  shiftRequests: EmployeeShiftRequestDTO[]
   shiftPerScheduleRequests: ShiftsPerScheduleRequestDTO[]
   onEmployeeAction: (action: CrudAction<EmployeeRecord>) => void
-  onShiftRequestsChanged?: (changedRequests: Omit<SpecificShiftRequestDTO, "id">[]) => void
+  onShiftRequestsChanged?: (changedRequests: Omit<EmployeeShiftRequestDTO, "id">[]) => void
   result?: SolverSolutionDTO
 }
 
@@ -53,7 +53,7 @@ export function ScheduleGridContainer(props: Props) {
   function handleShiftChange(updatedCell: Cell) {
     props.onShiftRequestsChanged?.([
       {
-        type: ConstraintType.SPECIFIC_SHIFT_REQUEST,
+        type: ConstraintType.EMPLOYEE_SHIFT_REQUEST,
         owner: updatedCell.owner,
         date: updatedCell.date,
         requestedShift: updatedCell.shift
@@ -65,24 +65,24 @@ export function ScheduleGridContainer(props: Props) {
     const originDate = originCell.index < endCell.index ? stupidDateToDate(originCell.date) : stupidDateToDate(endCell.date)
     const lowEnd = originCell.index < endCell.index ? originCell.index : endCell.index
     const highEnd = originCell.index > endCell.index ? originCell.index : endCell.index
-    const requests: Omit<SpecificShiftRequestDTO, "id">[] = []
+    const requests: Omit<EmployeeShiftRequestDTO, "id">[] = []
     for (let i = lowEnd; i <= highEnd; i++) {
       const index = i - lowEnd
       const requestDate = new Date(originDate)
       requestDate.setDate(requestDate.getDate() + index)
       requests.push({
-          type: ConstraintType.SPECIFIC_SHIFT_REQUEST,
+          type: ConstraintType.EMPLOYEE_SHIFT_REQUEST,
           owner: originCell.owner,
           requestedShift: originCell.shift,
           date: dateToStupidDate(requestDate)
-        } as Omit<SpecificShiftRequestDTO, "id">
+        } as Omit<EmployeeShiftRequestDTO, "id">
       )
     }
     props.onShiftRequestsChanged?.(requests)
   }
 
   const shiftRequestMap = useMemo(() => {
-    const map = new Map<string, SpecificShiftRequestDTO>()
+    const map = new Map<string, EmployeeShiftRequestDTO>()
     props.shiftRequests.forEach(r => map.set(stupidDateToString(r.date) + r.owner.id, r))
     return map
   }, [props.shiftRequests])
@@ -130,7 +130,7 @@ function getDistanceInDays(startDate: Date, endDate: Date): Index[] {
 function createRows(
   request: SolverConfigurationDTO,
   employees: EmployeeRecord[],
-  shiftRequests: Map<string, SpecificShiftRequestDTO>,
+  shiftRequests: Map<string, EmployeeShiftRequestDTO>,
   shiftPatterns: Map<PlainWorkerId, ShiftPatternRequestDTO>,
   shiftPerSchedule: ShiftsPerScheduleRequestDTO[],
   highlightInfo: Highlight,
@@ -216,10 +216,10 @@ function createRowTitle(
 
 function getResultingShift(
   results: SolverSolutionDTO | undefined,
-  workerId: WorkerId,
+  workerId: EmployeeId,
   cellDate: Date,
   cellIndex: number,
-  relatedRequest: SpecificShiftRequestDTO | undefined,
+  relatedRequest: EmployeeShiftRequestDTO | undefined,
   relatedPattern: ShiftPatternRequestDTO | undefined
 ): WorkShifts {
   if (results) {

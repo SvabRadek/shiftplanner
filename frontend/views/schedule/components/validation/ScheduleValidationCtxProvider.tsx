@@ -1,18 +1,18 @@
 import { createContext, ReactNode, useMemo, useState } from "react";
 import DayValidationIssue from "Frontend/generated/com/cocroachden/planner/constraint/validations/day/DayValidationIssue";
-import WorkerValidationIssue
-  from "Frontend/generated/com/cocroachden/planner/constraint/validations/worker/WorkerValidationIssue";
 import ConstraintRequestDTO from "Frontend/generated/com/cocroachden/planner/constraint/api/ConstraintRequestDTO";
 import { ConstraintValidationEndpoint } from "Frontend/generated/endpoints";
 import { stupidDateToString } from "Frontend/util/utils";
 import IssueSeverity from "Frontend/generated/com/cocroachden/planner/constraint/validations/IssueSeverity";
 import SolverConfigurationDTO from "Frontend/generated/com/cocroachden/planner/solver/api/SolverConfigurationDTO";
+import EmployeeValidationIssue
+  from "Frontend/generated/com/cocroachden/planner/constraint/validations/employee/EmployeeValidationIssue";
 
 type ScheduleValidationCtxType = {
   dayIssues: DayValidationIssue[]
-  workerIssues: WorkerValidationIssue[]
+  workerIssues: EmployeeValidationIssue[]
   dayIssueMap: Map<string, DayValidationIssue[]>
-  workerIssueMap: Map<number, WorkerValidationIssue[]>
+  workerIssueMap: Map<number, EmployeeValidationIssue[]>
   validate: (config: SolverConfigurationDTO, constraints: ConstraintRequestDTO[]) => void
   clear: () => void
   containsIssues: boolean
@@ -35,7 +35,7 @@ export const ValidationContext = createContext<ScheduleValidationCtxType>({
 
 type IssueContainer = {
   dayIssues: DayValidationIssue[],
-  workerIssues: WorkerValidationIssue[]
+  workerIssues: EmployeeValidationIssue[]
 }
 
 export function ScheduleValidationCtxProvider({ children }: { children: ReactNode }) {
@@ -55,17 +55,18 @@ export function ScheduleValidationCtxProvider({ children }: { children: ReactNod
   }, [issues.dayIssues])
 
   const workerIssueMap = useMemo(() => {
-    const map = new Map<number, WorkerValidationIssue[]>
+    const map = new Map<number, EmployeeValidationIssue[]>
     issues.workerIssues.forEach(i => {
-      const existing = map.get(i.workerId.id)
-      map.set(i.workerId.id, existing ? [...existing, i] : [i])
+      const existing = map.get(i.employeeId.id)
+      map.set(i.employeeId.id, existing ? [...existing, i] : [i])
     })
     return map
   }, [issues.workerIssues])
 
   function handleValidation(config: SolverConfigurationDTO, constraints: ConstraintRequestDTO[]) {
-    ConstraintValidationEndpoint.validateDays(config, constraints).then(dayIssues => {
-      ConstraintValidationEndpoint.validateWorkers(config, constraints).then(workerIssues => {
+
+    ConstraintValidationEndpoint.validateDays({ ...config, constraints }).then(dayIssues => {
+      ConstraintValidationEndpoint.validateWorkers({ ...config, constraints }).then(workerIssues => {
         setIssues({
           workerIssues: workerIssues,
           dayIssues: dayIssues

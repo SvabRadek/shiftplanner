@@ -1,15 +1,15 @@
-package com.cocroachden.planner.solver.solver.schedule;
+package com.cocroachden.planner.solver.service.schedule;
 
 
-import com.cocroachden.planner.core.identity.WorkerId;
+import com.cocroachden.planner.employee.api.EmployeeId;
 import com.cocroachden.planner.solver.api.WorkShifts;
 import com.google.ortools.sat.BoolVar;
 
 import java.time.LocalDate;
 import java.util.List;
 
-public record WorkDay(
-    WorkerId owner,
+public record ScheduleDay(
+    EmployeeId owner,
     LocalDate date,
     BoolVar offShiftAssignment,
     BoolVar dayShiftAssignment,

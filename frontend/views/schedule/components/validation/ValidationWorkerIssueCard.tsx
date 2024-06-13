@@ -1,16 +1,16 @@
 import { Card } from "Frontend/components/Card";
-import WorkerValidationIssue
-  from "Frontend/generated/com/cocroachden/planner/constraint/validations/worker/WorkerValidationIssue";
+import EmployeeValidationIssue
+  from "Frontend/generated/com/cocroachden/planner/constraint/validations/employee/EmployeeValidationIssue";
 
 type Props = {
-  issue: WorkerValidationIssue
+  issue: EmployeeValidationIssue
 }
 
 export function ValidationWorkerIssueCard(props: Props) {
   return (
     <Card>
       <span>{props.issue.severity}</span>
-      <span>{props.issue.workerId.id}</span>
+      <span>{props.issue.employeeId.id}</span>
       <small>{props.issue.issue}</small>
     </Card>
   );

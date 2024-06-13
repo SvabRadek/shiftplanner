@@ -4,9 +4,9 @@ import com.cocroachden.planner.solver.constraints.ConstraintApplier;
 import com.cocroachden.planner.solver.constraints.ConstraintRequest;
 import com.cocroachden.planner.solver.constraints.specific.MinMaxConstraint;
 import com.cocroachden.planner.solver.constraints.specific.consecutiveworkingdays.request.ConsecutiveWorkingDaysRequest;
-import com.cocroachden.planner.solver.solver.Objectives;
-import com.cocroachden.planner.solver.solver.schedule.SchedulePlan;
-import com.cocroachden.planner.solver.solver.schedule.WorkDay;
+import com.cocroachden.planner.solver.service.SolutionObjectives;
+import com.cocroachden.planner.solver.service.schedule.SchedulePlan;
+import com.cocroachden.planner.solver.service.schedule.ScheduleDay;
 import com.google.ortools.sat.BoolVar;
 import com.google.ortools.sat.CpModel;
 
@@ -16,7 +16,7 @@ import java.util.Map;
 
 public class ConsecutiveWorkingDaysConstraintApplier implements ConstraintApplier {
   @Override
-  public void apply(SchedulePlan schedulePlan, CpModel model, Objectives objective, ConstraintRequest constraintRequest) {
+  public void apply(SchedulePlan schedulePlan, CpModel model, SolutionObjectives objective, ConstraintRequest constraintRequest) {
     var request = (ConsecutiveWorkingDaysRequest) constraintRequest;
     var owner = request.getOwner();
     if (owner.isEmpty()) {
@@ -31,8 +31,8 @@ public class ConsecutiveWorkingDaysConstraintApplier implements ConstraintApplie
 
   private void applyConstraint(
       CpModel model,
-      Objectives objective,
-      Map<LocalDate, WorkDay> assignments,
+      SolutionObjectives objective,
+      Map<LocalDate, ScheduleDay> assignments,
       ConsecutiveWorkingDaysRequest request,
       Integer weight
   ) {

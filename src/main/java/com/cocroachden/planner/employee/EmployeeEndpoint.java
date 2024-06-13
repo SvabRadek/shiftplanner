@@ -1,6 +1,6 @@
 package com.cocroachden.planner.employee;
 
-import com.cocroachden.planner.core.identity.WorkerId;
+import com.cocroachden.planner.employee.api.EmployeeId;
 import com.cocroachden.planner.employee.repository.EmployeeRecord;
 import com.cocroachden.planner.employee.repository.EmployeeRepository;
 import com.cocroachden.planner.solver.constraints.specific.AbstractEmployeeSpecificConstraint;
@@ -31,7 +31,7 @@ public class EmployeeEndpoint extends CrudRepositoryService<EmployeeRecord, Long
 
   @Override
   public void delete(@Nonnull Long workerId) {
-    var typedWorkerId = new WorkerId(workerId);
+    var typedWorkerId = new EmployeeId(workerId);
     plannerConfigurationRepository.findByWorkersContaining(typedWorkerId).stream()
         .filter(Objects::nonNull)
         .forEach(config -> {

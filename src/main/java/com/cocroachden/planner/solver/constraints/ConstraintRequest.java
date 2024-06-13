@@ -9,8 +9,8 @@ import com.cocroachden.planner.solver.constraints.specific.shiftpattern.request.
 import com.cocroachden.planner.solver.constraints.specific.shiftperday.request.OneShiftPerDayRequest;
 import com.cocroachden.planner.solver.constraints.specific.shiftperschedule.request.ShiftsPerScheduleRequest;
 import com.cocroachden.planner.solver.constraints.specific.tripleshift.request.TripleShiftConstraintRequest;
-import com.cocroachden.planner.solver.constraints.specific.workershiftrequest.request.SpecificShiftRequest;
-import com.cocroachden.planner.solver.constraints.specific.workerspershift.request.WorkersPerShiftRequest;
+import com.cocroachden.planner.solver.constraints.specific.employeeshiftrequest.request.EmployeeShiftRequest;
+import com.cocroachden.planner.solver.constraints.specific.employeespershift.request.EmployeesPerShiftRequest;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 
@@ -21,12 +21,12 @@ import java.io.Serializable;
     property = "class_type"
 )
 @JsonSubTypes({
-    @JsonSubTypes.Type(value = SpecificShiftRequest.class, name = "SpecificShiftRequest"),
+    @JsonSubTypes.Type(value = EmployeeShiftRequest.class, name = "EmployeeShiftRequest"),
     @JsonSubTypes.Type(value = OneShiftPerDayRequest.class, name = "OneShiftPerDayRequest"),
     @JsonSubTypes.Type(value = ShiftFollowUpRestrictionRequest.class, name = "ShiftFollowUpRestrictionRequest"),
     @JsonSubTypes.Type(value = ShiftPatternConstraintRequest.class, name = "ShiftPatternConstraintRequest"),
     @JsonSubTypes.Type(value = ShiftsPerScheduleRequest.class, name = "ShiftsPerScheduleRequest"),
-    @JsonSubTypes.Type(value = WorkersPerShiftRequest.class, name = "WorkersPerShiftRequest"),
+    @JsonSubTypes.Type(value = EmployeesPerShiftRequest.class, name = "EmployeesPerShiftRequest"),
     @JsonSubTypes.Type(value = AbstractEmployeeSpecificConstraint.class, name = "AbstractEmployeeSpecificConstraint"),
     @JsonSubTypes.Type(value = AbstractMinMaxRequest.class, name = "AbstractMinMaxRequest"),
     @JsonSubTypes.Type(value = ConsecutiveWorkingDaysRequest.class, name = "ConsecutiveWorkingDaysRequest"),

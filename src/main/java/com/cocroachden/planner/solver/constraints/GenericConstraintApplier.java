@@ -1,7 +1,7 @@
 package com.cocroachden.planner.solver.constraints;
 
-import com.cocroachden.planner.solver.solver.Objectives;
-import com.cocroachden.planner.solver.solver.schedule.SchedulePlan;
+import com.cocroachden.planner.solver.service.SolutionObjectives;
+import com.cocroachden.planner.solver.service.schedule.SchedulePlan;
 import com.google.ortools.sat.CpModel;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -21,11 +21,11 @@ public class GenericConstraintApplier {
   public void apply(
       SchedulePlan schedulePlan,
       CpModel model,
-      Objectives objectives,
+      SolutionObjectives solutionObjectives,
       ConstraintRequest request
   ) {
       log.debug("Applying '{}'", request.getType());
-      this.getSupportingConstraint(request).apply(schedulePlan, model, objectives, request);
+      this.getSupportingConstraint(request).apply(schedulePlan, model, solutionObjectives, request);
   }
 
   private ConstraintApplier getSupportingConstraint(ConstraintRequest request) {

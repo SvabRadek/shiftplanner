@@ -8,15 +8,15 @@ import com.cocroachden.planner.solver.constraints.specific.shiftfollowuprestrict
 import com.cocroachden.planner.solver.constraints.specific.shiftpattern.request.ShiftPatternConstraintRequest;
 import com.cocroachden.planner.solver.constraints.specific.shiftperschedule.request.ShiftsPerScheduleRequest;
 import com.cocroachden.planner.solver.constraints.specific.tripleshift.request.TripleShiftConstraintRequest;
-import com.cocroachden.planner.solver.constraints.specific.workershiftrequest.request.SpecificShiftRequest;
-import com.cocroachden.planner.solver.constraints.specific.workerspershift.request.WorkersPerShiftRequest;
+import com.cocroachden.planner.solver.constraints.specific.employeeshiftrequest.request.EmployeeShiftRequest;
+import com.cocroachden.planner.solver.constraints.specific.employeespershift.request.EmployeesPerShiftRequest;
 
 public class ConstraintMapper {
 
   public static ConstraintRequestDTO fromRecord(ConstraintRequestRecord record) {
     var request = record.getRequest();
-    if (request instanceof SpecificShiftRequest specificShiftRequest) {
-      return SpecificShiftRequestDTO.from(record.getId(), specificShiftRequest);
+    if (request instanceof EmployeeShiftRequest employeeShiftRequest) {
+      return EmployeeShiftRequestDTO.from(record.getId(), employeeShiftRequest);
     }
     if (request instanceof ShiftFollowUpRestrictionRequest followUpRestrictionRequest) {
       return ShiftFollowupRestrictionRequestDTO.from(record.getId(), followUpRestrictionRequest);
@@ -27,7 +27,7 @@ public class ConstraintMapper {
     if (request instanceof ShiftsPerScheduleRequest shiftsPerScheduleRequest) {
       return ShiftsPerScheduleRequestDTO.from(record.getId(), shiftsPerScheduleRequest);
     }
-    if (request instanceof WorkersPerShiftRequest workersPerShiftRequest) {
+    if (request instanceof EmployeesPerShiftRequest workersPerShiftRequest) {
       return EmployeesPerShiftRequestDTO.from(record.getId(), workersPerShiftRequest);
     }
     if (request instanceof ConsecutiveWorkingDaysRequest consecutiveWorkingDaysRequest) {
@@ -40,8 +40,8 @@ public class ConstraintMapper {
   }
 
   public static ConstraintRequest fromDto(ConstraintRequestDTO dto) {
-    if (dto instanceof SpecificShiftRequestDTO specificShiftRequest) {
-      return SpecificShiftRequest.from(specificShiftRequest);
+    if (dto instanceof EmployeeShiftRequestDTO specificShiftRequest) {
+      return EmployeeShiftRequest.from(specificShiftRequest);
     }
     if (dto instanceof ShiftFollowupRestrictionRequestDTO followUpRestrictionRequest) {
       return ShiftFollowUpRestrictionRequest.from(followUpRestrictionRequest);
@@ -53,7 +53,7 @@ public class ConstraintMapper {
       return ShiftsPerScheduleRequest.from(shiftsPerScheduleRequest);
     }
     if (dto instanceof EmployeesPerShiftRequestDTO workersPerShiftRequest) {
-      return WorkersPerShiftRequest.from(workersPerShiftRequest);
+      return EmployeesPerShiftRequest.from(workersPerShiftRequest);
     }
     if (dto instanceof ConsecutiveWorkingDaysRequestDTO consecutiveWorkingDaysRequest) {
       return ConsecutiveWorkingDaysRequest.from(consecutiveWorkingDaysRequest);

@@ -1,8 +1,8 @@
-package com.cocroachden.planner.solver.solver;
+package com.cocroachden.planner.solver.service;
 
 
 import com.cocroachden.planner.solver.constraints.ConstraintRequest;
-import com.cocroachden.planner.solver.solver.schedule.ScheduleWorker;
+import com.cocroachden.planner.solver.service.schedule.ScheduleEmployee;
 import org.apache.commons.lang3.StringUtils;
 
 import java.time.LocalDate;
@@ -11,7 +11,7 @@ import java.util.List;
 public record SolverConfiguration(
     LocalDate startDate,
     LocalDate endDate,
-    List<ScheduleWorker> scheduleWorkers,
+    List<ScheduleEmployee> scheduleEmployees,
     List<ConstraintRequest> constraintRequests
 ) {
   @Override
@@ -19,7 +19,7 @@ public record SolverConfiguration(
     return "{ startDate: %s, endDate: %s, scheduleWorkers: [%s] }".formatted(
         startDate.toString(),
         endDate.toString(),
-        StringUtils.join(scheduleWorkers.stream().map(w -> w.workerId().toString()).toList(), ", ")
+        StringUtils.join(scheduleEmployees.stream().map(w -> w.employeeId().toString()).toList(), ", ")
     );
   }
 }

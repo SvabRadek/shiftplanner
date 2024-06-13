@@ -46,7 +46,7 @@ export function GlobalTab(props: Props) {
         <Button
           onClick={() => props.onEmployeePerShiftAction({
             type: CRUDActions.CREATE,
-            payload: { ...defaultConstraints.WORKERS_PER_SHIFT.constraint, id: generateUUID() } as unknown as EmployeesPerShiftRequestDTO
+            payload: { ...defaultConstraints["EMPLOYEES_PER_SHIFT"].constraint, id: generateUUID() } as unknown as EmployeesPerShiftRequestDTO
           })}
           disabled={modeCtx.mode !== ScheduleMode.EDIT}
           theme={"small icon"}>
