@@ -2,9 +2,9 @@ package com.cocroachden.planner.solver.constraints.specific.workerspershift.requ
 
 
 import com.cocroachden.planner.constraint.api.EmployeesPerShiftRequestDTO;
-import com.cocroachden.planner.lib.ConstraintType;
+import com.cocroachden.planner.constraint.api.ConstraintType;
 import com.cocroachden.planner.solver.constraints.specific.AbstractMinMaxRequest;
-import com.cocroachden.planner.solver.schedule.WorkShifts;
+import com.cocroachden.planner.solver.api.WorkShifts;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import lombok.AccessLevel;
 import lombok.Getter;

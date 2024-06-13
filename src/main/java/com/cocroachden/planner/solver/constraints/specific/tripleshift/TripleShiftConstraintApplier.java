@@ -3,10 +3,10 @@ package com.cocroachden.planner.solver.constraints.specific.tripleshift;
 import com.cocroachden.planner.solver.constraints.ConstraintApplier;
 import com.cocroachden.planner.solver.constraints.ConstraintRequest;
 import com.cocroachden.planner.solver.constraints.specific.tripleshift.request.TripleShiftConstraintRequest;
-import com.cocroachden.planner.solver.schedule.Objectives;
-import com.cocroachden.planner.solver.schedule.SchedulePlan;
-import com.cocroachden.planner.solver.schedule.WorkDay;
-import com.cocroachden.planner.solver.schedule.WorkShifts;
+import com.cocroachden.planner.solver.solver.Objectives;
+import com.cocroachden.planner.solver.solver.schedule.SchedulePlan;
+import com.cocroachden.planner.solver.solver.schedule.WorkDay;
+import com.cocroachden.planner.solver.api.WorkShifts;
 import com.google.ortools.sat.BoolVar;
 import com.google.ortools.sat.CpModel;
 import com.google.ortools.sat.LinearArgument;
@@ -24,11 +24,11 @@ public class TripleShiftConstraintApplier implements ConstraintApplier {
     tripletRequest.getOwner()
         .ifPresentOrElse(
             owner -> {
-              var assignments = schedulePlan.assignments().get(owner);
+              var assignments = schedulePlan.getAssignments().get(owner);
               var workerWeight = schedulePlan.getWeightForWorker(owner);
               this.applyConstraint(schedulePlan, model, objective, workerWeight, assignments, tripletRequest);
             },
-            () -> schedulePlan.assignments().forEach((workerId, days) ->
+            () -> schedulePlan.getAssignments().forEach((workerId, days) ->
                 this.applyConstraint(schedulePlan, model, objective, 1, days, tripletRequest)
             )
         );

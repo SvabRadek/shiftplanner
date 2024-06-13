@@ -1,8 +1,8 @@
 import { Select, SelectItem } from "@hilla/react-components/Select";
 import { workShiftBindings } from "Frontend/views/schedule/WorkShiftBindigs";
 import { ScheduleMode, ScheduleModeCtx } from "Frontend/views/schedule/ScheduleModeCtxProvider";
-import WorkShifts from "Frontend/generated/com/cocroachden/planner/solver/schedule/WorkShifts";
 import { CSSProperties, useContext } from "react";
+import WorkShifts from "Frontend/generated/com/cocroachden/planner/solver/api/WorkShifts";
 
 type Props = {
   label: string

@@ -3,9 +3,6 @@ import { CSSProperties, useState } from "react";
 import { Tab } from "@hilla/react-components/Tab";
 import { Tabs } from "@hilla/react-components/Tabs";
 import { EmployeeTab } from "Frontend/views/schedule/components/schedulesettings/EmployeeTab";
-import EmployeeRecord from "Frontend/generated/com/cocroachden/planner/employee/EmployeeRecord";
-import PlannerConfigurationDTO
-  from "Frontend/generated/com/cocroachden/planner/plannerconfiguration/PlannerConfigurationDTO";
 import { Button } from "@hilla/react-components/Button";
 import { HorizontalLayout } from "@hilla/react-components/HorizontalLayout";
 import { GlobalTab } from "Frontend/views/schedule/components/schedulesettings/GlobalTab";
@@ -17,13 +14,15 @@ import ShiftFollowupRestrictionRequestDTO
   from "Frontend/generated/com/cocroachden/planner/constraint/api/ShiftFollowupRestrictionRequestDTO";
 import { CrudAction } from "Frontend/util/utils";
 import { VerticalLayout } from "@hilla/react-components/VerticalLayout";
+import EmployeeRecord from "Frontend/generated/com/cocroachden/planner/employee/repository/EmployeeRecord";
+import SolverConfigurationDTO from "Frontend/generated/com/cocroachden/planner/solver/api/SolverConfigurationDTO";
 
 type Props = {
   isOpen: boolean
   onOpenChanged: (value: boolean) => void
   employees: EmployeeRecord[]
   onEmployeeAction: (action: CrudAction<EmployeeRecord>) => void
-  request: PlannerConfigurationDTO
+  request: SolverConfigurationDTO
   consecutiveWorkingDays: ConsecutiveWorkingDaysRequestDTO[]
   onConsecutiveWorkingDaysAction: (action: CrudAction<ConsecutiveWorkingDaysRequestDTO>) => void
   employeesPerShift: EmployeesPerShiftRequestDTO[]

@@ -4,9 +4,9 @@ import com.cocroachden.planner.solver.constraints.ConstraintApplier;
 import com.cocroachden.planner.solver.constraints.ConstraintRequest;
 import com.cocroachden.planner.solver.constraints.specific.MinMaxConstraint;
 import com.cocroachden.planner.solver.constraints.specific.consecutiveworkingdays.request.ConsecutiveWorkingDaysRequest;
-import com.cocroachden.planner.solver.schedule.Objectives;
-import com.cocroachden.planner.solver.schedule.SchedulePlan;
-import com.cocroachden.planner.solver.schedule.WorkDay;
+import com.cocroachden.planner.solver.solver.Objectives;
+import com.cocroachden.planner.solver.solver.schedule.SchedulePlan;
+import com.cocroachden.planner.solver.solver.schedule.WorkDay;
 import com.google.ortools.sat.BoolVar;
 import com.google.ortools.sat.CpModel;
 
@@ -20,11 +20,11 @@ public class ConsecutiveWorkingDaysConstraintApplier implements ConstraintApplie
     var request = (ConsecutiveWorkingDaysRequest) constraintRequest;
     var owner = request.getOwner();
     if (owner.isEmpty()) {
-      schedulePlan.assignments().forEach((workerId, assignments) ->
+      schedulePlan.getAssignments().forEach((workerId, assignments) ->
           this.applyConstraint(model, objective, assignments, request, schedulePlan.getWeightForWorker(workerId))
       );
     } else {
-      var assignments = schedulePlan.assignments().get(owner.get());
+      var assignments = schedulePlan.getAssignments().get(owner.get());
       this.applyConstraint(model, objective, assignments, request, schedulePlan.getWeightForWorker(owner.get()));
     }
   }

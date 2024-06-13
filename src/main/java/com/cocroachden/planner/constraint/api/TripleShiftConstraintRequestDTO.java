@@ -1,7 +1,6 @@
 package com.cocroachden.planner.constraint.api;
 
-import com.cocroachden.planner.lib.ConstraintType;
-import com.cocroachden.planner.lib.WorkerId;
+import com.cocroachden.planner.core.identity.WorkerId;
 import com.cocroachden.planner.solver.constraints.specific.tripleshift.request.TripleShiftConstraintRequest;
 import dev.hilla.Nonnull;
 import lombok.AccessLevel;

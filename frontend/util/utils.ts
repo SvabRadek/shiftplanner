@@ -1,4 +1,3 @@
-import StupidDate from "Frontend/generated/com/cocroachden/planner/lib/StupidDate";
 import SpecificShiftRequestDTO from "Frontend/generated/com/cocroachden/planner/constraint/api/SpecificShiftRequestDTO";
 import ShiftsPerScheduleRequestDTO
   from "Frontend/generated/com/cocroachden/planner/constraint/api/ShiftsPerScheduleRequestDTO";
@@ -8,7 +7,8 @@ import ShiftFollowupRestrictionRequestDTO
   from "Frontend/generated/com/cocroachden/planner/constraint/api/ShiftFollowupRestrictionRequestDTO";
 import ConsecutiveWorkingDaysRequestDTO
   from "Frontend/generated/com/cocroachden/planner/constraint/api/ConsecutiveWorkingDaysRequestDTO";
-import WorkShifts from "Frontend/generated/com/cocroachden/planner/solver/schedule/WorkShifts";
+import StupidDate from "Frontend/generated/com/cocroachden/planner/core/StupidDate";
+import WorkShifts from "Frontend/generated/com/cocroachden/planner/solver/api/WorkShifts";
 
 export enum CRUDActions {
   CREATE,

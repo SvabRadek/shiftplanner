@@ -1,17 +1,16 @@
 import { HorizontalLayout } from "@hilla/react-components/HorizontalLayout";
 import { Button } from "@hilla/react-components/Button";
-import EmployeeRecord from "Frontend/generated/com/cocroachden/planner/employee/EmployeeRecord";
-import PlannerConfigurationDTO
-  from "Frontend/generated/com/cocroachden/planner/plannerconfiguration/PlannerConfigurationDTO";
 import { Icon } from "@hilla/react-components/Icon";
 import { AddEmployeeDialog } from "Frontend/views/schedule/components/schedulesettings/AddEmployeeDialog";
 import { useContext, useState } from "react";
 import { CrudAction, CRUDActions } from "Frontend/util/utils";
 import { ScheduleMode, ScheduleModeCtx } from "Frontend/views/schedule/ScheduleModeCtxProvider";
+import EmployeeRecord from "Frontend/generated/com/cocroachden/planner/employee/repository/EmployeeRecord";
+import SolverConfigurationDTO from "Frontend/generated/com/cocroachden/planner/solver/api/SolverConfigurationDTO";
 
 type Props = {
   employees: EmployeeRecord[]
-  request: PlannerConfigurationDTO
+  request: SolverConfigurationDTO
   onEmployeeAction: (action: CrudAction<EmployeeRecord>) => void
 }
 

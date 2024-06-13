@@ -1,0 +1,103 @@
+package com.cocroachden.planner.solver.solver.solution;
+
+
+import com.cocroachden.planner.core.StupidDate;
+import com.cocroachden.planner.core.identity.WorkerId;
+import com.cocroachden.planner.solver.api.SolverSolutionDTO;
+import com.cocroachden.planner.solver.api.SolutionStatus;
+import com.cocroachden.planner.solver.solver.schedule.SchedulePlan;
+import com.cocroachden.planner.solver.api.WorkShifts;
+import com.google.ortools.sat.CpSolverSolutionCallback;
+import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
+
+import java.util.*;
+import java.util.function.Consumer;
+
+@Slf4j
+public class SolverSolutionCallback extends CpSolverSolutionCallback {
+  private final Consumer<SolverSolutionDTO> fluxSink;
+  @Getter
+  private Integer currentSolutionCount = 0;
+  @Getter
+  private SolverSolution latestResponse;
+  private double bestObjectiveValue = Double.MAX_VALUE;
+  private final Integer solutionLimit;
+  private final SchedulePlan schedulePlan;
+
+  public SolverSolutionCallback(
+      Consumer<SolverSolutionDTO> fluxSink,
+      SchedulePlan schedulePlan
+  ) {
+    this.fluxSink = fluxSink;
+    this.solutionLimit = 999999999;
+    this.schedulePlan = schedulePlan;
+  }
+
+  @Override
+  public void stopSearch() {
+    super.stopSearch();
+  }
+
+  @Override
+  public void onSolutionCallback() {
+    var currentObjective = this.objectiveValue();
+    if (currentObjective > bestObjectiveValue) return;
+    bestObjectiveValue = currentObjective;
+    var response = createResponseSchedule();
+    var latestResponse = new SolverSolution(response);
+    this.printStatsHeader(currentObjective);
+    this.latestResponse = latestResponse;
+    var workerMap = new HashMap<Long, Map<StupidDate, WorkShifts>>();
+    latestResponse.workdays().forEach((workerId, responseWorkDays) -> {
+      var shiftMap = new HashMap<StupidDate, WorkShifts>();
+      responseWorkDays.forEach(solutionWorkDay -> {
+        shiftMap.put(StupidDate.fromDate(solutionWorkDay.date()), solutionWorkDay.assignedShift());
+      });
+      workerMap.put(workerId.getId(), shiftMap);
+    });
+    fluxSink.accept(
+        new SolverSolutionDTO(
+            SolutionStatus.OK,
+            currentObjective,
+            currentSolutionCount,
+            workerMap
+        )
+    );
+    currentSolutionCount++;
+    if (currentSolutionCount >= solutionLimit) {
+      stopSearch();
+    }
+  }
+
+
+
+  private HashMap<WorkerId, List<SolutionWorkDay>> createResponseSchedule() {
+    var response = new HashMap<WorkerId, List<SolutionWorkDay>>();
+    schedulePlan.getAssignments()
+        .entrySet().stream()
+        .sorted(Comparator.comparingLong(value -> value.getKey().getId()))
+        .forEach(entry -> {
+          var workerId = entry.getKey();
+          var assignments = entry.getValue();
+          var responseDays = new ArrayList<SolutionWorkDay>();
+          assignments.values()
+              .forEach(workDay -> {
+                var off = booleanValue(workDay.offShiftAssignment());
+                var day = booleanValue(workDay.dayShiftAssignment());
+                responseDays.add(new SolutionWorkDay(
+                    workDay.date(),
+                    off ? WorkShifts.OFF : day ? WorkShifts.DAY : WorkShifts.NIGHT
+                ));
+              });
+          response.put(workerId, responseDays);
+        });
+    return response;
+  }
+
+  private void printStatsHeader(double currentObjective) {
+    double bestBound = this.bestObjectiveBound();
+    double distance = currentObjective + (bestBound > 0 ? bestBound : bestBound * -1);
+    log.debug("Solution #{}, cost: {}, optimum deviation: {}", currentSolutionCount, currentObjective, distance);
+  }
+}

@@ -4,20 +4,19 @@ import { ScheduleMode, ScheduleModeCtx } from "Frontend/views/schedule/ScheduleM
 import { ConfigSelectDialog } from "Frontend/views/schedule/components/ConfigSelectDialog";
 import { HorizontalLayout } from "@hilla/react-components/HorizontalLayout";
 import { Subscription } from "@hilla/frontend";
-import ScheduleResultDTO from "Frontend/generated/com/cocroachden/planner/solver/ScheduleResultDTO";
 import { useContext, useEffect, useState } from "react";
-import PlannerConfigurationDTO
-  from "Frontend/generated/com/cocroachden/planner/plannerconfiguration/PlannerConfigurationDTO";
 import { ResultCache } from "Frontend/views/schedule/ScheduleView";
-import PlannerConfigurationMetaDataDTO
-  from "Frontend/generated/com/cocroachden/planner/plannerconfiguration/PlannerConfigurationMetaDataDTO";
 import { CrudAction, CRUDActions } from "Frontend/util/utils";
-import { PlannerConfigurationEndpoint } from "Frontend/generated/endpoints";
 import { Card } from "Frontend/components/Card";
 import { ResultSubHeaderStrip } from "Frontend/views/schedule/ResultSubHeaderStrip";
 import { ValidationIssuesDialog } from "Frontend/views/schedule/components/validation/ValidationIssuesDialog";
 import { Tooltip } from "@hilla/react-components/Tooltip";
 import { ValidationContext } from "Frontend/views/schedule/components/validation/ScheduleValidationCtxProvider";
+import SolverSolutionDTO from "Frontend/generated/com/cocroachden/planner/solver/api/SolverSolutionDTO";
+import SolverConfigurationDTO from "Frontend/generated/com/cocroachden/planner/solver/api/SolverConfigurationDTO";
+import SolverConfigurationMetaDataDTO
+  from "Frontend/generated/com/cocroachden/planner/solver/api/SolverConfigurationMetaDataDTO";
+import { SolverConfigurationEndpoint } from "Frontend/generated/endpoints";
 
 type Props = {
   onStopCalculation: () => void
@@ -31,13 +30,13 @@ type Props = {
   onResultSelectionChanged: (value: 1 | -1) => void
   onConfigSelected: (id: string) => void
   cacheSize: number
-  resultSubscription: Subscription<ScheduleResultDTO> | undefined
-  request: PlannerConfigurationDTO | undefined
+  resultSubscription: Subscription<SolverSolutionDTO> | undefined
+  request: SolverConfigurationDTO | undefined
   resultCache: ResultCache
 }
 
 export function HeaderStrip(props: Props) {
-  const [configMetaData, setConfigMetaData] = useState<PlannerConfigurationMetaDataDTO[]>([]);
+  const [configMetaData, setConfigMetaData] = useState<SolverConfigurationMetaDataDTO[]>([]);
   const [isConfigSelectDialogOpen, setIsConfigSelectDialogOpen] = useState(false);
   const [isIssuesDialogOpen, setIsIssuesDialogOpen] = useState(false);
   const modeCtx = useContext(ScheduleModeCtx);
@@ -45,15 +44,15 @@ export function HeaderStrip(props: Props) {
 
   useEffect(() => {
     if (isConfigSelectDialogOpen) {
-      PlannerConfigurationEndpoint.getMetaData().then(setConfigMetaData)
+      SolverConfigurationEndpoint.getMetaData().then(setConfigMetaData)
     }
   }, [isConfigSelectDialogOpen])
 
-  async function handleConfigAction(action: CrudAction<PlannerConfigurationMetaDataDTO>) {
+  async function handleConfigAction(action: CrudAction<SolverConfigurationMetaDataDTO>) {
     switch (action.type) {
       case CRUDActions.DELETE:
-        await PlannerConfigurationEndpoint.delete(action.payload.id)
-        PlannerConfigurationEndpoint.getMetaData().then(setConfigMetaData)
+        await SolverConfigurationEndpoint.delete(action.payload.id)
+        SolverConfigurationEndpoint.getMetaData().then(setConfigMetaData)
         break
       case CRUDActions.READ:
         props.onConfigSelected(action.payload.id)

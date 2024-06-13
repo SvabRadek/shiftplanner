@@ -1,21 +1,21 @@
 import { useEffect, useState } from "react";
 import { Grid } from "@hilla/react-components/Grid";
 import { GridColumn } from "@hilla/react-components/GridColumn";
-import PlannerConfigurationMetaDataDTO
-  from "Frontend/generated/com/cocroachden/planner/plannerconfiguration/PlannerConfigurationMetaDataDTO";
 import { CrudAction, CRUDActions } from "Frontend/util/utils";
 import { Button } from "@hilla/react-components/Button";
 import { Icon } from "@hilla/react-components/Icon";
+import SolverConfigurationMetaDataDTO
+  from "Frontend/generated/com/cocroachden/planner/solver/api/SolverConfigurationMetaDataDTO";
 
 type Props = {
-  configList: PlannerConfigurationMetaDataDTO[]
-  onSelectionChanged: (value: PlannerConfigurationMetaDataDTO) => void
-  onAction: (action: CrudAction<PlannerConfigurationMetaDataDTO>) => void
+  configList: SolverConfigurationMetaDataDTO[]
+  onSelectionChanged: (value: SolverConfigurationMetaDataDTO) => void
+  onAction: (action: CrudAction<SolverConfigurationMetaDataDTO>) => void
 }
 
 export function PlannerConfigList(props: Props) {
 
-  const [selectedItems, setSelectedItems] = useState<PlannerConfigurationMetaDataDTO[]>([])
+  const [selectedItems, setSelectedItems] = useState<SolverConfigurationMetaDataDTO[]>([])
 
   useEffect(() => {
     selectedItems.length > 0 && props.onSelectionChanged?.(selectedItems[0])

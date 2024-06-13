@@ -1,7 +1,7 @@
 package com.cocroachden.planner.solver.constraints;
 
-import com.cocroachden.planner.solver.schedule.Objectives;
-import com.cocroachden.planner.solver.schedule.SchedulePlan;
+import com.cocroachden.planner.solver.solver.Objectives;
+import com.cocroachden.planner.solver.solver.schedule.SchedulePlan;
 import com.google.ortools.sat.CpModel;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

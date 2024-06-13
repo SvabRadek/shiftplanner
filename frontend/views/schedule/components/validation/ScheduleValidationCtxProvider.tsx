@@ -1,20 +1,19 @@
 import { createContext, ReactNode, useMemo, useState } from "react";
-import DayValidationIssue from "Frontend/generated/com/cocroachden/planner/constraint/validations/DayValidationIssue";
+import DayValidationIssue from "Frontend/generated/com/cocroachden/planner/constraint/validations/day/DayValidationIssue";
 import WorkerValidationIssue
-  from "Frontend/generated/com/cocroachden/planner/constraint/validations/WorkerValidationIssue";
-import PlannerConfigurationDTO
-  from "Frontend/generated/com/cocroachden/planner/plannerconfiguration/PlannerConfigurationDTO";
+  from "Frontend/generated/com/cocroachden/planner/constraint/validations/worker/WorkerValidationIssue";
 import ConstraintRequestDTO from "Frontend/generated/com/cocroachden/planner/constraint/api/ConstraintRequestDTO";
 import { ConstraintValidationEndpoint } from "Frontend/generated/endpoints";
 import { stupidDateToString } from "Frontend/util/utils";
 import IssueSeverity from "Frontend/generated/com/cocroachden/planner/constraint/validations/IssueSeverity";
+import SolverConfigurationDTO from "Frontend/generated/com/cocroachden/planner/solver/api/SolverConfigurationDTO";
 
 type ScheduleValidationCtxType = {
   dayIssues: DayValidationIssue[]
   workerIssues: WorkerValidationIssue[]
   dayIssueMap: Map<string, DayValidationIssue[]>
   workerIssueMap: Map<number, WorkerValidationIssue[]>
-  validate: (config: PlannerConfigurationDTO, constraints: ConstraintRequestDTO[]) => void
+  validate: (config: SolverConfigurationDTO, constraints: ConstraintRequestDTO[]) => void
   clear: () => void
   containsIssues: boolean
   getSeverityOfIssues: (issues: { severity: IssueSeverity }[]) => IssueSeverity
@@ -64,7 +63,7 @@ export function ScheduleValidationCtxProvider({ children }: { children: ReactNod
     return map
   }, [issues.workerIssues])
 
-  function handleValidation(config: PlannerConfigurationDTO, constraints: ConstraintRequestDTO[]) {
+  function handleValidation(config: SolverConfigurationDTO, constraints: ConstraintRequestDTO[]) {
     ConstraintValidationEndpoint.validateDays(config, constraints).then(dayIssues => {
       ConstraintValidationEndpoint.validateWorkers(config, constraints).then(workerIssues => {
         setIssues({

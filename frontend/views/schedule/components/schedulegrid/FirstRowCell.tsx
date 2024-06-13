@@ -1,7 +1,8 @@
 import { VerticalLayout } from "@hilla/react-components/VerticalLayout";
 import { Tooltip } from "@hilla/react-components/Tooltip";
-import DayValidationIssue from "Frontend/generated/com/cocroachden/planner/constraint/validations/DayValidationIssue";
 import { CSSProperties } from "react";
+import DayValidationIssue
+  from "Frontend/generated/com/cocroachden/planner/constraint/validations/day/DayValidationIssue";
 
 const defaultStyle: CSSProperties = {
   display: "flex",

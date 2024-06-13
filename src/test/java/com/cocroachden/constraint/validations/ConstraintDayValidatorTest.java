@@ -3,13 +3,13 @@ package com.cocroachden.constraint.validations;
 import com.cocroachden.planner.constraint.api.ConstraintRequestDTO;
 import com.cocroachden.planner.constraint.api.EmployeesPerShiftRequestDTO;
 import com.cocroachden.planner.constraint.api.SpecificShiftRequestDTO;
-import com.cocroachden.planner.constraint.validations.ConstraintDayValidator;
-import com.cocroachden.planner.lib.ConstraintType;
-import com.cocroachden.planner.lib.StupidDate;
-import com.cocroachden.planner.lib.WorkerId;
-import com.cocroachden.planner.plannerconfiguration.ConfigurationRequestLinkDTO;
-import com.cocroachden.planner.plannerconfiguration.PlannerConfigurationDTO;
-import com.cocroachden.planner.solver.schedule.WorkShifts;
+import com.cocroachden.planner.constraint.validations.day.ConstraintDayValidator;
+import com.cocroachden.planner.constraint.api.ConstraintType;
+import com.cocroachden.planner.core.StupidDate;
+import com.cocroachden.planner.core.identity.WorkerId;
+import com.cocroachden.planner.solverconfiguration.ConfigurationRequestLinkDTO;
+import com.cocroachden.planner.solver.api.SolverConfigurationDTO;
+import com.cocroachden.planner.solver.api.WorkShifts;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -37,15 +37,14 @@ class ConstraintDayValidatorTest {
     var spec2 = this.createSpecificShiftRequest(new WorkerId(1L), new StupidDate(1,1,1), WorkShifts.NIGHT);
     var spec3 = this.createSpecificShiftRequest(new WorkerId(2L), new StupidDate(1,1,1), WorkShifts.DAY);
     var issues = ConstraintDayValidator.validate(
-        new PlannerConfigurationDTO(
+        new SolverConfigurationDTO(
             UUID.randomUUID(),
             "",
             Instant.now(),
             Instant.now(),
             new StupidDate(1, 1, 1),
             new StupidDate(2, 1, 1),
-            List.of(new WorkerId(0L), new WorkerId(1L), new WorkerId(2L)),
-            this.convertToLinks(limitingRequest, spec1, spec2, spec3)
+            List.of(new WorkerId(0L), new WorkerId(1L), new WorkerId(2L))
         ),
         List.of(limitingRequest, spec1, spec2, spec3)
     );
@@ -70,15 +69,14 @@ class ConstraintDayValidatorTest {
     var spec1 = this.createSpecificShiftRequest(new WorkerId(0L), new StupidDate(1,1,1), WorkShifts.OFF);
     var spec2 = this.createSpecificShiftRequest(new WorkerId(1L), new StupidDate(1,1,1), WorkShifts.OFF);
     var issues = ConstraintDayValidator.validate(
-        new PlannerConfigurationDTO(
+        new SolverConfigurationDTO(
             UUID.randomUUID(),
             "",
             Instant.now(),
             Instant.now(),
             new StupidDate(1, 1, 1),
             new StupidDate(2, 1, 1),
-            List.of(new WorkerId(0L), new WorkerId(1L), new WorkerId(2L)),
-            this.convertToLinks(limitingRequest, spec1, spec2)
+            List.of(new WorkerId(0L), new WorkerId(1L), new WorkerId(2L))
         ),
         List.of(limitingRequest, spec1, spec2)
     );

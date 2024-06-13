@@ -1,10 +1,10 @@
 import { CrudAction, CRUDActions } from "Frontend/util/utils";
-import EmployeeRecord from "Frontend/generated/com/cocroachden/planner/employee/EmployeeRecord";
 import { Tooltip } from "@hilla/react-components/Tooltip";
-import WorkerId from "Frontend/generated/com/cocroachden/planner/lib/WorkerId";
-import WorkerValidationIssue
-  from "Frontend/generated/com/cocroachden/planner/constraint/validations/WorkerValidationIssue";
 import { CSSProperties, ReactNode } from "react";
+import WorkerId from "Frontend/generated/com/cocroachden/planner/core/identity/WorkerId";
+import EmployeeRecord from "Frontend/generated/com/cocroachden/planner/employee/repository/EmployeeRecord";
+import WorkerValidationIssue
+  from "Frontend/generated/com/cocroachden/planner/constraint/validations/worker/WorkerValidationIssue";
 
 const defaultStyle: CSSProperties = {
   cursor: "pointer",

@@ -1,9 +1,9 @@
 import { ContextMenu, ContextMenuItem, ContextMenuItemSelectedEvent } from "@hilla/react-components/ContextMenu";
-import StupidDate from "Frontend/generated/com/cocroachden/planner/lib/StupidDate";
-import WorkShifts from "Frontend/generated/com/cocroachden/planner/solver/schedule/WorkShifts";
 import { workShiftBindings } from "Frontend/views/schedule/WorkShiftBindigs";
 import { CSSProperties } from "react";
-import WorkerId from "Frontend/generated/com/cocroachden/planner/lib/WorkerId";
+import WorkShifts from "Frontend/generated/com/cocroachden/planner/solver/api/WorkShifts";
+import WorkerId from "Frontend/generated/com/cocroachden/planner/core/identity/WorkerId";
+import StupidDate from "Frontend/generated/com/cocroachden/planner/core/StupidDate";
 
 export enum DisplayMode {
   DEFAULT,

@@ -3,12 +3,12 @@ import { CSSProperties, ReactNode, useContext } from "react";
 import { FirstColumnCell } from "Frontend/views/schedule/components/schedulegrid/FirstColumnCell";
 import { FirstRowCell } from "Frontend/views/schedule/components/schedulegrid/FirstRowCell";
 import { CrudAction, stupidDateToDate, stupidDateToString } from "Frontend/util/utils";
-import StupidDate from "Frontend/generated/com/cocroachden/planner/lib/StupidDate";
 import { ScheduleMode, ScheduleModeCtx } from "Frontend/views/schedule/ScheduleModeCtxProvider";
-import EmployeeRecord from "Frontend/generated/com/cocroachden/planner/employee/EmployeeRecord";
-import WorkerId from "Frontend/generated/com/cocroachden/planner/lib/WorkerId";
 import { ValidationContext } from "Frontend/views/schedule/components/validation/ScheduleValidationCtxProvider";
 import IssueSeverity from "Frontend/generated/com/cocroachden/planner/constraint/validations/IssueSeverity";
+import WorkerId from "Frontend/generated/com/cocroachden/planner/core/identity/WorkerId";
+import EmployeeRecord from "Frontend/generated/com/cocroachden/planner/employee/repository/EmployeeRecord";
+import StupidDate from "Frontend/generated/com/cocroachden/planner/core/StupidDate";
 
 const dayVocabulary: Record<number, string> = {
   1: "Po",

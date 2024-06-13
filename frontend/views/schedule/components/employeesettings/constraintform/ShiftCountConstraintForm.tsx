@@ -3,12 +3,12 @@ import { NumberField } from "@hilla/react-components/NumberField";
 import ShiftsPerScheduleRequestDTO
   from "Frontend/generated/com/cocroachden/planner/constraint/api/ShiftsPerScheduleRequestDTO";
 import { Button } from "@hilla/react-components/Button";
-import WorkShifts from "Frontend/generated/com/cocroachden/planner/solver/schedule/WorkShifts";
 import { Tooltip } from "@hilla/react-components/Tooltip";
 import { Card } from "Frontend/components/Card";
 import { ShiftSelect } from "Frontend/components/ShiftSelect";
 import { CrudAction, CRUDActions } from "Frontend/util/utils";
 import { Icon } from "@hilla/react-components/Icon";
+import WorkShifts from "Frontend/generated/com/cocroachden/planner/solver/api/WorkShifts";
 
 type Props = {
   request: ShiftsPerScheduleRequestDTO

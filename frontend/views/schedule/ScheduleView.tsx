@@ -1,24 +1,14 @@
 import { DatePicker } from "@hilla/react-components/DatePicker";
 import { Fragment, useContext, useEffect, useState } from "react";
-import {
-  ConstraintEndpoint,
-  EmployeeEndpoint,
-  PlannerConfigurationEndpoint,
-  PlannerEndpoint
-} from "Frontend/generated/endpoints";
+import { EmployeeEndpoint, PlannerEndpoint, SolverConfigurationEndpoint } from "Frontend/generated/endpoints";
 import { Button } from "@hilla/react-components/Button";
 import { HorizontalLayout } from "@hilla/react-components/HorizontalLayout";
 import { TextField } from "@hilla/react-components/TextField";
 import { VerticalLayout } from "@hilla/react-components/VerticalLayout";
-import EmployeeRecord from "Frontend/generated/com/cocroachden/planner/employee/EmployeeRecord";
 import { ScheduleGridContainer } from "./components/schedulegrid/ScheduleGridContainer";
 import {
   EmployeeRequestConfigDialog
 } from "Frontend/views/schedule/components/employeesettings/EmployeeRequestConfigDialog";
-import PlannerConfigurationDTO
-  from "Frontend/generated/com/cocroachden/planner/plannerconfiguration/PlannerConfigurationDTO";
-import WorkerId from "Frontend/generated/com/cocroachden/planner/lib/WorkerId";
-import ConstraintType from "Frontend/generated/com/cocroachden/planner/lib/ConstraintType";
 import {
   areShiftRequestsSame,
   CrudAction,
@@ -27,12 +17,10 @@ import {
   localeDateToStupidDate,
   stupidDateToLocaleDate
 } from "Frontend/util/utils";
-import WorkShifts from "Frontend/generated/com/cocroachden/planner/solver/schedule/WorkShifts";
 import { Notification } from "@hilla/react-components/Notification";
 import { Card } from "Frontend/components/Card";
 import { Icon } from "@hilla/react-components/Icon";
 import { Subscription } from "@hilla/frontend";
-import ScheduleResultDTO from "Frontend/generated/com/cocroachden/planner/solver/ScheduleResultDTO";
 import { ScheduleMode, ScheduleModeCtx } from "Frontend/views/schedule/ScheduleModeCtxProvider";
 import ConsecutiveWorkingDaysRequestDTO
   from "Frontend/generated/com/cocroachden/planner/constraint/api/ConsecutiveWorkingDaysRequestDTO";
@@ -43,13 +31,21 @@ import ShiftFollowupRestrictionRequestDTO
 import ShiftPatternRequestDTO from "Frontend/generated/com/cocroachden/planner/constraint/api/ShiftPatternRequestDTO";
 import { ScheduleSettingsDialog } from "Frontend/views/schedule/components/schedulesettings/ScheduleSettingsDialog";
 import { exportToExcel } from "Frontend/util/excel";
-import SolutionStatus from "Frontend/generated/com/cocroachden/planner/solver/SolutionStatus";
 import { HeaderStrip } from "Frontend/views/schedule/HeaderStrip";
 import SpecificShiftRequestDTO from "Frontend/generated/com/cocroachden/planner/constraint/api/SpecificShiftRequestDTO";
 import ShiftsPerScheduleRequestDTO
   from "Frontend/generated/com/cocroachden/planner/constraint/api/ShiftsPerScheduleRequestDTO";
 import ConstraintRequestDTO from "Frontend/generated/com/cocroachden/planner/constraint/api/ConstraintRequestDTO";
 import { ValidationContext } from "Frontend/views/schedule/components/validation/ScheduleValidationCtxProvider";
+import TripleShiftConstraintRequestDTO
+  from "Frontend/generated/com/cocroachden/planner/constraint/api/TripleShiftConstraintRequestDTO";
+import WorkerId from "Frontend/generated/com/cocroachden/planner/core/identity/WorkerId";
+import SolverConfigurationDTO from "Frontend/generated/com/cocroachden/planner/solver/api/SolverConfigurationDTO";
+import EmployeeRecord from "Frontend/generated/com/cocroachden/planner/employee/repository/EmployeeRecord";
+import SolverSolutionDTO from "Frontend/generated/com/cocroachden/planner/solver/api/SolverSolutionDTO";
+import ConstraintType from "Frontend/generated/com/cocroachden/planner/constraint/api/ConstraintType";
+import WorkShifts from "Frontend/generated/com/cocroachden/planner/solver/api/WorkShifts";
+import SolutionStatus from "Frontend/generated/com/cocroachden/planner/solver/api/SolutionStatus";
 
 type EmployeeConfigDialogParams = {
   isOpen: boolean,
@@ -57,7 +53,7 @@ type EmployeeConfigDialogParams = {
 }
 
 export type ResultCache = {
-  results: ScheduleResultDTO[]
+  results: SolverSolutionDTO[]
   selectedIndex: number
 }
 
@@ -75,15 +71,16 @@ export default function ScheduleView() {
   const [employeeConfigDialog, setEmployeeConfigDialog] = useState<EmployeeConfigDialogParams>({ isOpen: false })
   const [isScheduleConfigDialogOpen, setIsScheduleConfigDialogOpen] = useState(false);
   const [resultCache, setResultCache] = useState<ResultCache>({ results: [], selectedIndex: 0 });
-  const [resultSubscription, setResultSubscription] = useState<Subscription<ScheduleResultDTO> | undefined>();
+  const [resultSubscription, setResultSubscription] = useState<Subscription<SolverSolutionDTO> | undefined>();
 
-  const [request, setRequest] = useState<PlannerConfigurationDTO | undefined>();
+  const [request, setRequest] = useState<SolverConfigurationDTO | undefined>();
   const [shiftRequests, setShiftRequests] = useState<SpecificShiftRequestDTO[]>([])
   const [shiftPerScheduleRequests, setShiftPerScheduleRequests] = useState<ShiftsPerScheduleRequestDTO[]>([])
   const [consecutiveWorkingDaysRequests, setConsecutiveWorkingDaysRequests] = useState<ConsecutiveWorkingDaysRequestDTO[]>([]);
   const [employeesPerShiftRequests, setEmployeesPerShiftRequests] = useState<EmployeesPerShiftRequestDTO[]>([]);
   const [shiftFollowupRestrictionRequests, setShiftFollowupRestrictionRequests] = useState<ShiftFollowupRestrictionRequestDTO[]>([]);
   const [shiftPatternRequests, setShiftPatternRequests] = useState<ShiftPatternRequestDTO[]>([]);
+  const [tripleShiftConstraintRequests, setTripleShiftConstraintRequests] = useState<TripleShiftConstraintRequestDTO[]>([]);
 
   useEffect(() => {
     EmployeeEndpoint.getAllEmployees().then(setEmployees)
@@ -102,15 +99,20 @@ export default function ScheduleView() {
   }
 
   async function handleSave() {
-    await PlannerConfigurationEndpoint.save(
-      request!,
-      shiftRequests,
-      shiftPatternRequests,
-      employeesPerShiftRequests,
-      shiftFollowupRestrictionRequests,
-      shiftPerScheduleRequests,
-      consecutiveWorkingDaysRequests
-    ).then(response => {
+    const combinedList = [
+      ...shiftRequests,
+      ...shiftPatternRequests,
+      ...employeesPerShiftRequests,
+      ...shiftFollowupRestrictionRequests,
+      ...shiftPerScheduleRequests,
+      ...consecutiveWorkingDaysRequests,
+      ...tripleShiftConstraintRequests
+    ] as ConstraintRequestDTO[]
+    await SolverConfigurationEndpoint.save({
+      ...request!,
+      id: generateUUID(),
+      constraints: combinedList
+    }).then(response => {
       handleFetchConfig(response)
       Notification.show("Konfigurace úspěšně uložena!", {
         position: "top-center",
@@ -121,15 +123,19 @@ export default function ScheduleView() {
   }
 
   async function handleUpdate() {
-    await PlannerConfigurationEndpoint.update(
-      request!,
-      shiftRequests,
-      shiftPatternRequests,
-      employeesPerShiftRequests,
-      shiftFollowupRestrictionRequests,
-      shiftPerScheduleRequests,
-      consecutiveWorkingDaysRequests
-    ).then(response => {
+    const combinedList = [
+      ...shiftRequests,
+      ...shiftPatternRequests,
+      ...employeesPerShiftRequests,
+      ...shiftFollowupRestrictionRequests,
+      ...shiftPerScheduleRequests,
+      ...consecutiveWorkingDaysRequests,
+      ...tripleShiftConstraintRequests
+    ] as ConstraintRequestDTO[]
+    await SolverConfigurationEndpoint.save({
+      ...request!,
+      constraints: combinedList
+    }).then(response => {
       handleFetchConfig(response)
       Notification.show("Konfigurace úuspěšně upravena!", {
         position: "top-center",
@@ -140,40 +146,32 @@ export default function ScheduleView() {
   }
 
   function handleFetchConfig(configId: string) {
-    PlannerConfigurationEndpoint.getConfiguration(configId).then(configResponse => {
-      setRequest(configResponse)
+    SolverConfigurationEndpoint.getConfiguration(configId).then(configResponse => {
       validationCtx.clear()
       setResultCache({ selectedIndex: 0, results: [] })
-      ConstraintEndpoint.findSpecificShiftRequests(
-        configResponse.constraintRequestInstances
-          .filter(l => l.requestType === ConstraintType.SPECIFIC_SHIFT_REQUEST)
-          .map(l => l.requestId)
-      ).then(setShiftRequests)
-      ConstraintEndpoint.findShiftsPerScheduleRequests(
-        configResponse.constraintRequestInstances
-          .filter(l => l.requestType === ConstraintType.SHIFT_PER_SCHEDULE)
-          .map(l => l.requestId)
-      ).then(setShiftPerScheduleRequests)
-      ConstraintEndpoint.findConsecutiveWorkingDaysRequests(
-        configResponse.constraintRequestInstances
-          .filter(l => l.requestType === ConstraintType.CONSECUTIVE_WORKING_DAYS)
-          .map(l => l.requestId)
-      ).then(setConsecutiveWorkingDaysRequests)
-      ConstraintEndpoint.findEmployeesPerShiftRequests(
-        configResponse.constraintRequestInstances
-          .filter(l => l.requestType === ConstraintType.WORKERS_PER_SHIFT)
-          .map(l => l.requestId)
-      ).then(setEmployeesPerShiftRequests)
-      ConstraintEndpoint.findShiftFollowupRestrictionRequests(
-        configResponse.constraintRequestInstances
-          .filter(l => l.requestType === ConstraintType.SHIFT_FOLLOW_UP_RESTRICTION)
-          .map(l => l.requestId)
-      ).then(setShiftFollowupRestrictionRequests)
-      ConstraintEndpoint.findShiftPatternRequests(
-        configResponse.constraintRequestInstances
-          .filter(l => l.requestType === ConstraintType.SHIFT_PATTERN_CONSTRAINT)
-          .map(l => l.requestId)
-      ).then(setShiftPatternRequests)
+      setShiftRequests(
+        configResponse.constraints.filter(c => c.type === ConstraintType.SPECIFIC_SHIFT_REQUEST) as SpecificShiftRequestDTO[]
+      )
+      setShiftPerScheduleRequests(
+        configResponse.constraints.filter(c => c.type === ConstraintType.SHIFT_PER_SCHEDULE) as ShiftsPerScheduleRequestDTO[]
+      )
+      setConsecutiveWorkingDaysRequests(
+        configResponse.constraints.filter(c => c.type === ConstraintType.CONSECUTIVE_WORKING_DAYS) as ConsecutiveWorkingDaysRequestDTO[]
+      )
+      setEmployeesPerShiftRequests(
+        configResponse.constraints.filter(c => c.type === ConstraintType.WORKERS_PER_SHIFT) as EmployeesPerShiftRequestDTO[]
+      )
+      setShiftFollowupRestrictionRequests(
+        configResponse.constraints.filter(c => c.type === ConstraintType.SHIFT_FOLLOW_UP_RESTRICTION) as ShiftFollowupRestrictionRequestDTO[]
+      )
+      setShiftPatternRequests(
+        configResponse.constraints.filter(c => c.type === ConstraintType.SHIFT_PATTERN_CONSTRAINT) as ShiftPatternRequestDTO[]
+      )
+      setTripleShiftConstraintRequests(
+        configResponse.constraints.filter(c => c.type === ConstraintType.TRIPLE_SHIFTS_CONSTRAINT) as TripleShiftConstraintRequestDTO[]
+      )
+      configResponse["constraints"] = []
+      setRequest(configResponse)
     })
     modeCtx.setMode(ScheduleMode.READONLY)
   }
@@ -233,7 +231,8 @@ export default function ScheduleView() {
       ...employeesPerShiftRequests,
       ...consecutiveWorkingDaysRequests,
       ...shiftFollowupRestrictionRequests,
-      ...shiftPerScheduleRequests
+      ...shiftPerScheduleRequests,
+      ...tripleShiftConstraintRequests
     ]
     validationCtx.validate(request!, combinedList)
   }
@@ -284,6 +283,10 @@ export default function ScheduleView() {
       ...prevState,
       selectedIndex: Math.min(RESULT_CACHE_SIZE - 1, Math.max(0, prevState.selectedIndex + offset))
     }))
+  }
+
+  function handleTripleShiftConstraintAction(action: CrudAction<TripleShiftConstraintRequestDTO>) {
+    setTripleShiftConstraintRequests(prevState => updateList(action, prevState))
   }
 
   function handleEmployeePerShiftAction(action: CrudAction<EmployeesPerShiftRequestDTO>) {
@@ -392,6 +395,8 @@ export default function ScheduleView() {
                   }))}
                   shiftPatternRequests={shiftPatternRequests.filter(r => r.owner!.id === employeeConfigDialog.selectedEmployee?.id)}
                   onShiftPatternRequestsAction={handleShiftPatternAction}
+                  tripleShiftConstraintRequest={tripleShiftConstraintRequests.filter(r => r.owner.id === employeeConfigDialog.selectedEmployee?.id)}
+                  onTripleShiftConstraintAction={handleTripleShiftConstraintAction}
                   readonly={modeCtx.mode !== ScheduleMode.EDIT}
               />
               <Card

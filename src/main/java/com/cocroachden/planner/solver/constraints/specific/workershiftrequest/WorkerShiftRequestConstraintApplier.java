@@ -3,9 +3,9 @@ package com.cocroachden.planner.solver.constraints.specific.workershiftrequest;
 import com.cocroachden.planner.solver.constraints.ConstraintApplier;
 import com.cocroachden.planner.solver.constraints.ConstraintRequest;
 import com.cocroachden.planner.solver.constraints.specific.workershiftrequest.request.SpecificShiftRequest;
-import com.cocroachden.planner.solver.schedule.Objectives;
-import com.cocroachden.planner.solver.schedule.SchedulePlan;
-import com.cocroachden.planner.solver.schedule.WorkShifts;
+import com.cocroachden.planner.solver.solver.Objectives;
+import com.cocroachden.planner.solver.solver.schedule.SchedulePlan;
+import com.cocroachden.planner.solver.api.WorkShifts;
 import com.google.ortools.sat.CpModel;
 
 public class WorkerShiftRequestConstraintApplier implements ConstraintApplier {

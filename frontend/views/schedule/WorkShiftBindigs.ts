@@ -1,4 +1,4 @@
-import WorkShifts from "Frontend/generated/com/cocroachden/planner/solver/schedule/WorkShifts";
+import WorkShifts from "Frontend/generated/com/cocroachden/planner/solver/api/WorkShifts";
 
 export type WorkShiftBinding = {
   shift: WorkShifts,

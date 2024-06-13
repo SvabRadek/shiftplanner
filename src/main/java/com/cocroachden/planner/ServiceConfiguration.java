@@ -9,7 +9,7 @@ import com.cocroachden.planner.solver.constraints.specific.shiftperschedule.Shif
 import com.cocroachden.planner.solver.constraints.specific.tripleshift.TripleShiftConstraintApplier;
 import com.cocroachden.planner.solver.constraints.specific.workershiftrequest.WorkerShiftRequestConstraintApplier;
 import com.cocroachden.planner.solver.constraints.specific.workerspershift.WorkersPerShiftConstraintApplier;
-import com.cocroachden.planner.solver.solver.ScheduleSolver;
+import com.cocroachden.planner.solver.solver.Solver;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
@@ -33,8 +33,8 @@ public class ServiceConfiguration {
   }
 
   @Bean
-  public ScheduleSolver alternativeSolver(GenericConstraintApplier constraintApplier) {
-    return new ScheduleSolver(constraintApplier);
+  public Solver alternativeSolver(GenericConstraintApplier constraintApplier) {
+    return new Solver(constraintApplier);
   }
 
   @Bean

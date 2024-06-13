@@ -11,7 +11,7 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import jakarta.persistence.AttributeConverter;
 import jakarta.persistence.Converter;
 
-@Converter
+@Converter(autoApply = true)
 public class ConstraintRequestAttributeConverter implements AttributeConverter<ConstraintRequest, String> {
 
   private final ObjectMapper mapper = new ObjectMapper()

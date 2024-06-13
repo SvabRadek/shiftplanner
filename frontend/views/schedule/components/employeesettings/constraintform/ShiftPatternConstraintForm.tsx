@@ -9,8 +9,8 @@ import { useContext } from "react";
 import { ScheduleMode, ScheduleModeCtx } from "Frontend/views/schedule/ScheduleModeCtxProvider";
 import { Select, SelectItem } from "@hilla/react-components/Select";
 import { GridCell } from "Frontend/views/schedule/components/schedulegrid/GridCell";
-import WorkShifts from "Frontend/generated/com/cocroachden/planner/solver/schedule/WorkShifts";
 import { apolinarPattern, classicPattern } from "Frontend/views/schedule/DefaultEmptyConstraints";
+import WorkShifts from "Frontend/generated/com/cocroachden/planner/solver/api/WorkShifts";
 
 type Props = {
   request: ShiftPatternRequestDTO

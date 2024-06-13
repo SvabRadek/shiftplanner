@@ -4,8 +4,8 @@ import com.cocroachden.planner.solver.constraints.ConstraintApplier;
 import com.cocroachden.planner.solver.constraints.ConstraintRequest;
 import com.cocroachden.planner.solver.constraints.specific.MinMaxConstraint;
 import com.cocroachden.planner.solver.constraints.specific.workerspershift.request.WorkersPerShiftRequest;
-import com.cocroachden.planner.solver.schedule.Objectives;
-import com.cocroachden.planner.solver.schedule.SchedulePlan;
+import com.cocroachden.planner.solver.solver.Objectives;
+import com.cocroachden.planner.solver.solver.schedule.SchedulePlan;
 import com.google.ortools.sat.BoolVar;
 import com.google.ortools.sat.CpModel;
 
@@ -24,7 +24,7 @@ public class WorkersPerShiftConstraintApplier implements ConstraintApplier {
       MinMaxConstraint.apply(
           request,
           shiftAssignmentsInOneDay,
-          schedulePlan.assignments().size(),
+          schedulePlan.getAssignments().size(),
           model,
           objective,
           1

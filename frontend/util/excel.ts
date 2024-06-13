@@ -1,9 +1,9 @@
 import { utils, writeFile } from "xlsx"
-import ScheduleResultDTO from "Frontend/generated/com/cocroachden/planner/solver/ScheduleResultDTO";
-import WorkShifts from "Frontend/generated/com/cocroachden/planner/solver/schedule/WorkShifts";
-import EmployeeRecord from "Frontend/generated/com/cocroachden/planner/employee/EmployeeRecord";
+import EmployeeRecord from "Frontend/generated/com/cocroachden/planner/employee/repository/EmployeeRecord";
+import WorkShifts from "Frontend/generated/com/cocroachden/planner/solver/api/WorkShifts";
+import SolverSolutionDTO from "Frontend/generated/com/cocroachden/planner/solver/api/SolverSolutionDTO";
 
-export function exportToExcel(employees: EmployeeRecord[], result: ScheduleResultDTO) {
+export function exportToExcel(employees: EmployeeRecord[], result: SolverSolutionDTO) {
   const rows = Object.keys(result.assignments).map(owner => {
     const row: Record<string, string> = {}
     const employee = employees.find(e => e.id.toString() === owner)

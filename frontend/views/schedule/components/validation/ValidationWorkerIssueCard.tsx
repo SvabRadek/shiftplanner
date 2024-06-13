@@ -1,6 +1,6 @@
 import { Card } from "Frontend/components/Card";
 import WorkerValidationIssue
-  from "Frontend/generated/com/cocroachden/planner/constraint/validations/WorkerValidationIssue";
+  from "Frontend/generated/com/cocroachden/planner/constraint/validations/worker/WorkerValidationIssue";
 
 type Props = {
   issue: WorkerValidationIssue

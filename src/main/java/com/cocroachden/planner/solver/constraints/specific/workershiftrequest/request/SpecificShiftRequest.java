@@ -2,10 +2,10 @@ package com.cocroachden.planner.solver.constraints.specific.workershiftrequest.r
 
 
 import com.cocroachden.planner.constraint.api.SpecificShiftRequestDTO;
-import com.cocroachden.planner.lib.ConstraintType;
-import com.cocroachden.planner.lib.WorkerId;
-import com.cocroachden.planner.solver.constraints.specific.AbstractConstraintRequest;
-import com.cocroachden.planner.solver.schedule.WorkShifts;
+import com.cocroachden.planner.constraint.api.ConstraintType;
+import com.cocroachden.planner.core.identity.WorkerId;
+import com.cocroachden.planner.solver.constraints.specific.AbstractEmployeeSpecificConstraint;
+import com.cocroachden.planner.solver.api.WorkShifts;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import lombok.AccessLevel;
@@ -17,7 +17,7 @@ import java.time.LocalDate;
 @Getter
 @JsonTypeName("SpecificShiftRequest")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class SpecificShiftRequest extends AbstractConstraintRequest {
+public class SpecificShiftRequest extends AbstractEmployeeSpecificConstraint {
   public static final ConstraintType TYPE = ConstraintType.SPECIFIC_SHIFT_REQUEST;
 
   public static SpecificShiftRequest from(SpecificShiftRequestDTO dto) {

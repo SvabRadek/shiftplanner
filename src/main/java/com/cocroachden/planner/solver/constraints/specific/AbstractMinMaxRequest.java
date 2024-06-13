@@ -1,8 +1,8 @@
 package com.cocroachden.planner.solver.constraints.specific;
 
 
-import com.cocroachden.planner.lib.ConstraintType;
-import com.cocroachden.planner.lib.WorkerId;
+import com.cocroachden.planner.constraint.api.ConstraintType;
+import com.cocroachden.planner.core.identity.WorkerId;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @JsonTypeName("AbstractMinMaxRequest")
-public class AbstractMinMaxRequest extends AbstractConstraintRequest {
+public class AbstractMinMaxRequest extends AbstractEmployeeSpecificConstraint {
   private Integer softMin;
   private Integer minPenalty;
   private Integer hardMin;

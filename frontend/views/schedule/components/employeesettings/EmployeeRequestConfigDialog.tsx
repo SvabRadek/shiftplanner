@@ -1,6 +1,5 @@
 import { Dialog } from "@hilla/react-components/Dialog";
 import { VerticalLayout } from "@hilla/react-components/VerticalLayout";
-import EmployeeRecord from "Frontend/generated/com/cocroachden/planner/employee/EmployeeRecord";
 import { TextField } from "@hilla/react-components/TextField";
 import { HorizontalLayout } from "@hilla/react-components/HorizontalLayout";
 import { Button } from "@hilla/react-components/Button";
@@ -12,13 +11,19 @@ import {
 import { Icon } from "@hilla/react-components/Icon";
 import { CrudAction, CRUDActions, generateUUID } from "Frontend/util/utils";
 import { Card } from "Frontend/components/Card";
-import WorkShifts from "Frontend/generated/com/cocroachden/planner/solver/schedule/WorkShifts";
 import { defaultConstraints } from "Frontend/views/schedule/DefaultEmptyConstraints";
 import ShiftPatternRequestDTO from "Frontend/generated/com/cocroachden/planner/constraint/api/ShiftPatternRequestDTO";
 import {
   ShiftPatternConstraintForm
 } from "Frontend/views/schedule/components/employeesettings/constraintform/ShiftPatternConstraintForm";
-import WorkerId from "Frontend/generated/com/cocroachden/planner/lib/WorkerId";
+import TripleShiftConstraintRequestDTO
+  from "Frontend/generated/com/cocroachden/planner/constraint/api/TripleShiftConstraintRequestDTO";
+import {
+  TripleShiftConstraintForm
+} from "Frontend/views/schedule/components/employeesettings/constraintform/TripleShiftConstraintForm";
+import EmployeeRecord from "Frontend/generated/com/cocroachden/planner/employee/repository/EmployeeRecord";
+import WorkerId from "Frontend/generated/com/cocroachden/planner/core/identity/WorkerId";
+import WorkShifts from "Frontend/generated/com/cocroachden/planner/solver/api/WorkShifts";
 
 type Props = {
   employee?: EmployeeRecord
@@ -28,6 +33,8 @@ type Props = {
   onShiftPerScheduleAction: (action: CrudAction<ShiftsPerScheduleRequestDTO>) => void
   shiftPatternRequests: ShiftPatternRequestDTO[],
   onShiftPatternRequestsAction: (action: CrudAction<ShiftPatternRequestDTO>) => void
+  tripleShiftConstraintRequest: TripleShiftConstraintRequestDTO[]
+  onTripleShiftConstraintAction: (action: CrudAction<TripleShiftConstraintRequestDTO>) => void
   readonly?: boolean
 }
 
@@ -73,6 +80,13 @@ export function EmployeeRequestConfigDialog(props: Props) {
     )
   }
 
+  function handleCreateNewTripleShiftConstraint() {
+    props.onTripleShiftConstraintAction({
+      type: CRUDActions.CREATE,
+      payload: generateNewTripleShiftConstraintRequest(props.employee!)
+    })
+  }
+
   return (
     <Dialog
       header-title={"Konfigurace zamestance"}
@@ -111,6 +125,10 @@ export function EmployeeRequestConfigDialog(props: Props) {
             onAction={props.onShiftPatternRequestsAction}
           />
         ))}
+        {renderSectionHeader("Nastaveni trojitych smen", "vaadin:plus", handleCreateNewTripleShiftConstraint)}
+        {props.tripleShiftConstraintRequest.map(request => (
+          <TripleShiftConstraintForm key={request.id} request={request} onAction={props.onTripleShiftConstraintAction}/>
+        ))}
         <HorizontalLayout style={{ width: "100%", justifyContent: "end" }}>
           <Button onClick={() => props.onOpenChanged(false)}>Zavrit</Button>
         </HorizontalLayout>
@@ -134,5 +152,12 @@ function generateNewShiftPattern(workerId: WorkerId): ShiftPatternRequestDTO {
     ...defaultConstraints.SHIFT_PATTERN_CONSTRAINT.constraint as unknown as ShiftPatternRequestDTO,
     owner: workerId,
     id: generateUUID()
+  }
+}
+
+function generateNewTripleShiftConstraintRequest(workerId: WorkerId): TripleShiftConstraintRequestDTO {
+  return {
+    ...defaultConstraints.TRIPLE_SHIFTS_CONSTRAINT.constraint as unknown as TripleShiftConstraintRequestDTO,
+    owner: { id: workerId.id }
   }
 }

@@ -3,7 +3,6 @@ import { HorizontalLayout } from "@hilla/react-components/HorizontalLayout";
 import { NumberField } from "@hilla/react-components/NumberField";
 import EmployeesPerShiftRequestDTO
   from "Frontend/generated/com/cocroachden/planner/constraint/api/EmployeesPerShiftRequestDTO";
-import WorkShifts from "Frontend/generated/com/cocroachden/planner/solver/schedule/WorkShifts";
 import { useContext } from "react";
 import { ScheduleMode, ScheduleModeCtx } from "Frontend/views/schedule/ScheduleModeCtxProvider";
 import { ShiftSelect } from "Frontend/components/ShiftSelect";
@@ -11,6 +10,7 @@ import { CrudAction, CRUDActions } from "Frontend/util/utils";
 import { Button } from "@hilla/react-components/Button";
 import { Icon } from "@hilla/react-components/Icon";
 import { CardFooter } from "Frontend/components/CardFooter";
+import WorkShifts from "Frontend/generated/com/cocroachden/planner/solver/api/WorkShifts";
 
 type Props = {
   request: EmployeesPerShiftRequestDTO

@@ -1,8 +1,7 @@
 package com.cocroachden.planner.constraint.api;
 
-import com.cocroachden.planner.lib.ConstraintType;
 import com.cocroachden.planner.solver.constraints.specific.consecutiveworkingdays.request.ConsecutiveWorkingDaysRequest;
-import com.cocroachden.planner.solver.schedule.WorkShifts;
+import com.cocroachden.planner.solver.api.WorkShifts;
 import dev.hilla.Nonnull;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;

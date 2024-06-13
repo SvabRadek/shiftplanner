@@ -26,6 +26,8 @@ import java.util.stream.StreamSupport;
 public class ConstraintEndpoint {
   private final ConstraintRequestRepository constraintRequestRepository;
 
+
+
   public @Nonnull List<@Nonnull ConstraintRequestDTO> findRequests(@Nonnull List<@Nonnull UUID> requestIds) {
     return this.getRecords(requestIds).stream()
         .map(this::convertToDto)
@@ -78,6 +80,14 @@ public class ConstraintEndpoint {
   ) {
     return this.getRecords(requestIds).stream()
         .map(r -> ShiftPatternRequestDTO.from(r.getId(), (ShiftPatternConstraintRequest) r.getRequest()))
+        .toList();
+  }
+
+  public @Nonnull List<@Nonnull TripleShiftConstraintRequestDTO> findTripleShiftConstraintRequests(
+      @Nonnull List<@Nonnull UUID> requestIds
+  ) {
+    return this.getRecords(requestIds).stream()
+        .map(r -> TripleShiftConstraintRequestDTO.from(r.getId(), (TripleShiftConstraintRequest) r.getRequest()))
         .toList();
   }
 

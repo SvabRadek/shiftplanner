@@ -6,10 +6,10 @@ import { ProgressBar } from "@hilla/react-components/ProgressBar";
 import { VerticalLayout } from "@hilla/react-components/VerticalLayout";
 import { ResultCache } from "Frontend/views/schedule/ScheduleView";
 import { Subscription } from "@hilla/frontend";
-import ScheduleResultDTO from "Frontend/generated/com/cocroachden/planner/solver/ScheduleResultDTO";
+import SolverSolutionDTO from "Frontend/generated/com/cocroachden/planner/solver/api/SolverSolutionDTO";
 
 type Props = {
-  resultSubscription?: Subscription<ScheduleResultDTO>
+  resultSubscription?: Subscription<SolverSolutionDTO>
   onExportToExcel: () => void
   resultCache: ResultCache
   cacheSize: number,

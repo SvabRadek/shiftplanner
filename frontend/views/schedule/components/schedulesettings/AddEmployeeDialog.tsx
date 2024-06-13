@@ -2,10 +2,10 @@ import { Dialog } from "@hilla/react-components/Dialog";
 import { Button } from "@hilla/react-components/Button";
 import { VerticalLayout } from "@hilla/react-components/VerticalLayout";
 import { HorizontalLayout } from "@hilla/react-components/HorizontalLayout";
-import EmployeeRecord from "Frontend/generated/com/cocroachden/planner/employee/EmployeeRecord";
 import { GridColumn } from "@hilla/react-components/GridColumn";
 import { Grid } from "@hilla/react-components/Grid";
 import { Icon } from "@hilla/react-components/Icon";
+import EmployeeRecord from "Frontend/generated/com/cocroachden/planner/employee/repository/EmployeeRecord";
 
 type Props = {
   employees: EmployeeRecord[]

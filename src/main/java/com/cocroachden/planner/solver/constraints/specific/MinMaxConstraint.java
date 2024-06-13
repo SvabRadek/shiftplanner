@@ -1,7 +1,7 @@
 package com.cocroachden.planner.solver.constraints.specific;
 
 
-import com.cocroachden.planner.solver.schedule.Objectives;
+import com.cocroachden.planner.solver.solver.Objectives;
 import com.google.ortools.sat.BoolVar;
 import com.google.ortools.sat.CpModel;
 import com.google.ortools.sat.LinearArgument;

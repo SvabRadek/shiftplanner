@@ -1,16 +1,16 @@
 package com.cocroachden.planner.employee;
 
-import com.cocroachden.planner.lib.WorkerId;
-import com.cocroachden.planner.plannerconfiguration.PlannerConfigurationDTO;
-import com.cocroachden.planner.plannerconfiguration.repository.PlannerConfigurationRecord;
-import com.cocroachden.planner.plannerconfiguration.repository.PlannerConfigurationRepository;
+import com.cocroachden.planner.core.identity.WorkerId;
+import com.cocroachden.planner.employee.repository.EmployeeRecord;
+import com.cocroachden.planner.employee.repository.EmployeeRepository;
+import com.cocroachden.planner.solver.constraints.specific.AbstractEmployeeSpecificConstraint;
+import com.cocroachden.planner.solver.repository.SolverConfigurationRepository;
 import com.vaadin.flow.server.auth.AnonymousAllowed;
 import dev.hilla.BrowserCallable;
 import dev.hilla.Nonnull;
 import dev.hilla.crud.CrudRepositoryService;
 import lombok.AllArgsConstructor;
 
-import java.time.Instant;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.StreamSupport;
@@ -20,7 +20,7 @@ import java.util.stream.StreamSupport;
 @AllArgsConstructor
 public class EmployeeEndpoint extends CrudRepositoryService<EmployeeRecord, Long, EmployeeRepository> {
   private EmployeeRepository employeeRepository;
-  private PlannerConfigurationRepository plannerConfigurationRepository;
+  private SolverConfigurationRepository plannerConfigurationRepository;
 
   @Nonnull
   public List<@Nonnull EmployeeRecord> getAllEmployees() {
@@ -28,28 +28,30 @@ public class EmployeeEndpoint extends CrudRepositoryService<EmployeeRecord, Long
         .stream(employeeRepository.findAll().spliterator(), false)
         .toList();
   }
-  
+
   @Override
-  public void delete(Long aLong) {
-    plannerConfigurationRepository.findByWorkersContaining(new WorkerId(aLong)).stream()
+  public void delete(@Nonnull Long workerId) {
+    var typedWorkerId = new WorkerId(workerId);
+    plannerConfigurationRepository.findByWorkersContaining(typedWorkerId).stream()
         .filter(Objects::nonNull)
         .forEach(config -> {
-          var newConfig = new PlannerConfigurationRecord();
-          newConfig.setId(config.getId());
-          newConfig.setName(config.getName());
-          newConfig.setStartDate(config.getStartDate());
-          newConfig.setEndDate(config.getEndDate());
-          newConfig.setWorkers(
-              config.getWorkers().stream()
-                  .filter(workerId -> !workerId.getId().equals(aLong))
-                  .toList()
-          );
-          newConfig.setConstraintRequestInstances(config.getConstraintRequestInstances());
-          newConfig.setCreatedAt(config.getCreatedAt());
-          newConfig.setLastUpdated(Instant.now());
-          plannerConfigurationRepository.save(newConfig);
+          var updatedWorkers = config.getWorkers().stream()
+              .filter(id -> !id.equals(typedWorkerId))
+              .toList();
+          var updatedConstraints = config.getConstraintRequestRecords().stream()
+              .filter(r -> {
+                if (r.getRequest() instanceof AbstractEmployeeSpecificConstraint employeeSpecificConstraint) {
+                  if (employeeSpecificConstraint.getOwner().isPresent()) {
+                    return !employeeSpecificConstraint.getOwner().get().equals(typedWorkerId);
+                  }
+                }
+                return true;
+              }).toList();
+          config.setWorkers(updatedWorkers);
+          config.setConstraintRequestRecords(updatedConstraints);
+          plannerConfigurationRepository.save(config);
         });
-    super.delete(aLong);
+    super.delete(workerId);
   }
 
   @Nonnull

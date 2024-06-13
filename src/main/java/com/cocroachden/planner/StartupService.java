@@ -1,12 +1,10 @@
 package com.cocroachden.planner;
 
 import com.cocroachden.planner.constraint.repository.ConstraintRequestRecord;
-import com.cocroachden.planner.constraint.repository.ConstraintRequestRepository;
-import com.cocroachden.planner.plannerconfiguration.repository.ConfigurationRequestLink;
-import com.cocroachden.planner.plannerconfiguration.repository.PlannerConfigurationRecord;
-import com.cocroachden.planner.plannerconfiguration.repository.PlannerConfigurationRepository;
-import com.cocroachden.planner.employee.EmployeeRecord;
-import com.cocroachden.planner.employee.EmployeeRepository;
+import com.cocroachden.planner.employee.repository.EmployeeRecord;
+import com.cocroachden.planner.employee.repository.EmployeeRepository;
+import com.cocroachden.planner.solver.repository.SolverConfigurationRecord;
+import com.cocroachden.planner.solver.repository.SolverConfigurationRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.context.event.ApplicationStartedEvent;
 import org.springframework.context.ApplicationContext;
@@ -19,6 +17,7 @@ import java.util.UUID;
 
 @Slf4j
 public class StartupService {
+
   @EventListener
   public void on(ApplicationStartedEvent event) {
     var context = event.getApplicationContext();
@@ -28,29 +27,24 @@ public class StartupService {
   }
 
   private void createConfigurations(ApplicationContext context) {
-    var configService = context.getBean(PlannerConfigurationRepository.class);
-    var constraintRequestRepository = context.getBean(ConstraintRequestRepository.class);
-    if (!configService.findAll().iterator().hasNext()) {
-      var configId = UUID.randomUUID();
-      var requestLinks = Example.constraintRequests().stream()
-          .map(ConstraintRequestRecord::new)
-          .map(constraintRequestRepository::save)
-          .map(record -> new ConfigurationRequestLink(
-              record.getType(),
-              record.getId()
-          )).toList();
-      configService.save(
-          new PlannerConfigurationRecord(
-              configId,
-              "Priklad konfigurace",
-              Instant.now(),
-              Instant.now(),
-              LocalDate.now(),
-              LocalDate.now().plusDays(30),
-              Example.workers(),
-              requestLinks
-          )
+    var configRepo = context.getBean(SolverConfigurationRepository.class);
+    if (!configRepo.findAll().iterator().hasNext()) {
+      var configRecord = new SolverConfigurationRecord();
+      configRecord.setStartDate(LocalDate.now());
+      configRecord.setEndDate(LocalDate.now().plusDays(30));
+      configRecord.setName("Priklad konfigurace");
+      configRecord.setWorkers(DefaultSolverConfiguration.workers());
+      configRecord.setConstraintRequestRecords(
+          DefaultSolverConfiguration.constraintRequests().stream()
+              .map(c -> {
+                var record = new ConstraintRequestRecord();
+                record.setType(c.getType());
+                record.setParent(configRecord);
+                record.setRequest(c);
+                return record;
+              }).toList()
       );
+      configRepo.save(configRecord);
     }
   }
 

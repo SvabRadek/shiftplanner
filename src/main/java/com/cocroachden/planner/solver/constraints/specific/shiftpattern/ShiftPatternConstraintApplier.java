@@ -3,9 +3,9 @@ package com.cocroachden.planner.solver.constraints.specific.shiftpattern;
 
 import com.cocroachden.planner.solver.constraints.ConstraintRequest;
 import com.cocroachden.planner.solver.constraints.specific.shiftpattern.request.ShiftPatternConstraintRequest;
-import com.cocroachden.planner.solver.schedule.Objectives;
-import com.cocroachden.planner.solver.schedule.SchedulePlan;
-import com.cocroachden.planner.solver.schedule.WorkDay;
+import com.cocroachden.planner.solver.solver.Objectives;
+import com.cocroachden.planner.solver.solver.schedule.SchedulePlan;
+import com.cocroachden.planner.solver.solver.schedule.WorkDay;
 import com.google.ortools.sat.CpModel;
 import com.cocroachden.planner.solver.constraints.ConstraintApplier;
 
@@ -18,11 +18,11 @@ public class ShiftPatternConstraintApplier implements ConstraintApplier {
     var request = (ShiftPatternConstraintRequest) constraintRequest;
     var owner = request.getOwner();
     if (owner.isEmpty()) {
-      schedulePlan.assignments().forEach((workerId, assignments) -> {
+      schedulePlan.getAssignments().forEach((workerId, assignments) -> {
         this.applyConstraint(model, objective, assignments, request, schedulePlan.getWeightForWorker(workerId));
       });
     } else {
-      var assignments = schedulePlan.assignments().get(owner.get());
+      var assignments = schedulePlan.getAssignments().get(owner.get());
       this.applyConstraint(model, objective, assignments, request, schedulePlan.getWeightForWorker(owner.get()));
     }
   }

@@ -1,6 +1,5 @@
 package com.cocroachden.planner.constraint.api;
 
-import com.cocroachden.planner.lib.ConstraintType;
 import com.fasterxml.jackson.core.JacksonException;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.*;

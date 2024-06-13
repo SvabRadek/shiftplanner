@@ -1,32 +1,31 @@
 import { useMemo, useState } from "react";
-import WorkShifts from "Frontend/generated/com/cocroachden/planner/solver/schedule/WorkShifts";
-import EmployeeRecord from "Frontend/generated/com/cocroachden/planner/employee/EmployeeRecord";
 import { CrudAction, dateToString, dateToStupidDate, stupidDateToDate, stupidDateToString } from "Frontend/util/utils";
 import { Row, ScheduleGrid } from "Frontend/views/schedule/components/schedulegrid/ScheduleGrid";
 import { Cell, DisplayMode } from "Frontend/views/schedule/components/schedulegrid/GridCell";
-import PlannerConfigurationDTO
-  from "Frontend/generated/com/cocroachden/planner/plannerconfiguration/PlannerConfigurationDTO";
 import SpecificShiftRequestDTO from "Frontend/generated/com/cocroachden/planner/constraint/api/SpecificShiftRequestDTO";
 import ShiftsPerScheduleRequestDTO
   from "Frontend/generated/com/cocroachden/planner/constraint/api/ShiftsPerScheduleRequestDTO";
-import ConstraintType from "Frontend/generated/com/cocroachden/planner/lib/ConstraintType";
-import ScheduleResultDTO from "Frontend/generated/com/cocroachden/planner/solver/ScheduleResultDTO";
-import WorkerId from "Frontend/generated/com/cocroachden/planner/lib/WorkerId";
 import ShiftPatternRequestDTO from "Frontend/generated/com/cocroachden/planner/constraint/api/ShiftPatternRequestDTO";
 import { HorizontalLayout } from "@hilla/react-components/HorizontalLayout";
+import EmployeeRecord from "Frontend/generated/com/cocroachden/planner/employee/repository/EmployeeRecord";
+import SolverConfigurationDTO from "Frontend/generated/com/cocroachden/planner/solver/api/SolverConfigurationDTO";
+import SolverSolutionDTO from "Frontend/generated/com/cocroachden/planner/solver/api/SolverSolutionDTO";
+import WorkShifts from "Frontend/generated/com/cocroachden/planner/solver/api/WorkShifts";
+import WorkerId from "Frontend/generated/com/cocroachden/planner/core/identity/WorkerId";
+import ConstraintType from "Frontend/generated/com/cocroachden/planner/constraint/api/ConstraintType";
 
 export type PlainWorkerId = number
 export type Index = number
 
 type Props = {
-  request: PlannerConfigurationDTO
+  request: SolverConfigurationDTO
   employees: EmployeeRecord[]
   shiftPatterns: ShiftPatternRequestDTO[]
   shiftRequests: SpecificShiftRequestDTO[]
   shiftPerScheduleRequests: ShiftsPerScheduleRequestDTO[]
   onEmployeeAction: (action: CrudAction<EmployeeRecord>) => void
   onShiftRequestsChanged?: (changedRequests: Omit<SpecificShiftRequestDTO, "id">[]) => void
-  result?: ScheduleResultDTO
+  result?: SolverSolutionDTO
 }
 
 type Highlight = {
@@ -129,13 +128,13 @@ function getDistanceInDays(startDate: Date, endDate: Date): Index[] {
 }
 
 function createRows(
-  request: PlannerConfigurationDTO,
+  request: SolverConfigurationDTO,
   employees: EmployeeRecord[],
   shiftRequests: Map<string, SpecificShiftRequestDTO>,
   shiftPatterns: Map<PlainWorkerId, ShiftPatternRequestDTO>,
   shiftPerSchedule: ShiftsPerScheduleRequestDTO[],
   highlightInfo: Highlight,
-  results?: ScheduleResultDTO
+  results?: SolverSolutionDTO
 ): Row[] {
   const startDate = stupidDateToDate(request.startDate)
   const endDate = stupidDateToDate(request.endDate)
@@ -216,7 +215,7 @@ function createRowTitle(
 }
 
 function getResultingShift(
-  results: ScheduleResultDTO | undefined,
+  results: SolverSolutionDTO | undefined,
   workerId: WorkerId,
   cellDate: Date,
   cellIndex: number,
