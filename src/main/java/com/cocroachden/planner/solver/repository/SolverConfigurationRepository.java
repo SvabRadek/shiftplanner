@@ -8,5 +8,6 @@ import java.util.UUID;
 
 public interface SolverConfigurationRepository extends CrudRepository<SolverConfigurationRecord, UUID> {
   SolverConfigurationRecord getById(UUID id);
-  List<SolverConfigurationRecord> findByWorkersContaining(EmployeeId employeeId);
+  List<SolverConfigurationRecord> findByEmployeesContaining(EmployeeId employeeId);
+  List<SolverConfigurationMetadata> findBy();
 }

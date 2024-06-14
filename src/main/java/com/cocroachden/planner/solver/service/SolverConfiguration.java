@@ -16,7 +16,7 @@ public record SolverConfiguration(
 ) {
   @Override
   public String toString() {
-    return "{ startDate: %s, endDate: %s, scheduleWorkers: [%s] }".formatted(
+    return "{ startDate: %s, endDate: %s, scheduleEmployees: [%s] }".formatted(
         startDate.toString(),
         endDate.toString(),
         StringUtils.join(scheduleEmployees.stream().map(w -> w.employeeId().toString()).toList(), ", ")

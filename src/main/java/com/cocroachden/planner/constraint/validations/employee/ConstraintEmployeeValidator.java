@@ -38,15 +38,15 @@ public class ConstraintEmployeeValidator {
     var issues = new ArrayList<EmployeeValidationIssue>();
     var daysInSchedule = configuration.getStartDate().toDate().datesUntil(configuration.getEndDate().toDate()).count();
     var constraints = configuration.getConstraints();
-    var workersSpecificRequests = constraints.stream()
+    var employeeSpecificRequests = constraints.stream()
         .filter(r -> r instanceof EmployeeShiftRequestDTO)
         .map(r -> (EmployeeShiftRequestDTO) r)
         .filter(r -> r.getOwner().equals(shiftPerSchedule.getOwner()))
         .toList();
-    var requestedDaysOff = workersSpecificRequests.stream()
+    var requestedDaysOff = employeeSpecificRequests.stream()
         .filter(r -> r.getRequestedShift().equals(WorkShifts.OFF))
         .count();
-    var requestedWorkingShifts = workersSpecificRequests.stream()
+    var requestedWorkingShifts = employeeSpecificRequests.stream()
         .filter(r -> r.getRequestedShift().isSameAs(WorkShifts.WORKING_SHIFTS))
         .count();
     var optimisticCountOfAvailableDaysForWorkAssignments = daysInSchedule - requestedDaysOff;
@@ -81,7 +81,7 @@ public class ConstraintEmployeeValidator {
         .map(c -> {
           var maxAllowedShifts = c.getHardMax();
           var minAllowedShifts = c.getHardMin();
-          return configuration.getWorkers().stream()
+          return configuration.getEmployees().stream()
               .map(w -> {
                 var datesOfWorkRequests = constraints.stream()
                     .filter(c1 -> c1 instanceof EmployeeShiftRequestDTO)

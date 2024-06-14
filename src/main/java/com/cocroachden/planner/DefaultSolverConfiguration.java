@@ -19,7 +19,7 @@ public class DefaultSolverConfiguration {
   private static final LocalDate FIRST_DAY = LocalDate.of(2023, 11, 1);
   private static final LocalDate LAST_DAY = LocalDate.of(2023, 11, 30);
 
-  public static List<EmployeeId> workers() {
+  public static List<EmployeeId> employees() {
     return IntStream.rangeClosed(1, 18).asLongStream()
         .mapToObj(EmployeeId::new)
         .toList();

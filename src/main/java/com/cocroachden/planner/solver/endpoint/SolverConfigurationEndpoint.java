@@ -1,7 +1,6 @@
 package com.cocroachden.planner.solver.endpoint;
 
 import com.cocroachden.planner.constraint.repository.ConstraintRequestRecord;
-import com.cocroachden.planner.constraint.repository.ConstraintRequestRepository;
 import com.cocroachden.planner.solver.api.ConstraintMapper;
 import com.cocroachden.planner.solver.api.SolverConfigurationDTO;
 import com.cocroachden.planner.solver.api.SolverConfigurationMetaDataDTO;
@@ -31,7 +30,7 @@ public class SolverConfigurationEndpoint {
     configurationRecord.setName(solverConfig.getName());
     configurationRecord.setEndDate(solverConfig.getEndDate().toDate());
     configurationRecord.setStartDate(solverConfig.getStartDate().toDate());
-    configurationRecord.setWorkers(solverConfig.getWorkers());
+    configurationRecord.setEmployees(solverConfig.getEmployees());
     configurationRecord.getConstraintRequestRecords().clear();
     configurationRecord.setConstraintRequestRecords(
         solverConfig.getConstraints().stream()

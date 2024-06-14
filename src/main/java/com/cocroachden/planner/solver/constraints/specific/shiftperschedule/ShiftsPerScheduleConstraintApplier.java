@@ -20,7 +20,7 @@ public class ShiftsPerScheduleConstraintApplier implements ConstraintApplier {
     var request = (ShiftsPerScheduleRequest) constraintRequest;
     log.debug("Applying constraint: {}", request.toString());
     var targetShift = request.getTargetShift();
-    var workDays = schedulePlan.getAllDaysForWorker(request.getOwner().orElseThrow());
+    var workDays = schedulePlan.getAllDaysForEmployee(request.getOwner().orElseThrow());
     var assignedShifts = new ArrayList<BoolVar>();
     workDays.forEach(workDay -> assignedShifts.addAll(workDay.getShifts(targetShift)));
     var asArray = assignedShifts.toArray(BoolVar[]::new);
@@ -30,7 +30,7 @@ public class ShiftsPerScheduleConstraintApplier implements ConstraintApplier {
         workDays.size(),
         model,
         objective,
-        schedulePlan.getWeightForWorker(request.getOwner().get())
+        schedulePlan.getWeightForEmployee(request.getOwner().get())
     );
   }
 

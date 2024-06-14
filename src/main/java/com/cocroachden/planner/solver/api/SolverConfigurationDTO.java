@@ -25,7 +25,7 @@ public class SolverConfigurationDTO {
         record.getLastUpdated(),
         StupidDate.fromDate(record.getStartDate()),
         StupidDate.fromDate(record.getEndDate()),
-        record.getWorkers(),
+        record.getEmployees(),
         record.getConstraintRequestRecords().stream()
             .map(ConstraintMapper::fromRecord)
             .toList()
@@ -45,7 +45,7 @@ public class SolverConfigurationDTO {
   @Nonnull
   private StupidDate endDate;
   @Nonnull
-  private List<@Nonnull EmployeeId> workers;
+  private List<@Nonnull EmployeeId> employees;
   @Nonnull
   private List<@Nonnull ConstraintRequestDTO> constraints;
 }

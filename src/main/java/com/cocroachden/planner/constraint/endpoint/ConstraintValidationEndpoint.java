@@ -19,7 +19,7 @@ public class ConstraintValidationEndpoint {
     return ConstraintDayValidator.validate(configuration);
   }
 
-  public @Nonnull List<@Nonnull EmployeeValidationIssue> validateWorkers(@Nonnull SolverConfigurationDTO configuration) {
+  public @Nonnull List<@Nonnull EmployeeValidationIssue> validateEmployees(@Nonnull SolverConfigurationDTO configuration) {
     return ConstraintEmployeeValidator.validate(configuration);
   }
 }

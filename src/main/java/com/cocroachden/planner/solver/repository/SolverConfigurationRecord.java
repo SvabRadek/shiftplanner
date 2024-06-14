@@ -35,7 +35,7 @@ public class SolverConfigurationRecord {
   private LocalDate endDate;
   @ElementCollection
   @OrderColumn(name = "list_index")
-  private List<EmployeeId> workers;
+  private List<EmployeeId> employees;
   @OneToMany(mappedBy = "parent", cascade = CascadeType.ALL, orphanRemoval = true)
   private List<ConstraintRequestRecord> constraintRequestRecords = new ArrayList<>();
 

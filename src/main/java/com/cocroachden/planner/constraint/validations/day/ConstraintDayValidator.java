@@ -55,7 +55,7 @@ public class ConstraintDayValidator {
       List<EmployeeShiftRequestDTO> requests
   ) {
     var issues = new ArrayList<DayValidationIssue>();
-    var peopleInSchedule = configurationDTO.getWorkers().size();
+    var peopleInSchedule = configurationDTO.getEmployees().size();
     var peopleRequestingTimeOffForGivenDay = requests.stream()
         .filter(r -> r.getRequestedShift().equals(WorkShifts.OFF))
         .toList()

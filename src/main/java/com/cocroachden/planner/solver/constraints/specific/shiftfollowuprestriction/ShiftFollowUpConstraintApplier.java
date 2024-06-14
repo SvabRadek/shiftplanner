@@ -20,12 +20,12 @@ public class ShiftFollowUpConstraintApplier implements ConstraintApplier {
     var request = (ShiftFollowUpRestrictionRequest) constraintRequest;
     var owner = request.getOwner();
     if (owner.isEmpty()) {
-      schedulePlan.getAssignments().forEach((workerId, assignments) -> {
-        this.applyConstraint(model, objective, assignments, request, schedulePlan.getWeightForWorker(workerId));
+      schedulePlan.getAssignments().forEach((employeeId, assignments) -> {
+        this.applyConstraint(model, objective, assignments, request, schedulePlan.getWeightForEmployee(employeeId));
       });
     } else {
       var assignments = schedulePlan.getAssignments().get(owner.get());
-      this.applyConstraint(model, objective, assignments, request, schedulePlan.getWeightForWorker(owner.get()));
+      this.applyConstraint(model, objective, assignments, request, schedulePlan.getWeightForEmployee(owner.get()));
     }
   }
 

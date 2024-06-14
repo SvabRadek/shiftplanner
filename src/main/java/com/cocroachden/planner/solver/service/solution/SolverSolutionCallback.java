@@ -48,20 +48,20 @@ public class SolverSolutionCallback extends CpSolverSolutionCallback {
     var latestResponse = new SolverSolution(response);
     this.printStatsHeader(currentObjective);
     this.latestResponse = latestResponse;
-    var workerMap = new HashMap<Long, Map<StupidDate, WorkShifts>>();
-    latestResponse.workdays().forEach((workerId, responseWorkDays) -> {
+    var employeeMap = new HashMap<Long, Map<StupidDate, WorkShifts>>();
+    latestResponse.workdays().forEach((employeeId, responseWorkDays) -> {
       var shiftMap = new HashMap<StupidDate, WorkShifts>();
       responseWorkDays.forEach(solutionWorkDay -> {
         shiftMap.put(StupidDate.fromDate(solutionWorkDay.date()), solutionWorkDay.assignedShift());
       });
-      workerMap.put(workerId.getId(), shiftMap);
+      employeeMap.put(employeeId.getId(), shiftMap);
     });
     fluxSink.accept(
         new SolverSolutionDTO(
             SolutionStatus.OK,
             currentObjective,
             currentSolutionCount,
-            workerMap
+            employeeMap
         )
     );
     currentSolutionCount++;
@@ -78,7 +78,7 @@ public class SolverSolutionCallback extends CpSolverSolutionCallback {
         .entrySet().stream()
         .sorted(Comparator.comparingLong(value -> value.getKey().getId()))
         .forEach(entry -> {
-          var workerId = entry.getKey();
+          var employeeId = entry.getKey();
           var assignments = entry.getValue();
           var responseDays = new ArrayList<SolutionWorkDay>();
           assignments.values()
@@ -90,7 +90,7 @@ public class SolverSolutionCallback extends CpSolverSolutionCallback {
                     off ? WorkShifts.OFF : day ? WorkShifts.DAY : WorkShifts.NIGHT
                 ));
               });
-          response.put(workerId, responseDays);
+          response.put(employeeId, responseDays);
         });
     return response;
   }

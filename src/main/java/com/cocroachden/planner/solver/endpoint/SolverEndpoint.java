@@ -33,8 +33,8 @@ public class SolverEndpoint {
     var solverConfig = new SolverConfiguration(
         solverConfigRecord.getStartDate(),
         solverConfigRecord.getEndDate(),
-        solverConfigRecord.getWorkers().stream()
-            .map(workerId -> new ScheduleEmployee(workerId, 1))
+        solverConfigRecord.getEmployees().stream()
+            .map(employeeId -> new ScheduleEmployee(employeeId, 1))
             .toList(),
         solverConfigRecord.getConstraintRequestRecords().stream()
             .map(ConstraintRequestRecord::getRequest)

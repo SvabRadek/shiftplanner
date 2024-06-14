@@ -30,33 +30,33 @@ public class EmployeeEndpoint extends CrudRepositoryService<EmployeeRecord, Long
   }
 
   @Override
-  public void delete(@Nonnull Long workerId) {
-    var typedWorkerId = new EmployeeId(workerId);
-    plannerConfigurationRepository.findByWorkersContaining(typedWorkerId).stream()
+  public void delete(@Nonnull Long employeeId) {
+    var typedEmployeeId = new EmployeeId(employeeId);
+    plannerConfigurationRepository.findByEmployeesContaining(typedEmployeeId).stream()
         .filter(Objects::nonNull)
         .forEach(config -> {
-          var updatedWorkers = config.getWorkers().stream()
-              .filter(id -> !id.equals(typedWorkerId))
+          var updatedEmployees = config.getEmployees().stream()
+              .filter(id -> !id.equals(typedEmployeeId))
               .toList();
           var updatedConstraints = config.getConstraintRequestRecords().stream()
               .filter(r -> {
                 if (r.getRequest() instanceof AbstractEmployeeSpecificConstraint employeeSpecificConstraint) {
                   if (employeeSpecificConstraint.getOwner().isPresent()) {
-                    return !employeeSpecificConstraint.getOwner().get().equals(typedWorkerId);
+                    return !employeeSpecificConstraint.getOwner().get().equals(typedEmployeeId);
                   }
                 }
                 return true;
               }).toList();
-          config.setWorkers(updatedWorkers);
+          config.setEmployees(updatedEmployees);
           config.setConstraintRequestRecords(updatedConstraints);
           plannerConfigurationRepository.save(config);
         });
-    super.delete(workerId);
+    super.delete(employeeId);
   }
 
   @Nonnull
-  public List<@Nonnull EmployeeRecord> getEmployeesExcluding(@Nonnull List<@Nonnull Long> workerIds) {
-    return employeeRepository.findByIdNotIn(workerIds);
+  public List<@Nonnull EmployeeRecord> getEmployeesExcluding(@Nonnull List<@Nonnull Long> employeeIds) {
+    return employeeRepository.findByIdNotIn(employeeIds);
   }
 }
 

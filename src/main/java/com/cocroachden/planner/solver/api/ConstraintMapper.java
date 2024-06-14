@@ -27,8 +27,8 @@ public class ConstraintMapper {
     if (request instanceof ShiftsPerScheduleRequest shiftsPerScheduleRequest) {
       return ShiftsPerScheduleRequestDTO.from(record.getId(), shiftsPerScheduleRequest);
     }
-    if (request instanceof EmployeesPerShiftRequest workersPerShiftRequest) {
-      return EmployeesPerShiftRequestDTO.from(record.getId(), workersPerShiftRequest);
+    if (request instanceof EmployeesPerShiftRequest employeesPerShiftRequest) {
+      return EmployeesPerShiftRequestDTO.from(record.getId(), employeesPerShiftRequest);
     }
     if (request instanceof ConsecutiveWorkingDaysRequest consecutiveWorkingDaysRequest) {
       return ConsecutiveWorkingDaysRequestDTO.from(record.getId(), consecutiveWorkingDaysRequest);
@@ -52,8 +52,8 @@ public class ConstraintMapper {
     if (dto instanceof ShiftsPerScheduleRequestDTO shiftsPerScheduleRequest) {
       return ShiftsPerScheduleRequest.from(shiftsPerScheduleRequest);
     }
-    if (dto instanceof EmployeesPerShiftRequestDTO workersPerShiftRequest) {
-      return EmployeesPerShiftRequest.from(workersPerShiftRequest);
+    if (dto instanceof EmployeesPerShiftRequestDTO employeesPerShiftRequestDTO) {
+      return EmployeesPerShiftRequest.from(employeesPerShiftRequestDTO);
     }
     if (dto instanceof ConsecutiveWorkingDaysRequestDTO consecutiveWorkingDaysRequest) {
       return ConsecutiveWorkingDaysRequest.from(consecutiveWorkingDaysRequest);

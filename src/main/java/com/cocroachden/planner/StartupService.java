@@ -10,10 +10,8 @@ import org.springframework.boot.context.event.ApplicationStartedEvent;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.event.EventListener;
 
-import java.time.Instant;
 import java.time.LocalDate;
 import java.util.List;
-import java.util.UUID;
 
 @Slf4j
 public class StartupService {
@@ -33,7 +31,7 @@ public class StartupService {
       configRecord.setStartDate(LocalDate.now());
       configRecord.setEndDate(LocalDate.now().plusDays(30));
       configRecord.setName("Priklad konfigurace");
-      configRecord.setWorkers(DefaultSolverConfiguration.workers());
+      configRecord.setEmployees(DefaultSolverConfiguration.employees());
       configRecord.setConstraintRequestRecords(
           DefaultSolverConfiguration.constraintRequests().stream()
               .map(c -> {

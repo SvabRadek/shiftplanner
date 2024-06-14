@@ -25,10 +25,10 @@ public class TripleShiftConstraintApplier implements ConstraintApplier {
         .ifPresentOrElse(
             owner -> {
               var assignments = schedulePlan.getAssignments().get(owner);
-              var workerWeight = schedulePlan.getWeightForWorker(owner);
-              this.applyConstraint(schedulePlan, model, objective, workerWeight, assignments, tripletRequest);
+              var weightForEmployee = schedulePlan.getWeightForEmployee(owner);
+              this.applyConstraint(schedulePlan, model, objective, weightForEmployee, assignments, tripletRequest);
             },
-            () -> schedulePlan.getAssignments().forEach((workerId, days) ->
+            () -> schedulePlan.getAssignments().forEach((employeeId, days) ->
                 this.applyConstraint(schedulePlan, model, objective, 1, days, tripletRequest)
             )
         );

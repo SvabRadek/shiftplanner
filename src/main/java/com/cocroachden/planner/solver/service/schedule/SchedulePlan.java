@@ -18,23 +18,23 @@ import java.util.stream.Collectors;
 public class SchedulePlan {
 
   private final Map<EmployeeId, Map<LocalDate, ScheduleDay>> assignments;
-  private final Map<EmployeeId, ScheduleEmployee> workers;
+  private final Map<EmployeeId, ScheduleEmployee> employees;
 
   public SchedulePlan(SolverConfiguration configuration, CpModel model) {
     var endDateExclusive = configuration.endDate().plusDays(1);
     var assignments = new HashMap<EmployeeId, Map<LocalDate, ScheduleDay>>();
-    configuration.scheduleEmployees().forEach(worker -> {
+    configuration.scheduleEmployees().forEach(employee -> {
       var days = new HashMap<LocalDate, ScheduleDay>();
       configuration.startDate().datesUntil(endDateExclusive).forEach(date -> {
-        var workDay = this.createWorkDay(model, worker.employeeId(), date);
+        var workDay = this.createWorkDay(model, employee.employeeId(), date);
         days.put(date, workDay);
       });
-      assignments.put(worker.employeeId(), days);
+      assignments.put(employee.employeeId(), days);
     });
-    var workersAsMap = configuration.scheduleEmployees().stream()
+    var employeeMap = configuration.scheduleEmployees().stream()
         .collect(Collectors.toMap(ScheduleEmployee::employeeId, scheduleEmployee -> scheduleEmployee));
     this.assignments = assignments;
-    this.workers = workersAsMap;
+    this.employees = employeeMap;
   }
 
   public LocalDate getStartDate() {
@@ -50,22 +50,22 @@ public class SchedulePlan {
   }
 
   public ScheduleDay getSpecificDay(EmployeeId employeeId, LocalDate date) {
-    this.ensureSchedulePlanContainsWorkerId(employeeId);
+    this.ensureSchedulePlanContainsEmployeeId(employeeId);
     return assignments.get(employeeId).get(date);
   }
 
-  public Integer getWeightForWorker(EmployeeId employeeId) {
-    return this.workers.get(employeeId).weight();
+  public Integer getWeightForEmployee(EmployeeId employeeId) {
+    return this.employees.get(employeeId).weight();
   }
 
-  public List<ScheduleDay> getAllDaysForWorker(EmployeeId employeeId) {
-    this.ensureSchedulePlanContainsWorkerId(employeeId);
+  public List<ScheduleDay> getAllDaysForEmployee(EmployeeId employeeId) {
+    this.ensureSchedulePlanContainsEmployeeId(employeeId);
     return assignments.get(employeeId).values().stream().toList();
   }
 
   public Map<LocalDate, List<ScheduleDay>> getAllAssignmentsByDate() {
     var workDaysByDate = new HashMap<LocalDate, List<ScheduleDay>>();
-    this.assignments.forEach((workerId, workDays) -> {
+    this.assignments.forEach((employeeId, workDays) -> {
       workDays.forEach((date, workDay) -> {
         if (workDaysByDate.containsKey(date)) {
           workDaysByDate.get(date).add(workDay);
@@ -82,8 +82,8 @@ public class SchedulePlan {
   @Override
   public String toString() {
     StringBuilder builder = new StringBuilder("SchedulePlan:\n").append("\tAssignments:\n");
-    this.assignments.forEach((workerId, workDaysMap) -> {
-      builder.append("  Worker: ").append(workerId).append("\n");
+    this.assignments.forEach((employeeId, workDaysMap) -> {
+      builder.append("  Employee: ").append(employeeId).append("\n");
       workDaysMap.forEach((date, workDay) -> {
         builder.append("    Date: ").append(date).append("\n");
         builder.append("    Work Day: ").append(workDay).append("\n");
@@ -91,19 +91,19 @@ public class SchedulePlan {
       builder.append("\n");
     });
 
-    builder.append("Workers:\n");
-    this.workers.forEach((workerId, worker) -> {
-      builder.append("  Worker ID: ").append(workerId).append("\n");
-      builder.append("  Worker: ").append(worker).append("\n");
+    builder.append("Employees:\n");
+    this.employees.forEach((employeeId, employee) -> {
+      builder.append("  Employee ID: ").append(employeeId).append("\n");
+      builder.append("  Employee: ").append(employee).append("\n");
     });
 
     return builder.toString();
   }
 
   @SneakyThrows
-  private void ensureSchedulePlanContainsWorkerId(EmployeeId employeeId) {
+  private void ensureSchedulePlanContainsEmployeeId(EmployeeId employeeId) {
     if (!this.assignments.containsKey(employeeId)) {
-      throw SchedulePlanException.becauseWorkerIsNotPresent(employeeId);
+      throw SchedulePlanException.becauseEmployeeIsNotPresent(employeeId);
     }
   }
 
@@ -112,8 +112,8 @@ public class SchedulePlan {
       super(message);
     }
 
-    public static SchedulePlanException becauseWorkerIsNotPresent(EmployeeId employeeId) {
-      return new SchedulePlanException("Schedule plan does not contain workerId [%s]".formatted(employeeId.toString()));
+    public static SchedulePlanException becauseEmployeeIsNotPresent(EmployeeId employeeId) {
+      return new SchedulePlanException("Schedule plan does not contain employeeId [%s]".formatted(employeeId.toString()));
     }
   }
 
