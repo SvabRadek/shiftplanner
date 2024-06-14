@@ -10,9 +10,9 @@ import EmployeeValidationIssue
 
 type ScheduleValidationCtxType = {
   dayIssues: DayValidationIssue[]
-  workerIssues: EmployeeValidationIssue[]
+  employeeIssues: EmployeeValidationIssue[]
   dayIssueMap: Map<string, DayValidationIssue[]>
-  workerIssueMap: Map<number, EmployeeValidationIssue[]>
+  employeeIssueMap: Map<number, EmployeeValidationIssue[]>
   validate: (config: SolverConfigurationDTO, constraints: ConstraintRequestDTO[]) => void
   clear: () => void
   containsIssues: boolean
@@ -21,9 +21,9 @@ type ScheduleValidationCtxType = {
 
 export const ValidationContext = createContext<ScheduleValidationCtxType>({
   dayIssues: [],
-  workerIssues: [],
+  employeeIssues: [],
   dayIssueMap: new Map,
-  workerIssueMap: new Map,
+  employeeIssueMap: new Map,
   validate: () => {
   },
   clear: () => {
@@ -35,14 +35,14 @@ export const ValidationContext = createContext<ScheduleValidationCtxType>({
 
 type IssueContainer = {
   dayIssues: DayValidationIssue[],
-  workerIssues: EmployeeValidationIssue[]
+  employeeIssues: EmployeeValidationIssue[]
 }
 
 export function ScheduleValidationCtxProvider({ children }: { children: ReactNode }) {
 
   const [issues, setIssues] = useState<IssueContainer>({
     dayIssues: [],
-    workerIssues: []
+    employeeIssues: []
   });
 
   const dayIssueMap = useMemo(() => {
@@ -54,21 +54,21 @@ export function ScheduleValidationCtxProvider({ children }: { children: ReactNod
     return map
   }, [issues.dayIssues])
 
-  const workerIssueMap = useMemo(() => {
+  const employeeIssueMap = useMemo(() => {
     const map = new Map<number, EmployeeValidationIssue[]>
-    issues.workerIssues.forEach(i => {
+    issues.employeeIssues.forEach(i => {
       const existing = map.get(i.employeeId.id)
       map.set(i.employeeId.id, existing ? [...existing, i] : [i])
     })
     return map
-  }, [issues.workerIssues])
+  }, [issues.employeeIssues])
 
   function handleValidation(config: SolverConfigurationDTO, constraints: ConstraintRequestDTO[]) {
 
     ConstraintValidationEndpoint.validateDays({ ...config, constraints }).then(dayIssues => {
-      ConstraintValidationEndpoint.validateWorkers({ ...config, constraints }).then(workerIssues => {
+      ConstraintValidationEndpoint.validateEmployees({ ...config, constraints }).then(employeeIssues => {
         setIssues({
-          workerIssues: workerIssues,
+          employeeIssues: employeeIssues,
           dayIssues: dayIssues
         })
       })
@@ -78,13 +78,13 @@ export function ScheduleValidationCtxProvider({ children }: { children: ReactNod
 
   function handleClearing() {
     setIssues({
-      workerIssues: [],
+      employeeIssues: [],
       dayIssues: []
     })
   }
 
   function containsIssues() {
-    return issues.workerIssues.length + issues.dayIssues.length > 0
+    return issues.employeeIssues.length + issues.dayIssues.length > 0
   }
 
   function getSeverityOfIssues(issues: { severity: IssueSeverity }[]): IssueSeverity {
@@ -95,10 +95,10 @@ export function ScheduleValidationCtxProvider({ children }: { children: ReactNod
 
   return (
     <ValidationContext.Provider value={{
-      workerIssues: issues.workerIssues,
+      employeeIssues: issues.employeeIssues,
       dayIssues: issues.dayIssues,
       dayIssueMap,
-      workerIssueMap,
+      employeeIssueMap,
       validate: handleValidation,
       clear: handleClearing,
       containsIssues: containsIssues(),

@@ -14,7 +14,7 @@ import ConstraintType from "Frontend/generated/com/cocroachden/planner/constrain
 import EmployeeShiftRequestDTO from "Frontend/generated/com/cocroachden/planner/constraint/api/EmployeeShiftRequestDTO";
 import EmployeeId from "Frontend/generated/com/cocroachden/planner/employee/api/EmployeeId";
 
-export type PlainWorkerId = number
+export type PlainEmployeeId = number
 export type Index = number
 
 type Props = {
@@ -88,7 +88,7 @@ export function ScheduleGridContainer(props: Props) {
   }, [props.shiftRequests])
 
   const shiftPatternMap = useMemo(() => {
-    const map = new Map<PlainWorkerId, ShiftPatternRequestDTO>()
+    const map = new Map<PlainEmployeeId, ShiftPatternRequestDTO>()
     props.shiftPatterns.forEach(r => map.set(r.owner?.id || -1, r))
     return map
   }, [props.shiftPatterns])
@@ -131,7 +131,7 @@ function createRows(
   request: SolverConfigurationDTO,
   employees: EmployeeRecord[],
   shiftRequests: Map<string, EmployeeShiftRequestDTO>,
-  shiftPatterns: Map<PlainWorkerId, ShiftPatternRequestDTO>,
+  shiftPatterns: Map<PlainEmployeeId, ShiftPatternRequestDTO>,
   shiftPerSchedule: ShiftsPerScheduleRequestDTO[],
   highlightInfo: Highlight,
   results?: SolverSolutionDTO
@@ -139,21 +139,21 @@ function createRows(
   const startDate = stupidDateToDate(request.startDate)
   const endDate = stupidDateToDate(request.endDate)
   const dayIndexes = getDistanceInDays(startDate, endDate)
-  return request.workers
-    .map(workerId => {
+  return request.employees
+    .map(employeeId => {
       let highLightIndexes: number[] = []
-      if (highlightInfo.originCell && highlightInfo.originCell.owner.id === workerId.id) {
+      if (highlightInfo.originCell && highlightInfo.originCell.owner.id === employeeId.id) {
         highLightIndexes = getIndexesBetweenCells(highlightInfo.originCell, highlightInfo.lastCell!)
       }
-      const relatedPattern = shiftPatterns.get(workerId.id)
+      const relatedPattern = shiftPatterns.get(employeeId.id)
       const cells = dayIndexes
         .map(dayOffset => {
           const cellDate = new Date(startDate)
           cellDate.setDate(startDate.getDate() + dayOffset)
-          const relatedRequest = shiftRequests.get(dateToString(cellDate) + workerId.id)
+          const relatedRequest = shiftRequests.get(dateToString(cellDate) + employeeId.id)
           const cellShift = getResultingShift(
             results,
-            workerId,
+            employeeId,
             cellDate,
             dayOffset,
             relatedRequest,
@@ -163,7 +163,7 @@ function createRows(
           return {
             shift: cellShift,
             index: dayOffset,
-            owner: workerId,
+            owner: employeeId,
             date: dateToStupidDate(cellDate),
             isHighlighted: highLightIndexes.find(i => i === dayOffset) !== undefined,
             requestId: relatedRequest?.id,
@@ -176,8 +176,8 @@ function createRows(
                   : DisplayMode.DEFAULT
           } as Cell
         })
-      const referencedEmployee = employees.find(e => e.id === workerId.id)!
-      const relatedShiftPerScheduleRequests = shiftPerSchedule.filter(r => r.owner.id === workerId.id)
+      const referencedEmployee = employees.find(e => e.id === employeeId.id)!
+      const relatedShiftPerScheduleRequests = shiftPerSchedule.filter(r => r.owner.id === employeeId.id)
       const displayShiftCount = relatedShiftPerScheduleRequests
         .map(r => Math.floor((r.softMin + r.softMax) / 2))
         .reduce((previousValue, currentValue) => previousValue + currentValue, 0)
@@ -186,10 +186,10 @@ function createRows(
           .reduce((previousValue, currentValue) => previousValue + currentValue, 0)
         / relatedShiftPerScheduleRequests.length)
 
-      const assignments = results ? Object.values(results?.assignments[workerId.id]!) : []
+      const assignments = results ? Object.values(results?.assignments[employeeId.id]!) : []
 
       return {
-        owner: workerId,
+        owner: employeeId,
         rowTitle: createRowTitle(referencedEmployee, displayShiftCount, allowedDeviation, assignments),
         cells,
         issues: []
@@ -216,14 +216,14 @@ function createRowTitle(
 
 function getResultingShift(
   results: SolverSolutionDTO | undefined,
-  workerId: EmployeeId,
+  employeeId: EmployeeId,
   cellDate: Date,
   cellIndex: number,
   relatedRequest: EmployeeShiftRequestDTO | undefined,
   relatedPattern: ShiftPatternRequestDTO | undefined
 ): WorkShifts {
   if (results) {
-    const resultShift = results.assignments[workerId.id][dateToString(cellDate)]
+    const resultShift = results.assignments[employeeId.id][dateToString(cellDate)]
     if (resultShift === WorkShifts.OFF) {
       return WorkShifts.ANY
     } else {

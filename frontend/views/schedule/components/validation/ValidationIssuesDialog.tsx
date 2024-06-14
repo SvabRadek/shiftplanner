@@ -33,7 +33,7 @@ export function ValidationIssuesDialog(props: Props) {
             key={issue.issue + stupidDateToString(issue.localDate)}
             issue={issue}/>
           )}
-        {validationCtx.workerIssues
+        {validationCtx.employeeIssues
           .map(issue => <ValidationWorkerIssueCard
             key={issue.issue + issue.employeeId.id}
             issue={issue!}/>

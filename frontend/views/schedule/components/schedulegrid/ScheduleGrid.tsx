@@ -46,7 +46,7 @@ export function ScheduleGrid(props: Props) {
       if (rowIndex === 0) {
         items.push(generateFirstRow(row))
       }
-      const workerIssues = validationCtx.workerIssueMap.get(row.owner.id) || []
+      const workerIssues = validationCtx.employeeIssueMap.get(row.owner.id) || []
       const severity = validationCtx.getSeverityOfIssues(workerIssues)
       items.push(renderCell(
         rowIndex + 2,

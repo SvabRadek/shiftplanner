@@ -183,14 +183,14 @@ export default function ScheduleView() {
           if (!prevState) return undefined
           return {
             ...prevState,
-            workers: [...prevState.workers, { id: action.payload.id }]
+            workers: [...prevState.employees, { id: action.payload.id }]
           }
         })
         break
       case CRUDActions.DELETE:
         setRequest(prevState => ({
           ...prevState!,
-          workers: prevState!.workers.filter(w => w.id !== action.payload.id)
+          workers: prevState!.employees.filter(e => e.id !== action.payload.id)
         }))
         break
       case CRUDActions.UPDATE:

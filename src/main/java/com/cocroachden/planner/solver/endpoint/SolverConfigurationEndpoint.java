@@ -3,7 +3,7 @@ package com.cocroachden.planner.solver.endpoint;
 import com.cocroachden.planner.constraint.repository.ConstraintRequestRecord;
 import com.cocroachden.planner.solver.api.ConstraintMapper;
 import com.cocroachden.planner.solver.api.SolverConfigurationDTO;
-import com.cocroachden.planner.solver.api.SolverConfigurationMetaDataDTO;
+import com.cocroachden.planner.solver.repository.SolverConfigurationMetadata;
 import com.cocroachden.planner.solver.repository.SolverConfigurationRecord;
 import com.cocroachden.planner.solver.repository.SolverConfigurationRepository;
 import com.vaadin.flow.server.auth.AnonymousAllowed;
@@ -46,10 +46,8 @@ public class SolverConfigurationEndpoint {
   }
 
   @Nonnull
-  public List<@Nonnull SolverConfigurationMetaDataDTO> getMetaData() {
-    return StreamSupport.stream(solverConfigurationRepository.findAll().spliterator(), false)
-        .map(SolverConfigurationMetaDataDTO::from)
-        .toList();
+  public List<@Nonnull SolverConfigurationMetadata> getMetaData() {
+    return solverConfigurationRepository.findBy();
   }
 
   @Nonnull

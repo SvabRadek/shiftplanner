@@ -18,10 +18,10 @@ export function EmployeeTab(props: Props) {
 
   const [isAddEmployeeDialogOpen, setIsAddEmployeeDialogOpen] = useState(false);
   const { mode } = useContext(ScheduleModeCtx);
-  const selectedWorkers = props.employees
-    .filter(e => props.request.workers.some(w => w.id === e.id))
-  const missingWorkers = props.employees
-    .filter(e => !props.request.workers.some(w => w.id === e.id))
+  const selectedEmployees = props.employees
+    .filter(e => props.request.employees.some(e => e.id === e.id))
+  const missingEmployees = props.employees
+    .filter(e => !props.request.employees.some(e => e.id === e.id))
 
   function renderEmployeeCard(employee: EmployeeRecord) {
     return (
@@ -71,7 +71,7 @@ export function EmployeeTab(props: Props) {
                           paddingTop: 5,
                           paddingBottom: 5
                         }}>
-        <AddEmployeeDialog employees={missingWorkers}
+        <AddEmployeeDialog employees={missingEmployees}
                            onOpenChanged={setIsAddEmployeeDialogOpen}
                            isOpen={isAddEmployeeDialogOpen}
                            onEmployeeAdd={e =>
@@ -85,7 +85,7 @@ export function EmployeeTab(props: Props) {
         <h6>Seznam zamestnancu</h6>
       </HorizontalLayout>
       <div style={{ width: "98%" }}>
-        {selectedWorkers.map(w => renderEmployeeCard(w))}
+        {selectedEmployees.map(w => renderEmployeeCard(w))}
       </div>
     </div>
 

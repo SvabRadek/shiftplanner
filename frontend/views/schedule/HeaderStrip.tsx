@@ -14,9 +14,9 @@ import { Tooltip } from "@hilla/react-components/Tooltip";
 import { ValidationContext } from "Frontend/views/schedule/components/validation/ScheduleValidationCtxProvider";
 import SolverSolutionDTO from "Frontend/generated/com/cocroachden/planner/solver/api/SolverSolutionDTO";
 import SolverConfigurationDTO from "Frontend/generated/com/cocroachden/planner/solver/api/SolverConfigurationDTO";
-import SolverConfigurationMetaDataDTO
-  from "Frontend/generated/com/cocroachden/planner/solver/api/SolverConfigurationMetaDataDTO";
 import { SolverConfigurationEndpoint } from "Frontend/generated/endpoints";
+import SolverConfigurationMetadata
+  from "Frontend/generated/com/cocroachden/planner/solver/repository/SolverConfigurationMetadata";
 
 type Props = {
   onStopCalculation: () => void
@@ -36,7 +36,7 @@ type Props = {
 }
 
 export function HeaderStrip(props: Props) {
-  const [configMetaData, setConfigMetaData] = useState<SolverConfigurationMetaDataDTO[]>([]);
+  const [configMetaData, setConfigMetaData] = useState<SolverConfigurationMetadata[]>([]);
   const [isConfigSelectDialogOpen, setIsConfigSelectDialogOpen] = useState(false);
   const [isIssuesDialogOpen, setIsIssuesDialogOpen] = useState(false);
   const modeCtx = useContext(ScheduleModeCtx);
@@ -48,7 +48,7 @@ export function HeaderStrip(props: Props) {
     }
   }, [isConfigSelectDialogOpen])
 
-  async function handleConfigAction(action: CrudAction<SolverConfigurationMetaDataDTO>) {
+  async function handleConfigAction(action: CrudAction<SolverConfigurationMetadata>) {
     switch (action.type) {
       case CRUDActions.DELETE:
         await SolverConfigurationEndpoint.delete(action.payload.id)

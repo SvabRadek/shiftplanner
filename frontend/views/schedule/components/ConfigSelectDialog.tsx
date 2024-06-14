@@ -5,19 +5,19 @@ import { VerticalLayout } from "@hilla/react-components/VerticalLayout";
 import { PlannerConfigList } from "Frontend/views/schedule/components/PlannerConfigList";
 import { HorizontalLayout } from "@hilla/react-components/HorizontalLayout";
 import { CrudAction, CRUDActions } from "Frontend/util/utils";
-import SolverConfigurationMetaDataDTO
-  from "Frontend/generated/com/cocroachden/planner/solver/api/SolverConfigurationMetaDataDTO";
+import SolverConfigurationMetadata
+  from "Frontend/generated/com/cocroachden/planner/solver/repository/SolverConfigurationMetadata";
 
 type Props = {
-  configMetaData: SolverConfigurationMetaDataDTO[]
-  onConfigAction: (action: CrudAction<SolverConfigurationMetaDataDTO>) => void
+  configMetaData: SolverConfigurationMetadata[]
+  onConfigAction: (action: CrudAction<SolverConfigurationMetadata>) => void
   onOpenChanged: (value: boolean) => void
   isOpen: boolean
 }
 
 export function ConfigSelectDialog(props: Props) {
 
-  const [selectedItem, setSelectedItem] = useState<SolverConfigurationMetaDataDTO>()
+  const [selectedItem, setSelectedItem] = useState<SolverConfigurationMetadata>()
 
   function handleConfigSelect() {
     if (selectedItem) {
