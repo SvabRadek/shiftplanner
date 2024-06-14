@@ -2,39 +2,42 @@ package com.cocroachden.planner.constraint.validations.employee;
 
 import com.cocroachden.planner.constraint.api.ConsecutiveWorkingDaysRequestDTO;
 import com.cocroachden.planner.constraint.api.ConstraintRequestDTO;
-import com.cocroachden.planner.constraint.api.ShiftsPerScheduleRequestDTO;
 import com.cocroachden.planner.constraint.api.EmployeeShiftRequestDTO;
+import com.cocroachden.planner.constraint.api.ShiftsPerScheduleRequestDTO;
 import com.cocroachden.planner.constraint.validations.IssueSeverity;
 import com.cocroachden.planner.solver.api.SolverConfigurationDTO;
 import com.cocroachden.planner.solver.api.WorkShifts;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.Objects;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
 public class ConstraintEmployeeValidator {
-  public static List<EmployeeValidationIssue> validate(
-      SolverConfigurationDTO solverConfig
-  ) {
+  public static List<EmployeeValidationIssue> validate(SolverConfigurationDTO solverConfig) {
     var issues = new ArrayList<EmployeeValidationIssue>();
     var constraints = solverConfig.getConstraints();
-    issues.addAll(constraints.stream()
-        .filter(c -> c instanceof ShiftsPerScheduleRequestDTO)
-        .map(c -> (ShiftsPerScheduleRequestDTO) c)
-        .map(r -> validateShiftsPerSchedule(r, solverConfig, constraints))
-        .flatMap(Collection::stream)
-        .toList());
+    issues.addAll(
+        solverConfig.getConstraints().stream()
+            .filter(c -> c instanceof ShiftsPerScheduleRequestDTO)
+            .map(c -> (ShiftsPerScheduleRequestDTO) c)
+            .map(r -> validateShiftsPerSchedule(r, solverConfig))
+            .flatMap(Collection::stream)
+            .toList()
+    );
     issues.addAll(validateConsecutiveWorkingDays(solverConfig, constraints));
     return issues;
   }
 
   private static List<EmployeeValidationIssue> validateShiftsPerSchedule(
       ShiftsPerScheduleRequestDTO shiftPerSchedule,
-      SolverConfigurationDTO configuration,
-      List<ConstraintRequestDTO> constraints
+      SolverConfigurationDTO configuration
   ) {
     var issues = new ArrayList<EmployeeValidationIssue>();
     var daysInSchedule = configuration.getStartDate().toDate().datesUntil(configuration.getEndDate().toDate()).count();
+    var constraints = configuration.getConstraints();
     var workersSpecificRequests = constraints.stream()
         .filter(r -> r instanceof EmployeeShiftRequestDTO)
         .map(r -> (EmployeeShiftRequestDTO) r)

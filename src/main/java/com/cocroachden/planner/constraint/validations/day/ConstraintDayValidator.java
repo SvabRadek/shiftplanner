@@ -1,8 +1,7 @@
 package com.cocroachden.planner.constraint.validations.day;
 
-import com.cocroachden.planner.constraint.api.ConstraintRequestDTO;
-import com.cocroachden.planner.constraint.api.EmployeesPerShiftRequestDTO;
 import com.cocroachden.planner.constraint.api.EmployeeShiftRequestDTO;
+import com.cocroachden.planner.constraint.api.EmployeesPerShiftRequestDTO;
 import com.cocroachden.planner.constraint.validations.IssueSeverity;
 import com.cocroachden.planner.core.StupidDate;
 import com.cocroachden.planner.solver.api.SolverConfigurationDTO;
@@ -15,20 +14,21 @@ import java.util.List;
 import java.util.stream.IntStream;
 
 public class ConstraintDayValidator {
-  public static List<DayValidationIssue> validate(
-      SolverConfigurationDTO configurationRecord
-  ) {
+  public static List<DayValidationIssue> validate(SolverConfigurationDTO configurationRecord) {
     var issues = new ArrayList<DayValidationIssue>();
-    var constraints = configurationRecord.getConstraints();
-    constraints.stream()
+    configurationRecord.getConstraints().stream()
         .filter(c -> c instanceof EmployeesPerShiftRequestDTO)
         .map(c -> (EmployeesPerShiftRequestDTO) c)
-        .map(r -> validateEmployeesPerShiftLimit(r, configurationRecord, constraints))
+        .map(r -> validateEmployeesPerShiftLimit(r, configurationRecord))
         .forEach(issues::addAll);
     return issues;
   }
 
-  private static List<DayValidationIssue> validateEmployeesPerShiftLimit(EmployeesPerShiftRequestDTO perShiftRequestDTO, SolverConfigurationDTO configurationRecord, List<ConstraintRequestDTO> constraints) {
+  private static List<DayValidationIssue> validateEmployeesPerShiftLimit(
+      EmployeesPerShiftRequestDTO perShiftRequestDTO,
+      SolverConfigurationDTO configurationRecord
+  ) {
+    var constraints = configurationRecord.getConstraints();
     var startDate = configurationRecord.getStartDate().toDate();
     var endDate = configurationRecord.getEndDate().toDate();
     var dayCount = startDate.until(endDate).getDays();
