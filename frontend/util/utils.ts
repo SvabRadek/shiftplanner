@@ -1,3 +1,4 @@
+
 import ShiftsPerScheduleRequestDTO
   from "Frontend/generated/com/cocroachden/planner/constraint/api/ShiftsPerScheduleRequestDTO";
 import EmployeesPerShiftRequestDTO
@@ -6,7 +7,6 @@ import ShiftFollowupRestrictionRequestDTO
   from "Frontend/generated/com/cocroachden/planner/constraint/api/ShiftFollowupRestrictionRequestDTO";
 import ConsecutiveWorkingDaysRequestDTO
   from "Frontend/generated/com/cocroachden/planner/constraint/api/ConsecutiveWorkingDaysRequestDTO";
-import StupidDate from "Frontend/generated/com/cocroachden/planner/core/StupidDate";
 import WorkShifts from "Frontend/generated/com/cocroachden/planner/solver/api/WorkShifts";
 import EmployeeShiftRequestDTO from "Frontend/generated/com/cocroachden/planner/constraint/api/EmployeeShiftRequestDTO";
 
@@ -22,27 +22,7 @@ export type CrudAction<T> = {
   payload: T
 }
 
-export function dateToStupidDate(date: Date): StupidDate {
-  return { day: date.getDate(), month: date.getMonth() + 1, year: date.getFullYear() }
-}
-
-export function stupidDateToString(date: StupidDate): string {
-  return [
-    doubleDigit(date.day),
-    doubleDigit(date.month),
-    date.year.toString()
-  ].join("/")
-}
-
-export function stupidDateToLocaleDate(date: StupidDate): string {
-  return [
-    date.year,
-    doubleDigit(date.month),
-    doubleDigit(date.day)
-  ].join("-")
-}
-
-export function dateToLocaleDate(date: Date): string {
+export function dateToString(date: Date): string {
   return [
     date.getFullYear(),
     doubleDigit(date.getUTCMonth() + 1),
@@ -50,21 +30,13 @@ export function dateToLocaleDate(date: Date): string {
   ].join("-")
 }
 
-export function localeDateToStupidDate(date: string): StupidDate {
+export function stringToDate(date: string): Date {
   const dateArray = date.split("-")
-  return {
-    year: Number.parseInt(dateArray[0]),
-    month: Number.parseInt(dateArray[1]),
-    day: Number.parseInt(dateArray[2]),
-  }
-}
-
-export function stupidDateToDate(date: StupidDate): Date {
-  return new Date(date.year,date.month -1, date.day)
-}
-
-export function dateToString(date: Date): string {
-  return stupidDateToString(dateToStupidDate(date))
+  return new Date(
+    Number.parseInt(dateArray[0]),
+    Number.parseInt(dateArray[1]) - 1,
+    Number.parseInt(dateArray[2])
+  )
 }
 
 export function getDistanceInDaysNumeric(startDate: Date, endDate: Date): number {
@@ -75,7 +47,7 @@ export function getDistanceInDaysNumeric(startDate: Date, endDate: Date): number
 type IdentifiableSpecificShiftRequestDTO = Pick<EmployeeShiftRequestDTO, "owner" | "date">
 
 export function areShiftRequestsSame(r1: IdentifiableSpecificShiftRequestDTO, r2: IdentifiableSpecificShiftRequestDTO): boolean {
-  return [r1.owner.id, stupidDateToString(r1.date)].join() === [r2.owner.id, stupidDateToString(r2.date)].join()
+  return [r1.owner.id, r1.date].join() === [r2.owner.id, r2.date].join()
 }
 
 type IdentifiableShiftsPerScheduleRequestDTO = Pick<ShiftsPerScheduleRequestDTO, "owner" | "targetShift">

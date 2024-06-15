@@ -6,8 +6,6 @@ import { Button } from "@hilla/react-components/Button";
 import { ValidationWorkerIssueCard } from "Frontend/views/schedule/components/validation/ValidationWorkerIssueCard";
 import { useContext } from "react";
 import { ValidationContext } from "Frontend/views/schedule/components/validation/ScheduleValidationCtxProvider";
-import { stupidDateToString } from "Frontend/util/utils";
-
 
 type Props = {
   isOpen: boolean
@@ -30,7 +28,7 @@ export function ValidationIssuesDialog(props: Props) {
       }}>
         {validationCtx.dayIssues
           .map(issue => <ValidationDayIssueCard
-            key={issue.issue + stupidDateToString(issue.localDate)}
+            key={issue.issue + issue.localDate}
             issue={issue}/>
           )}
         {validationCtx.employeeIssues

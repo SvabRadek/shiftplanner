@@ -2,12 +2,11 @@ import { Cell, DisplayMode, GridCell } from "Frontend/views/schedule/components/
 import { CSSProperties, ReactNode, useContext } from "react";
 import { FirstColumnCell } from "Frontend/views/schedule/components/schedulegrid/FirstColumnCell";
 import { FirstRowCell } from "Frontend/views/schedule/components/schedulegrid/FirstRowCell";
-import { CrudAction, stupidDateToDate, stupidDateToString } from "Frontend/util/utils";
+import { CrudAction, dateToString } from "Frontend/util/utils";
 import { ScheduleMode, ScheduleModeCtx } from "Frontend/views/schedule/ScheduleModeCtxProvider";
 import { ValidationContext } from "Frontend/views/schedule/components/validation/ScheduleValidationCtxProvider";
 import IssueSeverity from "Frontend/generated/com/cocroachden/planner/constraint/validations/IssueSeverity";
 import EmployeeRecord from "Frontend/generated/com/cocroachden/planner/employee/repository/EmployeeRecord";
-import StupidDate from "Frontend/generated/com/cocroachden/planner/core/StupidDate";
 import EmployeeId from "Frontend/generated/com/cocroachden/planner/employee/api/EmployeeId";
 
 const dayVocabulary: Record<number, string> = {
@@ -102,15 +101,15 @@ export function ScheduleGrid(props: Props) {
       />
     ))
     row.cells.forEach(c => {
-      const issues = validationCtx.dayIssueMap.get(stupidDateToString(c.date)) || []
+      const issues = validationCtx.dayIssueMap.get(dateToString(c.date)) || []
       const severity = validationCtx.getSeverityOfIssues(issues)
       items.push(
         renderCell(
           1,
           c.index + 2,
           <FirstRowCell
-            title={c.date.day.toString()}
-            hint={stupidDateToString(c.date) + ", " + dayVocabulary[stupidDateToDate(c.date).getDay()]}
+            title={c.date.getDay().toString()}
+            hint={dateToString(c.date) + ", " + dayVocabulary[c.date.getDay()]}
             style={{
               backgroundColor: severity === IssueSeverity.ERROR ? "var(--lumo-error-color-50pct)"
                 : severity === IssueSeverity.WARNING ? "var(--lumo-primary-color)"
@@ -139,7 +138,7 @@ function shadowIntensity(
   row: number,
   column: number,
   mode: ScheduleMode,
-  date?: StupidDate
+  date?: Date
 ): number {
   let shadowIntensity = 10
   if (date && isWeekend(date)) shadowIntensity += 20
@@ -153,7 +152,7 @@ function cellColor(
   row: number,
   column: number,
   mode: ScheduleMode,
-  date?: StupidDate
+  date?: Date
 ) {
   return "var(--lumo-shade-" + shadowIntensity(row, column, mode, date) + "pct)"
 }
@@ -199,8 +198,7 @@ function firstRowCell(): ReactNode {
   return null
 }
 
-function isWeekend(stupidDate: StupidDate): boolean {
-  const date = stupidDateToDate(stupidDate)
+function isWeekend(date: Date): boolean {
   return date.getDay() === 0 || date.getDay() === 6
 }
 

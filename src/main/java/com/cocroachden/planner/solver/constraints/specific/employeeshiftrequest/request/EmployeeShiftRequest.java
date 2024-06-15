@@ -23,7 +23,7 @@ public class EmployeeShiftRequest extends AbstractEmployeeSpecificConstraint {
   public static EmployeeShiftRequest from(EmployeeShiftRequestDTO dto) {
     return new EmployeeShiftRequest(
         dto.getOwner(),
-        dto.getDate().toDate(),
+        dto.getDate(),
         dto.getRequestedShift()
     );
   }

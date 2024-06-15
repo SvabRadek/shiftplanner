@@ -8,10 +8,7 @@ import lombok.Getter;
 import lombok.SneakyThrows;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Getter
@@ -39,14 +36,18 @@ public class SchedulePlan {
 
   public LocalDate getStartDate() {
     return assignments.values().stream().toList()
-        .get(0).values().stream().toList()
-        .get(0).date();
+        .get(0).values().stream()
+        .min(Comparator.comparing(ScheduleDay::date))
+        .orElseThrow()
+        .date();
   }
 
   public LocalDate getLastDate() {
     var days = assignments.values().stream().toList().get(0);
-    return days.values().stream().toList()
-        .get(days.size() - 1).date();
+    return days.values().stream()
+        .max(Comparator.comparing(ScheduleDay::date))
+        .orElseThrow()
+        .date();
   }
 
   public ScheduleDay getSpecificDay(EmployeeId employeeId, LocalDate date) {
@@ -90,7 +91,6 @@ public class SchedulePlan {
       });
       builder.append("\n");
     });
-
     builder.append("Employees:\n");
     this.employees.forEach((employeeId, employee) -> {
       builder.append("  Employee ID: ").append(employeeId).append("\n");

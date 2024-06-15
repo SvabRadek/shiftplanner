@@ -2,7 +2,6 @@ import { createContext, ReactNode, useMemo, useState } from "react";
 import DayValidationIssue from "Frontend/generated/com/cocroachden/planner/constraint/validations/day/DayValidationIssue";
 import ConstraintRequestDTO from "Frontend/generated/com/cocroachden/planner/constraint/api/ConstraintRequestDTO";
 import { ConstraintValidationEndpoint } from "Frontend/generated/endpoints";
-import { stupidDateToString } from "Frontend/util/utils";
 import IssueSeverity from "Frontend/generated/com/cocroachden/planner/constraint/validations/IssueSeverity";
 import SolverConfigurationDTO from "Frontend/generated/com/cocroachden/planner/solver/api/SolverConfigurationDTO";
 import EmployeeValidationIssue
@@ -48,8 +47,8 @@ export function ScheduleValidationCtxProvider({ children }: { children: ReactNod
   const dayIssueMap = useMemo(() => {
     const map = new Map<string, DayValidationIssue[]>
     issues.dayIssues.forEach(i => {
-      const existing = map.get(stupidDateToString(i.localDate))
-      map.set(stupidDateToString(i.localDate), existing ? [...existing, i] : [i])
+      const existing = map.get(i.localDate)
+      map.set(i.localDate, existing ? [...existing, i] : [i])
     })
     return map
   }, [issues.dayIssues])

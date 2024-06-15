@@ -1,10 +1,9 @@
 package com.cocroachden.planner.constraint.validations;
 
 import com.cocroachden.planner.constraint.api.ConstraintType;
-import com.cocroachden.planner.constraint.api.ShiftsPerScheduleRequestDTO;
 import com.cocroachden.planner.constraint.api.EmployeeShiftRequestDTO;
+import com.cocroachden.planner.constraint.api.ShiftsPerScheduleRequestDTO;
 import com.cocroachden.planner.constraint.validations.employee.ConstraintEmployeeValidator;
-import com.cocroachden.planner.core.StupidDate;
 import com.cocroachden.planner.employee.api.EmployeeId;
 import com.cocroachden.planner.solver.api.SolverConfigurationDTO;
 import com.cocroachden.planner.solver.api.WorkShifts;
@@ -12,6 +11,7 @@ import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import java.time.Instant;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
 
@@ -32,8 +32,8 @@ class ConstraintEmployeeValidatorTest {
             "",
             Instant.now(),
             Instant.now(),
-            new StupidDate(1, 1, 1),
-            new StupidDate(2, 1, 1),
+            LocalDate.of(1, 1, 1),
+            LocalDate.of(1, 1, 2),
             List.of(new EmployeeId(0L), new EmployeeId(1L), new EmployeeId(2L)),
             List.of(shiftsPerSchedule)
         )
@@ -57,14 +57,14 @@ class ConstraintEmployeeValidatorTest {
         UUID.randomUUID(),
         ConstraintType.EMPLOYEE_SHIFT_REQUEST,
         new EmployeeId(0L),
-        new StupidDate(1, 1, 1),
+        LocalDate.of(1, 1, 1),
         WorkShifts.DAY
     );
     var spec2 = new EmployeeShiftRequestDTO(
         UUID.randomUUID(),
         ConstraintType.EMPLOYEE_SHIFT_REQUEST,
         new EmployeeId(0L),
-        new StupidDate(2, 1, 1),
+        LocalDate.of(1, 1, 2),
         WorkShifts.DAY
     );
     var issues = ConstraintEmployeeValidator.validate(
@@ -73,8 +73,8 @@ class ConstraintEmployeeValidatorTest {
             "",
             Instant.now(),
             Instant.now(),
-            new StupidDate(1, 1, 1),
-            new StupidDate(2, 1, 1),
+            LocalDate.of(1, 1, 1),
+            LocalDate.of(1, 1, 2),
             List.of(new EmployeeId(0L), new EmployeeId(1L), new EmployeeId(2L)),
             List.of(shiftsPerSchedule, spec1, spec2)
         )

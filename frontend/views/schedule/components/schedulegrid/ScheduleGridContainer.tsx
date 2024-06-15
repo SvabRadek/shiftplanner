@@ -1,5 +1,8 @@
 import { useMemo, useState } from "react";
-import { CrudAction, dateToString, dateToStupidDate, stupidDateToDate, stupidDateToString } from "Frontend/util/utils";
+import {
+  CrudAction,
+  dateToString, stringToDate
+} from "Frontend/util/utils";
 import { Row, ScheduleGrid } from "Frontend/views/schedule/components/schedulegrid/ScheduleGrid";
 import { Cell, DisplayMode } from "Frontend/views/schedule/components/schedulegrid/GridCell";
 import ShiftsPerScheduleRequestDTO
@@ -55,14 +58,14 @@ export function ScheduleGridContainer(props: Props) {
       {
         type: ConstraintType.EMPLOYEE_SHIFT_REQUEST,
         owner: updatedCell.owner,
-        date: updatedCell.date,
+        date: dateToString(updatedCell.date),
         requestedShift: updatedCell.shift
       }
     ])
   }
 
   function handleGroupShiftChange(originCell: Cell, endCell: Cell) {
-    const originDate = originCell.index < endCell.index ? stupidDateToDate(originCell.date) : stupidDateToDate(endCell.date)
+    const originDate = originCell.index < endCell.index ? originCell.date : endCell.date
     const lowEnd = originCell.index < endCell.index ? originCell.index : endCell.index
     const highEnd = originCell.index > endCell.index ? originCell.index : endCell.index
     const requests: Omit<EmployeeShiftRequestDTO, "id">[] = []
@@ -74,7 +77,7 @@ export function ScheduleGridContainer(props: Props) {
           type: ConstraintType.EMPLOYEE_SHIFT_REQUEST,
           owner: originCell.owner,
           requestedShift: originCell.shift,
-          date: dateToStupidDate(requestDate)
+          date: dateToString(requestDate)
         } as Omit<EmployeeShiftRequestDTO, "id">
       )
     }
@@ -83,7 +86,7 @@ export function ScheduleGridContainer(props: Props) {
 
   const shiftRequestMap = useMemo(() => {
     const map = new Map<string, EmployeeShiftRequestDTO>()
-    props.shiftRequests.forEach(r => map.set(stupidDateToString(r.date) + r.owner.id, r))
+    props.shiftRequests.forEach(r => map.set(r.date + r.owner.id, r))
     return map
   }, [props.shiftRequests])
 
@@ -136,8 +139,8 @@ function createRows(
   highlightInfo: Highlight,
   results?: SolverSolutionDTO
 ): Row[] {
-  const startDate = stupidDateToDate(request.startDate)
-  const endDate = stupidDateToDate(request.endDate)
+  const startDate = stringToDate(request.startDate)
+  const endDate = stringToDate(request.endDate)
   const dayIndexes = getDistanceInDays(startDate, endDate)
   return request.employees
     .map(employeeId => {
@@ -164,7 +167,7 @@ function createRows(
             shift: cellShift,
             index: dayOffset,
             owner: employeeId,
-            date: dateToStupidDate(cellDate),
+            date: cellDate,
             isHighlighted: highLightIndexes.find(i => i === dayOffset) !== undefined,
             requestId: relatedRequest?.id,
             displayMode: results

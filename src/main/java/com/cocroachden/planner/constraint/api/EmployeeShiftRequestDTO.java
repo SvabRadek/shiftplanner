@@ -1,15 +1,15 @@
 package com.cocroachden.planner.constraint.api;
 
-import com.cocroachden.planner.core.StupidDate;
 import com.cocroachden.planner.employee.api.EmployeeId;
-import com.cocroachden.planner.solver.constraints.specific.employeeshiftrequest.request.EmployeeShiftRequest;
 import com.cocroachden.planner.solver.api.WorkShifts;
+import com.cocroachden.planner.solver.constraints.specific.employeeshiftrequest.request.EmployeeShiftRequest;
 import dev.hilla.Nonnull;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDate;
 import java.util.UUID;
 
 @AllArgsConstructor
@@ -21,10 +21,11 @@ public class EmployeeShiftRequestDTO implements ConstraintRequestDTO {
         id,
         EmployeeShiftRequest.TYPE,
         request.getOwner().orElseThrow(),
-        StupidDate.fromDate(request.getDate()),
+        request.getDate(),
         request.getRequestedShift()
     );
   }
+
   @Nonnull
   private UUID id;
   @Nonnull
@@ -32,7 +33,7 @@ public class EmployeeShiftRequestDTO implements ConstraintRequestDTO {
   @Nonnull
   private EmployeeId owner;
   @Nonnull
-  private StupidDate date;
+  private LocalDate date;
   @Nonnull
   private WorkShifts requestedShift;
 }

@@ -36,7 +36,7 @@ public class ConstraintEmployeeValidator {
       SolverConfigurationDTO configuration
   ) {
     var issues = new ArrayList<EmployeeValidationIssue>();
-    var daysInSchedule = configuration.getStartDate().toDate().datesUntil(configuration.getEndDate().toDate()).count();
+    var daysInSchedule = configuration.getStartDate().datesUntil(configuration.getEndDate()).count();
     var constraints = configuration.getConstraints();
     var employeeSpecificRequests = constraints.stream()
         .filter(r -> r instanceof EmployeeShiftRequestDTO)
@@ -88,7 +88,7 @@ public class ConstraintEmployeeValidator {
                     .map(c1 -> (EmployeeShiftRequestDTO) c1)
                     .filter(c1 -> c1.getOwner().equals(w))
                     .filter(c1 -> c1.getRequestedShift().isSameAs(WorkShifts.WORKING_SHIFTS))
-                    .map(c1 -> c1.getDate().toDate())
+                    .map(EmployeeShiftRequestDTO::getDate)
                     .collect(Collectors.toMap(Function.identity(), Function.identity()));
 
                 var isOverLimit = datesOfWorkRequests.values().stream()

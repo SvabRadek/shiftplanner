@@ -1,16 +1,16 @@
 package com.cocroachden.planner.solver.service.solution;
 
 
-import com.cocroachden.planner.core.StupidDate;
 import com.cocroachden.planner.employee.api.EmployeeId;
-import com.cocroachden.planner.solver.api.SolverSolutionDTO;
 import com.cocroachden.planner.solver.api.SolutionStatus;
-import com.cocroachden.planner.solver.service.schedule.SchedulePlan;
+import com.cocroachden.planner.solver.api.SolverSolutionDTO;
 import com.cocroachden.planner.solver.api.WorkShifts;
+import com.cocroachden.planner.solver.service.schedule.SchedulePlan;
 import com.google.ortools.sat.CpSolverSolutionCallback;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
+import java.time.LocalDate;
 import java.util.*;
 import java.util.function.Consumer;
 
@@ -48,11 +48,11 @@ public class SolverSolutionCallback extends CpSolverSolutionCallback {
     var latestResponse = new SolverSolution(response);
     this.printStatsHeader(currentObjective);
     this.latestResponse = latestResponse;
-    var employeeMap = new HashMap<Long, Map<StupidDate, WorkShifts>>();
+    var employeeMap = new HashMap<Long, Map<LocalDate, WorkShifts>>();
     latestResponse.workdays().forEach((employeeId, responseWorkDays) -> {
-      var shiftMap = new HashMap<StupidDate, WorkShifts>();
+      var shiftMap = new HashMap<LocalDate, WorkShifts>();
       responseWorkDays.forEach(solutionWorkDay -> {
-        shiftMap.put(StupidDate.fromDate(solutionWorkDay.date()), solutionWorkDay.assignedShift());
+        shiftMap.put(solutionWorkDay.date(), solutionWorkDay.assignedShift());
       });
       employeeMap.put(employeeId.getId(), shiftMap);
     });
@@ -69,7 +69,6 @@ public class SolverSolutionCallback extends CpSolverSolutionCallback {
       stopSearch();
     }
   }
-
 
 
   private HashMap<EmployeeId, List<SolutionWorkDay>> createResponseSchedule() {

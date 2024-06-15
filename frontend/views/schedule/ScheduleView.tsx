@@ -13,9 +13,7 @@ import {
   areShiftRequestsSame,
   CrudAction,
   CRUDActions,
-  generateUUID,
-  localeDateToStupidDate,
-  stupidDateToLocaleDate
+  generateUUID, stringToDate
 } from "Frontend/util/utils";
 import { Notification } from "@hilla/react-components/Notification";
 import { Card } from "Frontend/components/Card";
@@ -319,20 +317,20 @@ export default function ScheduleView() {
           />
           <DatePicker
             label={"Od"}
-            value={request && stupidDateToLocaleDate(request?.startDate)}
+            value={request && request?.startDate}
             onChange={e => setRequest({
               ...request!,
-              startDate: localeDateToStupidDate(e.target.value)
+              startDate: e.target.value
             })}
             readonly={modeCtx.mode !== ScheduleMode.EDIT}
             disabled={!request}
           />
           <DatePicker
             label={"Do"}
-            value={request && stupidDateToLocaleDate(request?.endDate)}
+            value={request && request?.endDate}
             onChange={e => setRequest({
               ...request!,
-              endDate: localeDateToStupidDate(e.target.value)
+              endDate: e.target.value
             })}
             readonly={modeCtx.mode !== ScheduleMode.EDIT}
             disabled={!request}

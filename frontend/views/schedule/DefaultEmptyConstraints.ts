@@ -1,4 +1,4 @@
-import { dateToStupidDate } from "Frontend/util/utils";
+import { dateToString, generateUUID } from "Frontend/util/utils";
 import ConstraintType from "Frontend/generated/com/cocroachden/planner/constraint/api/ConstraintType";
 import WorkShifts from "Frontend/generated/com/cocroachden/planner/solver/api/WorkShifts";
 import ShiftPatternRequestDTO from "Frontend/generated/com/cocroachden/planner/constraint/api/ShiftPatternRequestDTO";
@@ -95,7 +95,7 @@ export const defaultConstraints: DefaultConstraints = {
     label: "Pocet po sobe jdoucich smen",
     constraint: {
       type: ConstraintType.CONSECUTIVE_WORKING_DAYS,
-      id: "new-constraint",
+      id: generateUUID(),
       targetShift: WorkShifts.WORKING_SHIFTS,
       hardMin: 0,
       softMin: 0,
@@ -109,7 +109,7 @@ export const defaultConstraints: DefaultConstraints = {
     label: "Pocet pracovniku na smenu",
     constraint: {
       type: ConstraintType.EMPLOYEES_PER_SHIFT,
-      id: "new-constraint",
+      id: generateUUID(),
       targetShift: WorkShifts.DAY,
       softMin: 0,
       hardMin: 0,
@@ -123,7 +123,7 @@ export const defaultConstraints: DefaultConstraints = {
     label: "Omezeni navaznosti smen",
     constraint: {
       type: ConstraintType.SHIFT_FOLLOW_UP_RESTRICTION,
-      id: "new-constraint",
+      id: generateUUID(),
       firstShift: WorkShifts.NIGHT,
       forbiddenFollowup: WorkShifts.DAY,
       penalty: 0
@@ -133,7 +133,7 @@ export const defaultConstraints: DefaultConstraints = {
     label: "Vzor rozlozeni smen",
     constraint: {
       type: ConstraintType.SHIFT_PATTERN_CONSTRAINT,
-      id: "new-constraint",
+      id: generateUUID(),
       owner: { id: 0 },
       shiftPattern: [],
       reward: 1,
@@ -144,16 +144,16 @@ export const defaultConstraints: DefaultConstraints = {
     label: "Specificka smena na dane datum",
     constraint: {
       type: ConstraintType.EMPLOYEE_SHIFT_REQUEST,
-      id: "new-constraint",
+      id: generateUUID(),
       owner: { id: 0 },
-      date: dateToStupidDate(new Date()),
+      date: dateToString(new Date()),
       requestedShift: WorkShifts.ANY
     }
   },
   [ConstraintType.SHIFT_PER_SCHEDULE]: {
     label: "Pocet smen v rozvrhu",
     constraint: {
-      id: "new-constraint",
+      id: generateUUID(),
       owner: { id: 0 },
       type: ConstraintType.SHIFT_PER_SCHEDULE,
       targetShift: WorkShifts.ANY,
@@ -169,7 +169,7 @@ export const defaultConstraints: DefaultConstraints = {
     label: "Nastaveni trojitych smen",
     constraint: {
       type: ConstraintType.TRIPLE_SHIFTS_CONSTRAINT,
-      id: "new-constraint",
+      id: generateUUID(),
       owner: { id: 0 },
       penaltyForShiftTripletOutsideWeekend: 50
     }

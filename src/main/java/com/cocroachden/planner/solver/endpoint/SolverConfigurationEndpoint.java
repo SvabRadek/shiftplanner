@@ -28,8 +28,8 @@ public class SolverConfigurationEndpoint {
         .findById(solverConfig.getId())
         .orElse(new SolverConfigurationRecord());
     configurationRecord.setName(solverConfig.getName());
-    configurationRecord.setEndDate(solverConfig.getEndDate().toDate());
-    configurationRecord.setStartDate(solverConfig.getStartDate().toDate());
+    configurationRecord.setEndDate(solverConfig.getEndDate());
+    configurationRecord.setStartDate(solverConfig.getStartDate());
     configurationRecord.setEmployees(solverConfig.getEmployees());
     configurationRecord.getConstraintRequestRecords().clear();
     configurationRecord.setConstraintRequestRecords(

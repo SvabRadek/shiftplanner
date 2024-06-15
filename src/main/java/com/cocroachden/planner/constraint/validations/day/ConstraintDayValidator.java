@@ -3,7 +3,6 @@ package com.cocroachden.planner.constraint.validations.day;
 import com.cocroachden.planner.constraint.api.EmployeeShiftRequestDTO;
 import com.cocroachden.planner.constraint.api.EmployeesPerShiftRequestDTO;
 import com.cocroachden.planner.constraint.validations.IssueSeverity;
-import com.cocroachden.planner.core.StupidDate;
 import com.cocroachden.planner.solver.api.SolverConfigurationDTO;
 import com.cocroachden.planner.solver.api.WorkShifts;
 
@@ -11,7 +10,6 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.stream.IntStream;
 
 public class ConstraintDayValidator {
   public static List<DayValidationIssue> validate(SolverConfigurationDTO configurationRecord) {
@@ -29,19 +27,14 @@ public class ConstraintDayValidator {
       SolverConfigurationDTO configurationRecord
   ) {
     var constraints = configurationRecord.getConstraints();
-    var startDate = configurationRecord.getStartDate().toDate();
-    var endDate = configurationRecord.getEndDate().toDate();
-    var dayCount = startDate.until(endDate).getDays();
-    var maxEmployees = perShiftRequestDTO.getHardMax();
-    var minEmployees = perShiftRequestDTO.getHardMin();
-    var shift = perShiftRequestDTO.getTargetShift();
-    return IntStream.range(0, dayCount)
-        .mapToObj(startDate::plusDays)
+    var startDate = configurationRecord.getStartDate();
+    var endDate = configurationRecord.getEndDate();
+    return startDate.datesUntil(endDate)
         .map(day -> {
           var shiftRequestsForGivenDay = constraints.stream()
               .filter(c -> c instanceof EmployeeShiftRequestDTO)
               .map(c -> (EmployeeShiftRequestDTO) c)
-              .filter(c -> c.getDate().equals(StupidDate.fromDate(day)))
+              .filter(c -> c.getDate().equals(day))
               .toList();
           return evaluateGivenDay(configurationRecord, perShiftRequestDTO, day, shiftRequestsForGivenDay);
         }).flatMap(Collection::stream)
@@ -67,14 +60,14 @@ public class ConstraintDayValidator {
         .size();
     if (peopleRequestingGivenShiftThatDay > employeesPerShiftRequestDTO.getHardMax()) {
       issues.add(new DayValidationIssue(
-          StupidDate.fromDate(day),
+          day,
           IssueSeverity.ERROR,
           "O směnu žádá víc lidí, než je povolený maximální limit."
       ));
     }
     if (optimisticCountOfAssignablePeople < employeesPerShiftRequestDTO.getHardMin()) {
       issues.add(new DayValidationIssue(
-          StupidDate.fromDate(day),
+          day,
           IssueSeverity.WARNING,
           "Zdá se, že lidí, kterým se dá přiřadit pracovní směna, je méně než povolené minimum."
       ));

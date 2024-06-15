@@ -151,7 +151,7 @@ export function ShiftPatternConstraintForm(props: Props) {
                       shift: shift,
                       index: index,
                       owner: props.request.owner!,
-                      date: { day: 0, month: 0, year: 0 },
+                      date: new Date(0, 0, 0),
                       requestId: props.request.id,
                       isHighlighted: index === props.request.startDayIndex,
                     }}

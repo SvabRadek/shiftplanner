@@ -1,11 +1,11 @@
 package com.cocroachden.planner.solver.api;
 
-import com.cocroachden.planner.core.StupidDate;
 import dev.hilla.Nonnull;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDate;
 import java.util.Map;
 
 @AllArgsConstructor
@@ -19,5 +19,5 @@ public class SolverSolutionDTO {
   @Nonnull
   private Integer resultIndex;
   @Nonnull
-  private Map<@Nonnull Long, @Nonnull Map<@Nonnull StupidDate,@Nonnull WorkShifts>> assignments;
+  private Map<@Nonnull Long, @Nonnull Map<@Nonnull LocalDate, @Nonnull WorkShifts>> assignments;
 }

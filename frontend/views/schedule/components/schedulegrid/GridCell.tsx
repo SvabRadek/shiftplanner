@@ -2,7 +2,6 @@ import { ContextMenu, ContextMenuItem, ContextMenuItemSelectedEvent } from "@hil
 import { workShiftBindings } from "Frontend/views/schedule/WorkShiftBindigs";
 import { CSSProperties } from "react";
 import WorkShifts from "Frontend/generated/com/cocroachden/planner/solver/api/WorkShifts";
-import StupidDate from "Frontend/generated/com/cocroachden/planner/core/StupidDate";
 import EmployeeId from "Frontend/generated/com/cocroachden/planner/employee/api/EmployeeId";
 
 export enum DisplayMode {
@@ -15,7 +14,7 @@ export type Cell = {
   shift: WorkShifts
   index: number
   owner: EmployeeId
-  date: StupidDate
+  date: Date
   isHighlighted: boolean
   displayMode?: DisplayMode
   requestId?: string
