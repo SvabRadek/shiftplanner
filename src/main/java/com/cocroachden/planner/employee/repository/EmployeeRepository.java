@@ -9,4 +9,6 @@ import java.util.List;
 public interface EmployeeRepository extends CrudRepository<EmployeeRecord, Long>, JpaSpecificationExecutor<EmployeeRecord> {
 
   List<EmployeeRecord> findByIdNotIn(Collection<Long> ids);
+
+  List<EmployeeRecord> findByIdIn(Collection<Long> ids);
 }

@@ -24,7 +24,6 @@ public class GenericConstraintApplier {
       SolutionObjectives solutionObjectives,
       ConstraintRequest request
   ) {
-      log.debug("Applying '{}'", request.getType());
       this.getSupportingConstraint(request).apply(schedulePlan, model, solutionObjectives, request);
   }
 

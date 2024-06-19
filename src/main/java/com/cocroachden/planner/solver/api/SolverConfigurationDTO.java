@@ -1,7 +1,7 @@
 package com.cocroachden.planner.solver.api;
 
 import com.cocroachden.planner.constraint.api.ConstraintRequestDTO;
-import com.cocroachden.planner.employee.api.EmployeeId;
+import com.cocroachden.planner.employee.api.EmployeeDTO;
 import com.cocroachden.planner.solver.repository.SolverConfigurationRecord;
 import dev.hilla.Nonnull;
 import lombok.AllArgsConstructor;
@@ -25,7 +25,9 @@ public class SolverConfigurationDTO {
         record.getLastUpdated(),
         record.getStartDate(),
         record.getEndDate(),
-        record.getEmployees(),
+        record.getEmployees().stream()
+            .map(EmployeeDTO::from)
+            .toList(),
         record.getConstraintRequestRecords().stream()
             .map(ConstraintMapper::fromRecord)
             .toList()
@@ -45,7 +47,7 @@ public class SolverConfigurationDTO {
   @Nonnull
   private LocalDate endDate;
   @Nonnull
-  private List<@Nonnull EmployeeId> employees;
+  private List<@Nonnull EmployeeDTO> employees;
   @Nonnull
   private List<@Nonnull ConstraintRequestDTO> constraints;
 }

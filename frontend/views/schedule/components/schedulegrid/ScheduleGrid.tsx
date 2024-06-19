@@ -108,7 +108,7 @@ export function ScheduleGrid(props: Props) {
           1,
           c.index + 2,
           <FirstRowCell
-            title={c.date.getDay().toString()}
+            title={c.date.getDate().toString()}
             hint={dateToString(c.date) + ", " + dayVocabulary[c.date.getDay()]}
             style={{
               backgroundColor: severity === IssueSeverity.ERROR ? "var(--lumo-error-color-50pct)"
@@ -192,10 +192,6 @@ function renderCell(
       {content}
     </div>
   );
-}
-
-function firstRowCell(): ReactNode {
-  return null
 }
 
 function isWeekend(date: Date): boolean {

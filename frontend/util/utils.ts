@@ -25,8 +25,8 @@ export type CrudAction<T> = {
 export function dateToString(date: Date): string {
   return [
     date.getFullYear(),
-    doubleDigit(date.getUTCMonth() + 1),
-    doubleDigit(date.getUTCDate())
+    doubleDigit(date.getMonth() + 1),
+    doubleDigit(date.getDate())
   ].join("-")
 }
 

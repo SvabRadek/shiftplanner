@@ -1,6 +1,7 @@
 package com.cocroachden.planner.solver.endpoint;
 
 import com.cocroachden.planner.constraint.repository.ConstraintRequestRecord;
+import com.cocroachden.planner.employee.api.EmployeeId;
 import com.cocroachden.planner.solver.api.SolutionStatus;
 import com.cocroachden.planner.solver.api.SolverSolutionDTO;
 import com.cocroachden.planner.solver.repository.SolverConfigurationRepository;
@@ -34,6 +35,7 @@ public class SolverEndpoint {
         solverConfigRecord.getStartDate(),
         solverConfigRecord.getEndDate(),
         solverConfigRecord.getEmployees().stream()
+            .map(e -> new EmployeeId(e.getId()))
             .map(employeeId -> new ScheduleEmployee(employeeId, 1))
             .toList(),
         solverConfigRecord.getConstraintRequestRecords().stream()
@@ -41,9 +43,9 @@ public class SolverEndpoint {
             .toList()
     );
     var flux = Flux
-        .<SolverSolutionDTO>create(fluxSink -> solverService.solve(solverConfig, fluxSink::next))
-        .takeWhile(solution -> solution.getSolutionStatus().equals(SolutionStatus.OK));
-
+        .<SolverSolutionDTO>create(fluxSink -> {
+          solverService.solve(solverConfig, fluxSink::next);
+        }).takeWhile(solution -> solution.getSolutionStatus().equals(SolutionStatus.OK));
     return EndpointSubscription.of(
         flux,
         () -> {

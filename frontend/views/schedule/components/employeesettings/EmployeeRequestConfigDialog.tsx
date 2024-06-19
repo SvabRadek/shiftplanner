@@ -6,8 +6,8 @@ import { Button } from "@hilla/react-components/Button";
 import ShiftsPerScheduleRequestDTO
   from "Frontend/generated/com/cocroachden/planner/constraint/api/ShiftsPerScheduleRequestDTO";
 import {
-  ShiftCountConstraintForm
-} from "Frontend/views/schedule/components/employeesettings/constraintform/ShiftCountConstraintForm";
+  ShiftPerScheduleConstraintForm
+} from "Frontend/views/schedule/components/employeesettings/constraintform/ShiftPerScheduleConstraintForm";
 import { Icon } from "@hilla/react-components/Icon";
 import { CrudAction, CRUDActions, generateUUID } from "Frontend/util/utils";
 import { Card } from "Frontend/components/Card";
@@ -109,7 +109,7 @@ export function EmployeeRequestConfigDialog(props: Props) {
         </Card>
         {renderSectionHeader("Pocet smen na rozvrh", "vaadin:plus", handleCreateNewShiftPerSchedule)}
         {props.shiftsPerScheduleRequests.map(request => (
-          <ShiftCountConstraintForm
+          <ShiftPerScheduleConstraintForm
             key={request.owner.id + request.targetShift}
             request={request}
             onShiftCountAction={props.onShiftPerScheduleAction}

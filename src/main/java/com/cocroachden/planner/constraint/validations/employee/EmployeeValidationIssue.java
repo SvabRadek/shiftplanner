@@ -7,7 +7,7 @@ import dev.hilla.Nonnull;
 import java.io.Serializable;
 
 public record EmployeeValidationIssue(
-    @Nonnull EmployeeId employeeId,
+    @Nonnull Long employeeId,
     @Nonnull IssueSeverity severity,
     @Nonnull String issue
 ) implements Serializable {

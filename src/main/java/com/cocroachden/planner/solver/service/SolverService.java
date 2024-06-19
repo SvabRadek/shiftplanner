@@ -1,8 +1,8 @@
 package com.cocroachden.planner.solver.service;
 
 
-import com.cocroachden.planner.solver.api.SolverSolutionDTO;
 import com.cocroachden.planner.solver.api.SolutionStatus;
+import com.cocroachden.planner.solver.api.SolverSolutionDTO;
 import com.cocroachden.planner.solver.constraints.GenericConstraintApplier;
 import com.cocroachden.planner.solver.constraints.specific.shiftperday.request.OneShiftPerDayRequest;
 import com.cocroachden.planner.solver.service.schedule.SchedulePlan;
@@ -10,7 +10,6 @@ import com.cocroachden.planner.solver.service.solution.SolverSolutionCallback;
 import com.google.ortools.Loader;
 import com.google.ortools.sat.CpModel;
 import com.google.ortools.sat.CpSolver;
-import com.google.ortools.sat.CpSolverStatus;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -45,7 +44,7 @@ public class SolverService {
         constraintApplier.apply(schedulePlan, model, objectives, request)
     );
     if (solverConfiguration.constraintRequests().stream().noneMatch(c -> c instanceof OneShiftPerDayRequest)) {
-      //Apply constraint to assign only one shift per day. So basic constraint it feels useless to have it in configuration
+      //Apply constraint to assign only one shift per day. It is so basic constraint it feels useless to have it in configuration
       constraintApplier.apply(schedulePlan, model, objectives, new OneShiftPerDayRequest());
     }
     this.cpSolver = new CpSolver();
@@ -60,24 +59,29 @@ public class SolverService {
     );
     this.solverThread = new Thread(() -> {
       var status = this.cpSolver.solve(model, this.solutionCb);
-      if (status == CpSolverStatus.INFEASIBLE) {
-        solutionCallback.accept(
-            new SolverSolutionDTO(
-                SolutionStatus.INFEASIBLE,
-                0d,
-                0,
-                new HashMap<>()
-            ));
-      }
-      if (status == CpSolverStatus.MODEL_INVALID) {
-        solutionCallback.accept(
-            new SolverSolutionDTO(
-                SolutionStatus.MODEL_INVALID,
-                0d,
-                0,
-                new HashMap<>()
-            )
+      var markerSolution = switch (status) {
+        case INFEASIBLE -> new SolverSolutionDTO(
+            SolutionStatus.INFEASIBLE,
+            0d,
+            0,
+            new HashMap<>()
         );
+        case MODEL_INVALID -> new SolverSolutionDTO(
+            SolutionStatus.MODEL_INVALID,
+            0d,
+            0,
+            new HashMap<>()
+        );
+        case OPTIMAL -> new SolverSolutionDTO(
+            SolutionStatus.OPTIMAL,
+            0d,
+            0,
+            new HashMap<>()
+        );
+        default -> null;
+      };
+      if (markerSolution != null) {
+        solutionCallback.accept(markerSolution);
       }
       log.info(model.modelStats());
       log.info(model.validate());

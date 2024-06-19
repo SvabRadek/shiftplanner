@@ -1,6 +1,9 @@
 package com.cocroachden.planner.solver.endpoint;
 
 import com.cocroachden.planner.constraint.repository.ConstraintRequestRecord;
+import com.cocroachden.planner.employee.api.EmployeeDTO;
+import com.cocroachden.planner.employee.api.EmployeeId;
+import com.cocroachden.planner.employee.repository.EmployeeRepository;
 import com.cocroachden.planner.solver.api.ConstraintMapper;
 import com.cocroachden.planner.solver.api.SolverConfigurationDTO;
 import com.cocroachden.planner.solver.repository.SolverConfigurationMetadata;
@@ -22,6 +25,7 @@ import java.util.stream.StreamSupport;
 @AllArgsConstructor
 public class SolverConfigurationEndpoint {
   private SolverConfigurationRepository solverConfigurationRepository;
+  private EmployeeRepository employeeRepository;
 
   public @Nonnull UUID save(@Nonnull SolverConfigurationDTO solverConfig) {
     var configurationRecord = solverConfigurationRepository
@@ -30,7 +34,6 @@ public class SolverConfigurationEndpoint {
     configurationRecord.setName(solverConfig.getName());
     configurationRecord.setEndDate(solverConfig.getEndDate());
     configurationRecord.setStartDate(solverConfig.getStartDate());
-    configurationRecord.setEmployees(solverConfig.getEmployees());
     configurationRecord.getConstraintRequestRecords().clear();
     configurationRecord.setConstraintRequestRecords(
         solverConfig.getConstraints().stream()
@@ -42,6 +45,14 @@ public class SolverConfigurationEndpoint {
               return record;
             }).collect(Collectors.toCollection(ArrayList::new))
     );
+    var employeeRecords = employeeRepository.findByIdIn(
+        solverConfig.getEmployees().stream()
+            .map(EmployeeDTO::getId)
+            .toList()
+    );
+    employeeRecords.forEach(e -> e.addConfiguration(configurationRecord));
+    configurationRecord.setEmployees(employeeRecords);
+    employeeRepository.saveAll(employeeRecords);
     return solverConfigurationRepository.save(configurationRecord).getId();
   }
 

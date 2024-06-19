@@ -153,6 +153,7 @@ function createRows(
         .map(dayOffset => {
           const cellDate = new Date(startDate)
           cellDate.setDate(startDate.getDate() + dayOffset)
+          console.log(dateToString(cellDate))
           const relatedRequest = shiftRequests.get(dateToString(cellDate) + employeeId.id)
           const cellShift = getResultingShift(
             results,

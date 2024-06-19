@@ -18,7 +18,6 @@ public class ShiftsPerScheduleConstraintApplier implements ConstraintApplier {
   @Override
   public void apply(SchedulePlan schedulePlan, CpModel model, SolutionObjectives objective, ConstraintRequest constraintRequest) {
     var request = (ShiftsPerScheduleRequest) constraintRequest;
-    log.debug("Applying constraint: {}", request.toString());
     var targetShift = request.getTargetShift();
     var workDays = schedulePlan.getAllDaysForEmployee(request.getOwner().orElseThrow());
     var assignedShifts = new ArrayList<BoolVar>();

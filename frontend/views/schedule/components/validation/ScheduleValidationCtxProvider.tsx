@@ -12,7 +12,7 @@ type ScheduleValidationCtxType = {
   employeeIssues: EmployeeValidationIssue[]
   dayIssueMap: Map<string, DayValidationIssue[]>
   employeeIssueMap: Map<number, EmployeeValidationIssue[]>
-  validate: (config: SolverConfigurationDTO, constraints: ConstraintRequestDTO[]) => void
+  validate: (config: SolverConfigurationDTO) => void
   clear: () => void
   containsIssues: boolean
   getSeverityOfIssues: (issues: { severity: IssueSeverity }[]) => IssueSeverity
@@ -62,10 +62,10 @@ export function ScheduleValidationCtxProvider({ children }: { children: ReactNod
     return map
   }, [issues.employeeIssues])
 
-  function handleValidation(config: SolverConfigurationDTO, constraints: ConstraintRequestDTO[]) {
+  function handleValidation(config: SolverConfigurationDTO) {
 
-    ConstraintValidationEndpoint.validateDays({ ...config, constraints }).then(dayIssues => {
-      ConstraintValidationEndpoint.validateEmployees({ ...config, constraints }).then(employeeIssues => {
+    ConstraintValidationEndpoint.validateDays(config).then(dayIssues => {
+      ConstraintValidationEndpoint.validateEmployees(config).then(employeeIssues => {
         setIssues({
           employeeIssues: employeeIssues,
           dayIssues: dayIssues

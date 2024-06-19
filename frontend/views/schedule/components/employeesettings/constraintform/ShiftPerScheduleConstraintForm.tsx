@@ -17,7 +17,7 @@ type Props = {
   readonly?: boolean
 }
 
-export function ShiftCountConstraintForm(props: Props) {
+export function ShiftPerScheduleConstraintForm(props: Props) {
 
   function handleRemove() {
     props.onShiftCountAction({
@@ -75,6 +75,10 @@ export function ShiftCountConstraintForm(props: Props) {
             style={{ width: "75px" }}
             theme={"align-center small"}
             label={"Odchylka"}
+            onClick={() => handleUpdate({
+              hardMax: Number.NaN,
+              hardMin: Number.NaN
+            })}
             disabled={props.readonly}
             value={(props.request.hardMax - props.request.softMax).toString()}
             onChange={e => {

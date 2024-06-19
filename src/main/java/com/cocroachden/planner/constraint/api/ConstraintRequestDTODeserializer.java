@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JacksonException;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.*;
 import com.fasterxml.jackson.databind.json.JsonMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
@@ -34,6 +35,7 @@ public class ConstraintRequestDTODeserializer extends JsonDeserializer<Constrain
     var type = node.get("type").toString().replace("\"", "");
     var serializationType = ConstraintType.valueOf(type);
     return JsonMapper.builder()
+        .addModule(new JavaTimeModule())
         .disable(MapperFeature.USE_ANNOTATIONS)
         .build()
         .treeToValue(node, DESERIALIZATION_MAP.get(serializationType));

@@ -9,12 +9,7 @@ import { ScheduleGridContainer } from "./components/schedulegrid/ScheduleGridCon
 import {
   EmployeeRequestConfigDialog
 } from "Frontend/views/schedule/components/employeesettings/EmployeeRequestConfigDialog";
-import {
-  areShiftRequestsSame,
-  CrudAction,
-  CRUDActions,
-  generateUUID, stringToDate
-} from "Frontend/util/utils";
+import { areShiftRequestsSame, CrudAction, CRUDActions, generateUUID } from "Frontend/util/utils";
 import { Notification } from "@hilla/react-components/Notification";
 import { Card } from "Frontend/components/Card";
 import { Icon } from "@hilla/react-components/Icon";
@@ -88,6 +83,18 @@ export default function ScheduleView() {
     }
   }, []);
 
+  useEffect(() => {
+    validateRequest()
+  }, [
+    shiftRequests,
+    shiftPerScheduleRequests,
+    consecutiveWorkingDaysRequests,
+    employeesPerShiftRequests,
+    shiftFollowupRestrictionRequests,
+    shiftPatternRequests,
+    tripleShiftConstraintRequests
+  ]);
+
   function handleShiftPatternAction(action: CrudAction<ShiftPatternRequestDTO>) {
     updateList(action, shiftPatternRequests)
   }
@@ -96,8 +103,8 @@ export default function ScheduleView() {
     handleFetchConfig(request?.id!)
   }
 
-  async function handleSave() {
-    const combinedList = [
+  function combineConstraints() {
+    return [
       ...shiftRequests,
       ...shiftPatternRequests,
       ...employeesPerShiftRequests,
@@ -106,10 +113,13 @@ export default function ScheduleView() {
       ...consecutiveWorkingDaysRequests,
       ...tripleShiftConstraintRequests
     ] as ConstraintRequestDTO[]
+  }
+
+  async function handleSave() {
     await SolverConfigurationEndpoint.save({
       ...request!,
       id: generateUUID(),
-      constraints: combinedList
+      constraints: combineConstraints()
     }).then(response => {
       handleFetchConfig(response)
       Notification.show("Konfigurace úspěšně uložena!", {
@@ -121,21 +131,12 @@ export default function ScheduleView() {
   }
 
   async function handleUpdate() {
-    const combinedList = [
-      ...shiftRequests,
-      ...shiftPatternRequests,
-      ...employeesPerShiftRequests,
-      ...shiftFollowupRestrictionRequests,
-      ...shiftPerScheduleRequests,
-      ...consecutiveWorkingDaysRequests,
-      ...tripleShiftConstraintRequests
-    ] as ConstraintRequestDTO[]
     await SolverConfigurationEndpoint.save({
       ...request!,
-      constraints: combinedList
+      constraints: combineConstraints()
     }).then(response => {
       handleFetchConfig(response)
-      Notification.show("Konfigurace úuspěšně upravena!", {
+      Notification.show("Konfigurace upravena!", {
         position: "top-center",
         duration: 5000,
         theme: "success"
@@ -215,32 +216,19 @@ export default function ScheduleView() {
   }
 
   function handleStopCalculation() {
-    modeCtx.setMode(ScheduleMode.READONLY)
     if (resultSubscription) {
       resultSubscription.cancel()
-      setResultSubscription(undefined)
     }
+    setResultSubscription(undefined)
+    modeCtx.setMode(ScheduleMode.READONLY)
   }
 
   function validateRequest() {
-    const combinedList: ConstraintRequestDTO[] = [
-      ...shiftRequests,
-      ...shiftPatternRequests,
-      ...employeesPerShiftRequests,
-      ...consecutiveWorkingDaysRequests,
-      ...shiftFollowupRestrictionRequests,
-      ...shiftPerScheduleRequests,
-      ...tripleShiftConstraintRequests
-    ]
-    validationCtx.validate(request!, combinedList)
+    validationCtx.validate({ ...request!, constraints: combineConstraints() })
   }
 
   function handleStartCalculation() {
-    if (resultSubscription) {
-      resultSubscription.cancel()
-      setResultSubscription(undefined)
-    }
-    modeCtx.setMode(ScheduleMode.CALCULATING)
+    handleStopCalculation()
     setResultSubscription(SolverEndpoint.solve(request?.id)
       .onNext(value => {
         if (value.solutionStatus !== SolutionStatus.OK) {
@@ -259,19 +247,19 @@ export default function ScheduleView() {
           }
         });
       }).onComplete(() => {
-        Notification.show("Výpočet úspěšně ukončen!", {
+        Notification.show("Výpočet ukončen!", {
           position: "top-center",
           duration: 5000,
           theme: "success"
         })
-        setResultSubscription(undefined)
+        handleStopCalculation()
       }).onError(() => {
         Notification.show("Neřešitelné zadání!", {
           position: "top-center",
           duration: 5000,
           theme: "error"
         })
-        setResultSubscription(undefined)
+        handleStopCalculation()
       })
     )
   }
