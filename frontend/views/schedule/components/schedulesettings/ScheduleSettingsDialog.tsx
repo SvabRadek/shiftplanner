@@ -14,14 +14,15 @@ import ShiftFollowupRestrictionRequestDTO
   from "Frontend/generated/com/cocroachden/planner/constraint/api/ShiftFollowupRestrictionRequestDTO";
 import { CrudAction } from "Frontend/util/utils";
 import { VerticalLayout } from "@hilla/react-components/VerticalLayout";
-import EmployeeRecord from "Frontend/generated/com/cocroachden/planner/employee/repository/EmployeeRecord";
 import SolverConfigurationDTO from "Frontend/generated/com/cocroachden/planner/solver/api/SolverConfigurationDTO";
+import EmployeeDTO from "Frontend/generated/com/cocroachden/planner/employee/api/EmployeeDTO";
+import AssignedEmployeeDTO from "Frontend/generated/com/cocroachden/planner/solver/api/AssignedEmployeeDTO";
 
 type Props = {
   isOpen: boolean
   onOpenChanged: (value: boolean) => void
-  employees: EmployeeRecord[]
-  onEmployeeAction: (action: CrudAction<EmployeeRecord>) => void
+  employees: EmployeeDTO[]
+  onAssignmentAction: (action: CrudAction<AssignedEmployeeDTO>) => void
   request: SolverConfigurationDTO
   consecutiveWorkingDays: ConsecutiveWorkingDaysRequestDTO[]
   onConsecutiveWorkingDaysAction: (action: CrudAction<ConsecutiveWorkingDaysRequestDTO>) => void
@@ -54,7 +55,7 @@ export function ScheduleSettingsDialog(props: Props) {
         </Tabs>
         <div style={tabContainerCss}>
           {selectedTab == 0 &&
-              <EmployeeTab onEmployeeAction={props.onEmployeeAction}
+              <EmployeeTab onAssignmentAction={props.onAssignmentAction}
                            request={props.request}
                            employees={props.employees}/>
           }

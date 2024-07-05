@@ -10,7 +10,7 @@ export function ValidationWorkerIssueCard(props: Props) {
   return (
     <Card>
       <span>{props.issue.severity}</span>
-      <span>{props.issue.employeeId.id}</span>
+      <span>{props.issue.employeeId}</span>
       <small>{props.issue.issue}</small>
     </Card>
   );

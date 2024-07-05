@@ -13,7 +13,7 @@ export enum DisplayMode {
 export type Cell = {
   shift: WorkShifts
   index: number
-  owner: EmployeeId
+  employeeId: number
   date: Date
   isHighlighted: boolean
   displayMode?: DisplayMode

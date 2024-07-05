@@ -21,12 +21,13 @@ import TripleShiftConstraintRequestDTO
 import {
   TripleShiftConstraintForm
 } from "Frontend/views/schedule/components/employeesettings/constraintform/TripleShiftConstraintForm";
-import EmployeeRecord from "Frontend/generated/com/cocroachden/planner/employee/repository/EmployeeRecord";
 import WorkShifts from "Frontend/generated/com/cocroachden/planner/solver/api/WorkShifts";
 import EmployeeId from "Frontend/generated/com/cocroachden/planner/employee/api/EmployeeId";
+import { NumberField } from "@hilla/react-components/NumberField";
+import AssignedEmployeeDTO from "Frontend/generated/com/cocroachden/planner/solver/api/AssignedEmployeeDTO";
 
 type Props = {
-  employee?: EmployeeRecord
+  assignment?: AssignedEmployeeDTO
   isOpen: boolean
   onOpenChanged: (value: boolean) => void
   shiftsPerScheduleRequests: ShiftsPerScheduleRequestDTO[]
@@ -35,18 +36,29 @@ type Props = {
   onShiftPatternRequestsAction: (action: CrudAction<ShiftPatternRequestDTO>) => void
   tripleShiftConstraintRequest: TripleShiftConstraintRequestDTO[]
   onTripleShiftConstraintAction: (action: CrudAction<TripleShiftConstraintRequestDTO>) => void
+  onAssignmentAction: (action: CrudAction<AssignedEmployeeDTO>) => void
   readonly?: boolean
 }
 
 export function EmployeeRequestConfigDialog(props: Props) {
 
-  if (!props.employee) return null
+  if (!props.assignment) return null
+
+  function handleUpdateAssignment(value: Partial<AssignedEmployeeDTO>) {
+    props.onAssignmentAction({
+      type: CRUDActions.UPDATE,
+      payload: {
+        ...props.assignment!,
+        ...value
+      }
+    })
+  }
 
   function handleCreateNewShiftPerSchedule() {
     props.onShiftPerScheduleAction({
       type: CRUDActions.CREATE,
       payload: generateNewUniqueShiftsPerSchedule(
-        props.employee!,
+        props.assignment!.employee.id,
         props.shiftsPerScheduleRequests.map(r => r.targetShift)
       )
     });
@@ -55,7 +67,7 @@ export function EmployeeRequestConfigDialog(props: Props) {
   function handleCreateNewShiftPattern() {
     props.onShiftPatternRequestsAction({
         type: CRUDActions.CREATE,
-        payload: generateNewShiftPattern(props.employee!)
+        payload: generateNewShiftPattern(props.assignment?.employee!)
       }
     )
   }
@@ -83,7 +95,7 @@ export function EmployeeRequestConfigDialog(props: Props) {
   function handleCreateNewTripleShiftConstraint() {
     props.onTripleShiftConstraintAction({
       type: CRUDActions.CREATE,
-      payload: generateNewTripleShiftConstraintRequest(props.employee!)
+      payload: generateNewTripleShiftConstraintRequest(props.assignment?.employee!)
     })
   }
 
@@ -103,8 +115,18 @@ export function EmployeeRequestConfigDialog(props: Props) {
       }}>
         <Card style={{ width: "100%" }}>
           <HorizontalLayout theme={"spacing"}>
-            <TextField value={props.employee.firstName} readonly/>
-            <TextField value={props.employee.lastName} readonly/>
+            <TextField label={"Jméno"} value={props.assignment.employee.firstName} readonly/>
+            <TextField label={"Příjmení"} value={props.assignment.employee.lastName} readonly/>
+            <NumberField
+              label={"Váha"}
+              value={props.assignment.weight.toString()}
+              style={{ width: "100px" }}
+              stepButtonsVisible
+              readonly={props.readonly}
+              onChange={e => handleUpdateAssignment({
+                weight: Number.parseInt(e.target.value)
+              })}
+            />
           </HorizontalLayout>
         </Card>
         {renderSectionHeader("Pocet smen na rozvrh", "vaadin:plus", handleCreateNewShiftPerSchedule)}
@@ -137,12 +159,12 @@ export function EmployeeRequestConfigDialog(props: Props) {
   );
 }
 
-function generateNewUniqueShiftsPerSchedule(workerId: EmployeeId, excludeShifts: WorkShifts[]): ShiftsPerScheduleRequestDTO {
+function generateNewUniqueShiftsPerSchedule(employeeId: number, excludeShifts: WorkShifts[]): ShiftsPerScheduleRequestDTO {
   const allowedShifts = Object.values(WorkShifts).filter(val => !excludeShifts.some(s => s === val))
   return {
     ...defaultConstraints.SHIFT_PER_SCHEDULE.constraint as unknown as ShiftsPerScheduleRequestDTO,
     targetShift: allowedShifts[0],
-    owner: workerId,
+    owner: { id: employeeId },
     id: generateUUID()
   }
 }

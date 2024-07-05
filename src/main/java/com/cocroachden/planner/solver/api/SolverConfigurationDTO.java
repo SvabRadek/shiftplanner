@@ -2,6 +2,7 @@ package com.cocroachden.planner.solver.api;
 
 import com.cocroachden.planner.constraint.api.ConstraintRequestDTO;
 import com.cocroachden.planner.employee.api.EmployeeDTO;
+import com.cocroachden.planner.solver.repository.EmployeeAssignment;
 import com.cocroachden.planner.solver.repository.SolverConfigurationRecord;
 import dev.hilla.Nonnull;
 import lombok.AllArgsConstructor;
@@ -10,6 +11,7 @@ import lombok.NoArgsConstructor;
 
 import java.time.Instant;
 import java.time.LocalDate;
+import java.util.Comparator;
 import java.util.List;
 import java.util.UUID;
 
@@ -25,8 +27,9 @@ public class SolverConfigurationDTO {
         record.getLastUpdated(),
         record.getStartDate(),
         record.getEndDate(),
-        record.getEmployees().stream()
-            .map(EmployeeDTO::from)
+        record.getEmployeeAssignments().stream()
+            .sorted(Comparator.comparing(EmployeeAssignment::getIndex))
+            .map(AssignedEmployeeDTO::from)
             .toList(),
         record.getConstraintRequestRecords().stream()
             .map(ConstraintMapper::fromRecord)
@@ -47,7 +50,7 @@ public class SolverConfigurationDTO {
   @Nonnull
   private LocalDate endDate;
   @Nonnull
-  private List<@Nonnull EmployeeDTO> employees;
+  private List<@Nonnull AssignedEmployeeDTO> employees;
   @Nonnull
   private List<@Nonnull ConstraintRequestDTO> constraints;
 }

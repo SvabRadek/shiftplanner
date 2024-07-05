@@ -2,6 +2,7 @@ package com.cocroachden.planner.solver.service.schedule;
 
 
 import com.cocroachden.planner.employee.api.EmployeeId;
+import com.cocroachden.planner.solver.constraints.ConstraintRequest;
 import com.cocroachden.planner.solver.service.SolverConfiguration;
 import com.google.ortools.sat.CpModel;
 import lombok.Getter;
@@ -10,12 +11,14 @@ import lombok.SneakyThrows;
 import java.time.LocalDate;
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Getter
 public class SchedulePlan {
 
   private final Map<EmployeeId, Map<LocalDate, ScheduleDay>> assignments;
   private final Map<EmployeeId, ScheduleEmployee> employees;
+  private final List<ConstraintRequest> constraints;
 
   public SchedulePlan(SolverConfiguration configuration, CpModel model) {
     var endDateExclusive = configuration.endDate().plusDays(1);
@@ -32,6 +35,17 @@ public class SchedulePlan {
         .collect(Collectors.toMap(ScheduleEmployee::employeeId, scheduleEmployee -> scheduleEmployee));
     this.assignments = assignments;
     this.employees = employeeMap;
+    this.constraints = configuration.constraintRequests();
+  }
+
+  public <T extends ConstraintRequest> List<T> getAllConstraintsOfType(Class<T> type) {
+    return (List<T>) this.constraints.stream()
+        .filter(c -> c.getClass().isAssignableFrom(type))
+        .toList();
+  }
+
+  public Stream<LocalDate> getAllScheduleDatesAsStream() {
+    return this.getStartDate().datesUntil(this.getLastDate().plusDays(1));
   }
 
   public LocalDate getStartDate() {

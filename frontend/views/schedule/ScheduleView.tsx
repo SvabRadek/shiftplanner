@@ -32,13 +32,14 @@ import { ValidationContext } from "Frontend/views/schedule/components/validation
 import TripleShiftConstraintRequestDTO
   from "Frontend/generated/com/cocroachden/planner/constraint/api/TripleShiftConstraintRequestDTO";
 import SolverConfigurationDTO from "Frontend/generated/com/cocroachden/planner/solver/api/SolverConfigurationDTO";
-import EmployeeRecord from "Frontend/generated/com/cocroachden/planner/employee/repository/EmployeeRecord";
 import SolverSolutionDTO from "Frontend/generated/com/cocroachden/planner/solver/api/SolverSolutionDTO";
 import ConstraintType from "Frontend/generated/com/cocroachden/planner/constraint/api/ConstraintType";
 import WorkShifts from "Frontend/generated/com/cocroachden/planner/solver/api/WorkShifts";
 import SolutionStatus from "Frontend/generated/com/cocroachden/planner/solver/api/SolutionStatus";
 import EmployeeShiftRequestDTO from "Frontend/generated/com/cocroachden/planner/constraint/api/EmployeeShiftRequestDTO";
 import EmployeeId from "Frontend/generated/com/cocroachden/planner/employee/api/EmployeeId";
+import EmployeeDTO from "Frontend/generated/com/cocroachden/planner/employee/api/EmployeeDTO";
+import AssignedEmployeeDTO from "Frontend/generated/com/cocroachden/planner/solver/api/AssignedEmployeeDTO";
 
 type EmployeeConfigDialogParams = {
   isOpen: boolean,
@@ -60,7 +61,7 @@ export default function ScheduleView() {
 
   const modeCtx = useContext(ScheduleModeCtx);
   const validationCtx = useContext(ValidationContext)
-  const [employees, setEmployees] = useState<EmployeeRecord[]>([])
+  const [employees, setEmployees] = useState<EmployeeDTO[]>([])
   const [employeeConfigDialog, setEmployeeConfigDialog] = useState<EmployeeConfigDialogParams>({ isOpen: false })
   const [isScheduleConfigDialogOpen, setIsScheduleConfigDialogOpen] = useState(false);
   const [resultCache, setResultCache] = useState<ResultCache>({ results: [], selectedIndex: 0 });
@@ -84,16 +85,16 @@ export default function ScheduleView() {
   }, []);
 
   useEffect(() => {
+    //validate requests when shift request is made
     validateRequest()
-  }, [
-    shiftRequests,
-    shiftPerScheduleRequests,
-    consecutiveWorkingDaysRequests,
-    employeesPerShiftRequests,
-    shiftFollowupRestrictionRequests,
-    shiftPatternRequests,
-    tripleShiftConstraintRequests
-  ]);
+  }, [shiftRequests]);
+
+  useEffect(() => {
+    //validate requests when config dialog closes
+    if (!employeeConfigDialog.isOpen && !isScheduleConfigDialogOpen) {
+      validateRequest();
+    }
+  }, [employeeConfigDialog, isScheduleConfigDialogOpen]);
 
   function handleShiftPatternAction(action: CrudAction<ShiftPatternRequestDTO>) {
     updateList(action, shiftPatternRequests)
@@ -175,34 +176,43 @@ export default function ScheduleView() {
     modeCtx.setMode(ScheduleMode.READONLY)
   }
 
-  function handleEmployeeAction(action: CrudAction<EmployeeRecord>) {
+  function handleAssignmentAction(action: CrudAction<AssignedEmployeeDTO>) {
     switch (action.type) {
+      case CRUDActions.READ:
+        setEmployeeConfigDialog({
+          selectedEmployee: { id: action.payload.employee.id },
+          isOpen: true
+        })
+        break
+      case CRUDActions.UPDATE:
+        setRequest(prevState => {
+          if (prevState == undefined) return undefined
+          return {
+            ...request!,
+            employees: updateAssignmentsWithIndexIntegrity(
+              action.payload,
+              request!.employees
+            )
+          }
+        })
+        break
       case CRUDActions.CREATE:
         setRequest(prevState => {
-          if (!prevState) return undefined
+          if (prevState == undefined) return undefined
           return {
-            ...prevState,
-            workers: [...prevState.employees, { id: action.payload.id }]
+            ...request!,
+            employees: [...request!.employees, action.payload]
           }
         })
         break
       case CRUDActions.DELETE:
-        setRequest(prevState => ({
-          ...prevState!,
-          workers: prevState!.employees.filter(e => e.id !== action.payload.id)
-        }))
-        break
-      case CRUDActions.UPDATE:
-        setEmployeeConfigDialog(() =>
-          ({ selectedEmployee: { id: action.payload.id }, isOpen: true })
-        )
-        break
-      case CRUDActions.READ:
-        setEmployeeConfigDialog({
-          selectedEmployee: { id: action.payload.id },
-          isOpen: true
+        setRequest(prevState => {
+          if (prevState == undefined) return undefined
+          return {
+            ...request!,
+            employees: request!.employees.filter(a => a.employee.id !== action.payload.employee.id)
+          }
         })
-        break
     }
   }
 
@@ -349,7 +359,7 @@ export default function ScheduleView() {
         onUpdate={handleUpdate}
         onCancel={handleCancel}
         onClearCache={() => setResultCache({ results: [], selectedIndex: 0 })}
-        onExportToExcel={() => exportToExcel(employees, resultCache.results[resultCache.selectedIndex])}
+        onExportToExcel={() => exportToExcel(request!.employees, resultCache.results[resultCache.selectedIndex])}
         cacheSize={RESULT_CACHE_SIZE}
         onResultSelectionChanged={handleResultSelectionChanged}
       />
@@ -361,7 +371,7 @@ export default function ScheduleView() {
                   onOpenChanged={setIsScheduleConfigDialogOpen}
                   request={request}
                   employees={employees}
-                  onEmployeeAction={handleEmployeeAction}
+                  onAssignmentAction={handleAssignmentAction}
                   employeesPerShift={employeesPerShiftRequests}
                   onEmployeePerShiftAction={handleEmployeePerShiftAction}
                   shiftFollowupRestriction={shiftFollowupRestrictionRequests}
@@ -371,7 +381,7 @@ export default function ScheduleView() {
               />
               <EmployeeRequestConfigDialog
                   key={employeeConfigDialog.selectedEmployee?.id}
-                  employee={employees.find(w => w.id === employeeConfigDialog.selectedEmployee?.id)!}
+                  assignment={request.employees.find(w => w.employee.id === employeeConfigDialog.selectedEmployee?.id)!}
                   isOpen={employeeConfigDialog.isOpen}
                   onShiftPerScheduleAction={handleShiftPerScheduleAction}
                   shiftsPerScheduleRequests={shiftPerScheduleRequests.filter(r => r.owner.id === employeeConfigDialog.selectedEmployee?.id)}
@@ -383,6 +393,7 @@ export default function ScheduleView() {
                   onShiftPatternRequestsAction={handleShiftPatternAction}
                   tripleShiftConstraintRequest={tripleShiftConstraintRequests.filter(r => r.owner.id === employeeConfigDialog.selectedEmployee?.id)}
                   onTripleShiftConstraintAction={handleTripleShiftConstraintAction}
+                  onAssignmentAction={handleAssignmentAction}
                   readonly={modeCtx.mode !== ScheduleMode.EDIT}
               />
               <Card
@@ -396,11 +407,10 @@ export default function ScheduleView() {
               >
                   <ScheduleGridContainer
                       request={request}
-                      employees={employees}
                       shiftRequests={shiftRequests}
                       shiftPatterns={shiftPatternRequests}
                       shiftPerScheduleRequests={shiftPerScheduleRequests}
-                      onEmployeeAction={handleEmployeeAction}
+                      onAssignmentAction={handleAssignmentAction}
                       onShiftRequestsChanged={handleShiftRequestsChanged}
                       result={resultCache.results.length > 0 ? resultCache.results[resultCache.selectedIndex] : undefined}
                   />
@@ -425,4 +435,51 @@ function updateList<T extends { id: string }>(action: CrudAction<T>, requests: T
     default:
       return requests
   }
+}
+
+// function fixTheIndexes(updated: AssignedEmployeeDTO, existing: AssignedEmployeeDTO[]) {
+//   const filteredExisting = existing
+//     .filter(a => a.employee.id != updated.employee.id)
+//   const beforeElements = filteredExisting
+//     .slice(0, updated.index)
+//     .sort((a, b) => a.index - b.index)
+//     .map((value, index) => ({ ...value, index }))
+//   const afterElements = filteredExisting
+//     .slice(updated.index, filteredExisting.length)
+//     .sort((a, b) => a.index - b.index)
+//     .map((value, index) => ({ ...value, index: index + updated.index + 1 }))
+//   return [...beforeElements, updated, ...afterElements]
+// }
+
+function updateAssignmentsWithIndexIntegrity(updated: AssignedEmployeeDTO, previousState: AssignedEmployeeDTO[]) {
+  const original = previousState.find(a => a.employee.id === updated.employee.id)
+  if (!original) {
+    return [...previousState, updated]
+      .sort((a, b) => a.index - b.index)
+      .map((value, index) => ({ ...value, index }))
+  }
+  const neighbor = previousState.find(a => {
+    return a.employee.id != updated.employee.id && a.index === updated.index
+  })
+  if (!neighbor) {
+    return previousState
+      .map(a => {
+        if (a.employee.id === updated.employee.id) {
+          return updated
+        }
+        return a
+      }).sort((a, b) => a.index - b.index)
+      .map((value, index) => ({ ...value, index }))
+  }
+  const offset = updated.index - original.index
+  return previousState.map(a => {
+    if (a.employee.id === updated.employee.id) {
+      return updated
+    }
+    if (a.employee.id === neighbor.employee.id) {
+      return { ...neighbor, index: neighbor.index - offset }
+    }
+    return a
+  }).sort((a, b) => a.index - b.index)
+    .map((value, index) => ({ ...value, index }));
 }

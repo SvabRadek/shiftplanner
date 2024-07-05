@@ -4,12 +4,13 @@ import com.cocroachden.planner.constraint.api.*;
 import com.cocroachden.planner.constraint.repository.ConstraintRequestRecord;
 import com.cocroachden.planner.constraint.repository.ConstraintRequestRepository;
 import com.cocroachden.planner.solver.constraints.specific.consecutiveworkingdays.request.ConsecutiveWorkingDaysRequest;
+import com.cocroachden.planner.solver.constraints.specific.employeeshiftrequest.request.EmployeeShiftRequest;
+import com.cocroachden.planner.solver.constraints.specific.employeespershift.request.EmployeesPerShiftRequest;
 import com.cocroachden.planner.solver.constraints.specific.shiftfollowuprestriction.request.ShiftFollowUpRestrictionRequest;
 import com.cocroachden.planner.solver.constraints.specific.shiftpattern.request.ShiftPatternConstraintRequest;
 import com.cocroachden.planner.solver.constraints.specific.shiftperschedule.request.ShiftsPerScheduleRequest;
+import com.cocroachden.planner.solver.constraints.specific.teamassignment.request.TeamAssignmentRequest;
 import com.cocroachden.planner.solver.constraints.specific.tripleshift.request.TripleShiftConstraintRequest;
-import com.cocroachden.planner.solver.constraints.specific.employeeshiftrequest.request.EmployeeShiftRequest;
-import com.cocroachden.planner.solver.constraints.specific.employeespershift.request.EmployeesPerShiftRequest;
 import com.vaadin.flow.server.auth.AnonymousAllowed;
 import dev.hilla.BrowserCallable;
 import dev.hilla.Nonnull;
@@ -25,7 +26,6 @@ import java.util.stream.StreamSupport;
 @AllArgsConstructor
 public class ConstraintEndpoint {
   private final ConstraintRequestRepository constraintRequestRepository;
-
 
 
   public @Nonnull List<@Nonnull ConstraintRequestDTO> findRequests(@Nonnull List<@Nonnull UUID> requestIds) {
@@ -91,6 +91,14 @@ public class ConstraintEndpoint {
         .toList();
   }
 
+  public @Nonnull List<@Nonnull TeamAssignmentRequestDTO> findTeamAssignmentsConstraintRequests(
+      @Nonnull List<@Nonnull UUID> requestIds
+  ) {
+    return this.getRecords(requestIds).stream()
+        .map(r -> TeamAssignmentRequestDTO.from(r.getId(), (TeamAssignmentRequest) r.getRequest()))
+        .toList();
+  }
+
   public List<ConstraintRequestRecord> getRecords(List<UUID> constraintIds) {
     return StreamSupport.stream(
         constraintRequestRepository.findAllById(constraintIds).spliterator(),
@@ -127,6 +135,10 @@ public class ConstraintEndpoint {
       case TRIPLE_SHIFTS_CONSTRAINT -> TripleShiftConstraintRequestDTO.from(
           record.getId(),
           (TripleShiftConstraintRequest) record.getRequest()
+      );
+      case TEAM_ASSIGNMENT -> TeamAssignmentRequestDTO.from(
+          record.getId(),
+          (TeamAssignmentRequest) record.getRequest()
       );
       case ONE_SHIFT_PER_DAY -> null;
     };

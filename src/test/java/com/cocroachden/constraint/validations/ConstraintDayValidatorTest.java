@@ -4,7 +4,9 @@ import com.cocroachden.planner.constraint.api.ConstraintType;
 import com.cocroachden.planner.constraint.api.EmployeeShiftRequestDTO;
 import com.cocroachden.planner.constraint.api.EmployeesPerShiftRequestDTO;
 import com.cocroachden.planner.constraint.validations.day.ConstraintDayValidator;
+import com.cocroachden.planner.employee.api.EmployeeDTO;
 import com.cocroachden.planner.employee.api.EmployeeId;
+import com.cocroachden.planner.solver.api.AssignedEmployeeDTO;
 import com.cocroachden.planner.solver.api.SolverConfigurationDTO;
 import com.cocroachden.planner.solver.api.WorkShifts;
 import org.assertj.core.api.Assertions;
@@ -41,7 +43,7 @@ class ConstraintDayValidatorTest {
             Instant.now(),
             LocalDate.of(1, 1, 1),
             LocalDate.of(1, 1, 2),
-            List.of(new EmployeeId(0L), new EmployeeId(1L), new EmployeeId(2L)),
+            List.of(this.createAssignment(0L), this.createAssignment(1L), this.createAssignment(2L)),
             List.of(limitingRequest, spec1, spec2, spec3)
         )
     );
@@ -73,7 +75,7 @@ class ConstraintDayValidatorTest {
             Instant.now(),
             LocalDate.of(1, 1, 1),
             LocalDate.of(1, 1, 2),
-            List.of(new EmployeeId(0L), new EmployeeId(1L), new EmployeeId(2L)),
+            List.of(this.createAssignment(0L), this.createAssignment(1L), this.createAssignment(2L)),
             List.of(limitingRequest, spec1, spec2)
         )
     );
@@ -95,6 +97,17 @@ class ConstraintDayValidatorTest {
         date,
         shift
     );
+  }
+
+  private AssignedEmployeeDTO createAssignment(Long id) {
+    return new AssignedEmployeeDTO(
+            new EmployeeDTO(
+                id,
+                "irrelevant",
+                "irrelevant"
+            ),
+            0
+        );
   }
 
 }

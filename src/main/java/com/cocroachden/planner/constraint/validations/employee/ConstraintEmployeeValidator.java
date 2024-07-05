@@ -82,11 +82,11 @@ public class ConstraintEmployeeValidator {
           var maxAllowedShifts = c.getHardMax();
           var minAllowedShifts = c.getHardMin();
           return configuration.getEmployees().stream()
-              .map(employee -> {
+              .map(assignment -> {
                 var datesOfWorkRequests = constraints.stream()
                     .filter(c1 -> c1 instanceof EmployeeShiftRequestDTO)
                     .map(c1 -> (EmployeeShiftRequestDTO) c1)
-                    .filter(c1 -> c1.getOwner().equals(employee.getId()))
+                    .filter(c1 -> c1.getOwner().getId().equals(assignment.getEmployee().getId()))
                     .filter(c1 -> c1.getRequestedShift().isSameAs(WorkShifts.WORKING_SHIFTS))
                     .map(EmployeeShiftRequestDTO::getDate)
                     .collect(Collectors.toMap(Function.identity(), Function.identity()));
@@ -102,7 +102,7 @@ public class ConstraintEmployeeValidator {
                     });
                 if (isOverLimit) {
                   return new EmployeeValidationIssue(
-                      employee.getId(),
+                      assignment.getEmployee().getId(),
                       IssueSeverity.ERROR,
                       "Pracovnik zada vic smen v rade, nez je povolene maximum!"
                   );

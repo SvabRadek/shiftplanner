@@ -6,8 +6,8 @@ import { CrudAction, dateToString } from "Frontend/util/utils";
 import { ScheduleMode, ScheduleModeCtx } from "Frontend/views/schedule/ScheduleModeCtxProvider";
 import { ValidationContext } from "Frontend/views/schedule/components/validation/ScheduleValidationCtxProvider";
 import IssueSeverity from "Frontend/generated/com/cocroachden/planner/constraint/validations/IssueSeverity";
-import EmployeeRecord from "Frontend/generated/com/cocroachden/planner/employee/repository/EmployeeRecord";
 import EmployeeId from "Frontend/generated/com/cocroachden/planner/employee/api/EmployeeId";
+import AssignedEmployeeDTO from "Frontend/generated/com/cocroachden/planner/solver/api/AssignedEmployeeDTO";
 
 const dayVocabulary: Record<number, string> = {
   1: "Po",
@@ -30,7 +30,7 @@ type Props = {
   onCellChanged?: (cell: Cell) => void
   onLeftClick?: (cell: Cell) => void
   onMouseOverCell?: (cell: Cell) => void
-  onEmployeeAction: (action: CrudAction<Pick<EmployeeRecord, "id">>) => void
+  onAssignmentAction: (action: CrudAction<Pick<AssignedEmployeeDTO["employee"], "id">>) => void
 }
 
 export function ScheduleGrid(props: Props) {
@@ -53,7 +53,7 @@ export function ScheduleGrid(props: Props) {
         <FirstColumnCell
           title={row.rowTitle}
           owner={row.owner}
-          onEmployeeAction={props.onEmployeeAction}
+          onAssignmentAction={props.onAssignmentAction}
           style={{
             backgroundColor: severity === IssueSeverity.ERROR ? "var(--lumo-error-color-50pct)"
               : severity === IssueSeverity.WARNING ? "var(--lumo-primary-color-50pct)"
@@ -93,7 +93,7 @@ export function ScheduleGrid(props: Props) {
       1,
       <FirstColumnCell
         owner={row.owner}
-        onEmployeeAction={() => {
+        onAssignmentAction={() => {
         }}
         title={"Jmeno"}
         style={{ backgroundColor: cellColor(1, 1, modeCtx.mode) }}

@@ -55,25 +55,32 @@ public class DefaultSolverConfiguration {
 
   public static List<EmployeeRecord> employees() {
     return List.of(
-        new EmployeeRecord(1L, "Martina", "Kravariková"),
-        new EmployeeRecord(2L, "Vendula", "Zajícová"),
-        new EmployeeRecord(3L, "Alena", "Janáková"),
-        new EmployeeRecord(4L, "Simona", "Holmanová"),
-        new EmployeeRecord(5L, "Jana", "Zelenková"),
-        new EmployeeRecord(6L, "Jolana", "Pálffyová"),
-        new EmployeeRecord(7L, "Nicola", "Halbichová"),
-        new EmployeeRecord(8L, "Jana", "Kesslerová"),
-        new EmployeeRecord(9L, "Eva", "Dudek Premauer"),
-        new EmployeeRecord(10L, "Aneta", "Dubská"),
-        new EmployeeRecord(11L, "Jindra", "Labounková"),
-        new EmployeeRecord(12L, "Dana", "Zachová"),
-        new EmployeeRecord(13L, "Iva", "Najmanová"),
-        new EmployeeRecord(14L, "Barbora", "Řeháková"),
-        new EmployeeRecord(15L, "Karolína", "Vavrušková"),
-        new EmployeeRecord(16L, "Zuzana", "Kučerová"),
-        new EmployeeRecord(17L, "Natálie", "Vejvodová"),
-        new EmployeeRecord(18L, "Karolína", "Hromířová")
+        createEmployee("Martina", "Kravariková"),
+        createEmployee("Vendula", "Zajícová"),
+        createEmployee("Alena", "Janáková"),
+        createEmployee("Simona", "Holmanová"),
+        createEmployee("Jana", "Zelenková"),
+        createEmployee("Jolana", "Pálffyová"),
+        createEmployee("Nicola", "Halbichová"),
+        createEmployee("Jana", "Kesslerová"),
+        createEmployee("Eva", "Dudek Premauer"),
+        createEmployee("Aneta", "Dubská"),
+        createEmployee("Jindra", "Labounková"),
+        createEmployee("Dana", "Zachová"),
+        createEmployee("Iva", "Najmanová"),
+        createEmployee("Barbora", "Řeháková"),
+        createEmployee("Karolína", "Vavrušková"),
+        createEmployee("Zuzana", "Kučerová"),
+        createEmployee("Natálie", "Vejvodová"),
+        createEmployee("Karolína", "Hromířová")
     );
+  }
+
+  private static EmployeeRecord createEmployee(String firstName, String lastName) {
+    var record = new EmployeeRecord();
+    record.setFirstName(firstName);
+    record.setLastName(lastName);
+    return record;
   }
 
 }

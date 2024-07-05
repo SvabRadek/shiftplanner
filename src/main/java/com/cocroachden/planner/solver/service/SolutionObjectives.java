@@ -8,7 +8,6 @@ import lombok.Getter;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.IntStream;
 
 @Getter
 public class SolutionObjectives {
@@ -34,12 +33,12 @@ public class SolutionObjectives {
 
   public LinearArgument getObjectiveAsExpression() {
     var expr = LinearExpr.newBuilder();
-    IntStream.range(0, this.objectiveIntVars.size()).forEach(index -> {
-      expr.addTerm(objectiveIntVars.get(index), objectiveIntCoefficients.get(index));
-    });
-    IntStream.range(0, this.objectiveBoolVars.size()).forEach(index -> {
-      expr.addTerm(objectiveBoolVars.get(index), objectiveBoolCoefficients.get(index));
-    });
+    for (int i = 0; i < this.objectiveIntVars.size(); i++) {
+      expr.addTerm(objectiveIntVars.get(i), objectiveIntCoefficients.get(i));
+    }
+    for (int i = 0; i < objectiveBoolVars.size(); i++) {
+      expr.addTerm(objectiveBoolVars.get(i), objectiveBoolCoefficients.get(i));
+    }
     return expr;
   }
 

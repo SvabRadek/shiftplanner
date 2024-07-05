@@ -34,9 +34,8 @@ public class SolverEndpoint {
     var solverConfig = new SolverConfiguration(
         solverConfigRecord.getStartDate(),
         solverConfigRecord.getEndDate(),
-        solverConfigRecord.getEmployees().stream()
-            .map(e -> new EmployeeId(e.getId()))
-            .map(employeeId -> new ScheduleEmployee(employeeId, 1))
+        solverConfigRecord.getEmployeeAssignments().stream()
+            .map(ScheduleEmployee::from)
             .toList(),
         solverConfigRecord.getConstraintRequestRecords().stream()
             .map(ConstraintRequestRecord::getRequest)

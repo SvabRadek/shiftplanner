@@ -5,6 +5,8 @@ import EmployeeRecord from "Frontend/generated/com/cocroachden/planner/employee/
 import EmployeeId from "Frontend/generated/com/cocroachden/planner/employee/api/EmployeeId";
 import EmployeeValidationIssue
   from "Frontend/generated/com/cocroachden/planner/constraint/validations/employee/EmployeeValidationIssue";
+import EmployeeDTO from "Frontend/generated/com/cocroachden/planner/employee/api/EmployeeDTO";
+import AssignedEmployeeDTO from "Frontend/generated/com/cocroachden/planner/solver/api/AssignedEmployeeDTO";
 
 const defaultStyle: CSSProperties = {
   cursor: "pointer",
@@ -25,7 +27,7 @@ const defaultStyle: CSSProperties = {
 type Props = {
   owner: EmployeeId,
   title: ReactNode
-  onEmployeeAction: (action: CrudAction<Pick<EmployeeRecord, "id">>) => void
+  onAssignmentAction: (action: CrudAction<Pick<AssignedEmployeeDTO["employee"], "id">>) => void
   issues: EmployeeValidationIssue[]
   readonly?: boolean
   style?: CSSProperties
@@ -36,7 +38,7 @@ export function FirstColumnCell(props: Props) {
   const cellStyle = Object.assign({}, defaultStyle, props.style)
 
   function handleLeftClick() {
-    props.onEmployeeAction({
+    props.onAssignmentAction({
       type: CRUDActions.READ,
       payload: props.owner
     })
