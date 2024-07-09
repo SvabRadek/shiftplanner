@@ -4,7 +4,7 @@ import SolverSolutionDTO from "Frontend/generated/com/cocroachden/planner/solver
 import { dateToString, stringToDate } from "Frontend/util/utils";
 import AssignedEmployeeDTO from "Frontend/generated/com/cocroachden/planner/solver/api/AssignedEmployeeDTO";
 
-export function exportToExcel(assignments: AssignedEmployeeDTO[], result: SolverSolutionDTO) {
+export function exportToExcel(filename: string, assignments: AssignedEmployeeDTO[], result: SolverSolutionDTO) {
   const rows: string[][] = []
   const employeeIds = Object.keys(result.assignments)
   const dates = Object.keys(result.assignments[employeeIds[0]])
@@ -39,5 +39,5 @@ export function exportToExcel(assignments: AssignedEmployeeDTO[], result: Solver
   const sheet = utils.aoa_to_sheet(rows)
   const wb = utils.book_new()
   utils.book_append_sheet(wb, sheet, "rozvrh")
-  writeFile(wb, "Rozvrh.xlsx", { compression: true })
+  writeFile(wb, filename + ".xlsx", { compression: true })
 }

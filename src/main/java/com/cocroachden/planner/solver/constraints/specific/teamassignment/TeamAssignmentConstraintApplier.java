@@ -1,7 +1,8 @@
-package com.cocroachden.planner.solver.constraints.specific.teamassignment.request;
+package com.cocroachden.planner.solver.constraints.specific.teamassignment;
 
 import com.cocroachden.planner.solver.constraints.ConstraintApplier;
 import com.cocroachden.planner.solver.constraints.ConstraintRequest;
+import com.cocroachden.planner.solver.constraints.specific.teamassignment.request.TeamAssignmentRequest;
 import com.cocroachden.planner.solver.service.SolutionObjectives;
 import com.cocroachden.planner.solver.service.schedule.SchedulePlan;
 import com.google.ortools.sat.CpModel;

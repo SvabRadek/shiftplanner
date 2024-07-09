@@ -6,7 +6,7 @@ import com.cocroachden.planner.solver.constraints.specific.shiftfollowuprestrict
 import com.cocroachden.planner.solver.constraints.specific.shiftpattern.ShiftPatternConstraintApplier;
 import com.cocroachden.planner.solver.constraints.specific.shiftperday.OneShiftPerDayConstraintApplier;
 import com.cocroachden.planner.solver.constraints.specific.shiftperschedule.ShiftsPerScheduleConstraintApplier;
-import com.cocroachden.planner.solver.constraints.specific.teamassignment.request.TeamAssignmentConstraintApplier;
+import com.cocroachden.planner.solver.constraints.specific.teamassignment.TeamAssignmentConstraintApplier;
 import com.cocroachden.planner.solver.constraints.specific.tripleshift.TripleShiftConstraintApplier;
 import com.cocroachden.planner.solver.constraints.specific.employeeshiftrequest.EmployeeShiftRequestConstraintApplier;
 import com.cocroachden.planner.solver.constraints.specific.employeespershift.EmployeesPerShiftConstraintApplier;

@@ -14,6 +14,7 @@ import com.vaadin.flow.server.auth.AnonymousAllowed;
 import dev.hilla.BrowserCallable;
 import dev.hilla.Nonnull;
 import lombok.AllArgsConstructor;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -32,6 +33,7 @@ public class SolverConfigurationEndpoint {
   private EmployeeAssignmentRepository employeeAssignmentRepository;
   private EmployeeRepository employeeRepository;
 
+  @Transactional
   public @Nonnull UUID save(@Nonnull SolverConfigurationDTO configDTO) {
     if (solverConfigurationRepository.existsById(configDTO.getId())) {
       solverConfigurationRepository.deleteById(configDTO.getId());

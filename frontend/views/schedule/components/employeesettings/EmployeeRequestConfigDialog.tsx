@@ -25,6 +25,11 @@ import WorkShifts from "Frontend/generated/com/cocroachden/planner/solver/api/Wo
 import EmployeeId from "Frontend/generated/com/cocroachden/planner/employee/api/EmployeeId";
 import { NumberField } from "@hilla/react-components/NumberField";
 import AssignedEmployeeDTO from "Frontend/generated/com/cocroachden/planner/solver/api/AssignedEmployeeDTO";
+import TeamAssignmentRequestDTO
+  from "Frontend/generated/com/cocroachden/planner/constraint/api/TeamAssignmentRequestDTO";
+import {
+  TeamAssignmentConstraintForm
+} from "Frontend/views/schedule/components/employeesettings/constraintform/TeamAssignmentConstraintForm";
 
 type Props = {
   assignment?: AssignedEmployeeDTO
@@ -36,6 +41,8 @@ type Props = {
   onShiftPatternRequestsAction: (action: CrudAction<ShiftPatternRequestDTO>) => void
   tripleShiftConstraintRequest: TripleShiftConstraintRequestDTO[]
   onTripleShiftConstraintAction: (action: CrudAction<TripleShiftConstraintRequestDTO>) => void
+  teamAssignmentRequest: TeamAssignmentRequestDTO[],
+  onTeamAssignmentRequestAction: (action: CrudAction<TeamAssignmentRequestDTO>) => void
   onAssignmentAction: (action: CrudAction<AssignedEmployeeDTO>) => void
   readonly?: boolean
 }
@@ -68,6 +75,14 @@ export function EmployeeRequestConfigDialog(props: Props) {
     props.onShiftPatternRequestsAction({
         type: CRUDActions.CREATE,
         payload: generateNewShiftPattern(props.assignment?.employee!)
+      }
+    )
+  }
+
+  function handleCreateNewTeamAssignment() {
+    props.onTeamAssignmentRequestAction({
+        type: CRUDActions.CREATE,
+        payload: generateNewTeamAssignment(props.assignment?.employee!)
       }
     )
   }
@@ -147,6 +162,10 @@ export function EmployeeRequestConfigDialog(props: Props) {
             onAction={props.onShiftPatternRequestsAction}
           />
         ))}
+        {renderSectionHeader("Přirazení do týmu", "vaadin:plus", handleCreateNewTeamAssignment)}
+        {props.teamAssignmentRequest.map(request => (
+          <TeamAssignmentConstraintForm key={request.id} request={request} onAction={props.onTeamAssignmentRequestAction}/>
+        ))}
         {renderSectionHeader("Nastaveni trojitych smen", "vaadin:plus", handleCreateNewTripleShiftConstraint)}
         {props.tripleShiftConstraintRequest.map(request => (
           <TripleShiftConstraintForm key={request.id} request={request} onAction={props.onTripleShiftConstraintAction}/>
@@ -162,24 +181,32 @@ export function EmployeeRequestConfigDialog(props: Props) {
 function generateNewUniqueShiftsPerSchedule(employeeId: number, excludeShifts: WorkShifts[]): ShiftsPerScheduleRequestDTO {
   const allowedShifts = Object.values(WorkShifts).filter(val => !excludeShifts.some(s => s === val))
   return {
-    ...defaultConstraints.SHIFT_PER_SCHEDULE.constraint as unknown as ShiftsPerScheduleRequestDTO,
+    ...defaultConstraints.SHIFT_PER_SCHEDULE.constraint,
     targetShift: allowedShifts[0],
     owner: { id: employeeId },
     id: generateUUID()
   }
 }
 
-function generateNewShiftPattern(workerId: EmployeeId): ShiftPatternRequestDTO {
+function generateNewShiftPattern(employeeId: EmployeeId): ShiftPatternRequestDTO {
   return {
-    ...defaultConstraints.SHIFT_PATTERN_CONSTRAINT.constraint as unknown as ShiftPatternRequestDTO,
-    owner: workerId,
+    ...defaultConstraints.SHIFT_PATTERN_CONSTRAINT.constraint,
+    owner: { id: employeeId.id },
     id: generateUUID()
   }
 }
 
-function generateNewTripleShiftConstraintRequest(workerId: EmployeeId): TripleShiftConstraintRequestDTO {
+function generateNewTeamAssignment(employeeId: EmployeeId): TeamAssignmentRequestDTO {
   return {
-    ...defaultConstraints.TRIPLE_SHIFTS_CONSTRAINT.constraint as unknown as TripleShiftConstraintRequestDTO,
-    owner: { id: workerId.id }
+    ...defaultConstraints.TEAM_ASSIGNMENT.constraint,
+    owner: { id: employeeId.id },
+    id: generateUUID()
+  }
+}
+
+function generateNewTripleShiftConstraintRequest(employeeId: EmployeeId): TripleShiftConstraintRequestDTO {
+  return {
+    ...defaultConstraints.TRIPLE_SHIFTS_CONSTRAINT.constraint,
+    owner: { id: employeeId.id }
   }
 }

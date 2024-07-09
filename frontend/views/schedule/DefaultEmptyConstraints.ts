@@ -13,6 +13,8 @@ import ShiftsPerScheduleRequestDTO
 import EmployeesPerShiftRequestDTO
   from "Frontend/generated/com/cocroachden/planner/constraint/api/EmployeesPerShiftRequestDTO";
 import EmployeeShiftRequestDTO from "Frontend/generated/com/cocroachden/planner/constraint/api/EmployeeShiftRequestDTO";
+import TeamAssignmentRequestDTO
+  from "Frontend/generated/com/cocroachden/planner/constraint/api/TeamAssignmentRequestDTO";
 
 type ConstraintBinding<T> = {
   label: string
@@ -27,6 +29,7 @@ type DefaultConstraints = {
   [ConstraintType.SHIFT_FOLLOW_UP_RESTRICTION]: ConstraintBinding<ShiftFollowupRestrictionRequestDTO>
   [ConstraintType.SHIFT_PER_SCHEDULE]: ConstraintBinding<ShiftsPerScheduleRequestDTO>
   [ConstraintType.EMPLOYEES_PER_SHIFT]: ConstraintBinding<EmployeesPerShiftRequestDTO>
+  [ConstraintType.TEAM_ASSIGNMENT]: ConstraintBinding<TeamAssignmentRequestDTO>
 }
 
 export const apolinarPattern: WorkShifts[] = [
@@ -92,7 +95,7 @@ export const classicPattern: WorkShifts[] = [
 ]
 export const defaultConstraints: DefaultConstraints = {
   [ConstraintType.CONSECUTIVE_WORKING_DAYS]: {
-    label: "Pocet po sobe jdoucich smen",
+    label: "Počet po sobě jdoucích směn",
     constraint: {
       type: ConstraintType.CONSECUTIVE_WORKING_DAYS,
       id: generateUUID(),
@@ -106,7 +109,7 @@ export const defaultConstraints: DefaultConstraints = {
     }
   },
   [ConstraintType.EMPLOYEES_PER_SHIFT]: {
-    label: "Pocet pracovniku na smenu",
+    label: "Počet pracovníků na směnu",
     constraint: {
       type: ConstraintType.EMPLOYEES_PER_SHIFT,
       id: generateUUID(),
@@ -120,7 +123,7 @@ export const defaultConstraints: DefaultConstraints = {
     }
   },
   [ConstraintType.SHIFT_FOLLOW_UP_RESTRICTION]: {
-    label: "Omezeni navaznosti smen",
+    label: "Omezení návaznosti směn",
     constraint: {
       type: ConstraintType.SHIFT_FOLLOW_UP_RESTRICTION,
       id: generateUUID(),
@@ -130,7 +133,7 @@ export const defaultConstraints: DefaultConstraints = {
     }
   },
   [ConstraintType.SHIFT_PATTERN_CONSTRAINT]: {
-    label: "Vzor rozlozeni smen",
+    label: "Vzor rozložení směn",
     constraint: {
       type: ConstraintType.SHIFT_PATTERN_CONSTRAINT,
       id: generateUUID(),
@@ -141,7 +144,7 @@ export const defaultConstraints: DefaultConstraints = {
     }
   },
   [ConstraintType.EMPLOYEE_SHIFT_REQUEST]: {
-    label: "Specificka smena na dane datum",
+    label: "Specifická směna na dané datum",
     constraint: {
       type: ConstraintType.EMPLOYEE_SHIFT_REQUEST,
       id: generateUUID(),
@@ -151,7 +154,7 @@ export const defaultConstraints: DefaultConstraints = {
     }
   },
   [ConstraintType.SHIFT_PER_SCHEDULE]: {
-    label: "Pocet smen v rozvrhu",
+    label: "Počet směn v rozvrhu",
     constraint: {
       id: generateUUID(),
       owner: { id: 0 },
@@ -166,12 +169,23 @@ export const defaultConstraints: DefaultConstraints = {
     }
   },
   [ConstraintType.TRIPLE_SHIFTS_CONSTRAINT]: {
-    label: "Nastaveni trojitych smen",
+    label: "Nastavení trojitých směn",
     constraint: {
       type: ConstraintType.TRIPLE_SHIFTS_CONSTRAINT,
       id: generateUUID(),
       owner: { id: 0 },
       penaltyForShiftTripletOutsideWeekend: 50
+    }
+  },
+  [ConstraintType.TEAM_ASSIGNMENT]: {
+    label: "Přiřazení do týmu",
+    constraint: {
+      type: ConstraintType.TEAM_ASSIGNMENT,
+      id: generateUUID(),
+      owner: { id: 0 },
+      isLeader: false,
+      teamId: 1,
+      penalty: 50
     }
   }
 }

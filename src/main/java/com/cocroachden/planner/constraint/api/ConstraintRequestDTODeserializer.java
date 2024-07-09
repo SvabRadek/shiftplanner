@@ -2,7 +2,9 @@ package com.cocroachden.planner.constraint.api;
 
 import com.fasterxml.jackson.core.JacksonException;
 import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.databind.*;
+import com.fasterxml.jackson.databind.DeserializationContext;
+import com.fasterxml.jackson.databind.JsonDeserializer;
+import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.json.JsonMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import lombok.extern.slf4j.Slf4j;
@@ -24,6 +26,7 @@ public class ConstraintRequestDTODeserializer extends JsonDeserializer<Constrain
     DESERIALIZATION_MAP.put(ConstraintType.SHIFT_FOLLOW_UP_RESTRICTION, ShiftFollowupRestrictionRequestDTO.class);
     DESERIALIZATION_MAP.put(ConstraintType.SHIFT_PER_SCHEDULE, ShiftsPerScheduleRequestDTO.class);
     DESERIALIZATION_MAP.put(ConstraintType.TRIPLE_SHIFTS_CONSTRAINT, TripleShiftConstraintRequestDTO.class);
+    DESERIALIZATION_MAP.put(ConstraintType.TEAM_ASSIGNMENT, TeamAssignmentRequestDTO.class);
   }
 
   @Override

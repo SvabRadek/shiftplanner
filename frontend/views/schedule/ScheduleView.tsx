@@ -40,6 +40,8 @@ import EmployeeShiftRequestDTO from "Frontend/generated/com/cocroachden/planner/
 import EmployeeId from "Frontend/generated/com/cocroachden/planner/employee/api/EmployeeId";
 import EmployeeDTO from "Frontend/generated/com/cocroachden/planner/employee/api/EmployeeDTO";
 import AssignedEmployeeDTO from "Frontend/generated/com/cocroachden/planner/solver/api/AssignedEmployeeDTO";
+import TeamAssignmentRequestDTO
+  from "Frontend/generated/com/cocroachden/planner/constraint/api/TeamAssignmentRequestDTO";
 
 type EmployeeConfigDialogParams = {
   isOpen: boolean,
@@ -75,6 +77,7 @@ export default function ScheduleView() {
   const [shiftFollowupRestrictionRequests, setShiftFollowupRestrictionRequests] = useState<ShiftFollowupRestrictionRequestDTO[]>([]);
   const [shiftPatternRequests, setShiftPatternRequests] = useState<ShiftPatternRequestDTO[]>([]);
   const [tripleShiftConstraintRequests, setTripleShiftConstraintRequests] = useState<TripleShiftConstraintRequestDTO[]>([]);
+  const [teamAssignmentRequests, setTeamAssignmentRequests] = useState<TeamAssignmentRequestDTO[]>([]);
 
   useEffect(() => {
     EmployeeEndpoint.getAllEmployees().then(setEmployees)
@@ -112,7 +115,8 @@ export default function ScheduleView() {
       ...shiftFollowupRestrictionRequests,
       ...shiftPerScheduleRequests,
       ...consecutiveWorkingDaysRequests,
-      ...tripleShiftConstraintRequests
+      ...tripleShiftConstraintRequests,
+      ...teamAssignmentRequests
     ] as ConstraintRequestDTO[]
   }
 
@@ -169,6 +173,9 @@ export default function ScheduleView() {
       )
       setTripleShiftConstraintRequests(
         configResponse.constraints.filter(c => c.type === ConstraintType.TRIPLE_SHIFTS_CONSTRAINT) as TripleShiftConstraintRequestDTO[]
+      )
+      setTeamAssignmentRequests(
+        configResponse.constraints.filter(c => c.type === ConstraintType.TEAM_ASSIGNMENT) as TeamAssignmentRequestDTO[]
       )
       configResponse["constraints"] = []
       setRequest(configResponse)
@@ -301,6 +308,29 @@ export default function ScheduleView() {
     setShiftPerScheduleRequests(prevState => updateList(action, prevState))
   }
 
+  function handleTeamAssignmentAction(action: CrudAction<TeamAssignmentRequestDTO>) {
+    function updateTeamAssignments(action: CrudAction<TeamAssignmentRequestDTO>, requests: TeamAssignmentRequestDTO[]) {
+      switch (action.type) {
+        case CRUDActions.UPDATE:
+          const isNewLeader = action.payload.isLeader
+          return requests.map(r => {
+            if (action.payload.id !== r.id) return {
+              ...r,
+              isLeader: isNewLeader ? false : r.isLeader
+            }
+            return action.payload
+          })
+        case CRUDActions.DELETE:
+          return requests.filter(r => r.id !== action.payload.id)
+        case CRUDActions.CREATE:
+          return [...requests, action.payload]
+        default:
+          return requests
+      }
+    }
+    setTeamAssignmentRequests(prevState => updateTeamAssignments(action, prevState))
+  }
+
   function renderGridHeader() {
     return (
       <Card style={{ width: "100%" }}>
@@ -359,7 +389,7 @@ export default function ScheduleView() {
         onUpdate={handleUpdate}
         onCancel={handleCancel}
         onClearCache={() => setResultCache({ results: [], selectedIndex: 0 })}
-        onExportToExcel={() => exportToExcel(request!.employees, resultCache.results[resultCache.selectedIndex])}
+        onExportToExcel={() => exportToExcel(request!.name, request!.employees, resultCache.results[resultCache.selectedIndex])}
         cacheSize={RESULT_CACHE_SIZE}
         onResultSelectionChanged={handleResultSelectionChanged}
       />
@@ -393,6 +423,8 @@ export default function ScheduleView() {
                   onShiftPatternRequestsAction={handleShiftPatternAction}
                   tripleShiftConstraintRequest={tripleShiftConstraintRequests.filter(r => r.owner.id === employeeConfigDialog.selectedEmployee?.id)}
                   onTripleShiftConstraintAction={handleTripleShiftConstraintAction}
+                  teamAssignmentRequest={teamAssignmentRequests.filter(r => r.owner.id === employeeConfigDialog.selectedEmployee?.id)}
+                  onTeamAssignmentRequestAction={handleTeamAssignmentAction}
                   onAssignmentAction={handleAssignmentAction}
                   readonly={modeCtx.mode !== ScheduleMode.EDIT}
               />
@@ -436,20 +468,6 @@ function updateList<T extends { id: string }>(action: CrudAction<T>, requests: T
       return requests
   }
 }
-
-// function fixTheIndexes(updated: AssignedEmployeeDTO, existing: AssignedEmployeeDTO[]) {
-//   const filteredExisting = existing
-//     .filter(a => a.employee.id != updated.employee.id)
-//   const beforeElements = filteredExisting
-//     .slice(0, updated.index)
-//     .sort((a, b) => a.index - b.index)
-//     .map((value, index) => ({ ...value, index }))
-//   const afterElements = filteredExisting
-//     .slice(updated.index, filteredExisting.length)
-//     .sort((a, b) => a.index - b.index)
-//     .map((value, index) => ({ ...value, index: index + updated.index + 1 }))
-//   return [...beforeElements, updated, ...afterElements]
-// }
 
 function updateAssignmentsWithIndexIntegrity(updated: AssignedEmployeeDTO, previousState: AssignedEmployeeDTO[]) {
   const original = previousState.find(a => a.employee.id === updated.employee.id)
