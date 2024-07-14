@@ -132,7 +132,7 @@ export function HeaderStrip(props: Props) {
                       props.gridDisplayMode === GridDisplayMode.RESULT ? GridDisplayMode.PLANNING : GridDisplayMode.RESULT
                     )}
                 >
-                  {props.gridDisplayMode === GridDisplayMode.PLANNING ? "Zobrazit vysledky" : "Zobrazit plan"}
+                  {props.gridDisplayMode === GridDisplayMode.PLANNING ? "Zobrazit výsledky" : "Zobrazit plán"}
                 </Button>
                 <Button theme={"secondary"} onClick={props.onClearCache}>
                     Vyčistit výsledky

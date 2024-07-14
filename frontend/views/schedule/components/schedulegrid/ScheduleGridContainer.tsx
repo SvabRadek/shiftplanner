@@ -19,8 +19,14 @@ export enum GridDisplayMode {
   RESULT,
   PLANNING
 }
+
 export type PlainEmployeeId = number
 export type Index = number
+
+type CellShiftAndColor = {
+  color: string | undefined
+  shift: WorkShifts
+}
 
 type Props = {
   request: SolverConfigurationDTO
@@ -107,6 +113,7 @@ export function ScheduleGridContainer(props: Props) {
           shiftPatternMap,
           props.shiftPerScheduleRequests,
           highlight,
+          props.displayMode,
           props.result
         )
       }
@@ -137,6 +144,7 @@ function createRows(
   shiftPatterns: Map<PlainEmployeeId, ShiftPatternRequestDTO>,
   shiftPerSchedule: ShiftsPerScheduleRequestDTO[],
   highlightInfo: Highlight,
+  mode: GridDisplayMode,
   results?: SolverSolutionDTO
 ): Row[] {
   const startDate = stringToDate(request.startDate)
@@ -156,22 +164,24 @@ function createRows(
           const cellDate = new Date(startDate)
           cellDate.setDate(startDate.getDate() + dayOffset)
           const relatedRequest = shiftRequests.get(dateToString(cellDate) + employeeDto.id)
-          const cellShift = getResultingShift(
+          const cellShiftAndColor = getResultingShiftAndColor(
             results,
             employeeDto,
             cellDate,
             dayOffset,
             relatedRequest,
-            relatedPattern
+            relatedPattern,
+            mode
           );
 
           return {
-            shift: cellShift,
+            shift: cellShiftAndColor.shift,
             index: dayOffset,
             employeeId: employeeDto.id,
             date: cellDate,
             isHighlighted: highLightIndexes.find(i => i === dayOffset) !== undefined,
             requestId: relatedRequest?.id,
+            color: cellShiftAndColor.color,
             displayMode: results
               ? DisplayMode.DEFAULT
               : relatedRequest
@@ -218,30 +228,36 @@ function createRowTitle(
   )
 }
 
-function getResultingShift(
+function getResultingShiftAndColor(
   results: SolverSolutionDTO | undefined,
   employeeId: EmployeeId,
   cellDate: Date,
   cellIndex: number,
-  relatedRequest: EmployeeShiftRequestDTO | undefined,
-  relatedPattern: ShiftPatternRequestDTO | undefined
-): WorkShifts {
-  if (results) {
-    const resultShift = results.assignments[employeeId.id][dateToString(cellDate)]
-    if (resultShift === WorkShifts.OFF) {
-      return WorkShifts.ANY
-    } else {
-      return resultShift || WorkShifts.ANY
+  shiftRequest: EmployeeShiftRequestDTO | undefined,
+  patternRequest: ShiftPatternRequestDTO | undefined,
+  mode: GridDisplayMode
+): CellShiftAndColor {
+  if (results && mode === GridDisplayMode.RESULT) {
+    const assignedShift = results.assignments[employeeId.id][dateToString(cellDate)] || WorkShifts.ANY
+    return {
+      shift: assignedShift === WorkShifts.OFF ? WorkShifts.ANY : assignedShift,
+      color: undefined
     }
   } else {
-    if (relatedRequest) {
-      return relatedRequest.requestedShift
+    if (shiftRequest) {
+      return {
+        shift: shiftRequest.requestedShift,
+        color: undefined
+      }
     } else {
-      if (relatedPattern && relatedPattern.shiftPattern.length > 0) {
-        const index = cellIndex + relatedPattern.startDayIndex
-        return relatedPattern.shiftPattern[index % relatedPattern.shiftPattern.length]
+      if (patternRequest && patternRequest.shiftPattern.length > 0) {
+        const index = cellIndex + patternRequest.startDayIndex
+        return {
+          shift: patternRequest.shiftPattern[index % patternRequest.shiftPattern.length],
+          color: "var(--lumo-contrast-30pct)"
+        }
       } else {
-        return WorkShifts.ANY;
+        return { shift: WorkShifts.ANY, color: undefined };
       }
     }
   }
