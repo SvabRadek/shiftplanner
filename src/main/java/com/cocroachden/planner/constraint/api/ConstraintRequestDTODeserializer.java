@@ -1,5 +1,6 @@
 package com.cocroachden.planner.constraint.api;
 
+import com.cocroachden.planner.solver.constraints.specific.weekends.request.WeekendRequest;
 import com.fasterxml.jackson.core.JacksonException;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.DeserializationContext;
@@ -27,6 +28,7 @@ public class ConstraintRequestDTODeserializer extends JsonDeserializer<Constrain
     DESERIALIZATION_MAP.put(ConstraintType.SHIFT_PER_SCHEDULE, ShiftsPerScheduleRequestDTO.class);
     DESERIALIZATION_MAP.put(ConstraintType.TRIPLE_SHIFTS_CONSTRAINT, TripleShiftConstraintRequestDTO.class);
     DESERIALIZATION_MAP.put(ConstraintType.TEAM_ASSIGNMENT, TeamAssignmentRequestDTO.class);
+    DESERIALIZATION_MAP.put(ConstraintType.WEEKEND_REQUEST, WeekendRequestDTO.class);
   }
 
   @Override

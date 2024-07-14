@@ -17,6 +17,7 @@ import SolverConfigurationDTO from "Frontend/generated/com/cocroachden/planner/s
 import { SolverConfigurationEndpoint } from "Frontend/generated/endpoints";
 import SolverConfigurationMetadata
   from "Frontend/generated/com/cocroachden/planner/solver/repository/SolverConfigurationMetadata";
+import { GridDisplayMode } from "Frontend/views/schedule/components/schedulegrid/ScheduleGridContainer";
 
 type Props = {
   onStopCalculation: () => void
@@ -29,6 +30,8 @@ type Props = {
   onExportToExcel: () => void
   onResultSelectionChanged: (value: 1 | -1) => void
   onConfigSelected: (id: string) => void
+  gridDisplayMode: GridDisplayMode
+  onGridDisplayModeChange: (mode: GridDisplayMode) => void
   cacheSize: number
   resultSubscription: Subscription<SolverSolutionDTO> | undefined
   request: SolverConfigurationDTO | undefined
@@ -122,9 +125,19 @@ export function HeaderStrip(props: Props) {
             onClick={props.onCancel}>Zrušit</Button>
         }
         {props.resultCache.results.length > 0 && !props.resultSubscription &&
-            <Button theme={"secondary"} onClick={props.onClearCache}>
-                Vyčistit výsledky
-            </Button>
+            <HorizontalLayout theme={"spacing"}>
+                <Button
+                    theme={"secondary"}
+                    onClick={() => props.onGridDisplayModeChange(
+                      props.gridDisplayMode === GridDisplayMode.RESULT ? GridDisplayMode.PLANNING : GridDisplayMode.RESULT
+                    )}
+                >
+                  {props.gridDisplayMode === GridDisplayMode.PLANNING ? "Zobrazit vysledky" : "Zobrazit plan"}
+                </Button>
+                <Button theme={"secondary"} onClick={props.onClearCache}>
+                    Vyčistit výsledky
+                </Button>
+            </HorizontalLayout>
         }
       </HorizontalLayout>
       {(props.resultSubscription || props.resultCache.results.length > 0)

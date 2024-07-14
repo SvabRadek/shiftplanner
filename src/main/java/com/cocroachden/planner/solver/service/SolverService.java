@@ -49,9 +49,10 @@ public class SolverService {
     }
     this.cpSolver = new CpSolver();
     this.cpSolver.getParameters().setLinearizationLevel(0);
-    this.cpSolver.getParameters().setNumWorkers(8);
+//    this.cpSolver.getParameters().setNumWorkers(8);
     this.cpSolver.getParameters().setRelativeGapLimit(0.05);
     this.cpSolver.getParameters().setLogSearchProgress(true);
+    this.cpSolver.getParameters().setEnumerateAllSolutions(true);
     model.minimize(objectives.getObjectiveAsExpression());
     this.solutionCb = new SolverSolutionCallback(
         solutionCallback,

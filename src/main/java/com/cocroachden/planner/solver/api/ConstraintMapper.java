@@ -11,33 +11,56 @@ import com.cocroachden.planner.solver.constraints.specific.shiftpattern.request.
 import com.cocroachden.planner.solver.constraints.specific.shiftperschedule.request.ShiftsPerScheduleRequest;
 import com.cocroachden.planner.solver.constraints.specific.teamassignment.request.TeamAssignmentRequest;
 import com.cocroachden.planner.solver.constraints.specific.tripleshift.request.TripleShiftConstraintRequest;
+import com.cocroachden.planner.solver.constraints.specific.weekends.request.WeekendRequest;
 
 public class ConstraintMapper {
 
   public static ConstraintRequestDTO fromRecord(ConstraintRequestRecord record) {
     var request = record.getRequest();
-    if (request instanceof EmployeeShiftRequest employeeShiftRequest) {
-      return EmployeeShiftRequestDTO.from(record.getId(), employeeShiftRequest);
-    }
-    if (request instanceof ShiftFollowUpRestrictionRequest followUpRestrictionRequest) {
-      return ShiftFollowupRestrictionRequestDTO.from(record.getId(), followUpRestrictionRequest);
-    }
-    if (request instanceof ShiftPatternConstraintRequest shiftPatternConstraintRequest) {
-      return ShiftPatternRequestDTO.from(record.getId(), shiftPatternConstraintRequest);
-    }
-    if (request instanceof ShiftsPerScheduleRequest shiftsPerScheduleRequest) {
-      return ShiftsPerScheduleRequestDTO.from(record.getId(), shiftsPerScheduleRequest);
-    }
-    if (request instanceof EmployeesPerShiftRequest employeesPerShiftRequest) {
-      return EmployeesPerShiftRequestDTO.from(record.getId(), employeesPerShiftRequest);
-    }
-    if (request instanceof ConsecutiveWorkingDaysRequest consecutiveWorkingDaysRequest) {
-      return ConsecutiveWorkingDaysRequestDTO.from(record.getId(), consecutiveWorkingDaysRequest);
-    }
-    if (request instanceof TripleShiftConstraintRequest tripleShiftConstraintRequest) {
-      return TripleShiftConstraintRequestDTO.from(record.getId(), tripleShiftConstraintRequest);
+    switch (record.getType()) {
+      case EMPLOYEE_SHIFT_REQUEST -> {
+        return EmployeeShiftRequestDTO.from(record.getId(), (EmployeeShiftRequest) record.getRequest());
+      }
+      case SHIFT_PER_SCHEDULE -> {
+        return ShiftsPerScheduleRequestDTO.from(record.getId(), (ShiftsPerScheduleRequest) record.getRequest());
+      }
+      case CONSECUTIVE_WORKING_DAYS -> {
+        return ConsecutiveWorkingDaysRequestDTO.from(
+            record.getId(),
+            (ConsecutiveWorkingDaysRequest) record.getRequest()
+        );
+      }
+      case ONE_SHIFT_PER_DAY -> {
+        return null;
+      }
+      case SHIFT_FOLLOW_UP_RESTRICTION -> {
+        return ShiftFollowupRestrictionRequestDTO.from(
+            record.getId(),
+            (ShiftFollowUpRestrictionRequest) record.getRequest()
+        );
+      }
+      case SHIFT_PATTERN_CONSTRAINT -> {
+        return ShiftPatternRequestDTO.from(record.getId(), (ShiftPatternConstraintRequest) record.getRequest());
+      }
+      case EMPLOYEES_PER_SHIFT -> {
+        return EmployeesPerShiftRequestDTO.from(record.getId(), (EmployeesPerShiftRequest) record.getRequest());
+      }
+      case TRIPLE_SHIFTS_CONSTRAINT -> {
+        return TripleShiftConstraintRequestDTO.from(record.getId(), (TripleShiftConstraintRequest) record.getRequest());
+      }
+      case TEAM_ASSIGNMENT -> {
+        return TeamAssignmentRequestDTO.from(record.getId(), (TeamAssignmentRequest) record.getRequest());
+      }
+      case WEEKEND_REQUEST -> {
+        return WeekendRequestDTO.from(record.getId(), (WeekendRequest) record.getRequest());
+      }
     }
     throw new IllegalArgumentException("Cannot remap requested type: " + request.getType());
+  }
+
+  @SuppressWarnings("unchecked")
+  public static <T> T specificFromRecord(ConstraintRequestRecord record, Class<T> clazz) {
+    return (T) fromRecord(record);
   }
 
   public static ConstraintRequest fromDto(ConstraintRequestDTO dto) {
@@ -65,6 +88,9 @@ public class ConstraintMapper {
       }
       case TEAM_ASSIGNMENT -> {
         return TeamAssignmentRequest.from((TeamAssignmentRequestDTO) dto);
+      }
+      case WEEKEND_REQUEST -> {
+        return WeekendRequest.from((WeekendRequestDTO) dto);
       }
       case ONE_SHIFT_PER_DAY -> throw new IllegalArgumentException("Should not be part of api exchange");
     }

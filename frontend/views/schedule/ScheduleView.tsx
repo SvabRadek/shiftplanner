@@ -5,7 +5,7 @@ import { Button } from "@hilla/react-components/Button";
 import { HorizontalLayout } from "@hilla/react-components/HorizontalLayout";
 import { TextField } from "@hilla/react-components/TextField";
 import { VerticalLayout } from "@hilla/react-components/VerticalLayout";
-import { ScheduleGridContainer } from "./components/schedulegrid/ScheduleGridContainer";
+import { GridDisplayMode, ScheduleGridContainer } from "./components/schedulegrid/ScheduleGridContainer";
 import {
   EmployeeRequestConfigDialog
 } from "Frontend/views/schedule/components/employeesettings/EmployeeRequestConfigDialog";
@@ -42,6 +42,7 @@ import EmployeeDTO from "Frontend/generated/com/cocroachden/planner/employee/api
 import AssignedEmployeeDTO from "Frontend/generated/com/cocroachden/planner/solver/api/AssignedEmployeeDTO";
 import TeamAssignmentRequestDTO
   from "Frontend/generated/com/cocroachden/planner/constraint/api/TeamAssignmentRequestDTO";
+import WeekendRequestDTO from "Frontend/generated/com/cocroachden/planner/constraint/api/WeekendRequestDTO";
 
 type EmployeeConfigDialogParams = {
   isOpen: boolean,
@@ -68,6 +69,7 @@ export default function ScheduleView() {
   const [isScheduleConfigDialogOpen, setIsScheduleConfigDialogOpen] = useState(false);
   const [resultCache, setResultCache] = useState<ResultCache>({ results: [], selectedIndex: 0 });
   const [resultSubscription, setResultSubscription] = useState<Subscription<SolverSolutionDTO> | undefined>();
+  const [gridDisplayMode, setGridDisplayMode] = useState<GridDisplayMode>(GridDisplayMode.PLANNING);
 
   const [request, setRequest] = useState<SolverConfigurationDTO | undefined>();
   const [shiftRequests, setShiftRequests] = useState<EmployeeShiftRequestDTO[]>([])
@@ -78,6 +80,7 @@ export default function ScheduleView() {
   const [shiftPatternRequests, setShiftPatternRequests] = useState<ShiftPatternRequestDTO[]>([]);
   const [tripleShiftConstraintRequests, setTripleShiftConstraintRequests] = useState<TripleShiftConstraintRequestDTO[]>([]);
   const [teamAssignmentRequests, setTeamAssignmentRequests] = useState<TeamAssignmentRequestDTO[]>([]);
+  const [weekendRequests, setWeekendRequests] = useState<WeekendRequestDTO[]>([]);
 
   useEffect(() => {
     EmployeeEndpoint.getAllEmployees().then(setEmployees)
@@ -100,7 +103,7 @@ export default function ScheduleView() {
   }, [employeeConfigDialog, isScheduleConfigDialogOpen]);
 
   function handleShiftPatternAction(action: CrudAction<ShiftPatternRequestDTO>) {
-    updateList(action, shiftPatternRequests)
+    setShiftPatternRequests(prevState => updateList(action, prevState))
   }
 
   function handleCancel() {
@@ -116,7 +119,8 @@ export default function ScheduleView() {
       ...shiftPerScheduleRequests,
       ...consecutiveWorkingDaysRequests,
       ...tripleShiftConstraintRequests,
-      ...teamAssignmentRequests
+      ...teamAssignmentRequests,
+      ...weekendRequests
     ] as ConstraintRequestDTO[]
   }
 
@@ -176,6 +180,9 @@ export default function ScheduleView() {
       )
       setTeamAssignmentRequests(
         configResponse.constraints.filter(c => c.type === ConstraintType.TEAM_ASSIGNMENT) as TeamAssignmentRequestDTO[]
+      )
+      setWeekendRequests(
+        configResponse.constraints.filter(c => c.type === ConstraintType.WEEKEND_REQUEST) as WeekendRequestDTO[]
       )
       configResponse["constraints"] = []
       setRequest(configResponse)
@@ -246,6 +253,7 @@ export default function ScheduleView() {
 
   function handleStartCalculation() {
     handleStopCalculation()
+    setGridDisplayMode(GridDisplayMode.RESULT)
     setResultSubscription(SolverEndpoint.solve(request?.id)
       .onNext(value => {
         if (value.solutionStatus !== SolutionStatus.OK) {
@@ -306,6 +314,10 @@ export default function ScheduleView() {
 
   function handleShiftPerScheduleAction(action: CrudAction<ShiftsPerScheduleRequestDTO>) {
     setShiftPerScheduleRequests(prevState => updateList(action, prevState))
+  }
+
+  function handleWeekendRequestAction(action: CrudAction<WeekendRequestDTO>) {
+    setWeekendRequests(prevState => updateList(action, prevState))
   }
 
   function handleTeamAssignmentAction(action: CrudAction<TeamAssignmentRequestDTO>) {
@@ -392,6 +404,8 @@ export default function ScheduleView() {
         onExportToExcel={() => exportToExcel(request!.name, request!.employees, resultCache.results[resultCache.selectedIndex])}
         cacheSize={RESULT_CACHE_SIZE}
         onResultSelectionChanged={handleResultSelectionChanged}
+        gridDisplayMode={gridDisplayMode}
+        onGridDisplayModeChange={setGridDisplayMode}
       />
       {request ? renderGridHeader() : <h2 style={{ marginTop: 30, padding: 10 }}>Vyberte rozvrh</h2>}
       {request &&
@@ -423,9 +437,11 @@ export default function ScheduleView() {
                   onShiftPatternRequestsAction={handleShiftPatternAction}
                   tripleShiftConstraintRequest={tripleShiftConstraintRequests.filter(r => r.owner.id === employeeConfigDialog.selectedEmployee?.id)}
                   onTripleShiftConstraintAction={handleTripleShiftConstraintAction}
-                  teamAssignmentRequest={teamAssignmentRequests.filter(r => r.owner.id === employeeConfigDialog.selectedEmployee?.id)}
+                  teamAssignmentRequests={teamAssignmentRequests.filter(r => r.owner.id === employeeConfigDialog.selectedEmployee?.id)}
                   onTeamAssignmentRequestAction={handleTeamAssignmentAction}
                   onAssignmentAction={handleAssignmentAction}
+                  weekendRequests={weekendRequests.filter(r => r.owner.id === employeeConfigDialog.selectedEmployee?.id)}
+                  onWeekendRequestRequestAction={handleWeekendRequestAction}
                   readonly={modeCtx.mode !== ScheduleMode.EDIT}
               />
               <Card
@@ -445,6 +461,7 @@ export default function ScheduleView() {
                       onAssignmentAction={handleAssignmentAction}
                       onShiftRequestsChanged={handleShiftRequestsChanged}
                       result={resultCache.results.length > 0 ? resultCache.results[resultCache.selectedIndex] : undefined}
+                      displayMode={gridDisplayMode}
                   />
               </Card>
           </Fragment>

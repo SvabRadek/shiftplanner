@@ -3,6 +3,7 @@ package com.cocroachden.planner.constraint.endpoint;
 import com.cocroachden.planner.constraint.api.*;
 import com.cocroachden.planner.constraint.repository.ConstraintRequestRecord;
 import com.cocroachden.planner.constraint.repository.ConstraintRequestRepository;
+import com.cocroachden.planner.solver.api.ConstraintMapper;
 import com.cocroachden.planner.solver.constraints.specific.consecutiveworkingdays.request.ConsecutiveWorkingDaysRequest;
 import com.cocroachden.planner.solver.constraints.specific.employeeshiftrequest.request.EmployeeShiftRequest;
 import com.cocroachden.planner.solver.constraints.specific.employeespershift.request.EmployeesPerShiftRequest;
@@ -11,6 +12,7 @@ import com.cocroachden.planner.solver.constraints.specific.shiftpattern.request.
 import com.cocroachden.planner.solver.constraints.specific.shiftperschedule.request.ShiftsPerScheduleRequest;
 import com.cocroachden.planner.solver.constraints.specific.teamassignment.request.TeamAssignmentRequest;
 import com.cocroachden.planner.solver.constraints.specific.tripleshift.request.TripleShiftConstraintRequest;
+import com.cocroachden.planner.solver.constraints.specific.weekends.request.WeekendRequest;
 import com.vaadin.flow.server.auth.AnonymousAllowed;
 import dev.hilla.BrowserCallable;
 import dev.hilla.Nonnull;
@@ -30,7 +32,7 @@ public class ConstraintEndpoint {
 
   public @Nonnull List<@Nonnull ConstraintRequestDTO> findRequests(@Nonnull List<@Nonnull UUID> requestIds) {
     return this.getRecords(requestIds).stream()
-        .map(this::convertToDto)
+        .map(ConstraintMapper::fromRecord)
         .filter(Objects::nonNull)
         .toList();
   }
@@ -39,7 +41,7 @@ public class ConstraintEndpoint {
       @Nonnull List<@Nonnull UUID> requestIds
   ) {
     return this.getRecords(requestIds).stream()
-        .map(r -> EmployeeShiftRequestDTO.from(r.getId(), (EmployeeShiftRequest) r.getRequest()))
+        .map(r -> ConstraintMapper.specificFromRecord(r, EmployeeShiftRequestDTO.class))
         .toList();
   }
 
@@ -47,7 +49,7 @@ public class ConstraintEndpoint {
       @Nonnull List<@Nonnull UUID> requestIds
   ) {
     return this.getRecords(requestIds).stream()
-        .map(r -> ShiftsPerScheduleRequestDTO.from(r.getId(), (ShiftsPerScheduleRequest) r.getRequest()))
+        .map(r -> ConstraintMapper.specificFromRecord(r, ShiftsPerScheduleRequestDTO.class))
         .toList();
   }
 
@@ -55,7 +57,7 @@ public class ConstraintEndpoint {
       @Nonnull List<@Nonnull UUID> requestIds
   ) {
     return this.getRecords(requestIds).stream()
-        .map(r -> ConsecutiveWorkingDaysRequestDTO.from(r.getId(), (ConsecutiveWorkingDaysRequest) r.getRequest()))
+        .map(r -> ConstraintMapper.specificFromRecord(r, ConsecutiveWorkingDaysRequestDTO.class))
         .toList();
   }
 
@@ -63,7 +65,7 @@ public class ConstraintEndpoint {
       @Nonnull List<@Nonnull UUID> requestIds
   ) {
     return this.getRecords(requestIds).stream()
-        .map(r -> EmployeesPerShiftRequestDTO.from(r.getId(), (EmployeesPerShiftRequest) r.getRequest()))
+        .map(r -> ConstraintMapper.specificFromRecord(r, EmployeesPerShiftRequestDTO.class))
         .toList();
   }
 
@@ -71,7 +73,7 @@ public class ConstraintEndpoint {
       @Nonnull List<@Nonnull UUID> requestIds
   ) {
     return this.getRecords(requestIds).stream()
-        .map(r -> ShiftFollowupRestrictionRequestDTO.from(r.getId(), (ShiftFollowUpRestrictionRequest) r.getRequest()))
+        .map(r -> ConstraintMapper.specificFromRecord(r, ShiftFollowupRestrictionRequestDTO.class))
         .toList();
   }
 
@@ -79,7 +81,7 @@ public class ConstraintEndpoint {
       @Nonnull List<@Nonnull UUID> requestIds
   ) {
     return this.getRecords(requestIds).stream()
-        .map(r -> ShiftPatternRequestDTO.from(r.getId(), (ShiftPatternConstraintRequest) r.getRequest()))
+        .map(r -> ConstraintMapper.specificFromRecord(r, ShiftPatternRequestDTO.class))
         .toList();
   }
 
@@ -87,7 +89,7 @@ public class ConstraintEndpoint {
       @Nonnull List<@Nonnull UUID> requestIds
   ) {
     return this.getRecords(requestIds).stream()
-        .map(r -> TripleShiftConstraintRequestDTO.from(r.getId(), (TripleShiftConstraintRequest) r.getRequest()))
+        .map(r -> ConstraintMapper.specificFromRecord(r, TripleShiftConstraintRequestDTO.class))
         .toList();
   }
 
@@ -95,7 +97,15 @@ public class ConstraintEndpoint {
       @Nonnull List<@Nonnull UUID> requestIds
   ) {
     return this.getRecords(requestIds).stream()
-        .map(r -> TeamAssignmentRequestDTO.from(r.getId(), (TeamAssignmentRequest) r.getRequest()))
+        .map(r -> ConstraintMapper.specificFromRecord(r, TeamAssignmentRequestDTO.class))
+        .toList();
+  }
+
+  public @Nonnull List<@Nonnull WeekendRequestDTO> findWeekendConstraintRequests(
+      @Nonnull List<@Nonnull UUID> requestIds
+  ) {
+    return this.getRecords(requestIds).stream()
+        .map(r -> ConstraintMapper.specificFromRecord(r, WeekendRequestDTO.class))
         .toList();
   }
 
@@ -104,43 +114,5 @@ public class ConstraintEndpoint {
         constraintRequestRepository.findAllById(constraintIds).spliterator(),
         false
     ).toList();
-  }
-
-  private ConstraintRequestDTO convertToDto(ConstraintRequestRecord record) {
-    return switch (record.getType()) {
-      case EMPLOYEE_SHIFT_REQUEST -> EmployeeShiftRequestDTO.from(
-          record.getId(),
-          (EmployeeShiftRequest) record.getRequest()
-      );
-      case SHIFT_PER_SCHEDULE -> ShiftsPerScheduleRequestDTO.from(
-          record.getId(),
-          (ShiftsPerScheduleRequest) record.getRequest()
-      );
-      case CONSECUTIVE_WORKING_DAYS -> ConsecutiveWorkingDaysRequestDTO.from(
-          record.getId(),
-          (ConsecutiveWorkingDaysRequest) record.getRequest()
-      );
-      case SHIFT_FOLLOW_UP_RESTRICTION -> ShiftFollowupRestrictionRequestDTO.from(
-          record.getId(),
-          (ShiftFollowUpRestrictionRequest) record.getRequest()
-      );
-      case SHIFT_PATTERN_CONSTRAINT -> ShiftPatternRequestDTO.from(
-          record.getId(),
-          (ShiftPatternConstraintRequest) record.getRequest()
-      );
-      case EMPLOYEES_PER_SHIFT -> EmployeesPerShiftRequestDTO.from(
-          record.getId(),
-          (EmployeesPerShiftRequest) record.getRequest()
-      );
-      case TRIPLE_SHIFTS_CONSTRAINT -> TripleShiftConstraintRequestDTO.from(
-          record.getId(),
-          (TripleShiftConstraintRequest) record.getRequest()
-      );
-      case TEAM_ASSIGNMENT -> TeamAssignmentRequestDTO.from(
-          record.getId(),
-          (TeamAssignmentRequest) record.getRequest()
-      );
-      case ONE_SHIFT_PER_DAY -> null;
-    };
   }
 }

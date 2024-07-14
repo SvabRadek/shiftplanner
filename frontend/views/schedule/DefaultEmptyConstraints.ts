@@ -15,6 +15,7 @@ import EmployeesPerShiftRequestDTO
 import EmployeeShiftRequestDTO from "Frontend/generated/com/cocroachden/planner/constraint/api/EmployeeShiftRequestDTO";
 import TeamAssignmentRequestDTO
   from "Frontend/generated/com/cocroachden/planner/constraint/api/TeamAssignmentRequestDTO";
+import WeekendRequestDTO from "Frontend/generated/com/cocroachden/planner/constraint/api/WeekendRequestDTO";
 
 type ConstraintBinding<T> = {
   label: string
@@ -30,6 +31,7 @@ type DefaultConstraints = {
   [ConstraintType.SHIFT_PER_SCHEDULE]: ConstraintBinding<ShiftsPerScheduleRequestDTO>
   [ConstraintType.EMPLOYEES_PER_SHIFT]: ConstraintBinding<EmployeesPerShiftRequestDTO>
   [ConstraintType.TEAM_ASSIGNMENT]: ConstraintBinding<TeamAssignmentRequestDTO>
+  [ConstraintType.WEEKEND_REQUEST]: ConstraintBinding<WeekendRequestDTO>
 }
 
 export const apolinarPattern: WorkShifts[] = [
@@ -186,6 +188,16 @@ export const defaultConstraints: DefaultConstraints = {
       isLeader: false,
       teamId: 1,
       penalty: 50
+    }
+  },
+  [ConstraintType.WEEKEND_REQUEST]: {
+    label: "Nastavení víkendu",
+    constraint: {
+      type: ConstraintType.WEEKEND_REQUEST,
+      id: generateUUID(),
+      owner: { id: 0 },
+      assignOnlyFullWorkingWeekends: true,
+      penaltyForNotFullWorkingWeekend: 50
     }
   }
 }

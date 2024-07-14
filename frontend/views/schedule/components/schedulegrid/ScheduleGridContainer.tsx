@@ -15,6 +15,10 @@ import EmployeeId from "Frontend/generated/com/cocroachden/planner/employee/api/
 import EmployeeDTO from "Frontend/generated/com/cocroachden/planner/employee/api/EmployeeDTO";
 import AssignedEmployeeDTO from "Frontend/generated/com/cocroachden/planner/solver/api/AssignedEmployeeDTO";
 
+export enum GridDisplayMode {
+  RESULT,
+  PLANNING
+}
 export type PlainEmployeeId = number
 export type Index = number
 
@@ -25,6 +29,7 @@ type Props = {
   shiftPerScheduleRequests: ShiftsPerScheduleRequestDTO[]
   onAssignmentAction: (action: CrudAction<AssignedEmployeeDTO>) => void
   onShiftRequestsChanged?: (changedRequests: Omit<EmployeeShiftRequestDTO, "id">[]) => void
+  displayMode: GridDisplayMode
   result?: SolverSolutionDTO
 }
 

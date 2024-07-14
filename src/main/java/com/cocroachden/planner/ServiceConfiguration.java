@@ -10,6 +10,7 @@ import com.cocroachden.planner.solver.constraints.specific.teamassignment.TeamAs
 import com.cocroachden.planner.solver.constraints.specific.tripleshift.TripleShiftConstraintApplier;
 import com.cocroachden.planner.solver.constraints.specific.employeeshiftrequest.EmployeeShiftRequestConstraintApplier;
 import com.cocroachden.planner.solver.constraints.specific.employeespershift.EmployeesPerShiftConstraintApplier;
+import com.cocroachden.planner.solver.constraints.specific.weekends.WeekendRequestsApplier;
 import com.cocroachden.planner.solver.service.SolverService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -30,7 +31,8 @@ public class ServiceConfiguration {
         new ConsecutiveWorkingDaysConstraintApplier(),
         new ShiftPatternConstraintApplier(),
         new TripleShiftConstraintApplier(),
-        new TeamAssignmentConstraintApplier()
+        new TeamAssignmentConstraintApplier(),
+        new WeekendRequestsApplier()
     );
   }
 

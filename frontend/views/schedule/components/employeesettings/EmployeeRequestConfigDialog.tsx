@@ -30,6 +30,10 @@ import TeamAssignmentRequestDTO
 import {
   TeamAssignmentConstraintForm
 } from "Frontend/views/schedule/components/employeesettings/constraintform/TeamAssignmentConstraintForm";
+import {
+  WeekendConstraintForm
+} from "Frontend/views/schedule/components/employeesettings/constraintform/WeekendConstraintForm";
+import WeekendRequestDTO from "Frontend/generated/com/cocroachden/planner/constraint/api/WeekendRequestDTO";
 
 type Props = {
   assignment?: AssignedEmployeeDTO
@@ -41,8 +45,10 @@ type Props = {
   onShiftPatternRequestsAction: (action: CrudAction<ShiftPatternRequestDTO>) => void
   tripleShiftConstraintRequest: TripleShiftConstraintRequestDTO[]
   onTripleShiftConstraintAction: (action: CrudAction<TripleShiftConstraintRequestDTO>) => void
-  teamAssignmentRequest: TeamAssignmentRequestDTO[],
+  teamAssignmentRequests: TeamAssignmentRequestDTO[],
   onTeamAssignmentRequestAction: (action: CrudAction<TeamAssignmentRequestDTO>) => void
+  weekendRequests: WeekendRequestDTO[],
+  onWeekendRequestRequestAction: (action: CrudAction<WeekendRequestDTO>) => void
   onAssignmentAction: (action: CrudAction<AssignedEmployeeDTO>) => void
   readonly?: boolean
 }
@@ -83,6 +89,14 @@ export function EmployeeRequestConfigDialog(props: Props) {
     props.onTeamAssignmentRequestAction({
         type: CRUDActions.CREATE,
         payload: generateNewTeamAssignment(props.assignment?.employee!)
+      }
+    )
+  }
+
+  function handleCreateNewWeekendRequest() {
+    props.onWeekendRequestRequestAction({
+        type: CRUDActions.CREATE,
+        payload: generateNewWeekendRequest(props.assignment?.employee!)
       }
     )
   }
@@ -154,7 +168,7 @@ export function EmployeeRequestConfigDialog(props: Props) {
             readonly={props.readonly}
           />
         ))}
-        {renderSectionHeader("Schema smen", "vaadin:plus", handleCreateNewShiftPattern, props.shiftPatternRequests.length > 0)}
+        {renderSectionHeader("Schéma směn", "vaadin:plus", handleCreateNewShiftPattern, props.shiftPatternRequests.length > 0)}
         {props.shiftPatternRequests.map(request => (
           <ShiftPatternConstraintForm
             key={request.id}
@@ -163,15 +177,19 @@ export function EmployeeRequestConfigDialog(props: Props) {
           />
         ))}
         {renderSectionHeader("Přirazení do týmu", "vaadin:plus", handleCreateNewTeamAssignment)}
-        {props.teamAssignmentRequest.map(request => (
+        {props.teamAssignmentRequests.map(request => (
           <TeamAssignmentConstraintForm key={request.id} request={request} onAction={props.onTeamAssignmentRequestAction}/>
         ))}
         {renderSectionHeader("Nastaveni trojitych smen", "vaadin:plus", handleCreateNewTripleShiftConstraint)}
         {props.tripleShiftConstraintRequest.map(request => (
           <TripleShiftConstraintForm key={request.id} request={request} onAction={props.onTripleShiftConstraintAction}/>
         ))}
+        {renderSectionHeader("Nastaveni víkendů", "vaadin:plus", handleCreateNewWeekendRequest)}
+        {props.weekendRequests.map(request => (
+          <WeekendConstraintForm key={request.id} request={request} onAction={props.onWeekendRequestRequestAction}/>
+        ))}
         <HorizontalLayout style={{ width: "100%", justifyContent: "end" }}>
-          <Button onClick={() => props.onOpenChanged(false)}>Zavrit</Button>
+          <Button onClick={() => props.onOpenChanged(false)}>Zavřít</Button>
         </HorizontalLayout>
       </VerticalLayout>
     </Dialog>
@@ -199,6 +217,14 @@ function generateNewShiftPattern(employeeId: EmployeeId): ShiftPatternRequestDTO
 function generateNewTeamAssignment(employeeId: EmployeeId): TeamAssignmentRequestDTO {
   return {
     ...defaultConstraints.TEAM_ASSIGNMENT.constraint,
+    owner: { id: employeeId.id },
+    id: generateUUID()
+  }
+}
+
+function generateNewWeekendRequest(employeeId: EmployeeId): WeekendRequestDTO {
+  return {
+    ...defaultConstraints.WEEKEND_REQUEST.constraint,
     owner: { id: employeeId.id },
     id: generateUUID()
   }

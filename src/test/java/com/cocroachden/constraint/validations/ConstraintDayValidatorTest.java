@@ -106,7 +106,8 @@ class ConstraintDayValidatorTest {
                 "irrelevant",
                 "irrelevant"
             ),
-            0
+            0,
+        1
         );
   }
 
