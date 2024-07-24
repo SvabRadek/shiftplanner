@@ -2,6 +2,7 @@ package com.cocroachden.planner;
 
 import com.cocroachden.planner.solver.constraints.GenericConstraintApplier;
 import com.cocroachden.planner.solver.constraints.specific.consecutiveworkingdays.ConsecutiveWorkingDaysConstraintApplier;
+import com.cocroachden.planner.solver.constraints.specific.evenshiftdistribution.EvenShiftDistributionConstraintApplier;
 import com.cocroachden.planner.solver.constraints.specific.shiftfollowuprestriction.ShiftFollowUpConstraintApplier;
 import com.cocroachden.planner.solver.constraints.specific.shiftpattern.ShiftPatternConstraintApplier;
 import com.cocroachden.planner.solver.constraints.specific.shiftperday.OneShiftPerDayConstraintApplier;
@@ -32,7 +33,8 @@ public class ServiceConfiguration {
         new ShiftPatternConstraintApplier(),
         new TripleShiftConstraintApplier(),
         new TeamAssignmentConstraintApplier(),
-        new WeekendRequestsApplier()
+        new WeekendRequestsApplier(),
+        new EvenShiftDistributionConstraintApplier()
     );
   }
 

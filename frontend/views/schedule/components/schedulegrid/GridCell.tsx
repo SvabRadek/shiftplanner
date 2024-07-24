@@ -2,13 +2,6 @@ import { ContextMenu, ContextMenuItem, ContextMenuItemSelectedEvent } from "@hil
 import { workShiftBindings } from "Frontend/views/schedule/WorkShiftBindigs";
 import { CSSProperties } from "react";
 import WorkShifts from "Frontend/generated/com/cocroachden/planner/solver/api/WorkShifts";
-import EmployeeId from "Frontend/generated/com/cocroachden/planner/employee/api/EmployeeId";
-
-export enum DisplayMode {
-  DEFAULT,
-  REQUEST,
-  PATTERN
-}
 
 export type Cell = {
   shift: WorkShifts
@@ -16,7 +9,6 @@ export type Cell = {
   employeeId: number
   date: Date
   isHighlighted: boolean
-  displayMode?: DisplayMode
   requestId?: string
   backgroundColor?: string
   color?: string

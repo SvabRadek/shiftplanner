@@ -1,7 +1,7 @@
 import { useMemo, useState } from "react";
 import { CrudAction, dateToString, stringToDate } from "Frontend/util/utils";
 import { Row, ScheduleGrid } from "Frontend/views/schedule/components/schedulegrid/ScheduleGrid";
-import { Cell, DisplayMode } from "Frontend/views/schedule/components/schedulegrid/GridCell";
+import { Cell } from "Frontend/views/schedule/components/schedulegrid/GridCell";
 import ShiftsPerScheduleRequestDTO
   from "Frontend/generated/com/cocroachden/planner/constraint/api/ShiftsPerScheduleRequestDTO";
 import ShiftPatternRequestDTO from "Frontend/generated/com/cocroachden/planner/constraint/api/ShiftPatternRequestDTO";
@@ -181,14 +181,7 @@ function createRows(
             date: cellDate,
             isHighlighted: highLightIndexes.find(i => i === dayOffset) !== undefined,
             requestId: relatedRequest?.id,
-            color: cellShiftAndColor.color,
-            displayMode: results
-              ? DisplayMode.DEFAULT
-              : relatedRequest
-                ? DisplayMode.REQUEST
-                : relatedPattern
-                  ? DisplayMode.PATTERN
-                  : DisplayMode.DEFAULT
+            color: cellShiftAndColor.color
           } as Cell
         })
       const relatedShiftPerScheduleRequests = shiftPerSchedule.filter(r => r.owner.id === employeeDto.id)

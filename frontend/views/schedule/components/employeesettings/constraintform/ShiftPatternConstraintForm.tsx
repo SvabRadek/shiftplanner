@@ -19,15 +19,15 @@ type Props = {
 
 const selectItems: SelectItem[] = [
   {
-    label: "Apolinar",
+    label: "Apolinář",
     value: "apolinar"
   },
   {
-    label: "Klasicky",
+    label: "Klasický",
     value: "classic"
   },
   {
-    label: "Libovolny",
+    label: "Libovolný",
     value: "custom"
   }
 ]

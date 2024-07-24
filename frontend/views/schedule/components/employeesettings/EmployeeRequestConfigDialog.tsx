@@ -180,7 +180,7 @@ export function EmployeeRequestConfigDialog(props: Props) {
         {props.teamAssignmentRequests.map(request => (
           <TeamAssignmentConstraintForm key={request.id} request={request} onAction={props.onTeamAssignmentRequestAction}/>
         ))}
-        {renderSectionHeader("Nastaveni trojitych smen", "vaadin:plus", handleCreateNewTripleShiftConstraint)}
+        {renderSectionHeader("Nastavení trojitých směn", "vaadin:plus", handleCreateNewTripleShiftConstraint)}
         {props.tripleShiftConstraintRequest.map(request => (
           <TripleShiftConstraintForm key={request.id} request={request} onAction={props.onTripleShiftConstraintAction}/>
         ))}

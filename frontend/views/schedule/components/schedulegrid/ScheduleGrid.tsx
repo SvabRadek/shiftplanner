@@ -1,4 +1,4 @@
-import { Cell, DisplayMode, GridCell } from "Frontend/views/schedule/components/schedulegrid/GridCell";
+import { Cell, GridCell } from "Frontend/views/schedule/components/schedulegrid/GridCell";
 import { CSSProperties, ReactNode, useContext } from "react";
 import { FirstColumnCell } from "Frontend/views/schedule/components/schedulegrid/FirstColumnCell";
 import { FirstRowCell } from "Frontend/views/schedule/components/schedulegrid/FirstRowCell";
@@ -75,10 +75,7 @@ export function ScheduleGrid(props: Props) {
               onLeftClick={props.onLeftClick}
               backgroundColor={cellColor(rowIndex + 2, c.index + 2, modeCtx.mode, c.date)}
               readonly={modeCtx.mode !== ScheduleMode.EDIT}
-              color={c.displayMode === DisplayMode.PATTERN
-                ? "var(--lumo-contrast-30pct)"
-                : undefined
-              }
+              color={c.color}
             />
           ));
         })
