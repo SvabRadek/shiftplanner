@@ -115,3 +115,4 @@ export function arePatternsSame(shifts1: WorkShifts[], shift2: WorkShifts[]): bo
   }
   return true
 }
+

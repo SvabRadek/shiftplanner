@@ -8,6 +8,11 @@ import { ValidationContext } from "Frontend/views/schedule/components/validation
 import IssueSeverity from "Frontend/generated/com/cocroachden/planner/constraint/validations/IssueSeverity";
 import EmployeeId from "Frontend/generated/com/cocroachden/planner/employee/api/EmployeeId";
 import AssignedEmployeeDTO from "Frontend/generated/com/cocroachden/planner/solver/api/AssignedEmployeeDTO";
+import {HorizontalLayout} from "@hilla/react-components/HorizontalLayout";
+
+type TeamColor = {
+  [key: number]: string
+}
 
 const dayVocabulary: Record<number, string> = {
   1: "Po",
@@ -19,10 +24,22 @@ const dayVocabulary: Record<number, string> = {
   0: "Ne"
 }
 
+const teamColors: TeamColor = {
+  1 : "#4787ff",
+  2 : "#ff5671",
+  3 : "#7fff62",
+  4 : "#b77dff",
+  5 : "#ff8b57",
+  6 : "#ffdd3d",
+  7 : "#76e6ff",
+  8 : "#848484"
+}
+
 export type Row = {
   owner: EmployeeId
   rowTitle: ReactNode
   cells: Cell[]
+  team?: number
 }
 
 type Props = {

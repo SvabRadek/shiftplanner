@@ -59,7 +59,7 @@ export function GridCell(props: Props) {
     display: "flex",
     userSelect: "none",
     width: 50,
-    height: 50,
+    height: 100,
     border: "solid",
     borderColor: "var(--lumo-tint-20pct)",
     borderWidth: "1px",
