@@ -13,9 +13,14 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class EvenShiftDistributionRequest extends AbstractEmployeeSpecificConstraint {
   public static ConstraintType TYPE_ID = ConstraintType.EVEN_SHIFT_DISTRIBUTION;
+  private Boolean distributeShiftsEvenlyThroughoutSchedule;
+  private Integer penaltyForDeviationFromWeeksAverage;
 
-
-  public EvenShiftDistributionRequest(EmployeeId owner) {
+  public EvenShiftDistributionRequest(
+          EmployeeId owner,
+          Boolean distributeShiftsEvenlyThroughoutSchedule
+  ) {
     super(TYPE_ID, owner);
+    this.distributeShiftsEvenlyThroughoutSchedule = distributeShiftsEvenlyThroughoutSchedule;
   }
 }

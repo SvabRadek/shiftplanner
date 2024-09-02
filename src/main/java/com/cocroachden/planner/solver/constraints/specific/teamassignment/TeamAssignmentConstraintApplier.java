@@ -6,8 +6,6 @@ import com.cocroachden.planner.solver.constraints.specific.teamassignment.reques
 import com.cocroachden.planner.solver.service.SolutionObjectives;
 import com.cocroachden.planner.solver.service.schedule.SchedulePlan;
 import com.google.ortools.sat.CpModel;
-import com.google.ortools.sat.IntVar;
-import com.google.ortools.sat.LinearArgument;
 import com.google.ortools.sat.LinearExpr;
 
 public class TeamAssignmentConstraintApplier implements ConstraintApplier {

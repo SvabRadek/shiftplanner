@@ -1,20 +1,19 @@
 import {CrudAction, CRUDActions} from "Frontend/util/utils";
 import {Tooltip} from "@hilla/react-components/Tooltip";
 import {CSSProperties, ReactNode} from "react";
-import EmployeeRecord from "Frontend/generated/com/cocroachden/planner/employee/repository/EmployeeRecord";
 import EmployeeId from "Frontend/generated/com/cocroachden/planner/employee/api/EmployeeId";
 import EmployeeValidationIssue
     from "Frontend/generated/com/cocroachden/planner/constraint/validations/employee/EmployeeValidationIssue";
-import EmployeeDTO from "Frontend/generated/com/cocroachden/planner/employee/api/EmployeeDTO";
 import AssignedEmployeeDTO from "Frontend/generated/com/cocroachden/planner/solver/api/AssignedEmployeeDTO";
 import {VerticalLayout} from "@hilla/react-components/VerticalLayout";
+import {GridProperties} from "Frontend/views/schedule/components/schedulegrid/GridProperties";
 
 const defaultStyle: CSSProperties = {
     cursor: "pointer",
     display: "flex",
     userSelect: "none",
-    width: 250,
-    height: 100,
+    width: GridProperties.cellWidth * 3,
+    height: GridProperties.cellHeight,
     border: "solid",
     borderColor: "var(--lumo-tint-20pct)",
     borderWidth: "1px",
