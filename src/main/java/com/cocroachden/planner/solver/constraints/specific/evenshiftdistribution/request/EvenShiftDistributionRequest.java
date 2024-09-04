@@ -1,10 +1,12 @@
 package com.cocroachden.planner.solver.constraints.specific.evenshiftdistribution.request;
 
 import com.cocroachden.planner.constraint.api.ConstraintType;
+import com.cocroachden.planner.constraint.api.EvenShiftDistributionRequestDTO;
 import com.cocroachden.planner.employee.api.EmployeeId;
 import com.cocroachden.planner.solver.constraints.specific.AbstractEmployeeSpecificConstraint;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -12,15 +14,26 @@ import lombok.NoArgsConstructor;
 @JsonTypeName("EvenShiftDistributionRequest")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class EvenShiftDistributionRequest extends AbstractEmployeeSpecificConstraint {
-  public static ConstraintType TYPE_ID = ConstraintType.EVEN_SHIFT_DISTRIBUTION;
-  private Boolean distributeShiftsEvenlyThroughoutSchedule;
-  private Integer penaltyForDeviationFromWeeksAverage;
+    public static ConstraintType TYPE_ID = ConstraintType.EVEN_SHIFT_DISTRIBUTION;
+    private Boolean distributeShiftsEvenlyThroughoutSchedule;
+    private Integer penaltyForDeviationFromWeeksAverage;
 
-  public EvenShiftDistributionRequest(
-          EmployeeId owner,
-          Boolean distributeShiftsEvenlyThroughoutSchedule
-  ) {
-    super(TYPE_ID, owner);
-    this.distributeShiftsEvenlyThroughoutSchedule = distributeShiftsEvenlyThroughoutSchedule;
-  }
+    public static EvenShiftDistributionRequest from(EvenShiftDistributionRequestDTO dto) {
+        return new EvenShiftDistributionRequest(
+                dto.getOwner(),
+                dto.getDistributeShiftsEvenlyThroughoutSchedule(),
+                dto.getPenaltyForDeviationFromWeeksAverage()
+        );
+    }
+
+    public EvenShiftDistributionRequest(
+            EmployeeId owner,
+            Boolean distributeShiftsEvenlyThroughoutSchedule,
+            Integer penaltyForDeviationFromWeeksAverage
+
+    ) {
+        super(TYPE_ID, owner);
+        this.distributeShiftsEvenlyThroughoutSchedule = distributeShiftsEvenlyThroughoutSchedule;
+        this.penaltyForDeviationFromWeeksAverage = penaltyForDeviationFromWeeksAverage;
+    }
 }

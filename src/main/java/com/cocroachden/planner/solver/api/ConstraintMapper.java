@@ -6,6 +6,7 @@ import com.cocroachden.planner.solver.constraints.ConstraintRequest;
 import com.cocroachden.planner.solver.constraints.specific.consecutiveworkingdays.request.ConsecutiveWorkingDaysRequest;
 import com.cocroachden.planner.solver.constraints.specific.employeeshiftrequest.request.EmployeeShiftRequest;
 import com.cocroachden.planner.solver.constraints.specific.employeespershift.request.EmployeesPerShiftRequest;
+import com.cocroachden.planner.solver.constraints.specific.evenshiftdistribution.request.EvenShiftDistributionRequest;
 import com.cocroachden.planner.solver.constraints.specific.shiftfollowuprestriction.request.ShiftFollowUpRestrictionRequest;
 import com.cocroachden.planner.solver.constraints.specific.shiftpattern.request.ShiftPatternConstraintRequest;
 import com.cocroachden.planner.solver.constraints.specific.shiftperschedule.request.ShiftsPerScheduleRequest;
@@ -54,6 +55,9 @@ public class ConstraintMapper {
       case WEEKEND_REQUEST -> {
         return WeekendRequestDTO.from(record.getId(), (WeekendRequest) record.getRequest());
       }
+      case EVEN_SHIFT_DISTRIBUTION -> {
+        return EvenShiftDistributionRequestDTO.from(record.getId(), (EvenShiftDistributionRequest) record.getRequest());
+      }
     }
     throw new IllegalArgumentException("Cannot remap requested type: " + request.getType());
   }
@@ -92,6 +96,7 @@ public class ConstraintMapper {
       case WEEKEND_REQUEST -> {
         return WeekendRequest.from((WeekendRequestDTO) dto);
       }
+      case EVEN_SHIFT_DISTRIBUTION -> EvenShiftDistributionRequest.from((EvenShiftDistributionRequestDTO) dto);
       case ONE_SHIFT_PER_DAY -> throw new IllegalArgumentException("Should not be part of api exchange");
     }
     throw new IllegalArgumentException("Cannot remap requested type: " + dto.getType());

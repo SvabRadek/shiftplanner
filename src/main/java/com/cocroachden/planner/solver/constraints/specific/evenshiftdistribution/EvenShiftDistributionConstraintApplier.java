@@ -49,7 +49,13 @@ public class EvenShiftDistributionConstraintApplier implements ConstraintApplier
                         .addTerm(seven, 1)
                         .addTerm(weekSize, -1)
                         .build();
-                model.addMaxEquality(weekAvg, new LinearArgument[]{zero, LinearExpr.newBuilder().addTerm(avg, 1).addTerm(weekSizeDiff, -1)});
+                model.addMaxEquality(
+                        weekAvg,
+                        new LinearArgument[]{
+                                zero,
+                                LinearExpr.newBuilder().addTerm(avg, 1).addTerm(weekSizeDiff, -1)
+                        }
+                );
                 var deviationFromAvg = model.newIntVar(0, 7, "");
                 model.addAbsEquality(
                         deviationFromAvg,

@@ -109,6 +109,14 @@ public class ConstraintEndpoint {
         .toList();
   }
 
+  public @Nonnull List<@Nonnull EvenShiftDistributionRequestDTO> findEvenShiftDistributionRequests(
+      @Nonnull List<@Nonnull UUID> requestIds
+  ) {
+    return this.getRecords(requestIds).stream()
+        .map(r -> ConstraintMapper.specificFromRecord(r, EvenShiftDistributionRequestDTO.class))
+        .toList();
+  }
+
   public List<ConstraintRequestRecord> getRecords(List<UUID> constraintIds) {
     return StreamSupport.stream(
         constraintRequestRepository.findAllById(constraintIds).spliterator(),
