@@ -179,7 +179,8 @@ export const defaultConstraints: DefaultConstraints = {
       type: ConstraintType.TRIPLE_SHIFTS_CONSTRAINT,
       id: generateUUID(),
       owner: { id: 0 },
-      penaltyForShiftTripletOutsideWeekend: 50
+      penaltyForShiftTripletOutsideWeekend: 50,
+      areAllowed: true
     }
   },
   [ConstraintType.TEAM_ASSIGNMENT]: {
