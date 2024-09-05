@@ -2,9 +2,7 @@ package com.cocroachden.planner.solver.constraints.specific.evenshiftdistributio
 
 import com.cocroachden.planner.solver.constraints.ConstraintApplier;
 import com.cocroachden.planner.solver.constraints.ConstraintRequest;
-import com.cocroachden.planner.solver.constraints.specific.AbstractMinMaxRequest;
 import com.cocroachden.planner.solver.constraints.specific.evenshiftdistribution.request.EvenShiftDistributionRequest;
-import com.cocroachden.planner.solver.constraints.specific.shiftperschedule.request.ShiftsPerScheduleRequest;
 import com.cocroachden.planner.solver.service.SolutionObjectives;
 import com.cocroachden.planner.solver.service.schedule.SchedulePlan;
 import com.google.ortools.sat.CpModel;
@@ -23,43 +21,38 @@ public class EvenShiftDistributionConstraintApplier implements ConstraintApplier
             List<LinearExpr> assignmentWeeks = new ArrayList<>();
             var workersDays = schedulePlan.getAllDaysForEmployee(request.getOwner().orElseThrow());
             var currentWeek = LinearExpr.newBuilder();
-            for (int i = 0; i < workersDays.size(); i++) {
-                var currentDay = workersDays.get(i);
-                currentWeek.addTerm(currentDay.dayShiftAssignment(), 1);
-                currentWeek.addTerm(currentDay.nightShiftAssignment(), 1);
+            //Get all work assignments for each week in schedule
+            for (var currentDay : workersDays) {
+                currentWeek.add(currentDay.dayShiftAssignment());
+                currentWeek.add(currentDay.nightShiftAssignment());
                 if (currentDay.date().getDayOfWeek() == DayOfWeek.MONDAY) {
                     assignmentWeeks.add(currentWeek.build());
                     currentWeek = LinearExpr.newBuilder();
                 }
             }
             var totalAssignmentCount = LinearExpr.newBuilder();
-            var weekCount = assignmentWeeks.size();
             workersDays.forEach(d -> {
-                totalAssignmentCount.addTerm(d.dayShiftAssignment(), 1);
-                totalAssignmentCount.addTerm(d.nightShiftAssignment(), 1);
+                totalAssignmentCount.add(d.dayShiftAssignment());
+                totalAssignmentCount.add(d.nightShiftAssignment());
             });
-            var avg = model.newIntVar(0, 7, "");
-            var seven = model.newConstant(7);
-            var zero = model.newConstant(0);
-            model.addDivisionEquality(avg, totalAssignmentCount, LinearExpr.newBuilder().add(weekCount));
-            assignmentWeeks.forEach(w -> {
-                var weekAvg = model.newIntVar(0, 7, "");
-                var weekSize = model.newConstant(w.numElements());
-                var weekSizeDiff = LinearExpr.newBuilder()
-                        .addTerm(seven, 1)
-                        .addTerm(weekSize, -1)
-                        .build();
+            var weekCountInSchedule = model.newConstant(assignmentWeeks.size());
+            var targetAverageAssignmentsPerWeek = model.newIntVar(0, 7, "avg");
+//            model.addDivisionEquality(targetAverageAssignmentsPerWeek, totalAssignmentCount, weekCountInSchedule);
+            assignmentWeeks.forEach(weekAssignments -> {
+                var specificWeekTargetAvg = model.newIntVar(0, 7, "weekAvg");
+                var weekSize = model.newConstant(weekAssignments.numElements() / 2);
+                var weekSizeDiff = LinearExpr.affine(weekSize, -1, 7);
                 model.addMaxEquality(
-                        weekAvg,
+                        specificWeekTargetAvg,
                         new LinearArgument[]{
-                                zero,
-                                LinearExpr.newBuilder().addTerm(avg, 1).addTerm(weekSizeDiff, -1)
+                                LinearExpr.constant(0),
+                                LinearExpr.newBuilder().addTerm(targetAverageAssignmentsPerWeek, 1).addTerm(weekSizeDiff, -1)
                         }
                 );
-                var deviationFromAvg = model.newIntVar(0, 7, "");
+                var deviationFromAvg = model.newIntVar(0, 7, "deviationFromAvg");
                 model.addAbsEquality(
                         deviationFromAvg,
-                        LinearExpr.newBuilder().addTerm(weekAvg, 1).addTerm(w, 1).build()
+                        LinearExpr.newBuilder().add(specificWeekTargetAvg).addTerm(weekAssignments, -1).build()
                 );
                 objective.addIntCost(deviationFromAvg, request.getPenaltyForDeviationFromWeeksAverage());
             });

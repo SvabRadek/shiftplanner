@@ -1,4 +1,4 @@
-import { dateToString, generateUUID } from "Frontend/util/utils";
+import {dateToString, generateUUID} from "Frontend/util/utils";
 import ConstraintType from "Frontend/generated/com/cocroachden/planner/constraint/api/ConstraintType";
 import WorkShifts from "Frontend/generated/com/cocroachden/planner/solver/api/WorkShifts";
 import ShiftPatternRequestDTO from "Frontend/generated/com/cocroachden/planner/constraint/api/ShiftPatternRequestDTO";
@@ -16,6 +16,8 @@ import EmployeeShiftRequestDTO from "Frontend/generated/com/cocroachden/planner/
 import TeamAssignmentRequestDTO
   from "Frontend/generated/com/cocroachden/planner/constraint/api/TeamAssignmentRequestDTO";
 import WeekendRequestDTO from "Frontend/generated/com/cocroachden/planner/constraint/api/WeekendRequestDTO";
+import EvenShiftDistributionRequestDTO
+  from "Frontend/generated/com/cocroachden/planner/constraint/api/EvenShiftDistributionRequestDTO";
 
 type ConstraintBinding<T> = {
   label: string
@@ -32,6 +34,7 @@ type DefaultConstraints = {
   [ConstraintType.EMPLOYEES_PER_SHIFT]: ConstraintBinding<EmployeesPerShiftRequestDTO>
   [ConstraintType.TEAM_ASSIGNMENT]: ConstraintBinding<TeamAssignmentRequestDTO>
   [ConstraintType.WEEKEND_REQUEST]: ConstraintBinding<WeekendRequestDTO>
+  [ConstraintType.EVEN_SHIFT_DISTRIBUTION]: ConstraintBinding<EvenShiftDistributionRequestDTO>
 }
 
 export const apolinarPattern: WorkShifts[] = [
@@ -198,6 +201,16 @@ export const defaultConstraints: DefaultConstraints = {
       owner: { id: 0 },
       assignOnlyFullWorkingWeekends: true,
       penaltyForNotFullWorkingWeekend: 50
+    }
+  },
+  [ConstraintType.EVEN_SHIFT_DISTRIBUTION]: {
+    label: "Rozložení směn",
+    constraint: {
+      type: ConstraintType.EVEN_SHIFT_DISTRIBUTION,
+      id: generateUUID(),
+      owner: { id: 0 },
+      distributeShiftsEvenlyThroughoutSchedule: true,
+      penaltyForDeviationFromWeeksAverage: 10
     }
   }
 }

@@ -43,7 +43,8 @@ import AssignedEmployeeDTO from "Frontend/generated/com/cocroachden/planner/solv
 import TeamAssignmentRequestDTO
     from "Frontend/generated/com/cocroachden/planner/constraint/api/TeamAssignmentRequestDTO";
 import WeekendRequestDTO from "Frontend/generated/com/cocroachden/planner/constraint/api/WeekendRequestDTO";
-import {NameTag} from "Frontend/views/schedule/components/schedulegrid/nametag/NameTag";
+import EvenShiftDistributionRequestDTO
+    from "Frontend/generated/com/cocroachden/planner/constraint/api/EvenShiftDistributionRequestDTO";
 
 type EmployeeConfigDialogParams = {
     isOpen: boolean,
@@ -82,6 +83,7 @@ export default function ScheduleView() {
     const [tripleShiftConstraintRequests, setTripleShiftConstraintRequests] = useState<TripleShiftConstraintRequestDTO[]>([]);
     const [teamAssignmentRequests, setTeamAssignmentRequests] = useState<TeamAssignmentRequestDTO[]>([]);
     const [weekendRequests, setWeekendRequests] = useState<WeekendRequestDTO[]>([]);
+    const [evenDistributionRequests, setEvenDistributionRequests] = useState<EvenShiftDistributionRequestDTO[]>([]);
 
     useEffect(() => {
         EmployeeEndpoint.getAllEmployees().then(setEmployees)
@@ -121,7 +123,8 @@ export default function ScheduleView() {
             ...consecutiveWorkingDaysRequests,
             ...tripleShiftConstraintRequests,
             ...teamAssignmentRequests,
-            ...weekendRequests
+            ...weekendRequests,
+            ...evenDistributionRequests
         ] as ConstraintRequestDTO[]
     }
 
@@ -184,6 +187,9 @@ export default function ScheduleView() {
             )
             setWeekendRequests(
                 configResponse.constraints.filter(c => c.type === ConstraintType.WEEKEND_REQUEST) as WeekendRequestDTO[]
+            )
+            setEvenDistributionRequests(
+                configResponse.constraints.filter(c => c.type === ConstraintType.EVEN_SHIFT_DISTRIBUTION) as EvenShiftDistributionRequestDTO[]
             )
             configResponse["constraints"] = []
             setRequest(configResponse)
@@ -324,6 +330,10 @@ export default function ScheduleView() {
         setWeekendRequests(prevState => updateList(action, prevState))
     }
 
+    function handleEvenDistributionRequestAction(action: CrudAction<EvenShiftDistributionRequestDTO>) {
+        setEvenDistributionRequests(prevState => updateList(action, prevState))
+    }
+
     function handleTeamAssignmentAction(action: CrudAction<TeamAssignmentRequestDTO>) {
         function updateTeamAssignments(action: CrudAction<TeamAssignmentRequestDTO>, requests: TeamAssignmentRequestDTO[]) {
             switch (action.type) {
@@ -450,6 +460,8 @@ export default function ScheduleView() {
                         onAssignmentAction={handleAssignmentAction}
                         weekendRequests={weekendRequests.filter(r => r.owner.id === employeeConfigDialog.selectedEmployee?.id)}
                         onWeekendRequestRequestAction={handleWeekendRequestAction}
+                        evenDistributionRequests={evenDistributionRequests}
+                        onEvenDistributionRequestsAction={handleEvenDistributionRequestAction}
                         readonly={modeCtx.mode !== ScheduleMode.EDIT}
                     />
                     <Card

@@ -14,21 +14,24 @@ import java.util.UUID;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
 public class TripleShiftConstraintRequestDTO implements ConstraintRequestDTO {
-  public static TripleShiftConstraintRequestDTO from(UUID id, TripleShiftConstraintRequest request) {
-    return new TripleShiftConstraintRequestDTO(
-        id,
-        ConstraintType.TRIPLE_SHIFTS_CONSTRAINT,
-        request.getOwner().orElse(null),
-        request.getPenaltyForShiftTripletOutsideWeekend()
-    );
-  }
+    public static TripleShiftConstraintRequestDTO from(UUID id, TripleShiftConstraintRequest request) {
+        return new TripleShiftConstraintRequestDTO(
+                id,
+                ConstraintType.TRIPLE_SHIFTS_CONSTRAINT,
+                request.getOwner().orElse(null),
+                request.getPenaltyForShiftTripletOutsideWeekend(),
+                request.getAreAllowed()
+        );
+    }
 
-  @Nonnull
-  private UUID id;
-  @Nonnull
-  private ConstraintType type;
-  @Nonnull
-  private EmployeeId owner;
-  @Nonnull
-  private Integer penaltyForShiftTripletOutsideWeekend;
+    @Nonnull
+    private UUID id;
+    @Nonnull
+    private ConstraintType type;
+    @Nonnull
+    private EmployeeId owner;
+    @Nonnull
+    private Integer penaltyForShiftTripletOutsideWeekend;
+    @Nonnull
+    private Boolean areAllowed;
 }

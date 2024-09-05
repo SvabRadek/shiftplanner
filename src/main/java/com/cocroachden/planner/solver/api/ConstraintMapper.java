@@ -96,7 +96,9 @@ public class ConstraintMapper {
       case WEEKEND_REQUEST -> {
         return WeekendRequest.from((WeekendRequestDTO) dto);
       }
-      case EVEN_SHIFT_DISTRIBUTION -> EvenShiftDistributionRequest.from((EvenShiftDistributionRequestDTO) dto);
+      case EVEN_SHIFT_DISTRIBUTION -> {
+        return EvenShiftDistributionRequest.from((EvenShiftDistributionRequestDTO) dto);
+      }
       case ONE_SHIFT_PER_DAY -> throw new IllegalArgumentException("Should not be part of api exchange");
     }
     throw new IllegalArgumentException("Cannot remap requested type: " + dto.getType());

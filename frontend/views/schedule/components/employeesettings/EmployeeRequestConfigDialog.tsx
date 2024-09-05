@@ -34,6 +34,11 @@ import {
   WeekendConstraintForm
 } from "Frontend/views/schedule/components/employeesettings/constraintform/WeekendConstraintForm";
 import WeekendRequestDTO from "Frontend/generated/com/cocroachden/planner/constraint/api/WeekendRequestDTO";
+import EvenShiftDistributionRequestDTO
+  from "Frontend/generated/com/cocroachden/planner/constraint/api/EvenShiftDistributionRequestDTO";
+import {
+  EvenDistributionConstraintForm
+} from "Frontend/views/schedule/components/employeesettings/constraintform/EvenDistributionConstraintForm";
 
 type Props = {
   assignment?: AssignedEmployeeDTO
@@ -49,6 +54,8 @@ type Props = {
   onTeamAssignmentRequestAction: (action: CrudAction<TeamAssignmentRequestDTO>) => void
   weekendRequests: WeekendRequestDTO[],
   onWeekendRequestRequestAction: (action: CrudAction<WeekendRequestDTO>) => void
+  evenDistributionRequests: EvenShiftDistributionRequestDTO[]
+  onEvenDistributionRequestsAction: (action: CrudAction<EvenShiftDistributionRequestDTO>) => void
   onAssignmentAction: (action: CrudAction<AssignedEmployeeDTO>) => void
   readonly?: boolean
 }
@@ -97,6 +104,14 @@ export function EmployeeRequestConfigDialog(props: Props) {
     props.onWeekendRequestRequestAction({
         type: CRUDActions.CREATE,
         payload: generateNewWeekendRequest(props.assignment?.employee!)
+      }
+    )
+  }
+
+  function handleCreateNewEvenDistributionRequest() {
+    props.onEvenDistributionRequestsAction({
+        type: CRUDActions.CREATE,
+        payload: generateNewEvenDistributionRequest(props.assignment?.employee!)
       }
     )
   }
@@ -188,6 +203,10 @@ export function EmployeeRequestConfigDialog(props: Props) {
         {props.weekendRequests.map(request => (
           <WeekendConstraintForm key={request.id} request={request} onAction={props.onWeekendRequestRequestAction}/>
         ))}
+        {renderSectionHeader("Nastaveni rozložení směn", "vaadin:plus", handleCreateNewEvenDistributionRequest)}
+        {props.evenDistributionRequests.map(request => (
+            <EvenDistributionConstraintForm key={request.id} request={request} onAction={props.onEvenDistributionRequestsAction}/>
+        ))}
         <HorizontalLayout style={{ width: "100%", justifyContent: "end" }}>
           <Button onClick={() => props.onOpenChanged(false)}>Zavřít</Button>
         </HorizontalLayout>
@@ -225,6 +244,14 @@ function generateNewTeamAssignment(employeeId: EmployeeId): TeamAssignmentReques
 function generateNewWeekendRequest(employeeId: EmployeeId): WeekendRequestDTO {
   return {
     ...defaultConstraints.WEEKEND_REQUEST.constraint,
+    owner: { id: employeeId.id },
+    id: generateUUID()
+  }
+}
+
+function generateNewEvenDistributionRequest(employeeId: EmployeeId): EvenShiftDistributionRequestDTO {
+  return {
+    ...defaultConstraints.EVEN_SHIFT_DISTRIBUTION.constraint,
     owner: { id: employeeId.id },
     id: generateUUID()
   }
