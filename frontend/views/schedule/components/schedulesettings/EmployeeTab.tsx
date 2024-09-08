@@ -8,6 +8,7 @@ import { ScheduleMode, ScheduleModeCtx } from "Frontend/views/schedule/ScheduleM
 import SolverConfigurationDTO from "Frontend/generated/com/cocroachden/planner/solver/api/SolverConfigurationDTO";
 import EmployeeDTO from "Frontend/generated/com/cocroachden/planner/employee/api/EmployeeDTO";
 import AssignedEmployeeDTO from "Frontend/generated/com/cocroachden/planner/solver/api/AssignedEmployeeDTO";
+import "@vaadin/icons";
 
 type Props = {
   employees: EmployeeDTO[]

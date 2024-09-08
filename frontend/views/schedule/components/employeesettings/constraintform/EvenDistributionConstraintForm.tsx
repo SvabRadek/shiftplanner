@@ -9,6 +9,7 @@ import {Button} from "@hilla/react-components/Button";
 import {Checkbox} from "@hilla/react-components/Checkbox";
 import EvenShiftDistributionRequestDTO
     from "Frontend/generated/com/cocroachden/planner/constraint/api/EvenShiftDistributionRequestDTO";
+import "@vaadin/icons";
 
 type Props = {
     request: EvenShiftDistributionRequestDTO,

@@ -19,7 +19,6 @@ import java.util.Map;
 public class TripleShiftConstraintApplier implements ConstraintApplier {
     @Override
     public void apply(SchedulePlan schedulePlan, CpModel model, SolutionObjectives objective, ConstraintRequest constraintRequest) {
-        //detect tripleshift, middle shift has to be on weekend -> otherwise apply penalty
         var tripletRequest = (TripleShiftConstraintRequest) constraintRequest;
         if (!tripletRequest.getAreAllowed()) {
             var employee = tripletRequest.getOwner().orElseThrow();
@@ -42,6 +41,7 @@ public class TripleShiftConstraintApplier implements ConstraintApplier {
             }
             return;
         }
+        //detect tripleshift, middle shift has to be on weekend -> otherwise apply penalty
         tripletRequest.getOwner()
                 .ifPresentOrElse(
                         owner -> {

@@ -6,6 +6,7 @@ import { Button } from "@hilla/react-components/Button";
 import { ValidationWorkerIssueCard } from "Frontend/views/schedule/components/validation/ValidationWorkerIssueCard";
 import { useContext } from "react";
 import { ValidationContext } from "Frontend/views/schedule/components/validation/ScheduleValidationCtxProvider";
+import "@vaadin/icons";
 
 type Props = {
   isOpen: boolean

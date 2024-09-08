@@ -15,10 +15,6 @@ import EmployeeId from "Frontend/generated/com/cocroachden/planner/employee/api/
 import EmployeeDTO from "Frontend/generated/com/cocroachden/planner/employee/api/EmployeeDTO";
 import AssignedEmployeeDTO from "Frontend/generated/com/cocroachden/planner/solver/api/AssignedEmployeeDTO";
 import {VerticalLayout} from "@hilla/react-components/VerticalLayout";
-import TeamAssignmentRequest
-    from "Frontend/generated/com/cocroachden/planner/solver/constraints/specific/teamassignment/request/TeamAssignmentRequest";
-import teamAssignmentRequest
-    from "Frontend/generated/com/cocroachden/planner/solver/constraints/specific/teamassignment/request/TeamAssignmentRequest";
 import TeamAssignmentRequestDTO
     from "Frontend/generated/com/cocroachden/planner/constraint/api/TeamAssignmentRequestDTO";
 

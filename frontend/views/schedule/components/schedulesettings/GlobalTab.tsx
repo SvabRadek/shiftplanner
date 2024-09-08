@@ -19,6 +19,7 @@ import {
 import { CSSProperties, useContext } from "react";
 import { ScheduleMode, ScheduleModeCtx } from "Frontend/views/schedule/ScheduleModeCtxProvider";
 import { defaultConstraints } from "Frontend/views/schedule/DefaultEmptyConstraints";
+import "@vaadin/icons";
 
 type Props = {
   consecutiveWorkingDays: ConsecutiveWorkingDaysRequestDTO[]

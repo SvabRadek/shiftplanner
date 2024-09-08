@@ -10,6 +10,7 @@ import { Button } from "@hilla/react-components/Button";
 import { Icon } from "@hilla/react-components/Icon";
 import { CardFooter } from "Frontend/components/CardFooter";
 import { ShiftSelect } from "Frontend/components/ShiftSelect";
+import "@vaadin/icons";
 
 type Props = {
   request: ConsecutiveWorkingDaysRequestDTO

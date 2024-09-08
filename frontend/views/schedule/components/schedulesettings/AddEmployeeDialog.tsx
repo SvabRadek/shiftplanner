@@ -8,6 +8,7 @@ import { Icon } from "@hilla/react-components/Icon";
 import EmployeeRecord from "Frontend/generated/com/cocroachden/planner/employee/repository/EmployeeRecord";
 import EmployeeDTO from "Frontend/generated/com/cocroachden/planner/employee/api/EmployeeDTO";
 import AssignedEmployeeDTO from "Frontend/generated/com/cocroachden/planner/solver/api/AssignedEmployeeDTO";
+import "@vaadin/icons";
 
 type Props = {
   employees: EmployeeDTO[]

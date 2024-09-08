@@ -45,6 +45,7 @@ import TeamAssignmentRequestDTO
 import WeekendRequestDTO from "Frontend/generated/com/cocroachden/planner/constraint/api/WeekendRequestDTO";
 import EvenShiftDistributionRequestDTO
     from "Frontend/generated/com/cocroachden/planner/constraint/api/EvenShiftDistributionRequestDTO";
+import "@vaadin/icons";
 
 type EmployeeConfigDialogParams = {
     isOpen: boolean,

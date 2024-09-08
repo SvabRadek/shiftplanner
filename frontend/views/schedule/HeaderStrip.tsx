@@ -18,6 +18,7 @@ import { SolverConfigurationEndpoint } from "Frontend/generated/endpoints";
 import SolverConfigurationMetadata
   from "Frontend/generated/com/cocroachden/planner/solver/repository/SolverConfigurationMetadata";
 import { GridDisplayMode } from "Frontend/views/schedule/components/schedulegrid/ScheduleGridContainer";
+import "@vaadin/icons";
 
 type Props = {
   onStopCalculation: () => void

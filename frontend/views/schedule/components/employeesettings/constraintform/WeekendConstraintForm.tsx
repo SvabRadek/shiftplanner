@@ -8,6 +8,7 @@ import { Icon } from "@hilla/react-components/Icon";
 import { Button } from "@hilla/react-components/Button";
 import WeekendRequestDTO from "Frontend/generated/com/cocroachden/planner/constraint/api/WeekendRequestDTO";
 import { Checkbox } from "@hilla/react-components/Checkbox";
+import "@vaadin/icons";
 
 type Props = {
   request: WeekendRequestDTO,

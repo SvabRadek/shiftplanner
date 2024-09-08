@@ -11,6 +11,7 @@ import { Select, SelectItem } from "@hilla/react-components/Select";
 import { GridCell } from "Frontend/views/schedule/components/schedulegrid/GridCell";
 import { apolinarPattern, classicPattern } from "Frontend/views/schedule/DefaultEmptyConstraints";
 import WorkShifts from "Frontend/generated/com/cocroachden/planner/solver/api/WorkShifts";
+import "@vaadin/icons";
 
 type Props = {
   request: ShiftPatternRequestDTO

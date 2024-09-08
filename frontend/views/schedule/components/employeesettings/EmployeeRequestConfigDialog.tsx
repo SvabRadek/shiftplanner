@@ -39,6 +39,7 @@ import EvenShiftDistributionRequestDTO
 import {
   EvenDistributionConstraintForm
 } from "Frontend/views/schedule/components/employeesettings/constraintform/EvenDistributionConstraintForm";
+import "@vaadin/icons";
 
 type Props = {
   assignment?: AssignedEmployeeDTO

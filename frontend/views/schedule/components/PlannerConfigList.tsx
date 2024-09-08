@@ -6,6 +6,7 @@ import { Button } from "@hilla/react-components/Button";
 import { Icon } from "@hilla/react-components/Icon";
 import SolverConfigurationMetadata
   from "Frontend/generated/com/cocroachden/planner/solver/repository/SolverConfigurationMetadata";
+import "@vaadin/icons";
 
 type Props = {
   configList: SolverConfigurationMetadata[]

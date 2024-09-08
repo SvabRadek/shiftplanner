@@ -10,6 +10,7 @@ import { CrudAction, CRUDActions } from "Frontend/util/utils";
 import { Icon } from "@hilla/react-components/Icon";
 import { Button } from "@hilla/react-components/Button";
 import { CardFooter } from "Frontend/components/CardFooter";
+import "@vaadin/icons";
 
 type Props = {
   request: ShiftFollowupRestrictionRequestDTO

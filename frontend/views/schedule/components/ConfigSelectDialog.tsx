@@ -7,6 +7,7 @@ import { HorizontalLayout } from "@hilla/react-components/HorizontalLayout";
 import { CrudAction, CRUDActions } from "Frontend/util/utils";
 import SolverConfigurationMetadata
   from "Frontend/generated/com/cocroachden/planner/solver/repository/SolverConfigurationMetadata";
+import "@vaadin/icons";
 
 type Props = {
   configMetaData: SolverConfigurationMetadata[]

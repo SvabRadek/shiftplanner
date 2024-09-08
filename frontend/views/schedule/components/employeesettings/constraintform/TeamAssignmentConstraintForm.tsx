@@ -9,6 +9,7 @@ import { Button } from "@hilla/react-components/Button";
 import TeamAssignmentRequestDTO
   from "Frontend/generated/com/cocroachden/planner/constraint/api/TeamAssignmentRequestDTO";
 import { Checkbox } from "@hilla/react-components/Checkbox";
+import "@vaadin/icons";
 
 type Props = {
   request: TeamAssignmentRequestDTO,

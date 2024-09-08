@@ -11,6 +11,7 @@ import { Button } from "@hilla/react-components/Button";
 import { Icon } from "@hilla/react-components/Icon";
 import { CardFooter } from "Frontend/components/CardFooter";
 import WorkShifts from "Frontend/generated/com/cocroachden/planner/solver/api/WorkShifts";
+import "@vaadin/icons";
 
 type Props = {
   request: EmployeesPerShiftRequestDTO

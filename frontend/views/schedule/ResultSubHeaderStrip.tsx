@@ -7,6 +7,7 @@ import { VerticalLayout } from "@hilla/react-components/VerticalLayout";
 import { ResultCache } from "Frontend/views/schedule/ScheduleView";
 import { Subscription } from "@hilla/frontend";
 import SolverSolutionDTO from "Frontend/generated/com/cocroachden/planner/solver/api/SolverSolutionDTO";
+import "@vaadin/icons";
 
 type Props = {
   resultSubscription?: Subscription<SolverSolutionDTO>

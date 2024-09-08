@@ -1,13 +1,15 @@
-import { CrudAction, CRUDActions } from "Frontend/util/utils";
+import {CrudAction, CRUDActions} from "Frontend/util/utils";
 import TripleShiftConstraintRequestDTO
   from "Frontend/generated/com/cocroachden/planner/constraint/api/TripleShiftConstraintRequestDTO";
-import { Card } from "Frontend/components/Card";
-import { HorizontalLayout } from "@hilla/react-components/HorizontalLayout";
-import { NumberField } from "@hilla/react-components/NumberField";
-import { ScheduleMode, ScheduleModeCtx } from "Frontend/views/schedule/ScheduleModeCtxProvider";
-import { useContext } from "react";
-import { Icon } from "@hilla/react-components/Icon";
-import { Button } from "@hilla/react-components/Button";
+import {Card} from "Frontend/components/Card";
+import {HorizontalLayout} from "@hilla/react-components/HorizontalLayout";
+import {NumberField} from "@hilla/react-components/NumberField";
+import {ScheduleMode, ScheduleModeCtx} from "Frontend/views/schedule/ScheduleModeCtxProvider";
+import {useContext} from "react";
+import {Icon} from "@hilla/react-components/Icon";
+import {Button} from "@hilla/react-components/Button";
+import {Checkbox} from "@hilla/react-components/Checkbox";
+import "@vaadin/icons";
 
 type Props = {
   request: TripleShiftConstraintRequestDTO,
@@ -39,6 +41,19 @@ export function TripleShiftConstraintForm(props: Props) {
     <Card style={{ width: "100%" }}>
       <HorizontalLayout style={{ width: "100%" }}>
         <HorizontalLayout style={{ width: "100%" }}>
+          <Checkbox
+            label={"Jsou povoleny"}
+            checked={props.request.areAllowed}
+            onCheckedChanged={e => props.onAction({
+              type: CRUDActions.UPDATE,
+              payload: {
+                ...props.request,
+                areAllowed: e.detail.value
+              }
+            })}
+          >
+
+          </Checkbox>
           <NumberField
             label={"Pokuta za trojsmenu mimo vikend"}
             style={{ width: 250 }}

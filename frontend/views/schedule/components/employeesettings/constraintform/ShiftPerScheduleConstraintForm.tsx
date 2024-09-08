@@ -9,6 +9,7 @@ import { ShiftSelect } from "Frontend/components/ShiftSelect";
 import { CrudAction, CRUDActions } from "Frontend/util/utils";
 import { Icon } from "@hilla/react-components/Icon";
 import WorkShifts from "Frontend/generated/com/cocroachden/planner/solver/api/WorkShifts";
+import "@vaadin/icons";
 
 type Props = {
   request: ShiftsPerScheduleRequestDTO
