@@ -29,7 +29,7 @@
     "lit": "3.1.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
-    "xlsx": "https://cdn.sheetjs.com/xlsx-0.20.1/xlsx-0.20.1.tgz"
+    "xlsx": "^0.18.5"
   },
   "devDependencies": {
     "@lit-labs/react": "^1.1.0",
@@ -78,7 +78,8 @@
     "@hilla/generator-typescript-plugin-backbone": "$@hilla/generator-typescript-plugin-backbone",
     "@hilla/generator-typescript-cli": "$@hilla/generator-typescript-cli",
     "date-fns": "$date-fns",
-    "@uidotdev/usehooks": "$@uidotdev/usehooks"
+    "@uidotdev/usehooks": "$@uidotdev/usehooks",
+    "xlsx": "$xlsx"
   },
   "vaadin": {
     "dependencies": {
@@ -122,6 +123,6 @@
       "workbox-core": "7.0.0",
       "workbox-precaching": "7.0.0"
     },
-    "hash": "2ec3e674f7962b984cb95d52545c6895b57c15666a49c01eed4bab02e7230af0"
+    "hash": "d9a666efc41dc6fab9a0f11e4aae322cb7a617a593d7af2af9d927609bb1f6cb"
   }
 }
