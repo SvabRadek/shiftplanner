@@ -2,7 +2,7 @@ package com.cocroachden.planner.user.startup;
 
 import com.cocroachden.planner.security.Authorities;
 import com.cocroachden.planner.user.RegisteredUser;
-import com.cocroachden.planner.user.command.RegisterUserCommand;
+import com.cocroachden.planner.user.command.registeruser.RegisterUserCommand;
 import com.cocroachden.planner.user.query.UserQuery;
 import lombok.AllArgsConstructor;
 import org.springframework.context.event.ContextRefreshedEvent;
