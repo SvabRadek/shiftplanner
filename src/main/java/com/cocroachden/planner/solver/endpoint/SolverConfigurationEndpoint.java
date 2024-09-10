@@ -2,7 +2,7 @@ package com.cocroachden.planner.solver.endpoint;
 
 import com.cocroachden.planner.constraint.repository.ConstraintRequestRecord;
 import com.cocroachden.planner.constraint.repository.ConstraintRequestRepository;
-import com.cocroachden.planner.employee.api.EmployeeDTO;
+import com.cocroachden.planner.employee.endpoint.EmployeeDTO;
 import com.cocroachden.planner.employee.api.EmployeeId;
 import com.cocroachden.planner.employee.repository.EmployeeRepository;
 import com.cocroachden.planner.solver.api.AssignedEmployeeDTO;

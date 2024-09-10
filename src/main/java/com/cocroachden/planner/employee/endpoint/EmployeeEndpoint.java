@@ -1,6 +1,5 @@
-package com.cocroachden.planner.employee;
+package com.cocroachden.planner.employee.endpoint;
 
-import com.cocroachden.planner.employee.api.EmployeeDTO;
 import com.cocroachden.planner.employee.repository.EmployeeRecord;
 import com.cocroachden.planner.employee.repository.EmployeeRepository;
 import com.cocroachden.planner.solver.constraints.specific.AbstractEmployeeSpecificConstraint;

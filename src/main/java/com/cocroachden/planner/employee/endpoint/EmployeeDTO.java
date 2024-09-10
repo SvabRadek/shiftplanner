@@ -1,4 +1,4 @@
-package com.cocroachden.planner.employee.api;
+package com.cocroachden.planner.employee.endpoint;
 
 import com.cocroachden.planner.employee.repository.EmployeeRecord;
 import dev.hilla.Nonnull;

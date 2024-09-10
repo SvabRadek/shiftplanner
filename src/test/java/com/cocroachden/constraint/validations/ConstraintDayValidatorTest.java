@@ -4,7 +4,7 @@ import com.cocroachden.planner.constraint.api.ConstraintType;
 import com.cocroachden.planner.constraint.api.EmployeeShiftRequestDTO;
 import com.cocroachden.planner.constraint.api.EmployeesPerShiftRequestDTO;
 import com.cocroachden.planner.constraint.validations.day.ConstraintDayValidator;
-import com.cocroachden.planner.employee.api.EmployeeDTO;
+import com.cocroachden.planner.employee.endpoint.EmployeeDTO;
 import com.cocroachden.planner.employee.api.EmployeeId;
 import com.cocroachden.planner.solver.api.AssignedEmployeeDTO;
 import com.cocroachden.planner.solver.api.SolverConfigurationDTO;

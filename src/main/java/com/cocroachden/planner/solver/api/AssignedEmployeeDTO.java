@@ -1,6 +1,6 @@
 package com.cocroachden.planner.solver.api;
 
-import com.cocroachden.planner.employee.api.EmployeeDTO;
+import com.cocroachden.planner.employee.endpoint.EmployeeDTO;
 import com.cocroachden.planner.solver.repository.EmployeeAssignment;
 import dev.hilla.Nonnull;
 import lombok.AccessLevel;
