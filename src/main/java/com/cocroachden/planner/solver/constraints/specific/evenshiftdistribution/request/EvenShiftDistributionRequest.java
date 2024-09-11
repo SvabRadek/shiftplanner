@@ -2,11 +2,10 @@ package com.cocroachden.planner.solver.constraints.specific.evenshiftdistributio
 
 import com.cocroachden.planner.constraint.api.ConstraintType;
 import com.cocroachden.planner.constraint.api.EvenShiftDistributionRequestDTO;
-import com.cocroachden.planner.employee.api.EmployeeId;
+import com.cocroachden.planner.employee.EmployeeId;
 import com.cocroachden.planner.solver.constraints.specific.AbstractEmployeeSpecificConstraint;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 

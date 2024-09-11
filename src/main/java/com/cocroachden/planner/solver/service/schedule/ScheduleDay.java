@@ -1,7 +1,7 @@
 package com.cocroachden.planner.solver.service.schedule;
 
 
-import com.cocroachden.planner.employee.api.EmployeeId;
+import com.cocroachden.planner.employee.EmployeeId;
 import com.cocroachden.planner.solver.api.WorkShifts;
 import com.google.ortools.sat.BoolVar;
 

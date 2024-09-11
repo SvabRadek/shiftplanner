@@ -1,6 +1,6 @@
 package com.cocroachden.planner.constraint.api;
 
-import com.cocroachden.planner.employee.api.EmployeeId;
+import com.cocroachden.planner.employee.EmployeeId;
 import com.cocroachden.planner.solver.constraints.specific.shiftpattern.request.ShiftPatternConstraintRequest;
 import com.cocroachden.planner.solver.api.WorkShifts;
 import dev.hilla.Nonnull;
@@ -11,13 +11,12 @@ import lombok.NoArgsConstructor;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.UUID;
 
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
 public class ShiftPatternRequestDTO implements ConstraintRequestDTO {
-  public static ShiftPatternRequestDTO from(UUID id, ShiftPatternConstraintRequest request) {
+  public static ShiftPatternRequestDTO from(String id, ShiftPatternConstraintRequest request) {
     return new ShiftPatternRequestDTO(
         id,
         ShiftPatternConstraintRequest.ID,
@@ -29,7 +28,7 @@ public class ShiftPatternRequestDTO implements ConstraintRequestDTO {
   }
 
   @Nonnull
-  private UUID id;
+  private String id;
   @Nonnull
   private ConstraintType type;
   private EmployeeId owner;

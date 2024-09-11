@@ -3,7 +3,7 @@ package com.cocroachden.planner.solver.constraints.specific.shiftfollowuprestric
 
 import com.cocroachden.planner.constraint.api.ShiftFollowupRestrictionRequestDTO;
 import com.cocroachden.planner.constraint.api.ConstraintType;
-import com.cocroachden.planner.employee.api.EmployeeId;
+import com.cocroachden.planner.employee.EmployeeId;
 import com.cocroachden.planner.solver.constraints.specific.AbstractEmployeeSpecificConstraint;
 import com.cocroachden.planner.solver.api.WorkShifts;
 import com.fasterxml.jackson.annotation.JsonTypeName;

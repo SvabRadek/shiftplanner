@@ -14,7 +14,7 @@ import java.util.UUID;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
 public class ShiftFollowupRestrictionRequestDTO implements ConstraintRequestDTO {
-  public static ShiftFollowupRestrictionRequestDTO from(UUID id, ShiftFollowUpRestrictionRequest request) {
+  public static ShiftFollowupRestrictionRequestDTO from(String id, ShiftFollowUpRestrictionRequest request) {
     return new ShiftFollowupRestrictionRequestDTO(
         id,
         ShiftFollowUpRestrictionRequest.ID,
@@ -24,7 +24,7 @@ public class ShiftFollowupRestrictionRequestDTO implements ConstraintRequestDTO 
     );
   }
   @Nonnull
-  private UUID id;
+  private String id;
   @Nonnull
   private ConstraintType type;
   @Nonnull

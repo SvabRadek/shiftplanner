@@ -3,7 +3,7 @@ package com.cocroachden.planner.solver.constraints.specific.shiftpattern.request
 
 import com.cocroachden.planner.constraint.api.ShiftPatternRequestDTO;
 import com.cocroachden.planner.constraint.api.ConstraintType;
-import com.cocroachden.planner.employee.api.EmployeeId;
+import com.cocroachden.planner.employee.EmployeeId;
 import com.cocroachden.planner.solver.constraints.specific.AbstractEmployeeSpecificConstraint;
 import com.cocroachden.planner.solver.api.WorkShifts;
 import com.fasterxml.jackson.annotation.JsonTypeName;

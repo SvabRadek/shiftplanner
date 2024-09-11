@@ -14,7 +14,7 @@ import java.util.UUID;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
 public class ConsecutiveWorkingDaysRequestDTO implements ConstraintRequestDTO {
-  public static ConsecutiveWorkingDaysRequestDTO from(UUID id, ConsecutiveWorkingDaysRequest request) {
+  public static ConsecutiveWorkingDaysRequestDTO from(String id, ConsecutiveWorkingDaysRequest request) {
     return new ConsecutiveWorkingDaysRequestDTO(
         id,
         ConsecutiveWorkingDaysRequest.CONSTRAINT_TYPE,
@@ -28,7 +28,7 @@ public class ConsecutiveWorkingDaysRequestDTO implements ConstraintRequestDTO {
     );
   }
   @Nonnull
-  private UUID id;
+  private String id;
   @Nonnull
   private ConstraintType type;
   @Nonnull

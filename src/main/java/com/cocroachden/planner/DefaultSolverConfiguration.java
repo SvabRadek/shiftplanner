@@ -2,7 +2,6 @@ package com.cocroachden.planner;
 
 
 import com.cocroachden.planner.constraint.repository.ConstraintRequestRecord;
-import com.cocroachden.planner.employee.api.EmployeeId;
 import com.cocroachden.planner.employee.repository.EmployeeRecord;
 import com.cocroachden.planner.solver.constraints.ConstraintRequest;
 import com.cocroachden.planner.solver.constraints.specific.consecutiveworkingdays.request.ConsecutiveWorkingDaysRequest;

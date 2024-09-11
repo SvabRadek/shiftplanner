@@ -2,7 +2,7 @@ package com.cocroachden.planner.solver.constraints.specific.teamassignment.reque
 
 import com.cocroachden.planner.constraint.api.ConstraintType;
 import com.cocroachden.planner.constraint.api.TeamAssignmentRequestDTO;
-import com.cocroachden.planner.employee.api.EmployeeId;
+import com.cocroachden.planner.employee.EmployeeId;
 import com.cocroachden.planner.solver.constraints.specific.AbstractEmployeeSpecificConstraint;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import lombok.AccessLevel;

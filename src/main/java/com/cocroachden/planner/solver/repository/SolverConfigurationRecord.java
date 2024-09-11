@@ -1,6 +1,7 @@
 package com.cocroachden.planner.solver.repository;
 
 import com.cocroachden.planner.constraint.repository.ConstraintRequestRecord;
+import com.cocroachden.planner.solver.SolverConfigurationId;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -20,9 +21,9 @@ import java.util.*;
 @Entity(name = "SolverConfiguration")
 @Table(name = "solver_configuration")
 public class SolverConfigurationRecord {
-  @Id
-  @GeneratedValue(strategy = GenerationType.UUID)
-  private UUID id;
+  @EmbeddedId
+  @AttributeOverride(name = "id", column = @Column(name = "solver_configuration_id"))
+  private SolverConfigurationId id;
   private String name;
   @CreationTimestamp
   private Instant createdAt;
@@ -35,8 +36,16 @@ public class SolverConfigurationRecord {
   @OneToMany(mappedBy = "configuration", cascade = CascadeType.ALL, orphanRemoval = true)
   private List<EmployeeAssignment> employeeAssignments = new ArrayList<>();
 
-  public SolverConfigurationRecord(UUID id) {
+  public SolverConfigurationRecord(
+          SolverConfigurationId id,
+          String name,
+          LocalDate startDate,
+          LocalDate endDate
+  ) {
     this.id = id;
+    this.name = name;
+    this.startDate = startDate;
+    this.endDate = endDate;
   }
 
   public void setConstraintRequestRecords(List<ConstraintRequestRecord> constraintRequestRecords) {

@@ -15,8 +15,8 @@ import java.util.UUID;
 @Setter
 @NoArgsConstructor
 public class EmployeeAssignmentId implements Serializable {
-  private Long employeeId;
-  private UUID configurationId;
+  private String employeeId;
+  private String configurationId;
 
   @Override
   public int hashCode() {

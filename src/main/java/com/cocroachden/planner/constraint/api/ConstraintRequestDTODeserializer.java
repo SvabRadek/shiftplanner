@@ -1,6 +1,5 @@
 package com.cocroachden.planner.constraint.api;
 
-import com.cocroachden.planner.solver.constraints.specific.weekends.request.WeekendRequest;
 import com.fasterxml.jackson.core.JacksonException;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.DeserializationContext;

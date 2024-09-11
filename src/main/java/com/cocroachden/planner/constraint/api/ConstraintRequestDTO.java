@@ -8,7 +8,7 @@ import java.util.UUID;
 @JsonDeserialize(using = ConstraintRequestDTODeserializer.class)
 public interface ConstraintRequestDTO {
   @Nonnull
-  UUID getId();
+  String getId();
 
   @Nonnull
   ConstraintType getType();

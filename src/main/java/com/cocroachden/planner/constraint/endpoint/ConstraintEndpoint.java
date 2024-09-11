@@ -1,18 +1,10 @@
 package com.cocroachden.planner.constraint.endpoint;
 
+import com.cocroachden.planner.constraint.ConstraintId;
 import com.cocroachden.planner.constraint.api.*;
 import com.cocroachden.planner.constraint.repository.ConstraintRequestRecord;
 import com.cocroachden.planner.constraint.repository.ConstraintRequestRepository;
-import com.cocroachden.planner.solver.api.ConstraintMapper;
-import com.cocroachden.planner.solver.constraints.specific.consecutiveworkingdays.request.ConsecutiveWorkingDaysRequest;
-import com.cocroachden.planner.solver.constraints.specific.employeeshiftrequest.request.EmployeeShiftRequest;
-import com.cocroachden.planner.solver.constraints.specific.employeespershift.request.EmployeesPerShiftRequest;
-import com.cocroachden.planner.solver.constraints.specific.shiftfollowuprestriction.request.ShiftFollowUpRestrictionRequest;
-import com.cocroachden.planner.solver.constraints.specific.shiftpattern.request.ShiftPatternConstraintRequest;
-import com.cocroachden.planner.solver.constraints.specific.shiftperschedule.request.ShiftsPerScheduleRequest;
-import com.cocroachden.planner.solver.constraints.specific.teamassignment.request.TeamAssignmentRequest;
-import com.cocroachden.planner.solver.constraints.specific.tripleshift.request.TripleShiftConstraintRequest;
-import com.cocroachden.planner.solver.constraints.specific.weekends.request.WeekendRequest;
+import com.cocroachden.planner.constraint.ConstraintMapper;
 import com.vaadin.flow.server.auth.AnonymousAllowed;
 import dev.hilla.BrowserCallable;
 import dev.hilla.Nonnull;
@@ -30,7 +22,7 @@ public class ConstraintEndpoint {
   private final ConstraintRequestRepository constraintRequestRepository;
 
 
-  public @Nonnull List<@Nonnull ConstraintRequestDTO> findRequests(@Nonnull List<@Nonnull UUID> requestIds) {
+  public @Nonnull List<@Nonnull ConstraintRequestDTO> findRequests(@Nonnull List<@Nonnull String> requestIds) {
     return this.getRecords(requestIds).stream()
         .map(ConstraintMapper::fromRecord)
         .filter(Objects::nonNull)
@@ -38,7 +30,7 @@ public class ConstraintEndpoint {
   }
 
   public @Nonnull List<@Nonnull EmployeeShiftRequestDTO> findSpecificShiftRequests(
-      @Nonnull List<@Nonnull UUID> requestIds
+      @Nonnull List<@Nonnull String> requestIds
   ) {
     return this.getRecords(requestIds).stream()
         .map(r -> ConstraintMapper.specificFromRecord(r, EmployeeShiftRequestDTO.class))
@@ -46,7 +38,7 @@ public class ConstraintEndpoint {
   }
 
   public @Nonnull List<@Nonnull ShiftsPerScheduleRequestDTO> findShiftsPerScheduleRequests(
-      @Nonnull List<@Nonnull UUID> requestIds
+      @Nonnull List<@Nonnull String> requestIds
   ) {
     return this.getRecords(requestIds).stream()
         .map(r -> ConstraintMapper.specificFromRecord(r, ShiftsPerScheduleRequestDTO.class))
@@ -54,7 +46,7 @@ public class ConstraintEndpoint {
   }
 
   public @Nonnull List<@Nonnull ConsecutiveWorkingDaysRequestDTO> findConsecutiveWorkingDaysRequests(
-      @Nonnull List<@Nonnull UUID> requestIds
+      @Nonnull List<@Nonnull String> requestIds
   ) {
     return this.getRecords(requestIds).stream()
         .map(r -> ConstraintMapper.specificFromRecord(r, ConsecutiveWorkingDaysRequestDTO.class))
@@ -62,7 +54,7 @@ public class ConstraintEndpoint {
   }
 
   public @Nonnull List<@Nonnull EmployeesPerShiftRequestDTO> findEmployeesPerShiftRequests(
-      @Nonnull List<@Nonnull UUID> requestIds
+      @Nonnull List<@Nonnull String> requestIds
   ) {
     return this.getRecords(requestIds).stream()
         .map(r -> ConstraintMapper.specificFromRecord(r, EmployeesPerShiftRequestDTO.class))
@@ -70,7 +62,7 @@ public class ConstraintEndpoint {
   }
 
   public @Nonnull List<@Nonnull ShiftFollowupRestrictionRequestDTO> findShiftFollowupRestrictionRequests(
-      @Nonnull List<@Nonnull UUID> requestIds
+      @Nonnull List<@Nonnull String> requestIds
   ) {
     return this.getRecords(requestIds).stream()
         .map(r -> ConstraintMapper.specificFromRecord(r, ShiftFollowupRestrictionRequestDTO.class))
@@ -78,7 +70,7 @@ public class ConstraintEndpoint {
   }
 
   public @Nonnull List<@Nonnull ShiftPatternRequestDTO> findShiftPatternRequests(
-      @Nonnull List<@Nonnull UUID> requestIds
+      @Nonnull List<@Nonnull String> requestIds
   ) {
     return this.getRecords(requestIds).stream()
         .map(r -> ConstraintMapper.specificFromRecord(r, ShiftPatternRequestDTO.class))
@@ -86,7 +78,7 @@ public class ConstraintEndpoint {
   }
 
   public @Nonnull List<@Nonnull TripleShiftConstraintRequestDTO> findTripleShiftConstraintRequests(
-      @Nonnull List<@Nonnull UUID> requestIds
+      @Nonnull List<@Nonnull String> requestIds
   ) {
     return this.getRecords(requestIds).stream()
         .map(r -> ConstraintMapper.specificFromRecord(r, TripleShiftConstraintRequestDTO.class))
@@ -94,7 +86,7 @@ public class ConstraintEndpoint {
   }
 
   public @Nonnull List<@Nonnull TeamAssignmentRequestDTO> findTeamAssignmentsConstraintRequests(
-      @Nonnull List<@Nonnull UUID> requestIds
+      @Nonnull List<@Nonnull String> requestIds
   ) {
     return this.getRecords(requestIds).stream()
         .map(r -> ConstraintMapper.specificFromRecord(r, TeamAssignmentRequestDTO.class))
@@ -102,7 +94,7 @@ public class ConstraintEndpoint {
   }
 
   public @Nonnull List<@Nonnull WeekendRequestDTO> findWeekendConstraintRequests(
-      @Nonnull List<@Nonnull UUID> requestIds
+      @Nonnull List<@Nonnull String> requestIds
   ) {
     return this.getRecords(requestIds).stream()
         .map(r -> ConstraintMapper.specificFromRecord(r, WeekendRequestDTO.class))
@@ -110,16 +102,17 @@ public class ConstraintEndpoint {
   }
 
   public @Nonnull List<@Nonnull EvenShiftDistributionRequestDTO> findEvenShiftDistributionRequests(
-      @Nonnull List<@Nonnull UUID> requestIds
+      @Nonnull List<@Nonnull String> requestIds
   ) {
     return this.getRecords(requestIds).stream()
         .map(r -> ConstraintMapper.specificFromRecord(r, EvenShiftDistributionRequestDTO.class))
         .toList();
   }
 
-  public List<ConstraintRequestRecord> getRecords(List<UUID> constraintIds) {
+  public List<ConstraintRequestRecord> getRecords(List<String> constraintIds) {
+    var ids = constraintIds.stream().map(ConstraintId::new).toList();
     return StreamSupport.stream(
-        constraintRequestRepository.findAllById(constraintIds).spliterator(),
+        constraintRequestRepository.findAllById(ids).spliterator(),
         false
     ).toList();
   }

@@ -1,7 +1,7 @@
 package com.cocroachden.planner.solver.service.solution;
 
 
-import com.cocroachden.planner.employee.api.EmployeeId;
+import com.cocroachden.planner.employee.EmployeeId;
 import com.cocroachden.planner.solver.api.SolutionStatus;
 import com.cocroachden.planner.solver.api.SolverSolutionDTO;
 import com.cocroachden.planner.solver.api.WorkShifts;

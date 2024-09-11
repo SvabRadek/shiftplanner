@@ -1,4 +1,4 @@
-package com.cocroachden.planner.employee.endpoint;
+package com.cocroachden.planner.employee;
 
 import com.cocroachden.planner.employee.repository.EmployeeRecord;
 import dev.hilla.Nonnull;
@@ -11,13 +11,13 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Getter
 public class EmployeeDTO {
-  private @Nonnull Long id;
+  private @Nonnull String id;
   private @Nonnull String firstName;
   private @Nonnull String lastName;
 
   public static EmployeeDTO from(EmployeeRecord record) {
     return new EmployeeDTO(
-        record.getId(),
+        record.getId().getId(),
         record.getFirstName(),
         record.getLastName()
     );

@@ -11,7 +11,6 @@ import lombok.AllArgsConstructor;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 
 @Service
@@ -28,7 +27,7 @@ public class RegisteredUserService {
         var savedUser = userRepository.save(new RegisteredUser(
                 command.email(),
                 command.hashedPassword(),
-                new ArrayList<>()
+                Arrays.asList(command.authorities())
         ));
         return new UserHasBeenRegistered(savedUser);
     }

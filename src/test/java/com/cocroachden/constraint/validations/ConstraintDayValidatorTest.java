@@ -4,8 +4,8 @@ import com.cocroachden.planner.constraint.api.ConstraintType;
 import com.cocroachden.planner.constraint.api.EmployeeShiftRequestDTO;
 import com.cocroachden.planner.constraint.api.EmployeesPerShiftRequestDTO;
 import com.cocroachden.planner.constraint.validations.day.ConstraintDayValidator;
-import com.cocroachden.planner.employee.endpoint.EmployeeDTO;
-import com.cocroachden.planner.employee.api.EmployeeId;
+import com.cocroachden.planner.employee.EmployeeDTO;
+import com.cocroachden.planner.employee.EmployeeId;
 import com.cocroachden.planner.solver.api.AssignedEmployeeDTO;
 import com.cocroachden.planner.solver.api.SolverConfigurationDTO;
 import com.cocroachden.planner.solver.api.WorkShifts;
@@ -22,7 +22,7 @@ class ConstraintDayValidatorTest {
   @Test
   public void itCanFindIssueWithMoreWorkersRequestingWorkingShiftsThanAllowed() {
     var limitingRequest = new EmployeesPerShiftRequestDTO(
-        UUID.randomUUID(),
+        UUID.randomUUID().toString(),
         ConstraintType.EMPLOYEES_PER_SHIFT,
         WorkShifts.WORKING_SHIFTS,
         0,
@@ -32,9 +32,9 @@ class ConstraintDayValidatorTest {
         1,
         2
     );
-    var spec1 = this.createSpecificShiftRequest(new EmployeeId(0L), LocalDate.of(1, 1, 1), WorkShifts.DAY);
-    var spec2 = this.createSpecificShiftRequest(new EmployeeId(1L), LocalDate.of(1, 1, 1), WorkShifts.NIGHT);
-    var spec3 = this.createSpecificShiftRequest(new EmployeeId(2L), LocalDate.of(1, 1, 1), WorkShifts.DAY);
+    var spec1 = this.createSpecificShiftRequest(new EmployeeId(UUID.randomUUID().toString()), LocalDate.of(1, 1, 1), WorkShifts.DAY);
+    var spec2 = this.createSpecificShiftRequest(new EmployeeId(UUID.randomUUID().toString()), LocalDate.of(1, 1, 1), WorkShifts.NIGHT);
+    var spec3 = this.createSpecificShiftRequest(new EmployeeId(UUID.randomUUID().toString()), LocalDate.of(1, 1, 1), WorkShifts.DAY);
     var issues = ConstraintDayValidator.validate(
         new SolverConfigurationDTO(
             UUID.randomUUID(),
@@ -43,7 +43,7 @@ class ConstraintDayValidatorTest {
             Instant.now(),
             LocalDate.of(1, 1, 1),
             LocalDate.of(1, 1, 2),
-            List.of(this.createAssignment(0L), this.createAssignment(1L), this.createAssignment(2L)),
+            List.of(this.createAssignment(randomId()), this.createAssignment(randomId()), this.createAssignment(randomId())),
             List.of(limitingRequest, spec1, spec2, spec3)
         )
     );
@@ -55,7 +55,7 @@ class ConstraintDayValidatorTest {
   @Test
   public void itCanFindIssueWithLessWorkersAvailableForWorkThanMinimumRequiredForGivenDay() {
     var limitingRequest = new EmployeesPerShiftRequestDTO(
-        UUID.randomUUID(),
+        randomId(),
         ConstraintType.EMPLOYEES_PER_SHIFT,
         WorkShifts.WORKING_SHIFTS,
         2,
@@ -65,8 +65,8 @@ class ConstraintDayValidatorTest {
         1,
         5
     );
-    var spec1 = this.createSpecificShiftRequest(new EmployeeId(0L), LocalDate.of(1, 1, 1), WorkShifts.OFF);
-    var spec2 = this.createSpecificShiftRequest(new EmployeeId(1L), LocalDate.of(1, 1, 1), WorkShifts.OFF);
+    var spec1 = this.createSpecificShiftRequest(EmployeeId.random(), LocalDate.of(1, 1, 1), WorkShifts.OFF);
+    var spec2 = this.createSpecificShiftRequest(EmployeeId.random(), LocalDate.of(1, 1, 1), WorkShifts.OFF);
     var issues = ConstraintDayValidator.validate(
         new SolverConfigurationDTO(
             UUID.randomUUID(),
@@ -75,7 +75,7 @@ class ConstraintDayValidatorTest {
             Instant.now(),
             LocalDate.of(1, 1, 1),
             LocalDate.of(1, 1, 2),
-            List.of(this.createAssignment(0L), this.createAssignment(1L), this.createAssignment(2L)),
+            List.of(this.createAssignment(randomId()), this.createAssignment(randomId()), this.createAssignment(randomId())),
             List.of(limitingRequest, spec1, spec2)
         )
     );
@@ -91,7 +91,7 @@ class ConstraintDayValidatorTest {
       WorkShifts shift
   ) {
     return new EmployeeShiftRequestDTO(
-        UUID.randomUUID(),
+        UUID.randomUUID().toString(),
         ConstraintType.EMPLOYEE_SHIFT_REQUEST,
         owner,
         date,
@@ -99,7 +99,7 @@ class ConstraintDayValidatorTest {
     );
   }
 
-  private AssignedEmployeeDTO createAssignment(Long id) {
+  private AssignedEmployeeDTO createAssignment(String id) {
     return new AssignedEmployeeDTO(
             new EmployeeDTO(
                 id,
@@ -109,6 +109,10 @@ class ConstraintDayValidatorTest {
             0,
         1
         );
+  }
+
+  private static String randomId() {
+    return UUID.randomUUID().toString();
   }
 
 }

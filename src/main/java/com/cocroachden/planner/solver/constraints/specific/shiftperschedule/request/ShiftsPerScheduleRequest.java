@@ -3,7 +3,7 @@ package com.cocroachden.planner.solver.constraints.specific.shiftperschedule.req
 
 import com.cocroachden.planner.constraint.api.ShiftsPerScheduleRequestDTO;
 import com.cocroachden.planner.constraint.api.ConstraintType;
-import com.cocroachden.planner.employee.api.EmployeeId;
+import com.cocroachden.planner.employee.EmployeeId;
 import com.cocroachden.planner.solver.constraints.specific.AbstractMinMaxRequest;
 import com.cocroachden.planner.solver.api.WorkShifts;
 import com.fasterxml.jackson.annotation.JsonTypeName;

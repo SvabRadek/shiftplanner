@@ -27,7 +27,12 @@ public class RegisteredUserStartupService {
                         new RegisteredUser("user@planning.com", encoder.encode("1234"), List.of(Authorities.USER.getRole())),
                         new RegisteredUser("admin@planning.com", encoder.encode("1234"), List.of(Authorities.USER.getRole(), Authorities.ADMIN.getRole()))
                 ).filter(user -> !userQuery.userExists(user.getEmail()))
-                .map(RegisterUserCommand::new)
-                .toList();
+                .map(user ->
+                        new RegisterUserCommand(
+                                user.getEmail(),
+                                user.getHashedPassword(),
+                                user.getAuthorities().toArray(new String[0])
+                        )
+                ).toList();
     }
 }

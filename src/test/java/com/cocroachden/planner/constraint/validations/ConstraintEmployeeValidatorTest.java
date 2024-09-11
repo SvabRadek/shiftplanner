@@ -4,8 +4,8 @@ import com.cocroachden.planner.constraint.api.ConstraintType;
 import com.cocroachden.planner.constraint.api.EmployeeShiftRequestDTO;
 import com.cocroachden.planner.constraint.api.ShiftsPerScheduleRequestDTO;
 import com.cocroachden.planner.constraint.validations.employee.ConstraintEmployeeValidator;
-import com.cocroachden.planner.employee.endpoint.EmployeeDTO;
-import com.cocroachden.planner.employee.api.EmployeeId;
+import com.cocroachden.planner.employee.EmployeeDTO;
+import com.cocroachden.planner.employee.EmployeeId;
 import com.cocroachden.planner.solver.api.AssignedEmployeeDTO;
 import com.cocroachden.planner.solver.api.SolverConfigurationDTO;
 import com.cocroachden.planner.solver.api.WorkShifts;
@@ -21,9 +21,10 @@ class ConstraintEmployeeValidatorTest {
 
   @Test
   public void itCanFindIssueWhenWorkerIsNotAvailableForMinimumNumberOfShiftsPerSchedule() {
+    var employeeId = EmployeeId.random();
     var shiftsPerSchedule = new ShiftsPerScheduleRequestDTO(
-        UUID.randomUUID(),
-        new EmployeeId(0L),
+        UUID.randomUUID().toString(),
+        employeeId,
         ConstraintType.SHIFT_PER_SCHEDULE,
         WorkShifts.WORKING_SHIFTS,
         3, 4, 1, 5, 1, 6
@@ -36,7 +37,7 @@ class ConstraintEmployeeValidatorTest {
             Instant.now(),
             LocalDate.of(1, 1, 1),
             LocalDate.of(1, 1, 2),
-            List.of(this.createEmployee(0L), this.createEmployee(1L), this.createEmployee(2L)),
+            List.of(this.createEmployee(employeeId.getId()), this.createEmployee(randomId()), this.createEmployee(randomId())),
             List.of(shiftsPerSchedule)
         )
     );
@@ -48,24 +49,25 @@ class ConstraintEmployeeValidatorTest {
 
   @Test
   public void itCanFindIssueWhenWorkerRequestsMoreThanMaximumNumberOfShiftsPerSchedule() {
+    var employeeId = EmployeeId.random();
     var shiftsPerSchedule = new ShiftsPerScheduleRequestDTO(
-        UUID.randomUUID(),
-        new EmployeeId(0L),
+        UUID.randomUUID().toString(),
+        employeeId,
         ConstraintType.SHIFT_PER_SCHEDULE,
         WorkShifts.WORKING_SHIFTS,
         0, 1, 1, 1, 1, 1
     );
     var spec1 = new EmployeeShiftRequestDTO(
-        UUID.randomUUID(),
+        UUID.randomUUID().toString(),
         ConstraintType.EMPLOYEE_SHIFT_REQUEST,
-        new EmployeeId(0L),
+        employeeId,
         LocalDate.of(1, 1, 1),
         WorkShifts.DAY
     );
     var spec2 = new EmployeeShiftRequestDTO(
-        UUID.randomUUID(),
+        UUID.randomUUID().toString(),
         ConstraintType.EMPLOYEE_SHIFT_REQUEST,
-        new EmployeeId(0L),
+        employeeId,
         LocalDate.of(1, 1, 2),
         WorkShifts.DAY
     );
@@ -77,7 +79,7 @@ class ConstraintEmployeeValidatorTest {
             Instant.now(),
             LocalDate.of(1, 1, 1),
             LocalDate.of(1, 1, 2),
-            List.of(this.createEmployee(0L), this.createEmployee(1L), this.createEmployee(2L)),
+            List.of(this.createEmployee(employeeId.getId()), this.createEmployee(randomId()), this.createEmployee(randomId())),
             List.of(shiftsPerSchedule, spec1, spec2)
         )
     );
@@ -87,7 +89,7 @@ class ConstraintEmployeeValidatorTest {
         .isEqualTo("Pracovník vyžaduje více směn, než je nastavený maximální limit pro počet směn na rozvrh.");
   }
 
-  private AssignedEmployeeDTO createEmployee(Long id) {
+  private AssignedEmployeeDTO createEmployee(String id) {
     return new AssignedEmployeeDTO(
         new EmployeeDTO(
             id,
@@ -97,6 +99,10 @@ class ConstraintEmployeeValidatorTest {
         0,
         1
     );
+  }
+
+  private static String randomId() {
+    return UUID.randomUUID().toString();
   }
 
 }

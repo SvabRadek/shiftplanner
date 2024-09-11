@@ -1,7 +1,6 @@
 package com.cocroachden.planner.constraint.api;
 
-import com.cocroachden.planner.employee.api.EmployeeId;
-import com.cocroachden.planner.solver.constraints.specific.tripleshift.request.TripleShiftConstraintRequest;
+import com.cocroachden.planner.employee.EmployeeId;
 import com.cocroachden.planner.solver.constraints.specific.weekends.request.WeekendRequest;
 import dev.hilla.Nonnull;
 import lombok.AccessLevel;
@@ -9,13 +8,11 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import java.util.UUID;
-
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
 public class WeekendRequestDTO implements ConstraintRequestDTO {
-  public static WeekendRequestDTO from(UUID id, WeekendRequest request) {
+  public static WeekendRequestDTO from(String id, WeekendRequest request) {
     return new WeekendRequestDTO(
         id,
         ConstraintType.WEEKEND_REQUEST,
@@ -26,7 +23,7 @@ public class WeekendRequestDTO implements ConstraintRequestDTO {
   }
 
   @Nonnull
-  private UUID id;
+  private String id;
   @Nonnull
   private ConstraintType type;
   @Nonnull

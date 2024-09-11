@@ -1,5 +1,6 @@
 package com.cocroachden.planner.solver.api;
 
+import com.cocroachden.planner.constraint.ConstraintMapper;
 import com.cocroachden.planner.constraint.api.ConstraintRequestDTO;
 import com.cocroachden.planner.solver.repository.EmployeeAssignment;
 import com.cocroachden.planner.solver.repository.SolverConfigurationRecord;
@@ -7,6 +8,7 @@ import dev.hilla.Nonnull;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.time.Instant;
 import java.time.LocalDate;
@@ -20,7 +22,7 @@ import java.util.UUID;
 public class SolverConfigurationDTO {
   public static SolverConfigurationDTO from(SolverConfigurationRecord record) {
     return new SolverConfigurationDTO(
-        record.getId(),
+        record.getId().getId(),
         record.getName(),
         record.getCreatedAt(),
         record.getLastUpdated(),
@@ -37,7 +39,8 @@ public class SolverConfigurationDTO {
   }
 
   @Nonnull
-  private UUID id;
+  @Setter
+  private String id;
   @Nonnull
   private String name;
   @Nonnull
