@@ -5,6 +5,6 @@ import com.cocroachden.planner.security.Authorities;
 
 public record AddAuthorityCommand(
         String email,
-        Authorities authority
+        Authorities... authority
 ) implements Command {
 }

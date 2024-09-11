@@ -9,4 +9,9 @@ public enum Authorities {
     USER("user"),
     ADMIN("admin");
     private final String role;
+
+    public static Authorities fromRole(String role) {
+        return Authorities.valueOf(role);
+    }
+
 }
