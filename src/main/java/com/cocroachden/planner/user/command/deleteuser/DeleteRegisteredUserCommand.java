@@ -1,4 +1,4 @@
-package com.cocroachden.planner.user.command.removeuser;
+package com.cocroachden.planner.user.command.deleteuser;
 
 import com.cocroachden.planner.common.messaging.Command;
 

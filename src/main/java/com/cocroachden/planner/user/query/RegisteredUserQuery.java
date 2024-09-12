@@ -1,6 +1,6 @@
 package com.cocroachden.planner.user.query;
 
-import com.cocroachden.planner.user.endpoint.UserDTO;
+import com.cocroachden.planner.user.RegisteredUserDTO;
 import com.cocroachden.planner.user.repository.RegisteredUserRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
@@ -18,10 +18,10 @@ public class RegisteredUserQuery implements UserDetailsService {
 
     private final RegisteredUserRepository registeredUserRepository;
 
-    public Optional<UserDTO> findUser(String email, String hashedPassword) {
+    public Optional<RegisteredUserDTO> findUser(String email, String hashedPassword) {
         var user = registeredUserRepository.findById(email);
         if (user.isPresent() && user.get().getHashedPassword().equals(hashedPassword)) {
-            return user.map(UserDTO::from);
+            return user.map(RegisteredUserDTO::from);
         }
         return Optional.empty();
     }

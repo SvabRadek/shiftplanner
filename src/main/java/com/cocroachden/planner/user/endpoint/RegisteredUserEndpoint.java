@@ -1,5 +1,6 @@
 package com.cocroachden.planner.user.endpoint;
 
+import com.cocroachden.planner.user.RegisteredUserDTO;
 import com.cocroachden.planner.user.command.registeruser.RegisterUserCommand;
 import com.cocroachden.planner.user.query.RegisteredUserQuery;
 import com.vaadin.flow.server.auth.AnonymousAllowed;
@@ -10,13 +11,13 @@ import org.springframework.context.ApplicationEventPublisher;
 
 @Endpoint
 @AllArgsConstructor
-public class UserEndpoint {
+public class RegisteredUserEndpoint {
 
     private final RegisteredUserQuery registeredUserQuery;
     private final ApplicationEventPublisher publisher;
 
     @PermitAll
-    public UserDTO findUser(String email, String hashedPassword) {
+    public RegisteredUserDTO findUser(String email, String hashedPassword) {
         return registeredUserQuery.findUser(email, hashedPassword)
                 .orElseThrow(() -> new IllegalArgumentException("Invalid login information!"));
     }

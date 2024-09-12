@@ -1,6 +1,5 @@
-package com.cocroachden.planner.user.endpoint;
+package com.cocroachden.planner.user;
 
-import com.cocroachden.planner.user.RegisteredUser;
 import dev.hilla.Nonnull;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -12,13 +11,13 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
-public class UserDTO {
+public class RegisteredUserDTO {
     @Nonnull
     private String email;
     @Nonnull
     private List<@Nonnull String> authorities;
 
-    public static UserDTO from(RegisteredUser user) {
-        return new UserDTO(user.getEmail(), user.getAuthorities());
+    public static RegisteredUserDTO from(RegisteredUser user) {
+        return new RegisteredUserDTO(user.getEmail(), user.getAuthorities());
     }
 }
