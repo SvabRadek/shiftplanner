@@ -31,7 +31,7 @@ class ConstraintEmployeeValidatorTest {
     );
     var issues = ConstraintEmployeeValidator.validate(
         new SolverConfigurationDTO(
-            UUID.randomUUID(),
+            UUID.randomUUID().toString(),
             "",
             Instant.now(),
             Instant.now(),
@@ -73,7 +73,7 @@ class ConstraintEmployeeValidatorTest {
     );
     var issues = ConstraintEmployeeValidator.validate(
         new SolverConfigurationDTO(
-            UUID.randomUUID(),
+            UUID.randomUUID().toString(),
             "",
             Instant.now(),
             Instant.now(),

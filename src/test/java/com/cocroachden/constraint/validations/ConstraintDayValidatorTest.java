@@ -37,7 +37,7 @@ class ConstraintDayValidatorTest {
     var spec3 = this.createSpecificShiftRequest(new EmployeeId(UUID.randomUUID().toString()), LocalDate.of(1, 1, 1), WorkShifts.DAY);
     var issues = ConstraintDayValidator.validate(
         new SolverConfigurationDTO(
-            UUID.randomUUID(),
+            UUID.randomUUID().toString(),
             "",
             Instant.now(),
             Instant.now(),
@@ -69,7 +69,7 @@ class ConstraintDayValidatorTest {
     var spec2 = this.createSpecificShiftRequest(EmployeeId.random(), LocalDate.of(1, 1, 1), WorkShifts.OFF);
     var issues = ConstraintDayValidator.validate(
         new SolverConfigurationDTO(
-            UUID.randomUUID(),
+            UUID.randomUUID().toString(),
             "",
             Instant.now(),
             Instant.now(),

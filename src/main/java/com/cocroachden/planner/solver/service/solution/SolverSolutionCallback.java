@@ -48,7 +48,7 @@ public class SolverSolutionCallback extends CpSolverSolutionCallback {
     var latestResponse = new SolverSolution(response);
     this.printStatsHeader(currentObjective);
     this.latestResponse = latestResponse;
-    var employeeMap = new HashMap<Long, Map<LocalDate, WorkShifts>>();
+    var employeeMap = new HashMap<String, Map<LocalDate, WorkShifts>>();
     latestResponse.workdays().forEach((employeeId, responseWorkDays) -> {
       var shiftMap = new HashMap<LocalDate, WorkShifts>();
       responseWorkDays.forEach(solutionWorkDay -> {
@@ -75,7 +75,7 @@ public class SolverSolutionCallback extends CpSolverSolutionCallback {
     var response = new HashMap<EmployeeId, List<SolutionWorkDay>>();
     schedulePlan.getAssignments()
         .entrySet().stream()
-        .sorted(Comparator.comparingLong(value -> value.getKey().getId()))
+        .sorted(Comparator.comparing(value -> value.getKey().getId()))
         .forEach(entry -> {
           var employeeId = entry.getKey();
           var assignments = entry.getValue();

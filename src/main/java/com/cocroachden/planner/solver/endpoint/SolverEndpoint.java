@@ -1,6 +1,7 @@
 package com.cocroachden.planner.solver.endpoint;
 
 import com.cocroachden.planner.constraint.repository.ConstraintRequestRecord;
+import com.cocroachden.planner.solver.SolverConfigurationId;
 import com.cocroachden.planner.solver.api.SolutionStatus;
 import com.cocroachden.planner.solver.api.SolverSolutionDTO;
 import com.cocroachden.planner.solver.repository.SolverConfigurationRepository;
@@ -27,9 +28,9 @@ public class SolverEndpoint {
   private final SolverConfigurationRepository solverConfigurationRepository;
 
   @Transactional
-  public EndpointSubscription<@Nonnull SolverSolutionDTO> solve(UUID configurationId) {
-    log.debug("Solving configuration: {}", configurationId.toString());
-    var solverConfigRecord = solverConfigurationRepository.getById(configurationId);
+  public EndpointSubscription<@Nonnull SolverSolutionDTO> solve(String configurationId) {
+    log.debug("Solving configuration: {}", configurationId);
+    var solverConfigRecord = solverConfigurationRepository.getById(new SolverConfigurationId(configurationId));
     var solverConfig = new SolverConfiguration(
         solverConfigRecord.getStartDate(),
         solverConfigRecord.getEndDate(),

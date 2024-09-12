@@ -19,5 +19,5 @@ public class SolverSolutionDTO {
   @Nonnull
   private Integer resultIndex;
   @Nonnull
-  private Map<@Nonnull Long, @Nonnull Map<@Nonnull LocalDate, @Nonnull WorkShifts>> assignments;
+  private Map<@Nonnull String, @Nonnull Map<@Nonnull LocalDate, @Nonnull WorkShifts>> assignments;
 }
