@@ -12,9 +12,8 @@ import java.util.UUID;
 
 public interface SolverConfigurationRepository extends CrudRepository<SolverConfigurationRecord, SolverConfigurationId>, JpaSpecificationExecutor<SolverConfigurationRecord> {
   SolverConfigurationRecord getById(SolverConfigurationId id);
-  SolverConfigurationMetadata getMetadataById();
-  List<SolverConfigurationMetadata> findAllMetadata();
+  SolverConfigurationMetadata getMetadataById(SolverConfigurationId configurationId);
   List<SolverConfigurationRecord> findByEmployeeAssignments_Id_EmployeeId(EmployeeId employeeId);
-
+  List<SolverConfigurationMetadata> findBy();
 
 }

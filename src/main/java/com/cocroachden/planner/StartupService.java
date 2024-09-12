@@ -1,6 +1,7 @@
 package com.cocroachden.planner;
 
 import com.cocroachden.planner.employee.repository.EmployeeRepository;
+import com.cocroachden.planner.solver.SolverConfigurationId;
 import com.cocroachden.planner.solver.repository.EmployeeAssignment;
 import com.cocroachden.planner.solver.repository.EmployeeAssignmentRepository;
 import com.cocroachden.planner.solver.repository.SolverConfigurationRecord;
@@ -11,6 +12,7 @@ import org.springframework.boot.context.event.ApplicationStartedEvent;
 import org.springframework.context.event.EventListener;
 
 import java.time.LocalDate;
+import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
 
 @Slf4j
@@ -27,6 +29,7 @@ public class StartupService {
       return;
     }
     var configRecord = new SolverConfigurationRecord();
+    configRecord.setId(SolverConfigurationId.random());
     configRecord.setStartDate(LocalDate.now());
     configRecord.setEndDate(LocalDate.now().plusDays(30));
     configRecord.setName("Příklad konfigurace");

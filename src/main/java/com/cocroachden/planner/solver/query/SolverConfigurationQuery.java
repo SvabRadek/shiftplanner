@@ -25,7 +25,7 @@ public class SolverConfigurationQuery {
     }
 
     public List<SolverConfigurationMetadata> getAllMetadata() {
-        return repository.findAllMetadata().stream().toList();
+        return repository.findBy().stream().toList();
     }
 
     public SolverConfigurationMetadata getAllMetadataById(List<SolverConfigurationId> configurationIds) {

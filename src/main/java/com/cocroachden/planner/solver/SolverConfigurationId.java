@@ -1,14 +1,23 @@
 package com.cocroachden.planner.solver;
 
-import com.cocroachden.planner.common.AbstractIdentity;
+import jakarta.persistence.Embeddable;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
-public class SolverConfigurationId extends AbstractIdentity {
-    public SolverConfigurationId(String id) {
-        super(id);
-    }
+import java.io.Serializable;
+import java.util.UUID;
 
-    public SolverConfigurationId() {
-        super();
+@Embeddable
+@AllArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Getter
+public class SolverConfigurationId implements Serializable {
+    private String id;
+
+    public static SolverConfigurationId random() {
+        return new SolverConfigurationId(UUID.randomUUID().toString());
     }
 
     @Override

@@ -1,5 +1,9 @@
 package com.cocroachden.planner.solver.repository;
 
+import com.cocroachden.planner.employee.EmployeeId;
+import com.cocroachden.planner.solver.SolverConfigurationId;
+import jakarta.persistence.AttributeOverride;
+import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -15,8 +19,8 @@ import java.util.UUID;
 @Setter
 @NoArgsConstructor
 public class EmployeeAssignmentId implements Serializable {
-  private String employeeId;
-  private String configurationId;
+  private EmployeeId employeeId;
+  private SolverConfigurationId configurationId;
 
   @Override
   public int hashCode() {

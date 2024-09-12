@@ -1,26 +1,28 @@
 package com.cocroachden.planner.constraint;
 
-import com.cocroachden.planner.common.AbstractIdentity;
+import jakarta.persistence.Embeddable;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
+import java.io.Serializable;
 import java.util.UUID;
 
+@Embeddable
+@AllArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Getter
+public class ConstraintId implements Serializable {
 
-public class ConstraintId extends AbstractIdentity {
+    private String id;
+
     public static ConstraintId random() {
         return new ConstraintId(UUID.randomUUID().toString());
     }
 
-    public ConstraintId(String id) {
-        super(id);
-    }
-
-    protected ConstraintId() {
-        super();
-    }
-
     @Override
     public boolean equals(Object obj) {
-        if (this == obj) return true;
         if (obj instanceof ConstraintId other) {
             return other.id.equals(id);
         }

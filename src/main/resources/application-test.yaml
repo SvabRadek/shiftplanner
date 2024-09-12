@@ -1,0 +1,14 @@
+logging:
+  level:
+    root: INFO
+    org.atmosphere: WARN
+    com.cocroachden.planner: DEBUG
+
+spring:
+  datasource:
+    url: jdbc:h2:mem:test-db
+    driverClassName: org.h2.Driver
+  jpa:
+    database-platform: org.hibernate.dialect.H2Dialect
+    hibernate:
+      ddl-auto: create-drop

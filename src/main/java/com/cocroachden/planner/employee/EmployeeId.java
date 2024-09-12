@@ -1,25 +1,26 @@
 package com.cocroachden.planner.employee;
 
-import com.cocroachden.planner.common.AbstractIdentity;
+import jakarta.persistence.Embeddable;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
+import java.io.Serializable;
 import java.util.UUID;
 
-public class EmployeeId extends AbstractIdentity {
-    protected EmployeeId() {
-        super();
-    }
-
-    public EmployeeId(String id) {
-        super(id);
-    }
-
+@Embeddable
+@AllArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Getter
+public class EmployeeId implements Serializable {
+    private String id;
     public static EmployeeId random() {
         return new EmployeeId(UUID.randomUUID().toString());
     }
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
         if (o instanceof EmployeeId other) {
             return other.getId().equals(id);
         }

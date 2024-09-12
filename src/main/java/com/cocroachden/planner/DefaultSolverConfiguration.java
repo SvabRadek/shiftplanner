@@ -1,6 +1,7 @@
 package com.cocroachden.planner;
 
 
+import com.cocroachden.planner.constraint.ConstraintId;
 import com.cocroachden.planner.constraint.repository.ConstraintRequestRecord;
 import com.cocroachden.planner.employee.EmployeeId;
 import com.cocroachden.planner.employee.repository.EmployeeRecord;
@@ -15,6 +16,7 @@ import com.cocroachden.planner.solver.constraints.specific.weekends.request.Week
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 import static com.cocroachden.planner.solver.api.WorkShifts.*;
 
@@ -85,6 +87,7 @@ public class DefaultSolverConfiguration {
     return allRequests.stream()
         .map(c -> {
           var record = new ConstraintRequestRecord();
+          record.setId(ConstraintId.random());
           record.setType(c.getType());
           record.setRequest(c);
           return record;
@@ -116,6 +119,7 @@ public class DefaultSolverConfiguration {
 
   private static EmployeeRecord createEmployee(String firstName, String lastName) {
     var record = new EmployeeRecord();
+    record.setId(EmployeeId.random());
     record.setFirstName(firstName);
     record.setLastName(lastName);
     return record;
