@@ -20,13 +20,13 @@ public class EmployeeService {
 
     @EventListener
     public EmployeeHasBeenSaved handle(SaveEmployeeCommand command) {
-        var dto = command.employeeDTO();
-        if (employeeQuery.existsByName(dto.getFirstName(), dto.getLastName())) {
-            throw new IllegalArgumentException("Employee with this name [%s %s] already exists!".formatted(dto.getFirstName(), dto.getLastName()));
+        if (employeeQuery.existsByName(command.firstName(), command.lastName())) {
+            throw new IllegalArgumentException("Employee with this name [%s %s] already exists!".formatted(command.firstName(), command.lastName()));
         }
         var employee = new EmployeeRecord(
-                command.employeeDTO().getFirstName(),
-                command.employeeDTO().getLastName()
+                command.id(),
+                command.firstName(),
+                command.lastName()
         );
         var savedEmployee = employeeRepository.save(employee);
         return new EmployeeHasBeenSaved(savedEmployee);
@@ -34,6 +34,9 @@ public class EmployeeService {
 
     @EventListener
     public EmployeeHasBeenDeleted handle(DeleteEmployeeCommand command) {
+        if (!employeeRepository.existsById(command.employeeId())) {
+            return null;
+        }
         employeeRepository.deleteById(command.employeeId());
         return new EmployeeHasBeenDeleted(command.employeeId());
     }

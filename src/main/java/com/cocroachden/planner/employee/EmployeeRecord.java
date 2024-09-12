@@ -1,19 +1,18 @@
 package com.cocroachden.planner.employee;
 
 import com.cocroachden.planner.constraint.repository.ConstraintRequestRecord;
+import com.cocroachden.planner.solver.repository.EmployeeAssignment;
 import dev.hilla.Nonnull;
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.util.ArrayList;
 import java.util.List;
 
-@NoArgsConstructor
+@Entity(name = "employee")
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
 @Setter
-@Entity(name = "employee")
 public final class EmployeeRecord {
 
     @EmbeddedId
@@ -23,6 +22,8 @@ public final class EmployeeRecord {
     private String lastName;
     @OneToMany(mappedBy = "owner", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ConstraintRequestRecord> requests = new ArrayList<>();
+    @OneToMany(mappedBy = "employee", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<EmployeeAssignment> assignments = new ArrayList<>();
 
     public EmployeeRecord(@Nonnull EmployeeId id, @Nonnull String firstName, @Nonnull String lastName) {
         this.id = id;

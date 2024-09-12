@@ -8,11 +8,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Entity(name = "registered_user")
-@Getter
-@Setter
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class RegisteredUser {
+@Getter
+@Setter
+public class RegisteredUserRecord {
     @EmbeddedId
     @AttributeOverride(name = "id", column = @Column(name = "registered_user_email"))
     @Column(name = "email")

@@ -18,8 +18,7 @@ import java.util.*;
 @NoArgsConstructor
 @Getter
 @Setter
-@Entity(name = "SolverConfiguration")
-@Table(name = "solver_configuration")
+@Entity(name = "solver_configuration")
 public class SolverConfigurationRecord {
   @EmbeddedId
   @AttributeOverride(name = "id", column = @Column(name = "solver_configuration_id"))

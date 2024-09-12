@@ -8,22 +8,35 @@ import lombok.Setter;
 
 import java.io.Serializable;
 
-@Entity(name = "EmployeeAssignment")
+@Entity(name = "employee_assignment")
 @Table
 @NoArgsConstructor
 @Getter
 @Setter
 public class EmployeeAssignment implements Serializable {
+
   @EmbeddedId
-  private EmployeeAssignmentId id = new EmployeeAssignmentId();
+  @AttributeOverride(name = "id", column = @Column(name = "employee_assignment_id"))
+  private EmployeeAssignmentId id;
   private Integer index;
   private Integer weight = 1;
   @ManyToOne(fetch = FetchType.LAZY)
-  @MapsId("employeeId")
   private EmployeeRecord employee;
   @ManyToOne(fetch = FetchType.LAZY)
-  @MapsId("configurationId")
   private SolverConfigurationRecord configuration;
+
+  public EmployeeAssignment(
+          SolverConfigurationRecord configuration,
+          EmployeeRecord employee,
+          Integer index,
+          Integer weight
+  ) {
+    this.id = new EmployeeAssignmentId(configuration.getId().getId() + employee.getId().getId());
+    this.index = index;
+    this.weight = weight;
+    this.employee = employee;
+    this.configuration = configuration;
+  }
 
   @Override
   public int hashCode() {

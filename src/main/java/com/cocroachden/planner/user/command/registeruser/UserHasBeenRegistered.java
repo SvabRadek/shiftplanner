@@ -1,7 +1,7 @@
 package com.cocroachden.planner.user.command.registeruser;
 
 import com.cocroachden.planner.common.messaging.Event;
-import com.cocroachden.planner.user.RegisteredUser;
+import com.cocroachden.planner.user.RegisteredUserRecord;
 
-public record UserHasBeenRegistered(RegisteredUser user) implements Event {
+public record UserHasBeenRegistered(RegisteredUserRecord user) implements Event {
 }

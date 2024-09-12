@@ -2,11 +2,10 @@ package com.cocroachden.planner.employee.endpoint;
 
 import com.cocroachden.planner.employee.EmployeeDTO;
 import com.cocroachden.planner.employee.EmployeeId;
-import com.cocroachden.planner.employee.query.EmployeeQuery;
 import com.cocroachden.planner.employee.EmployeeRecord;
+import com.cocroachden.planner.employee.command.deleteemployee.DeleteEmployeeCommand;
+import com.cocroachden.planner.employee.query.EmployeeQuery;
 import com.cocroachden.planner.employee.repository.EmployeeRepository;
-import com.cocroachden.planner.solver.constraints.specific.AbstractEmployeeSpecificConstraint;
-import com.cocroachden.planner.solver.repository.EmployeeAssignment;
 import com.cocroachden.planner.solver.repository.SolverConfigurationRepository;
 import com.vaadin.flow.server.auth.AnonymousAllowed;
 import dev.hilla.BrowserCallable;
@@ -14,8 +13,8 @@ import dev.hilla.Nonnull;
 import dev.hilla.crud.CrudRepositoryService;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
+import org.springframework.context.ApplicationEventPublisher;
 
-import java.util.Comparator;
 import java.util.List;
 import java.util.stream.StreamSupport;
 
@@ -26,7 +25,7 @@ public class EmployeeEndpoint extends CrudRepositoryService<EmployeeRecord, Empl
     private EmployeeRepository employeeRepository;
     private SolverConfigurationRepository plannerConfigurationRepository;
     private EmployeeQuery employeeQuery;
-
+    private ApplicationEventPublisher publisher;
 
     @Nonnull
     public List<@Nonnull EmployeeDTO> getAllEmployees() {
@@ -39,31 +38,7 @@ public class EmployeeEndpoint extends CrudRepositoryService<EmployeeRecord, Empl
     @Override
     @Transactional
     public void delete(@Nonnull EmployeeId employeeId) {
-        employeeRepository.findById(employeeId)
-                .ifPresent(employeeRecord -> {
-                    plannerConfigurationRepository.findByEmployeeAssignments_Id_EmployeeId(employeeId)
-                            .forEach(config -> {
-                                var updatedEmployees = config.getEmployeeAssignments().stream()
-                                        .filter(id -> !id.getEmployee().equals(employeeRecord))
-                                        .sorted(Comparator.comparing(EmployeeAssignment::getIndex))
-                                        .toList();
-                                for (int i = 0; i < updatedEmployees.size(); i++) {
-                                    updatedEmployees.get(i).setIndex(i);
-                                }
-                                var updatedConstraints = config.getConstraintRequestRecords().stream()
-                                        .filter(r -> {
-                                            if (r.getRequest() instanceof AbstractEmployeeSpecificConstraint employeeSpecificConstraint) {
-                                                if (employeeSpecificConstraint.getOwner().isPresent()) {
-                                                    return !employeeSpecificConstraint.getOwner().get().getId().equals(employeeRecord.getId());
-                                                }
-                                            }
-                                            return true;
-                                        }).toList();
-                                config.setEmployeeAssignments(updatedEmployees);
-                                config.setConstraintRequestRecords(updatedConstraints);
-                                employeeRepository.delete(employeeRecord);
-                            });
-                });
+        publisher.publishEvent(new DeleteEmployeeCommand(employeeId));
     }
 
     @Nonnull

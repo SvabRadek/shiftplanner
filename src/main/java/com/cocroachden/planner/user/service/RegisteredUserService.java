@@ -1,6 +1,6 @@
 package com.cocroachden.planner.user.service;
 
-import com.cocroachden.planner.user.RegisteredUser;
+import com.cocroachden.planner.user.RegisteredUserRecord;
 import com.cocroachden.planner.user.command.addauthority.AddAuthoritiesCommand;
 import com.cocroachden.planner.user.command.addauthority.AuthorityHasBeenAdded;
 import com.cocroachden.planner.user.command.registeruser.RegisterUserCommand;
@@ -27,7 +27,7 @@ public class RegisteredUserService {
             throw new IllegalArgumentException("User with registeredUserId %s already exists!".formatted(command.getEmail()));
         }
         var savedUser = registeredUserRepository.save(
-                new RegisteredUser(
+                new RegisteredUserRecord(
                         command.getEmail(),
                         command.getHashedPassword(),
                         command.getAuthorities().stream().map(String::toUpperCase).toList()
