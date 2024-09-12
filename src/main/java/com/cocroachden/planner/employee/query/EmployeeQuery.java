@@ -2,7 +2,7 @@ package com.cocroachden.planner.employee.query;
 
 import com.cocroachden.planner.employee.EmployeeId;
 import com.cocroachden.planner.employee.EmployeeDTO;
-import com.cocroachden.planner.employee.repository.EmployeeRecord;
+import com.cocroachden.planner.employee.EmployeeRecord;
 import com.cocroachden.planner.employee.repository.EmployeeRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.data.jpa.domain.Specification;

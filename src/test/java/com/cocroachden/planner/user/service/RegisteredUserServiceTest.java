@@ -2,6 +2,7 @@ package com.cocroachden.planner.user.service;
 
 import com.cocroachden.AbstractIntegrationTest;
 import com.cocroachden.planner.security.Authorities;
+import com.cocroachden.planner.user.RegisteredUserId;
 import com.cocroachden.planner.user.command.addauthority.AddAuthoritiesCommand;
 import com.cocroachden.planner.user.command.addauthority.AuthorityHasBeenAdded;
 import com.cocroachden.planner.user.command.registeruser.RegisterUserCommand;
@@ -30,31 +31,31 @@ class RegisteredUserServiceTest extends AbstractIntegrationTest {
 
     @Test
     public void itCanRegisterNewUserWithDefaultAuthority() {
-        var email = "irrelevant";
+        var userId = RegisteredUserId.from("irrelevant");
         var command = new RegisterUserCommand(
-                email,
+                userId,
                 "irrelevant"
         );
         this.whenCommandHasBeenSent(command);
         this.thenExactlyOneEventHasBeenDispatched(UserHasBeenRegistered.class);
         this.thenExactlyOneEventHasBeenDispatched(AuthorityHasBeenAdded.class);
-        Assertions.assertThat(repository.existsById(email)).isTrue();
-        var user = repository.findById(email).orElseThrow();
+        Assertions.assertThat(repository.existsById(userId)).isTrue();
+        var user = repository.findById(userId).orElseThrow();
         Assertions.assertThat(user.getAuthorities()).hasSize(1);
     }
 
     @Test
     public void itCanRegisterNewUserWithAuthority() {
-        var email = "irrelevant";
+        var userId = RegisteredUserId.from("irrelevant");
         var command = new RegisterUserCommand(
-                email,
+                userId,
                 "irrelevant",
                 Authorities.USER.getRole()
         );
         this.whenCommandHasBeenSent(command);
         this.thenExactlyOneEventHasBeenDispatched(UserHasBeenRegistered.class);
         this.thenNoEventsOfTypeHaveBeenDispatched(AuthorityHasBeenAdded.class);
-        Assertions.assertThat(repository.existsById(email)).isTrue();
+        Assertions.assertThat(repository.existsById(userId)).isTrue();
     }
 
     @Test
@@ -70,41 +71,41 @@ class RegisteredUserServiceTest extends AbstractIntegrationTest {
 
     @Test
     public void itCanDeleteUser() {
-        var email = "irrelevant";
+        var userId = RegisteredUserId.from("irrelevant");
         var command = new RegisterUserCommand(
-                email,
+                userId,
                 "irrelevant"
         );
         this.givenCommandHasBeenSent(command);
-        var testedCommand = new DeleteRegisteredUserCommand(email);
+        var testedCommand = new DeleteRegisteredUserCommand(userId);
         this.whenCommandHasBeenSent(testedCommand);
         this.thenExactlyOneEventHasBeenDispatched(RegisteredUserHasBeenDeleted.class);
-        Assertions.assertThat(this.repository.existsById(email)).isFalse();
+        Assertions.assertThat(this.repository.existsById(userId)).isFalse();
     }
 
     @Test
     public void itIgnoresWhenDeletingNonExistingUser() {
-        var email = "irrelevant";
-        var command = new DeleteRegisteredUserCommand(email);
+        var userId = RegisteredUserId.from("irrelevant");
+        var command = new DeleteRegisteredUserCommand(userId);
         this.whenCommandHasBeenSent(command);
         this.thenNoEventsOfTypeHaveBeenDispatched(RegisteredUserHasBeenDeleted.class);
     }
 
     @Test
     public void itCanAddAuthoritiesToExistingUser() {
-        var email = "irrelevant";
+        var userId = RegisteredUserId.from("irrelevant");
         var command = new RegisterUserCommand(
-                email,
+                userId,
                 "irrelevant"
         );
         this.givenCommandHasBeenSent(command);
         var testedCommand = new AddAuthoritiesCommand(
-                email,
+                userId,
                 Authorities.ADMIN.getRole()
         );
         this.whenCommandHasBeenSent(testedCommand);
         this.thenExactlyOneEventHasBeenDispatched(AuthorityHasBeenAdded.class);
-        var authorities = registeredUserQuery.loadUserByUsername(email).getAuthorities();
+        var authorities = registeredUserQuery.loadUserByUsername(userId.getId()).getAuthorities();
         Assertions.assertThat(authorities).hasSize(2);
     }
 }

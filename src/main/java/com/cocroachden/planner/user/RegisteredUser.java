@@ -13,9 +13,10 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class RegisteredUser {
-    @Id
+    @EmbeddedId
+    @AttributeOverride(name = "id", column = @Column(name = "registered_user_email"))
     @Column(name = "email")
-    private String email;
+    private RegisteredUserId email;
     @Column(name = "password")
     private String hashedPassword;
 

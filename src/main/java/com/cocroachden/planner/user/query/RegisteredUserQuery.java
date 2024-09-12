@@ -1,6 +1,7 @@
 package com.cocroachden.planner.user.query;
 
 import com.cocroachden.planner.user.RegisteredUserDTO;
+import com.cocroachden.planner.user.RegisteredUserId;
 import com.cocroachden.planner.user.repository.RegisteredUserRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
@@ -18,23 +19,23 @@ public class RegisteredUserQuery implements UserDetailsService {
 
     private final RegisteredUserRepository registeredUserRepository;
 
-    public Optional<RegisteredUserDTO> findUser(String email, String hashedPassword) {
-        var user = registeredUserRepository.findById(email);
+    public Optional<RegisteredUserDTO> findUser(RegisteredUserId userId, String hashedPassword) {
+        var user = registeredUserRepository.findById(userId);
         if (user.isPresent() && user.get().getHashedPassword().equals(hashedPassword)) {
             return user.map(RegisteredUserDTO::from);
         }
         return Optional.empty();
     }
 
-    public Boolean userExists(String email) {
-        return registeredUserRepository.existsById(email);
+    public Boolean userExists(RegisteredUserId userId) {
+        return registeredUserRepository.existsById(userId);
     }
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        return registeredUserRepository.findById(username)
+        return registeredUserRepository.findById(new RegisteredUserId(username))
                 .map(user -> new User(
-                        user.getEmail(),
+                        user.getEmail().getId(),
                         user.getHashedPassword(),
                         true,
                         true,

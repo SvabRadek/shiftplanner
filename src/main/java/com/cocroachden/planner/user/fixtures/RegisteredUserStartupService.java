@@ -1,7 +1,7 @@
 package com.cocroachden.planner.user.fixtures;
 
 import com.cocroachden.planner.security.Authorities;
-import com.cocroachden.planner.user.RegisteredUser;
+import com.cocroachden.planner.user.RegisteredUserId;
 import com.cocroachden.planner.user.command.registeruser.RegisterUserCommand;
 import com.cocroachden.planner.user.query.RegisteredUserQuery;
 import lombok.AllArgsConstructor;
@@ -23,9 +23,12 @@ public class RegisteredUserStartupService {
     @EventListener
     public List<RegisterUserCommand> onApplicationEvent(ContextRefreshedEvent event) {
         return Stream.of(
-                        new RegisterUserCommand("user@planning.com", encoder.encode("1234")),
                         new RegisterUserCommand(
-                                "admin@planning.com",
+                                RegisteredUserId.from("user@planning.com"),
+                                encoder.encode("1234")
+                        ),
+                        new RegisterUserCommand(
+                                RegisteredUserId.from("admin@planning.com"),
                                 encoder.encode("1234"),
                                 Authorities.ADMIN.getRole()
                         )

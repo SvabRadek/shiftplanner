@@ -18,6 +18,6 @@ public class RegisteredUserDTO {
     private List<@Nonnull String> authorities;
 
     public static RegisteredUserDTO from(RegisteredUser user) {
-        return new RegisteredUserDTO(user.getEmail(), user.getAuthorities());
+        return new RegisteredUserDTO(user.getEmail().getId(), user.getAuthorities());
     }
 }

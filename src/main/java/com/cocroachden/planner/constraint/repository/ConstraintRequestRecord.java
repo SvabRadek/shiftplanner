@@ -2,17 +2,13 @@ package com.cocroachden.planner.constraint.repository;
 
 import com.cocroachden.planner.constraint.ConstraintId;
 import com.cocroachden.planner.constraint.api.ConstraintType;
-import com.cocroachden.planner.employee.EmployeeId;
-import com.cocroachden.planner.employee.repository.EmployeeRecord;
+import com.cocroachden.planner.employee.EmployeeRecord;
 import com.cocroachden.planner.solver.constraints.ConstraintRequest;
-import com.cocroachden.planner.solver.constraints.specific.AbstractEmployeeSpecificConstraint;
 import com.cocroachden.planner.solver.repository.SolverConfigurationRecord;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-
-import java.util.UUID;
 
 @Entity(name = "ConstraintRequest")
 @Table(name = "constraint_request")

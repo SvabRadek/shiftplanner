@@ -1,8 +1,9 @@
 package com.cocroachden.planner.user.command.deleteuser;
 
 import com.cocroachden.planner.common.messaging.Command;
+import com.cocroachden.planner.user.RegisteredUserId;
 
 public record DeleteRegisteredUserCommand(
-        String email
+        RegisteredUserId registeredUserId
 ) implements Command {
 }

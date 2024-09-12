@@ -24,7 +24,7 @@ public class RegisteredUserService {
     public UserHasBeenRegistered handle(RegisterUserCommand command) {
         log.debug("Handling RegisterUserCommand");
         if (registeredUserRepository.existsById(command.getEmail())) {
-            throw new IllegalArgumentException("User with email %s already exists!".formatted(command.getEmail()));
+            throw new IllegalArgumentException("User with registeredUserId %s already exists!".formatted(command.getEmail()));
         }
         var savedUser = registeredUserRepository.save(
                 new RegisteredUser(
@@ -39,8 +39,8 @@ public class RegisteredUserService {
     @EventListener
     public AuthorityHasBeenAdded handle(AddAuthoritiesCommand command) {
         log.debug("Handling AddAuthorityCommand");
-        var user = registeredUserRepository.findById(command.getEmail())
-                .orElseThrow(() -> new IllegalArgumentException("User with email %s does not exists!".formatted(command.getEmail())));
+        var user = registeredUserRepository.findById(command.getUserId())
+                .orElseThrow(() -> new IllegalArgumentException("User with registeredUserId %s does not exists!".formatted(command.getUserId())));
         var authorities = user.getAuthorities();
         authorities.addAll(command.getAuthorities());
         user.setAuthorities(authorities.stream().map(String::toUpperCase).distinct().toList());
@@ -51,10 +51,10 @@ public class RegisteredUserService {
     @EventListener
     public RegisteredUserHasBeenDeleted handle(DeleteRegisteredUserCommand command) {
         log.debug("Handling DeleteRegisteredUserCommand");
-        if (!registeredUserRepository.existsById(command.email())) {
+        if (!registeredUserRepository.existsById(command.registeredUserId())) {
             return null;
         }
-        registeredUserRepository.deleteById(command.email());
-        return new RegisteredUserHasBeenDeleted(command.email());
+        registeredUserRepository.deleteById(command.registeredUserId());
+        return new RegisteredUserHasBeenDeleted(command.registeredUserId());
     }
 }

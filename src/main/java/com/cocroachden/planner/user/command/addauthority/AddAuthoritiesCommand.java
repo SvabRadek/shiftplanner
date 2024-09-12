@@ -1,6 +1,7 @@
 package com.cocroachden.planner.user.command.addauthority;
 
 import com.cocroachden.planner.common.messaging.Command;
+import com.cocroachden.planner.user.RegisteredUserId;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
@@ -9,14 +10,14 @@ import java.util.List;
 @Getter
 @AllArgsConstructor
 public class AddAuthoritiesCommand implements Command {
-    private final String email;
+    private final RegisteredUserId userId;
     private final List<String> authorities;
 
     public AddAuthoritiesCommand(
-            String email,
+            RegisteredUserId userId,
             String... authorities
     ) {
-        this.email = email;
+        this.userId = userId;
         this.authorities = List.of(authorities);
     }
 }

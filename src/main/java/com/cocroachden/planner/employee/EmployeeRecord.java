@@ -1,10 +1,8 @@
-package com.cocroachden.planner.employee.repository;
+package com.cocroachden.planner.employee;
 
 import com.cocroachden.planner.constraint.repository.ConstraintRequestRecord;
-import com.cocroachden.planner.employee.EmployeeId;
 import dev.hilla.Nonnull;
 import jakarta.persistence.*;
-import jakarta.validation.OverridesAttribute;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;

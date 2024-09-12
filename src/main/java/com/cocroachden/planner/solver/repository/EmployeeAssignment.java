@@ -1,6 +1,6 @@
 package com.cocroachden.planner.solver.repository;
 
-import com.cocroachden.planner.employee.repository.EmployeeRecord;
+import com.cocroachden.planner.employee.EmployeeRecord;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
