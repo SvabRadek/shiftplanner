@@ -10,7 +10,9 @@ import java.util.List;
 
 public interface EmployeeRepository extends CrudRepository<EmployeeRecord, EmployeeId>, JpaSpecificationExecutor<EmployeeRecord> {
 
-  List<EmployeeRecord> findByIdNotIn(Collection<Long> ids);
+  List<EmployeeRecord> findByIdIn(Collection<EmployeeId> ids);
 
-  List<EmployeeRecord> findByIdIn(Collection<Long> ids);
+  Boolean existsByFirstNameAndLastName(String firstName, String lastName);
+
+  List<EmployeeRecord> findAllByIdNotIn(Collection<EmployeeId> ids);
 }
