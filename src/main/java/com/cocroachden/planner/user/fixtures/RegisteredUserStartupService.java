@@ -1,9 +1,9 @@
-package com.cocroachden.planner.user.startup;
+package com.cocroachden.planner.user.fixtures;
 
 import com.cocroachden.planner.security.Authorities;
 import com.cocroachden.planner.user.RegisteredUser;
 import com.cocroachden.planner.user.command.registeruser.RegisterUserCommand;
-import com.cocroachden.planner.user.query.UserQuery;
+import com.cocroachden.planner.user.query.RegisteredUserQuery;
 import lombok.AllArgsConstructor;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.context.event.EventListener;
@@ -17,22 +17,19 @@ import java.util.stream.Stream;
 @AllArgsConstructor
 public class RegisteredUserStartupService {
 
-    private final UserQuery userQuery;
+    private final RegisteredUserQuery registeredUserQuery;
     private final PasswordEncoder encoder;
 
     @EventListener
     public List<RegisterUserCommand> onApplicationEvent(ContextRefreshedEvent event) {
-        return Stream
-                .of(
-                        new RegisteredUser("user@planning.com", encoder.encode("1234"), List.of(Authorities.USER.getRole())),
-                        new RegisteredUser("admin@planning.com", encoder.encode("1234"), List.of(Authorities.USER.getRole(), Authorities.ADMIN.getRole()))
-                ).filter(user -> !userQuery.userExists(user.getEmail()))
-                .map(user ->
+        return Stream.of(
+                        new RegisterUserCommand("user@planning.com", encoder.encode("1234")),
                         new RegisterUserCommand(
-                                user.getEmail(),
-                                user.getHashedPassword(),
-                                user.getAuthorities().toArray(new String[0])
+                                "admin@planning.com",
+                                encoder.encode("1234"),
+                                Authorities.ADMIN.getRole()
                         )
-                ).toList();
+                ).filter(user -> !registeredUserQuery.userExists(user.getEmail()))
+                .toList();
     }
 }

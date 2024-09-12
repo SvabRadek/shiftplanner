@@ -1,45 +1,60 @@
 package com.cocroachden.planner.user.service;
 
-import com.cocroachden.planner.security.Authorities;
 import com.cocroachden.planner.user.RegisteredUser;
-import com.cocroachden.planner.user.command.addauthority.AddAuthorityCommand;
+import com.cocroachden.planner.user.command.addauthority.AddAuthoritiesCommand;
 import com.cocroachden.planner.user.command.addauthority.AuthorityHasBeenAdded;
 import com.cocroachden.planner.user.command.registeruser.RegisterUserCommand;
 import com.cocroachden.planner.user.command.registeruser.UserHasBeenRegistered;
+import com.cocroachden.planner.user.command.removeuser.DeleteRegisteredUserCommand;
+import com.cocroachden.planner.user.command.removeuser.RegisteredUserHasBeenDeleted;
 import com.cocroachden.planner.user.repository.RegisteredUserRepository;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Service;
 
-import java.util.Arrays;
-
 @Service
 @AllArgsConstructor
+@Slf4j
 public class RegisteredUserService {
 
     private final RegisteredUserRepository registeredUserRepository;
 
     @EventListener
     public UserHasBeenRegistered handle(RegisterUserCommand command) {
-        if (registeredUserRepository.existsById(command.email())) {
-            throw new IllegalArgumentException("User with email %s already exists!".formatted(command.email()));
+        log.debug("Handling RegisterUserCommand");
+        if (registeredUserRepository.existsById(command.getEmail())) {
+            throw new IllegalArgumentException("User with email %s already exists!".formatted(command.getEmail()));
         }
-        var savedUser = registeredUserRepository.save(new RegisteredUser(
-                command.email(),
-                command.hashedPassword(),
-                Arrays.asList(command.authorities())
-        ));
+        var savedUser = registeredUserRepository.save(
+                new RegisteredUser(
+                        command.getEmail(),
+                        command.getHashedPassword(),
+                        command.getAuthorities().stream().map(String::toUpperCase).toList()
+                )
+        );
         return new UserHasBeenRegistered(savedUser);
     }
 
     @EventListener
-    public AuthorityHasBeenAdded handle(AddAuthorityCommand command) {
-        var user = registeredUserRepository.findById(command.email())
-                .orElseThrow(() -> new IllegalArgumentException("User with email %s does not exists!".formatted(command.email())));
+    public AuthorityHasBeenAdded handle(AddAuthoritiesCommand command) {
+        log.debug("Handling AddAuthorityCommand");
+        var user = registeredUserRepository.findById(command.getEmail())
+                .orElseThrow(() -> new IllegalArgumentException("User with email %s does not exists!".formatted(command.getEmail())));
         var authorities = user.getAuthorities();
-        authorities.addAll(Arrays.stream(command.authority()).map(Authorities::getRole).toList());
-        user.setAuthorities(authorities.stream().distinct().toList());
+        authorities.addAll(command.getAuthorities());
+        user.setAuthorities(authorities.stream().map(String::toUpperCase).distinct().toList());
         var updatedUser = registeredUserRepository.save(user);
-        return new AuthorityHasBeenAdded(updatedUser.getEmail(), updatedUser.getAuthorities().stream().map(Authorities::fromRole).toList());
+        return new AuthorityHasBeenAdded(updatedUser.getEmail(), command.getAuthorities());
+    }
+
+    @EventListener
+    public RegisteredUserHasBeenDeleted handle(DeleteRegisteredUserCommand command) {
+        log.debug("Handling DeleteRegisteredUserCommand");
+        if (!registeredUserRepository.existsById(command.email())) {
+            return null;
+        }
+        registeredUserRepository.deleteById(command.email());
+        return new RegisteredUserHasBeenDeleted(command.email());
     }
 }

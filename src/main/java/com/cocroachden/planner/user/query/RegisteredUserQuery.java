@@ -14,7 +14,7 @@ import java.util.Optional;
 
 @Service
 @AllArgsConstructor
-public class UserQuery implements UserDetailsService {
+public class RegisteredUserQuery implements UserDetailsService {
 
     private final RegisteredUserRepository registeredUserRepository;
 

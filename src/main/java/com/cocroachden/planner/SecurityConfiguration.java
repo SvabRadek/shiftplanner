@@ -1,6 +1,6 @@
 package com.cocroachden.planner;
 
-import com.cocroachden.planner.user.query.UserQuery;
+import com.cocroachden.planner.user.query.RegisteredUserQuery;
 import com.vaadin.flow.spring.security.VaadinWebSecurity;
 import lombok.AllArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -16,12 +16,12 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 @AllArgsConstructor
 public class SecurityConfiguration extends VaadinWebSecurity {
 
-    private final UserQuery userQuery;
+    private final RegisteredUserQuery registeredUserQuery;
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         super.configure(http);
-        http.userDetailsService(userQuery);
+        http.userDetailsService(registeredUserQuery);
         http.formLogin(Customizer.withDefaults());
     }
 
