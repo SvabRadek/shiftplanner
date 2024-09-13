@@ -1,7 +1,6 @@
 package com.cocroachden.planner.employee.service;
 
-import com.cocroachden.AbstractIntegrationTest;
-import com.cocroachden.planner.employee.EmployeeDTO;
+import com.cocroachden.AbstractMessagingTest;
 import com.cocroachden.planner.employee.EmployeeId;
 import com.cocroachden.planner.employee.command.deleteemployee.DeleteEmployeeCommand;
 import com.cocroachden.planner.employee.command.deleteemployee.EmployeeHasBeenDeleted;
@@ -14,7 +13,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
-class EmployeeServiceTest extends AbstractIntegrationTest {
+class EmployeeServiceTest extends AbstractMessagingTest {
 
     @Autowired
     private EmployeeQuery employeeQuery;

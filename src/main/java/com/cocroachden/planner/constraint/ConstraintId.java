@@ -28,4 +28,9 @@ public class ConstraintId implements Serializable {
         }
         return false;
     }
+
+    @Override
+    public int hashCode() {
+        return id.hashCode();
+    }
 }

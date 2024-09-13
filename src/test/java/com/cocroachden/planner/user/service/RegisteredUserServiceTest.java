@@ -1,6 +1,6 @@
 package com.cocroachden.planner.user.service;
 
-import com.cocroachden.AbstractIntegrationTest;
+import com.cocroachden.AbstractMessagingTest;
 import com.cocroachden.planner.security.Authorities;
 import com.cocroachden.planner.user.RegisteredUserId;
 import com.cocroachden.planner.user.command.addauthority.AddAuthoritiesCommand;
@@ -16,7 +16,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
-class RegisteredUserServiceTest extends AbstractIntegrationTest {
+class RegisteredUserServiceTest extends AbstractMessagingTest {
 
     @Autowired
     private RegisteredUserQuery registeredUserQuery;

@@ -12,7 +12,7 @@ import org.springframework.test.context.event.RecordApplicationEvents;
 import java.util.List;
 
 @RecordApplicationEvents
-public class AbstractIntegrationTest extends AbstractSpringBootContextTest {
+public class AbstractMessagingTest extends AbstractSpringBootContextTest {
 
     @Autowired
     private ApplicationEventPublisher publisher;
@@ -55,5 +55,4 @@ public class AbstractIntegrationTest extends AbstractSpringBootContextTest {
         Assertions.assertThat(events).hasSize(count);
         return events;
     }
-
 }

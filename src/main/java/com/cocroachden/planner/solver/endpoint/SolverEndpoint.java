@@ -6,7 +6,7 @@ import com.cocroachden.planner.solver.api.SolutionStatus;
 import com.cocroachden.planner.solver.api.SolverSolutionDTO;
 import com.cocroachden.planner.solverconfiguration.repository.SolverConfigurationRepository;
 import com.cocroachden.planner.solver.service.SolverService;
-import com.cocroachden.planner.solverconfiguration.SolverConfiguration;
+import com.cocroachden.planner.solver.SolverConfiguration;
 import com.cocroachden.planner.solver.service.schedule.ScheduleEmployee;
 import com.vaadin.flow.server.auth.AnonymousAllowed;
 import dev.hilla.BrowserCallable;

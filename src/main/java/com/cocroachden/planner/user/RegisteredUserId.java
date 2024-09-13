@@ -27,4 +27,9 @@ public class RegisteredUserId implements Serializable {
         }
         return false;
     }
+
+    @Override
+    public int hashCode() {
+        return id.hashCode();
+    }
 }

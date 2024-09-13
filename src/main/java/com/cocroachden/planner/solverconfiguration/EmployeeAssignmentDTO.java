@@ -1,6 +1,6 @@
 package com.cocroachden.planner.solverconfiguration;
 
-import com.cocroachden.planner.employee.EmployeeDTO;
+import com.cocroachden.planner.employee.EmployeeId;
 import dev.hilla.Nonnull;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -10,17 +10,17 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
-public class AssignedEmployeeDTO {
+public class EmployeeAssignmentDTO {
 
-  public static AssignedEmployeeDTO from(EmployeeAssignmentRecord assignment) {
-    return new AssignedEmployeeDTO(
-        EmployeeDTO.from(assignment.getEmployee()),
+  public static EmployeeAssignmentDTO from(EmployeeAssignmentRecord assignment) {
+    return new EmployeeAssignmentDTO(
+        assignment.getEmployee().getId(),
         assignment.getIndex(),
         assignment.getWeight()
     );
   }
 
-  private @Nonnull EmployeeDTO employee;
+  private @Nonnull EmployeeId employee;
   private @Nonnull Integer index;
   private @Nonnull Integer weight;
 

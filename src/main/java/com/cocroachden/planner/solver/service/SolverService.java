@@ -1,7 +1,7 @@
 package com.cocroachden.planner.solver.service;
 
 
-import com.cocroachden.planner.solverconfiguration.SolverConfiguration;
+import com.cocroachden.planner.solver.SolverConfiguration;
 import com.cocroachden.planner.solver.api.SolutionStatus;
 import com.cocroachden.planner.solver.api.SolverSolutionDTO;
 import com.cocroachden.planner.solver.constraints.GenericConstraintApplier;

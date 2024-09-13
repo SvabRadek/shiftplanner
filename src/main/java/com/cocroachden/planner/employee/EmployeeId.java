@@ -18,6 +18,9 @@ public class EmployeeId implements Serializable {
     public static EmployeeId random() {
         return new EmployeeId(UUID.randomUUID().toString());
     }
+    public static EmployeeId from(String id) {
+        return new EmployeeId(id);
+    }
 
     @Override
     public boolean equals(Object o) {
@@ -25,5 +28,10 @@ public class EmployeeId implements Serializable {
             return other.getId().equals(id);
         }
         return false;
+    }
+
+    @Override
+    public int hashCode() {
+        return id.hashCode();
     }
 }

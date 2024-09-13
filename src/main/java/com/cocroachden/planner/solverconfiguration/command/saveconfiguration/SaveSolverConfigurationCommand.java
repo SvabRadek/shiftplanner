@@ -3,7 +3,7 @@ package com.cocroachden.planner.solverconfiguration.command.saveconfiguration;
 import com.cocroachden.planner.common.messaging.Command;
 import com.cocroachden.planner.constraint.api.ConstraintRequestDTO;
 import com.cocroachden.planner.solverconfiguration.SolverConfigurationId;
-import com.cocroachden.planner.solverconfiguration.AssignedEmployeeDTO;
+import com.cocroachden.planner.solverconfiguration.EmployeeAssignmentDTO;
 import com.cocroachden.planner.solverconfiguration.SolverConfigurationDTO;
 
 import java.time.LocalDate;
@@ -14,7 +14,7 @@ public record SaveSolverConfigurationCommand(
         String name,
         LocalDate startDate,
         LocalDate endDate,
-        List<AssignedEmployeeDTO> assignedEmployees,
+        List<EmployeeAssignmentDTO> assignedEmployees,
         List<ConstraintRequestDTO> constraints
 ) implements Command {
 

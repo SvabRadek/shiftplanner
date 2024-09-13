@@ -3,7 +3,7 @@ package com.cocroachden.planner.solver.service.schedule;
 
 import com.cocroachden.planner.employee.EmployeeId;
 import com.cocroachden.planner.solver.constraints.ConstraintRequest;
-import com.cocroachden.planner.solverconfiguration.SolverConfiguration;
+import com.cocroachden.planner.solver.SolverConfiguration;
 import com.google.ortools.sat.CpModel;
 import lombok.Getter;
 import lombok.SneakyThrows;

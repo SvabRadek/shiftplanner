@@ -6,7 +6,7 @@ import com.cocroachden.planner.constraint.api.ShiftsPerScheduleRequestDTO;
 import com.cocroachden.planner.constraint.validations.employee.ConstraintEmployeeValidator;
 import com.cocroachden.planner.employee.EmployeeDTO;
 import com.cocroachden.planner.employee.EmployeeId;
-import com.cocroachden.planner.solverconfiguration.AssignedEmployeeDTO;
+import com.cocroachden.planner.solverconfiguration.EmployeeAssignmentDTO;
 import com.cocroachden.planner.solverconfiguration.SolverConfigurationDTO;
 import com.cocroachden.planner.solver.api.WorkShifts;
 import org.assertj.core.api.Assertions;
@@ -89,13 +89,9 @@ class ConstraintEmployeeValidatorTest {
         .isEqualTo("Pracovník vyžaduje více směn, než je nastavený maximální limit pro počet směn na rozvrh.");
   }
 
-  private AssignedEmployeeDTO createEmployee(String id) {
-    return new AssignedEmployeeDTO(
-        new EmployeeDTO(
-            id,
-            "irrelevant",
-            "irrelevant"
-        ),
+  private EmployeeAssignmentDTO createEmployee(String id) {
+    return new EmployeeAssignmentDTO(
+            EmployeeId.from(id),
         0,
         1
     );

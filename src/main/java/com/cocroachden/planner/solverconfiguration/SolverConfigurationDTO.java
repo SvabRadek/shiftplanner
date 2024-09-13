@@ -27,7 +27,7 @@ public class SolverConfigurationDTO {
         record.getEndDate(),
         record.getEmployeeAssignments().stream()
             .sorted(Comparator.comparing(EmployeeAssignmentRecord::getIndex))
-            .map(AssignedEmployeeDTO::from)
+            .map(EmployeeAssignmentDTO::from)
             .toList(),
         record.getConstraintRequestRecords().stream()
             .map(ConstraintMapper::fromRecord)
@@ -49,7 +49,7 @@ public class SolverConfigurationDTO {
   @Nonnull
   private LocalDate endDate;
   @Nonnull
-  private List<@Nonnull AssignedEmployeeDTO> employees;
+  private List<@Nonnull EmployeeAssignmentDTO> employees;
   @Nonnull
   private List<@Nonnull ConstraintRequestDTO> constraints;
 }

@@ -1,10 +1,9 @@
 package com.cocroachden.planner.solverconfiguration.service;
 
-import com.cocroachden.AbstractIntegrationTest;
-import com.cocroachden.planner.employee.EmployeeDTO;
-import com.cocroachden.planner.employee.EmployeeRecord;
+import com.cocroachden.AbstractMessagingTest;
+import com.cocroachden.planner.employee.EmployeeId;
 import com.cocroachden.planner.employee.repository.EmployeeRepository;
-import com.cocroachden.planner.solverconfiguration.AssignedEmployeeDTO;
+import com.cocroachden.planner.solverconfiguration.EmployeeAssignmentDTO;
 import com.cocroachden.planner.solverconfiguration.SolverConfigurationId;
 import com.cocroachden.planner.solverconfiguration.command.deleteconfiguration.DeleteSolverConfigurationCommand;
 import com.cocroachden.planner.solverconfiguration.command.deleteconfiguration.SolverConfigurationHasBeenDeleted;
@@ -20,7 +19,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import java.time.LocalDate;
 import java.util.List;
 
-class SolverConfigurationServiceTest extends AbstractIntegrationTest {
+class SolverConfigurationServiceTest extends AbstractMessagingTest {
 
     @Autowired
     private EmployeeAssignmentRepository assignmentRepository;
@@ -77,7 +76,7 @@ class SolverConfigurationServiceTest extends AbstractIntegrationTest {
                 "Test Configuration",
                 LocalDate.now(),
                 LocalDate.now().plusDays(1),
-                List.of(new AssignedEmployeeDTO(new EmployeeDTO("non-existent-id", "John", "Doe"), 1, 10)),
+                List.of(new EmployeeAssignmentDTO(EmployeeId.from("non-existent-id"), 1, 10)),
                 List.of()
         );
         this.thenCommandThrowsException(command, IllegalArgumentException.class);

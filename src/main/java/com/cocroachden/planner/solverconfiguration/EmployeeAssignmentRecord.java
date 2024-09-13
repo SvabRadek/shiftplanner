@@ -9,20 +9,20 @@ import lombok.Setter;
 import java.io.Serializable;
 
 @Entity(name = "employee_assignment")
-@Table
 @NoArgsConstructor
 @Getter
 @Setter
 public class EmployeeAssignmentRecord implements Serializable {
 
   @EmbeddedId
-  @AttributeOverride(name = "id", column = @Column(name = "employee_assignment_id"))
   private EmployeeAssignmentId id;
   private Integer index;
   private Integer weight = 1;
   @ManyToOne(fetch = FetchType.LAZY)
+  @MapsId("employeeId")
   private EmployeeRecord employee;
   @ManyToOne(fetch = FetchType.LAZY)
+  @MapsId("configurationId")
   private SolverConfigurationRecord configuration;
 
   public EmployeeAssignmentRecord(
@@ -31,7 +31,7 @@ public class EmployeeAssignmentRecord implements Serializable {
           Integer index,
           Integer weight
   ) {
-    this.id = new EmployeeAssignmentId(configuration.getId().getId() + employee.getId().getId());
+    this.id = new EmployeeAssignmentId(employee.getId(), configuration.getId());
     this.index = index;
     this.weight = weight;
     this.employee = employee;
