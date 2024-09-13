@@ -9,7 +9,7 @@ import com.cocroachden.planner.constraint.repository.ConstraintRequestRecord;
 import com.cocroachden.planner.constraint.repository.ConstraintRequestRepository;
 import com.cocroachden.planner.employee.repository.EmployeeRepository;
 import com.cocroachden.planner.solver.constraints.specific.AbstractEmployeeSpecificConstraint;
-import com.cocroachden.planner.solver.repository.SolverConfigurationRepository;
+import com.cocroachden.planner.solverconfiguration.repository.SolverConfigurationRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Service;

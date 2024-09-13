@@ -4,7 +4,7 @@ import com.cocroachden.planner.constraint.ConstraintId;
 import com.cocroachden.planner.constraint.api.ConstraintType;
 import com.cocroachden.planner.employee.EmployeeRecord;
 import com.cocroachden.planner.solver.constraints.ConstraintRequest;
-import com.cocroachden.planner.solver.repository.SolverConfigurationRecord;
+import com.cocroachden.planner.solverconfiguration.SolverConfigurationRecord;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

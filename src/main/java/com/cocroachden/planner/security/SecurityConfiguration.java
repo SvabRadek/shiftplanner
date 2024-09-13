@@ -1,4 +1,4 @@
-package com.cocroachden.planner;
+package com.cocroachden.planner.security;
 
 import com.cocroachden.planner.user.query.RegisteredUserQuery;
 import com.vaadin.flow.spring.security.VaadinWebSecurity;

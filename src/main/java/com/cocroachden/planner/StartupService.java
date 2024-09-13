@@ -1,18 +1,17 @@
 package com.cocroachden.planner;
 
 import com.cocroachden.planner.employee.repository.EmployeeRepository;
-import com.cocroachden.planner.solver.SolverConfigurationId;
-import com.cocroachden.planner.solver.repository.EmployeeAssignment;
-import com.cocroachden.planner.solver.repository.EmployeeAssignmentRepository;
-import com.cocroachden.planner.solver.repository.SolverConfigurationRecord;
-import com.cocroachden.planner.solver.repository.SolverConfigurationRepository;
+import com.cocroachden.planner.solverconfiguration.SolverConfigurationId;
+import com.cocroachden.planner.solverconfiguration.EmployeeAssignmentRecord;
+import com.cocroachden.planner.solverconfiguration.repository.EmployeeAssignmentRepository;
+import com.cocroachden.planner.solverconfiguration.SolverConfigurationRecord;
+import com.cocroachden.planner.solverconfiguration.repository.SolverConfigurationRepository;
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.context.event.ApplicationStartedEvent;
 import org.springframework.context.event.EventListener;
 
 import java.time.LocalDate;
-import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
 
 @Slf4j
@@ -39,7 +38,7 @@ public class StartupService {
         var assignments = employeeRecords.stream()
                 .map(employeeRepo::save)
                 .map(e -> {
-                    var assignment = new EmployeeAssignment(savedConfiguration, e, index.getAndIncrement(), 1);
+                    var assignment = new EmployeeAssignmentRecord(savedConfiguration, e, index.getAndIncrement(), 1);
                     e.getAssignments().add(assignment);
                     return assignment;
                 }).toList();

@@ -1,12 +1,12 @@
 package com.cocroachden.planner.solver.endpoint;
 
 import com.cocroachden.planner.constraint.repository.ConstraintRequestRecord;
-import com.cocroachden.planner.solver.SolverConfigurationId;
+import com.cocroachden.planner.solverconfiguration.SolverConfigurationId;
 import com.cocroachden.planner.solver.api.SolutionStatus;
 import com.cocroachden.planner.solver.api.SolverSolutionDTO;
-import com.cocroachden.planner.solver.repository.SolverConfigurationRepository;
+import com.cocroachden.planner.solverconfiguration.repository.SolverConfigurationRepository;
 import com.cocroachden.planner.solver.service.SolverService;
-import com.cocroachden.planner.solver.service.SolverConfiguration;
+import com.cocroachden.planner.solverconfiguration.SolverConfiguration;
 import com.cocroachden.planner.solver.service.schedule.ScheduleEmployee;
 import com.vaadin.flow.server.auth.AnonymousAllowed;
 import dev.hilla.BrowserCallable;
@@ -16,8 +16,6 @@ import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import reactor.core.publisher.Flux;
-
-import java.util.UUID;
 
 @BrowserCallable
 @AnonymousAllowed

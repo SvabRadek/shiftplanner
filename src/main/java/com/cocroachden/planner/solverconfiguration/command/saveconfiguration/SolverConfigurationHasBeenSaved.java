@@ -1,7 +1,7 @@
-package com.cocroachden.planner.solver.command.saveconfiguration;
+package com.cocroachden.planner.solverconfiguration.command.saveconfiguration;
 
 import com.cocroachden.planner.common.messaging.Event;
-import com.cocroachden.planner.solver.repository.SolverConfigurationRecord;
+import com.cocroachden.planner.solverconfiguration.SolverConfigurationRecord;
 
 public record SolverConfigurationHasBeenSaved(
         SolverConfigurationRecord record

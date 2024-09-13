@@ -3,7 +3,7 @@ package com.cocroachden.planner.constraint.validations.day;
 import com.cocroachden.planner.constraint.api.EmployeeShiftRequestDTO;
 import com.cocroachden.planner.constraint.api.EmployeesPerShiftRequestDTO;
 import com.cocroachden.planner.constraint.validations.IssueSeverity;
-import com.cocroachden.planner.solver.api.SolverConfigurationDTO;
+import com.cocroachden.planner.solverconfiguration.SolverConfigurationDTO;
 import com.cocroachden.planner.solver.api.WorkShifts;
 
 import java.time.LocalDate;

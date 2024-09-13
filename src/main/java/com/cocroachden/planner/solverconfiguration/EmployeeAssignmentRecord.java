@@ -1,4 +1,4 @@
-package com.cocroachden.planner.solver.repository;
+package com.cocroachden.planner.solverconfiguration;
 
 import com.cocroachden.planner.employee.EmployeeRecord;
 import jakarta.persistence.*;
@@ -13,7 +13,7 @@ import java.io.Serializable;
 @NoArgsConstructor
 @Getter
 @Setter
-public class EmployeeAssignment implements Serializable {
+public class EmployeeAssignmentRecord implements Serializable {
 
   @EmbeddedId
   @AttributeOverride(name = "id", column = @Column(name = "employee_assignment_id"))
@@ -25,7 +25,7 @@ public class EmployeeAssignment implements Serializable {
   @ManyToOne(fetch = FetchType.LAZY)
   private SolverConfigurationRecord configuration;
 
-  public EmployeeAssignment(
+  public EmployeeAssignmentRecord(
           SolverConfigurationRecord configuration,
           EmployeeRecord employee,
           Integer index,
@@ -45,7 +45,7 @@ public class EmployeeAssignment implements Serializable {
 
   @Override
   public boolean equals(Object obj) {
-    if (obj instanceof EmployeeAssignment other) {
+    if (obj instanceof EmployeeAssignmentRecord other) {
       return this.id.equals(other.id);
     }
     return false;

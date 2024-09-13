@@ -1,13 +1,13 @@
-package com.cocroachden.planner.solver.endpoint;
+package com.cocroachden.planner.solverconfiguration.endpoint;
 
-import com.cocroachden.planner.solver.SolverConfigurationId;
-import com.cocroachden.planner.solver.api.AssignedEmployeeDTO;
-import com.cocroachden.planner.solver.api.SolverConfigurationDTO;
-import com.cocroachden.planner.solver.command.deleteconfiguration.DeleteSolverConfigurationCommand;
-import com.cocroachden.planner.solver.command.saveconfiguration.SaveSolverConfigurationCommand;
-import com.cocroachden.planner.solver.query.SolverConfigurationQuery;
-import com.cocroachden.planner.solver.repository.SolverConfigurationMetadata;
-import com.cocroachden.planner.solver.repository.SolverConfigurationRepository;
+import com.cocroachden.planner.solverconfiguration.SolverConfigurationId;
+import com.cocroachden.planner.solverconfiguration.AssignedEmployeeDTO;
+import com.cocroachden.planner.solverconfiguration.SolverConfigurationDTO;
+import com.cocroachden.planner.solverconfiguration.command.deleteconfiguration.DeleteSolverConfigurationCommand;
+import com.cocroachden.planner.solverconfiguration.command.saveconfiguration.SaveSolverConfigurationCommand;
+import com.cocroachden.planner.solverconfiguration.query.SolverConfigurationQuery;
+import com.cocroachden.planner.solverconfiguration.SolverConfigurationMetadata;
+import com.cocroachden.planner.solverconfiguration.repository.SolverConfigurationRepository;
 import com.vaadin.flow.server.auth.AnonymousAllowed;
 import dev.hilla.BrowserCallable;
 import dev.hilla.Nonnull;
@@ -33,7 +33,7 @@ public class SolverConfigurationEndpoint {
     public @Nonnull String save(@Nonnull SolverConfigurationDTO configDTO) {
         String randomId = UUID.randomUUID().toString();
         configDTO.setId(randomId);
-        publisher.publishEvent(new SaveSolverConfigurationCommand(configDTO));
+        publisher.publishEvent(SaveSolverConfigurationCommand.from(configDTO));
         return randomId;
     }
 

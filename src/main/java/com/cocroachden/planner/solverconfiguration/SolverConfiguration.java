@@ -1,4 +1,4 @@
-package com.cocroachden.planner.solver.service;
+package com.cocroachden.planner.solverconfiguration;
 
 
 import com.cocroachden.planner.solver.constraints.ConstraintRequest;

@@ -1,9 +1,9 @@
-package com.cocroachden.planner.solver.query;
+package com.cocroachden.planner.solverconfiguration.query;
 
-import com.cocroachden.planner.solver.SolverConfigurationId;
-import com.cocroachden.planner.solver.api.SolverConfigurationDTO;
-import com.cocroachden.planner.solver.repository.SolverConfigurationMetadata;
-import com.cocroachden.planner.solver.repository.SolverConfigurationRepository;
+import com.cocroachden.planner.solverconfiguration.SolverConfigurationId;
+import com.cocroachden.planner.solverconfiguration.SolverConfigurationDTO;
+import com.cocroachden.planner.solverconfiguration.SolverConfigurationMetadata;
+import com.cocroachden.planner.solverconfiguration.repository.SolverConfigurationRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 

@@ -1,7 +1,7 @@
 package com.cocroachden.planner.employee;
 
 import com.cocroachden.planner.constraint.repository.ConstraintRequestRecord;
-import com.cocroachden.planner.solver.repository.EmployeeAssignment;
+import com.cocroachden.planner.solverconfiguration.EmployeeAssignmentRecord;
 import dev.hilla.Nonnull;
 import jakarta.persistence.*;
 import lombok.*;
@@ -23,7 +23,7 @@ public final class EmployeeRecord {
     @OneToMany(mappedBy = "owner", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ConstraintRequestRecord> requests = new ArrayList<>();
     @OneToMany(mappedBy = "employee", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<EmployeeAssignment> assignments = new ArrayList<>();
+    private List<EmployeeAssignmentRecord> assignments = new ArrayList<>();
 
     public EmployeeRecord(@Nonnull EmployeeId id, @Nonnull String firstName, @Nonnull String lastName) {
         this.id = id;

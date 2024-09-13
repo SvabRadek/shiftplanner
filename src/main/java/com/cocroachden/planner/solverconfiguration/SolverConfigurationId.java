@@ -1,4 +1,4 @@
-package com.cocroachden.planner.solver;
+package com.cocroachden.planner.solverconfiguration;
 
 import jakarta.persistence.Embeddable;
 import lombok.AccessLevel;
