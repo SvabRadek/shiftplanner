@@ -11,11 +11,13 @@ import com.cocroachden.planner.solverconfiguration.repository.EmployeeAssignment
 import com.cocroachden.planner.solverconfiguration.SolverConfigurationRecord;
 import com.cocroachden.planner.solverconfiguration.repository.SolverConfigurationRepository;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Service;
 
 @Service
 @AllArgsConstructor
+@Slf4j
 public class SolverConfigurationService {
     private final EmployeeAssignmentRepository assignmentRepository;
     private final SolverConfigurationRepository configurationRepository;
@@ -23,6 +25,7 @@ public class SolverConfigurationService {
 
     @EventListener
     public SolverConfigurationHasBeenSaved handle(SaveSolverConfigurationCommand command) {
+        log.debug("Handling SaveSolverConfigurationCommand");
         var id = command.id();
         if (configurationRepository.existsById(id)) {
             throw new IllegalArgumentException("Solver configuration with id [" + id + "] already exists!");
@@ -58,6 +61,10 @@ public class SolverConfigurationService {
 
     @EventListener
     public SolverConfigurationHasBeenDeleted handle(DeleteSolverConfigurationCommand command) {
+        log.debug("Handling DeleteSolverConfigurationCommand");
+        if (!configurationRepository.existsById(command.configurationId())) {
+            return null;
+        }
         configurationRepository.deleteById(command.configurationId());
         return new SolverConfigurationHasBeenDeleted(command.configurationId());
     }

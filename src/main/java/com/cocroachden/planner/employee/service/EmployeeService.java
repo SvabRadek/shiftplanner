@@ -8,11 +8,13 @@ import com.cocroachden.planner.employee.query.EmployeeQuery;
 import com.cocroachden.planner.employee.EmployeeRecord;
 import com.cocroachden.planner.employee.repository.EmployeeRepository;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Service;
 
 @Service
 @AllArgsConstructor
+@Slf4j
 public class EmployeeService {
 
     private final EmployeeQuery employeeQuery;
@@ -20,6 +22,7 @@ public class EmployeeService {
 
     @EventListener
     public EmployeeHasBeenSaved handle(SaveEmployeeCommand command) {
+        log.debug("Handling SaveEmployeeCommand");
         if (employeeQuery.existsByName(command.firstName(), command.lastName())) {
             throw new IllegalArgumentException("Employee with this name [%s %s] already exists!".formatted(command.firstName(), command.lastName()));
         }
@@ -34,6 +37,7 @@ public class EmployeeService {
 
     @EventListener
     public EmployeeHasBeenDeleted handle(DeleteEmployeeCommand command) {
+        log.debug("Handling DeleteEmployeeCommand");
         if (!employeeRepository.existsById(command.employeeId())) {
             return null;
         }
