@@ -1,9 +1,7 @@
 package com.cocroachden.planner.solverconfiguration.service;
 
 import com.cocroachden.AbstractMessagingTest;
-import com.cocroachden.planner.employee.EmployeeDTO;
 import com.cocroachden.planner.employee.EmployeeId;
-import com.cocroachden.planner.employee.EmployeeRecord;
 import com.cocroachden.planner.employee.repository.EmployeeRepository;
 import com.cocroachden.planner.solverconfiguration.EmployeeAssignmentDTO;
 import com.cocroachden.planner.solverconfiguration.SolverConfigurationId;

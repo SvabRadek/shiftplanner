@@ -2,7 +2,7 @@ package com.cocroachden.planner.employee.endpoint;
 
 import com.cocroachden.planner.employee.EmployeeDTO;
 import com.cocroachden.planner.employee.EmployeeId;
-import com.cocroachden.planner.employee.EmployeeRecord;
+import com.cocroachden.planner.employee.repository.EmployeeRecord;
 import com.cocroachden.planner.employee.command.deleteemployee.DeleteEmployeeCommand;
 import com.cocroachden.planner.employee.query.EmployeeQuery;
 import com.cocroachden.planner.employee.repository.EmployeeRepository;

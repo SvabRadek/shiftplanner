@@ -1,6 +1,7 @@
-package com.cocroachden.planner.solverconfiguration;
+package com.cocroachden.planner.solverconfiguration.repository;
 
 import com.cocroachden.planner.constraint.repository.ConstraintRequestRecord;
+import com.cocroachden.planner.solverconfiguration.SolverConfigurationId;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;

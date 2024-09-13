@@ -1,7 +1,8 @@
-package com.cocroachden.planner.employee;
+package com.cocroachden.planner.employee.repository;
 
 import com.cocroachden.planner.constraint.repository.ConstraintRequestRecord;
-import com.cocroachden.planner.solverconfiguration.EmployeeAssignmentRecord;
+import com.cocroachden.planner.employee.EmployeeId;
+import com.cocroachden.planner.solverconfiguration.repository.EmployeeAssignmentRecord;
 import dev.hilla.Nonnull;
 import jakarta.persistence.*;
 import lombok.*;

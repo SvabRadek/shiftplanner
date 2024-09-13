@@ -1,6 +1,7 @@
-package com.cocroachden.planner.user;
+package com.cocroachden.planner.user.repository;
 
 
+import com.cocroachden.planner.user.RegisteredUserId;
 import jakarta.persistence.*;
 import lombok.*;
 

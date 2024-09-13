@@ -1,4 +1,4 @@
-package com.cocroachden.planner.constraint;
+package com.cocroachden.planner.constraint.service;
 
 import com.cocroachden.planner.constraint.api.*;
 import com.cocroachden.planner.constraint.repository.ConstraintRequestRecord;

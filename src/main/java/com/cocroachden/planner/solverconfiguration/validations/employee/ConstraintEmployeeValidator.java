@@ -1,10 +1,10 @@
-package com.cocroachden.planner.constraint.validations.employee;
+package com.cocroachden.planner.solverconfiguration.validations.employee;
 
 import com.cocroachden.planner.constraint.api.ConsecutiveWorkingDaysRequestDTO;
 import com.cocroachden.planner.constraint.api.ConstraintRequestDTO;
 import com.cocroachden.planner.constraint.api.EmployeeShiftRequestDTO;
 import com.cocroachden.planner.constraint.api.ShiftsPerScheduleRequestDTO;
-import com.cocroachden.planner.constraint.validations.IssueSeverity;
+import com.cocroachden.planner.solverconfiguration.validations.IssueSeverity;
 import com.cocroachden.planner.solverconfiguration.SolverConfigurationDTO;
 import com.cocroachden.planner.solver.api.WorkShifts;
 

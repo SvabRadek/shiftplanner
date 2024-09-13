@@ -9,11 +9,11 @@ import com.cocroachden.planner.solverconfiguration.command.deleteconfiguration.D
 import com.cocroachden.planner.solverconfiguration.command.deleteconfiguration.SolverConfigurationHasBeenDeleted;
 import com.cocroachden.planner.solverconfiguration.command.saveconfiguration.SaveSolverConfigurationCommand;
 import com.cocroachden.planner.solverconfiguration.command.saveconfiguration.SolverConfigurationHasBeenSaved;
-import com.cocroachden.planner.solverconfiguration.EmployeeAssignmentRecord;
+import com.cocroachden.planner.solverconfiguration.repository.EmployeeAssignmentRecord;
 import com.cocroachden.planner.solverconfiguration.command.updateconfiguration.SolverConfigurationHasBeenUpdated;
 import com.cocroachden.planner.solverconfiguration.command.updateconfiguration.UpdateSolverConfigurationCommand;
 import com.cocroachden.planner.solverconfiguration.repository.EmployeeAssignmentRepository;
-import com.cocroachden.planner.solverconfiguration.SolverConfigurationRecord;
+import com.cocroachden.planner.solverconfiguration.repository.SolverConfigurationRecord;
 import com.cocroachden.planner.solverconfiguration.repository.SolverConfigurationRepository;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

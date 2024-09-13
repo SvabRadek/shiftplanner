@@ -2,7 +2,7 @@ package com.cocroachden.planner.solver.service.schedule;
 
 
 import com.cocroachden.planner.employee.EmployeeId;
-import com.cocroachden.planner.solverconfiguration.EmployeeAssignmentRecord;
+import com.cocroachden.planner.solverconfiguration.repository.EmployeeAssignmentRecord;
 
 public record ScheduleEmployee(
     EmployeeId employeeId,

@@ -1,8 +1,8 @@
-package com.cocroachden.planner.constraint.validations.day;
+package com.cocroachden.planner.solverconfiguration.validations.day;
 
 import com.cocroachden.planner.constraint.api.EmployeeShiftRequestDTO;
 import com.cocroachden.planner.constraint.api.EmployeesPerShiftRequestDTO;
-import com.cocroachden.planner.constraint.validations.IssueSeverity;
+import com.cocroachden.planner.solverconfiguration.validations.IssueSeverity;
 import com.cocroachden.planner.solverconfiguration.SolverConfigurationDTO;
 import com.cocroachden.planner.solver.api.WorkShifts;
 
@@ -12,8 +12,8 @@ import java.util.Collection;
 import java.util.List;
 
 public class ConstraintDayValidator {
-  public static List<DayValidationIssue> validate(SolverConfigurationDTO configurationRecord) {
-    var issues = new ArrayList<DayValidationIssue>();
+  public static List<DayValidationIssueDTO> validate(SolverConfigurationDTO configurationRecord) {
+    var issues = new ArrayList<DayValidationIssueDTO>();
     configurationRecord.getConstraints().stream()
         .filter(c -> c instanceof EmployeesPerShiftRequestDTO)
         .map(c -> (EmployeesPerShiftRequestDTO) c)
@@ -22,7 +22,7 @@ public class ConstraintDayValidator {
     return issues;
   }
 
-  private static List<DayValidationIssue> validateEmployeesPerShiftLimit(
+  private static List<DayValidationIssueDTO> validateEmployeesPerShiftLimit(
       EmployeesPerShiftRequestDTO perShiftRequestDTO,
       SolverConfigurationDTO configurationRecord
   ) {
@@ -41,13 +41,13 @@ public class ConstraintDayValidator {
         .toList();
   }
 
-  private static List<DayValidationIssue> evaluateGivenDay(
+  private static List<DayValidationIssueDTO> evaluateGivenDay(
       SolverConfigurationDTO configurationDTO,
       EmployeesPerShiftRequestDTO employeesPerShiftRequestDTO,
       LocalDate day,
       List<EmployeeShiftRequestDTO> requests
   ) {
-    var issues = new ArrayList<DayValidationIssue>();
+    var issues = new ArrayList<DayValidationIssueDTO>();
     var peopleInSchedule = configurationDTO.getEmployees().size();
     var peopleRequestingTimeOffForGivenDay = requests.stream()
         .filter(r -> r.getRequestedShift().equals(WorkShifts.OFF))
@@ -59,14 +59,14 @@ public class ConstraintDayValidator {
         .toList()
         .size();
     if (peopleRequestingGivenShiftThatDay > employeesPerShiftRequestDTO.getHardMax()) {
-      issues.add(new DayValidationIssue(
+      issues.add(new DayValidationIssueDTO(
           day,
           IssueSeverity.ERROR,
           "O směnu žádá víc lidí, než je povolený maximální limit."
       ));
     }
     if (optimisticCountOfAssignablePeople < employeesPerShiftRequestDTO.getHardMin()) {
-      issues.add(new DayValidationIssue(
+      issues.add(new DayValidationIssueDTO(
           day,
           IssueSeverity.WARNING,
           "Zdá se, že lidí, kterým se dá přiřadit pracovní směna, je méně než povolené minimum."

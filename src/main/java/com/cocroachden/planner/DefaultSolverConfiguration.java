@@ -4,7 +4,7 @@ package com.cocroachden.planner;
 import com.cocroachden.planner.constraint.ConstraintId;
 import com.cocroachden.planner.constraint.repository.ConstraintRequestRecord;
 import com.cocroachden.planner.employee.EmployeeId;
-import com.cocroachden.planner.employee.EmployeeRecord;
+import com.cocroachden.planner.employee.repository.EmployeeRecord;
 import com.cocroachden.planner.solver.constraints.ConstraintRequest;
 import com.cocroachden.planner.solver.constraints.specific.consecutiveworkingdays.request.ConsecutiveWorkingDaysRequest;
 import com.cocroachden.planner.solver.constraints.specific.shiftfollowuprestriction.request.ShiftFollowUpRestrictionRequest;

@@ -4,7 +4,7 @@ import com.cocroachden.planner.constraint.ConstraintId;
 import com.cocroachden.planner.constraint.api.*;
 import com.cocroachden.planner.constraint.repository.ConstraintRequestRecord;
 import com.cocroachden.planner.constraint.repository.ConstraintRequestRepository;
-import com.cocroachden.planner.constraint.ConstraintMapper;
+import com.cocroachden.planner.constraint.service.ConstraintMapper;
 import com.vaadin.flow.server.auth.AnonymousAllowed;
 import dev.hilla.BrowserCallable;
 import dev.hilla.Nonnull;
@@ -12,7 +12,6 @@ import lombok.AllArgsConstructor;
 
 import java.util.List;
 import java.util.Objects;
-import java.util.UUID;
 import java.util.stream.StreamSupport;
 
 @BrowserCallable

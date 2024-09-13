@@ -1,6 +1,6 @@
 package com.cocroachden.planner.user.service;
 
-import com.cocroachden.planner.user.RegisteredUserRecord;
+import com.cocroachden.planner.user.repository.RegisteredUserRecord;
 import com.cocroachden.planner.user.command.addauthority.AddAuthoritiesCommand;
 import com.cocroachden.planner.user.command.addauthority.AuthorityHasBeenAdded;
 import com.cocroachden.planner.user.command.registeruser.RegisterUserCommand;

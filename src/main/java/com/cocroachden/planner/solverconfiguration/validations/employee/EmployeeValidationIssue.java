@@ -1,6 +1,6 @@
-package com.cocroachden.planner.constraint.validations.employee;
+package com.cocroachden.planner.solverconfiguration.validations.employee;
 
-import com.cocroachden.planner.constraint.validations.IssueSeverity;
+import com.cocroachden.planner.solverconfiguration.validations.IssueSeverity;
 import dev.hilla.Nonnull;
 
 import java.io.Serializable;

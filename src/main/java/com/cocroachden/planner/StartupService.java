@@ -2,9 +2,9 @@ package com.cocroachden.planner;
 
 import com.cocroachden.planner.employee.repository.EmployeeRepository;
 import com.cocroachden.planner.solverconfiguration.SolverConfigurationId;
-import com.cocroachden.planner.solverconfiguration.EmployeeAssignmentRecord;
+import com.cocroachden.planner.solverconfiguration.repository.EmployeeAssignmentRecord;
 import com.cocroachden.planner.solverconfiguration.repository.EmployeeAssignmentRepository;
-import com.cocroachden.planner.solverconfiguration.SolverConfigurationRecord;
+import com.cocroachden.planner.solverconfiguration.repository.SolverConfigurationRecord;
 import com.cocroachden.planner.solverconfiguration.repository.SolverConfigurationRepository;
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;

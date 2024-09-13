@@ -1,5 +1,6 @@
 package com.cocroachden.planner.employee;
 
+import com.cocroachden.planner.employee.repository.EmployeeRecord;
 import dev.hilla.Nonnull;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;

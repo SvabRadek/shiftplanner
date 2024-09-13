@@ -1,6 +1,5 @@
 package com.cocroachden.planner.constraint.service;
 
-import com.cocroachden.planner.constraint.ConstraintMapper;
 import com.cocroachden.planner.constraint.command.deleteconstraint.ConstraintHasBeenDeleted;
 import com.cocroachden.planner.constraint.command.deleteconstraint.DeleteConstraintCommand;
 import com.cocroachden.planner.constraint.command.saveconstraint.ConstraintHasBeenSaved;

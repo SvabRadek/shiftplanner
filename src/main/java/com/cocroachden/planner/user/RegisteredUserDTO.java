@@ -1,5 +1,6 @@
 package com.cocroachden.planner.user;
 
+import com.cocroachden.planner.user.repository.RegisteredUserRecord;
 import dev.hilla.Nonnull;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;

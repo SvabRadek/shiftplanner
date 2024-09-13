@@ -1,12 +1,12 @@
-package com.cocroachden.planner.constraint.validations.day;
+package com.cocroachden.planner.solverconfiguration.validations.day;
 
-import com.cocroachden.planner.constraint.validations.IssueSeverity;
+import com.cocroachden.planner.solverconfiguration.validations.IssueSeverity;
 import dev.hilla.Nonnull;
 
 import java.io.Serializable;
 import java.time.LocalDate;
 
-public record DayValidationIssue(
+public record DayValidationIssueDTO(
     @Nonnull LocalDate localDate,
     @Nonnull IssueSeverity severity,
     @Nonnull String issue

@@ -5,7 +5,7 @@ import com.cocroachden.planner.employee.command.deleteemployee.EmployeeHasBeenDe
 import com.cocroachden.planner.employee.command.saveemployee.EmployeeHasBeenSaved;
 import com.cocroachden.planner.employee.command.saveemployee.SaveEmployeeCommand;
 import com.cocroachden.planner.employee.query.EmployeeQuery;
-import com.cocroachden.planner.employee.EmployeeRecord;
+import com.cocroachden.planner.employee.repository.EmployeeRecord;
 import com.cocroachden.planner.employee.repository.EmployeeRepository;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

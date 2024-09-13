@@ -2,9 +2,9 @@ package com.cocroachden.planner.constraint.repository;
 
 import com.cocroachden.planner.constraint.ConstraintId;
 import com.cocroachden.planner.constraint.api.ConstraintType;
-import com.cocroachden.planner.employee.EmployeeRecord;
+import com.cocroachden.planner.employee.repository.EmployeeRecord;
 import com.cocroachden.planner.solver.constraints.ConstraintRequest;
-import com.cocroachden.planner.solverconfiguration.SolverConfigurationRecord;
+import com.cocroachden.planner.solverconfiguration.repository.SolverConfigurationRecord;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
