@@ -1,6 +1,7 @@
-package com.cocroachden.planner.constraint.api;
+package com.cocroachden.planner.constraint;
 
-import com.cocroachden.planner.solver.constraints.specific.consecutiveworkingdays.request.ConsecutiveWorkingDaysRequest;
+
+import com.cocroachden.planner.solver.constraints.specific.employeespershift.request.EmployeesPerShiftRequest;
 import com.cocroachden.planner.solver.api.WorkShifts;
 import dev.hilla.Nonnull;
 import lombok.AccessLevel;
@@ -8,17 +9,15 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import java.util.UUID;
-
-@AllArgsConstructor
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
-public class ConsecutiveWorkingDaysRequestDTO implements ConstraintRequestDTO {
-  public static ConsecutiveWorkingDaysRequestDTO from(String id, ConsecutiveWorkingDaysRequest request) {
-    return new ConsecutiveWorkingDaysRequestDTO(
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor
+public class EmployeesPerShiftRequestDTO implements ConstraintRequestDTO {
+  public static EmployeesPerShiftRequestDTO from(String id, EmployeesPerShiftRequest request) {
+    return new EmployeesPerShiftRequestDTO(
         id,
-        ConsecutiveWorkingDaysRequest.CONSTRAINT_TYPE,
-        request.getTargetShift(),
+        request.getType(),
+        request.getShift(),
         request.getHardMin(),
         request.getSoftMin(),
         request.getMinPenalty(),

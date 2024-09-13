@@ -1,4 +1,4 @@
-package com.cocroachden.planner.constraint.api;
+package com.cocroachden.planner.constraint;
 
 import com.cocroachden.planner.employee.EmployeeId;
 import com.cocroachden.planner.solver.api.WorkShifts;

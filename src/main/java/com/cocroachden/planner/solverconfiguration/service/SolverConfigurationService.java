@@ -1,6 +1,6 @@
 package com.cocroachden.planner.solverconfiguration.service;
 
-import com.cocroachden.planner.constraint.api.ConstraintRequestDTO;
+import com.cocroachden.planner.constraint.ConstraintRequestDTO;
 import com.cocroachden.planner.employee.EmployeeId;
 import com.cocroachden.planner.employee.repository.EmployeeRepository;
 import com.cocroachden.planner.solverconfiguration.EmployeeAssignmentDTO;

@@ -1,4 +1,4 @@
-package com.cocroachden.planner.constraint.api;
+package com.cocroachden.planner.constraint;
 
 import com.fasterxml.jackson.core.JacksonException;
 import com.fasterxml.jackson.core.JsonParser;

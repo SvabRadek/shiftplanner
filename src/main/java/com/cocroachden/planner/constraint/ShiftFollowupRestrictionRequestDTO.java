@@ -1,4 +1,4 @@
-package com.cocroachden.planner.constraint.api;
+package com.cocroachden.planner.constraint;
 
 import com.cocroachden.planner.solver.constraints.specific.shiftfollowuprestriction.request.ShiftFollowUpRestrictionRequest;
 import com.cocroachden.planner.solver.api.WorkShifts;
@@ -7,8 +7,6 @@ import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-
-import java.util.UUID;
 
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)

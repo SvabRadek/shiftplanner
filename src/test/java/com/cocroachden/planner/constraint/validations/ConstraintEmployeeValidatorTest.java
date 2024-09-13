@@ -1,8 +1,8 @@
 package com.cocroachden.planner.constraint.validations;
 
-import com.cocroachden.planner.constraint.api.ConstraintType;
-import com.cocroachden.planner.constraint.api.EmployeeShiftRequestDTO;
-import com.cocroachden.planner.constraint.api.ShiftsPerScheduleRequestDTO;
+import com.cocroachden.planner.constraint.ConstraintType;
+import com.cocroachden.planner.constraint.EmployeeShiftRequestDTO;
+import com.cocroachden.planner.constraint.ShiftsPerScheduleRequestDTO;
 import com.cocroachden.planner.solverconfiguration.validations.employee.ConstraintEmployeeValidator;
 import com.cocroachden.planner.employee.EmployeeId;
 import com.cocroachden.planner.solverconfiguration.EmployeeAssignmentDTO;

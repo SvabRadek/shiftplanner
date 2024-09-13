@@ -1,9 +1,7 @@
-package com.cocroachden.planner.constraint.api;
+package com.cocroachden.planner.constraint;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import dev.hilla.Nonnull;
-
-import java.util.UUID;
 
 @JsonDeserialize(using = ConstraintRequestDTODeserializer.class)
 public interface ConstraintRequestDTO {

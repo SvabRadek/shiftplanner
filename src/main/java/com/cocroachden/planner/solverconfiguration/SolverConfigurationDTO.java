@@ -1,7 +1,7 @@
 package com.cocroachden.planner.solverconfiguration;
 
 import com.cocroachden.planner.constraint.service.ConstraintMapper;
-import com.cocroachden.planner.constraint.api.ConstraintRequestDTO;
+import com.cocroachden.planner.constraint.ConstraintRequestDTO;
 import com.cocroachden.planner.solverconfiguration.repository.EmployeeAssignmentRecord;
 import com.cocroachden.planner.solverconfiguration.repository.SolverConfigurationRecord;
 import dev.hilla.Nonnull;

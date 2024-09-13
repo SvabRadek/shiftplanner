@@ -1,6 +1,6 @@
 package com.cocroachden.planner.constraint.repository;
 
-import com.cocroachden.planner.constraint.api.ConstraintType;
+import com.cocroachden.planner.constraint.ConstraintType;
 import jakarta.persistence.AttributeConverter;
 import jakarta.persistence.Converter;
 

@@ -1,6 +1,6 @@
 package com.cocroachden.planner.solver.constraints;
 
-import com.cocroachden.planner.constraint.api.*;
+import com.cocroachden.planner.constraint.ConstraintType;
 import com.cocroachden.planner.solver.constraints.specific.AbstractEmployeeSpecificConstraint;
 import com.cocroachden.planner.solver.constraints.specific.AbstractMinMaxRequest;
 import com.cocroachden.planner.solver.constraints.specific.consecutiveworkingdays.request.ConsecutiveWorkingDaysRequest;

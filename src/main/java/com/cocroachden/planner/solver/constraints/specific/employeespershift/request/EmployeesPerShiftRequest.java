@@ -1,8 +1,8 @@
 package com.cocroachden.planner.solver.constraints.specific.employeespershift.request;
 
 
-import com.cocroachden.planner.constraint.api.EmployeesPerShiftRequestDTO;
-import com.cocroachden.planner.constraint.api.ConstraintType;
+import com.cocroachden.planner.constraint.EmployeesPerShiftRequestDTO;
+import com.cocroachden.planner.constraint.ConstraintType;
 import com.cocroachden.planner.solver.constraints.specific.AbstractMinMaxRequest;
 import com.cocroachden.planner.solver.api.WorkShifts;
 import com.fasterxml.jackson.annotation.JsonTypeName;

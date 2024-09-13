@@ -1,8 +1,8 @@
 package com.cocroachden.planner.solver.constraints.specific.consecutiveworkingdays.request;
 
 
-import com.cocroachden.planner.constraint.api.ConsecutiveWorkingDaysRequestDTO;
-import com.cocroachden.planner.constraint.api.ConstraintType;
+import com.cocroachden.planner.constraint.ConsecutiveWorkingDaysRequestDTO;
+import com.cocroachden.planner.constraint.ConstraintType;
 import com.cocroachden.planner.employee.EmployeeId;
 import com.cocroachden.planner.solver.constraints.specific.AbstractMinMaxRequest;
 import com.cocroachden.planner.solver.api.WorkShifts;

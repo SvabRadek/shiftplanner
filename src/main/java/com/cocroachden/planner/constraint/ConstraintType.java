@@ -1,4 +1,4 @@
-package com.cocroachden.planner.constraint.api;
+package com.cocroachden.planner.constraint;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

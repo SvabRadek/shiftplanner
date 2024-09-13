@@ -1,6 +1,6 @@
 package com.cocroachden.planner.constraint.service;
 
-import com.cocroachden.planner.constraint.api.*;
+import com.cocroachden.planner.constraint.*;
 import com.cocroachden.planner.constraint.repository.ConstraintRequestRecord;
 import com.cocroachden.planner.solver.constraints.ConstraintRequest;
 import com.cocroachden.planner.solver.constraints.specific.consecutiveworkingdays.request.ConsecutiveWorkingDaysRequest;

@@ -1,7 +1,7 @@
 package com.cocroachden.planner.solverconfiguration.validations.day;
 
-import com.cocroachden.planner.constraint.api.EmployeeShiftRequestDTO;
-import com.cocroachden.planner.constraint.api.EmployeesPerShiftRequestDTO;
+import com.cocroachden.planner.constraint.EmployeeShiftRequestDTO;
+import com.cocroachden.planner.constraint.EmployeesPerShiftRequestDTO;
 import com.cocroachden.planner.solverconfiguration.validations.IssueSeverity;
 import com.cocroachden.planner.solverconfiguration.SolverConfigurationDTO;
 import com.cocroachden.planner.solver.api.WorkShifts;
