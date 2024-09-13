@@ -1,7 +1,9 @@
 package com.cocroachden.planner.solverconfiguration.service;
 
 import com.cocroachden.AbstractMessagingTest;
+import com.cocroachden.planner.employee.EmployeeDTO;
 import com.cocroachden.planner.employee.EmployeeId;
+import com.cocroachden.planner.employee.EmployeeRecord;
 import com.cocroachden.planner.employee.repository.EmployeeRepository;
 import com.cocroachden.planner.solverconfiguration.EmployeeAssignmentDTO;
 import com.cocroachden.planner.solverconfiguration.SolverConfigurationId;
@@ -9,6 +11,8 @@ import com.cocroachden.planner.solverconfiguration.command.deleteconfiguration.D
 import com.cocroachden.planner.solverconfiguration.command.deleteconfiguration.SolverConfigurationHasBeenDeleted;
 import com.cocroachden.planner.solverconfiguration.command.saveconfiguration.SaveSolverConfigurationCommand;
 import com.cocroachden.planner.solverconfiguration.command.saveconfiguration.SolverConfigurationHasBeenSaved;
+import com.cocroachden.planner.solverconfiguration.command.updateconfiguration.SolverConfigurationHasBeenUpdated;
+import com.cocroachden.planner.solverconfiguration.command.updateconfiguration.UpdateSolverConfigurationCommand;
 import com.cocroachden.planner.solverconfiguration.repository.EmployeeAssignmentRepository;
 import com.cocroachden.planner.solverconfiguration.repository.SolverConfigurationRepository;
 import org.assertj.core.api.Assertions;
@@ -105,5 +109,46 @@ class SolverConfigurationServiceTest extends AbstractMessagingTest {
         var deleteCommand = new DeleteSolverConfigurationCommand(new SolverConfigurationId("non-existent-config-id"));
         this.whenCommandHasBeenSent(deleteCommand);
         this.thenNoEventsOfTypeHaveBeenDispatched(SolverConfigurationHasBeenDeleted.class);
+    }
+
+    @Test
+    public void itCanUpdateSolverConfiguration() {
+        SolverConfigurationId id = new SolverConfigurationId("config-id");
+        var saveCommand = new SaveSolverConfigurationCommand(
+                id,
+                "Test Configuration",
+                LocalDate.now(),
+                LocalDate.now().plusDays(1),
+                List.of(),
+                List.of()
+        );
+        this.givenCommandHasBeenSent(saveCommand);
+        var updateCommand = new UpdateSolverConfigurationCommand(
+                id,
+                "Updated Configuration",
+                LocalDate.now(),
+                LocalDate.now().plusDays(2),
+                List.of(),
+                List.of()
+        );
+        this.whenCommandHasBeenSent(updateCommand);
+        var updatedConfig = this.thenExactlyOneEventHasBeenDispatched(SolverConfigurationHasBeenUpdated.class)
+                .configurationRecord();
+        Assertions.assertThat(updatedConfig.getName()).isEqualTo("Updated Configuration");
+        Assertions.assertThat(updatedConfig.getStartDate()).isEqualTo(updateCommand.startDate());
+        Assertions.assertThat(updatedConfig.getEndDate()).isEqualTo(updateCommand.endDate());
+    }
+
+    @Test
+    public void itThrowsWhenUpdatingNonExistingSolverConfiguration() {
+        var updateCommand = new UpdateSolverConfigurationCommand(
+                new SolverConfigurationId("non-existent-config-id"),
+                "Non-existent Configuration",
+                LocalDate.now(),
+                LocalDate.now().plusDays(1),
+                List.of(),
+                List.of()
+        );
+        this.thenCommandThrowsException(updateCommand, IllegalArgumentException.class);
     }
 }
