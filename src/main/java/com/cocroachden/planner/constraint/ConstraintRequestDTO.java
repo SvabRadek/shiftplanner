@@ -8,6 +8,8 @@ public interface ConstraintRequestDTO {
   @Nonnull
   String getId();
 
+  void setId(@Nonnull String id);
+
   @Nonnull
   ConstraintType getType();
 }

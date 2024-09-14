@@ -25,6 +25,7 @@ public class ConsecutiveWorkingDaysRequestDTO implements ConstraintRequestDTO {
   @Nonnull
   private final ConstraintType type = ConstraintType.CONSECUTIVE_WORKING_DAYS;
   @Nonnull
+  @Setter
   private String id;
   @Nonnull
   private String owner;

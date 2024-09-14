@@ -3,10 +3,7 @@ package com.cocroachden.planner.constraint;
 import com.cocroachden.planner.solver.api.WorkShifts;
 import com.cocroachden.planner.solver.constraints.specific.employeeshiftrequest.request.EmployeeShiftRequest;
 import dev.hilla.Nonnull;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.time.LocalDate;
 
@@ -26,6 +23,7 @@ public class EmployeeShiftRequestDTO implements ConstraintRequestDTO {
     @Nonnull
     private final ConstraintType type = ConstraintType.EMPLOYEE_SHIFT_REQUEST;
     @Nonnull
+    @Setter
     private String id;
     @Nonnull
     private String owner;

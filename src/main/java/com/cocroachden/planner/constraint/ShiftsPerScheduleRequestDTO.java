@@ -4,10 +4,7 @@ package com.cocroachden.planner.constraint;
 import com.cocroachden.planner.solver.api.WorkShifts;
 import com.cocroachden.planner.solver.constraints.specific.shiftperschedule.request.ShiftsPerScheduleRequest;
 import dev.hilla.Nonnull;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -30,6 +27,7 @@ public class ShiftsPerScheduleRequestDTO implements ConstraintRequestDTO {
     @Nonnull
     private final ConstraintType type = ConstraintType.SHIFT_PER_SCHEDULE;
     @Nonnull
+    @Setter
     private String id;
     @Nonnull
     private String owner;

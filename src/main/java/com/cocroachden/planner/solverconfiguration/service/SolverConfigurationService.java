@@ -46,7 +46,7 @@ public class SolverConfigurationService {
         if (configurationRepository.existsById(id)) {
             throw new IllegalArgumentException("Solver configuration with id [" + id + "] already exists!");
         }
-        var savedConfig = saveConfiguration(
+        var savedConfig = this.saveConfiguration(
                 command.id(),
                 command.name(),
                 command.startDate(),
@@ -102,9 +102,10 @@ public class SolverConfigurationService {
                 employeeRepository.findAllById(assignedEmployeeIds).spliterator(),
                 false
         ).toList();
+
         assignedEmployees.stream()
                 .map(assignment -> {
-                    var employeeId = new EmployeeId(assignment.getEmployee().getId());
+                    var employeeId = EmployeeId.from(assignment.getEmployee().getId());
                     var employeeRecord = this.getEmployee(employeeId, assignedEmployeeRecords);
                     var assignmentRecord = new EmployeeAssignmentRecord(
                             savedConfigurationRecord,
@@ -116,10 +117,11 @@ public class SolverConfigurationService {
                     employeeRepository.save(employeeRecord);
                     return assignmentRecord;
                 }).forEach(assignmentRepository::save);
+
         constraints.stream()
                 .map(dto -> {
                     var constraint = ConstraintMapper.fromDto(dto);
-                    var constraintRecord = new ConstraintRecord(ConstraintId.random(), constraint, savedConfigurationRecord);
+                    var constraintRecord = new ConstraintRecord(new ConstraintId(dto.getId()), constraint, savedConfigurationRecord);
                     if (constraint instanceof EmployeeConstraint employeeConstraint) {
                         var employeeRecord = this.getEmployee(employeeConstraint.getOwner(), assignedEmployeeRecords);
                         constraintRecord.setOwner(employeeRecord);

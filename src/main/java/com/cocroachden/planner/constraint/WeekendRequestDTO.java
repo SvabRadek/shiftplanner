@@ -2,10 +2,8 @@ package com.cocroachden.planner.constraint;
 
 import com.cocroachden.planner.solver.constraints.specific.weekends.request.WeekendRequest;
 import dev.hilla.Nonnull;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
+import org.checkerframework.common.value.qual.StringVal;
 
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -23,6 +21,7 @@ public class WeekendRequestDTO implements ConstraintRequestDTO {
   @Nonnull
   private final ConstraintType type = ConstraintType.WEEKEND_REQUEST;
   @Nonnull
+  @Setter
   private String id;
   @Nonnull
   private String owner;

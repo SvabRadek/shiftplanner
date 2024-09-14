@@ -3,10 +3,7 @@ package com.cocroachden.planner.constraint;
 import com.cocroachden.planner.solver.api.WorkShifts;
 import com.cocroachden.planner.solver.constraints.specific.shiftpattern.request.ShiftPatternConstraintRequest;
 import dev.hilla.Nonnull;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.util.Arrays;
 import java.util.List;
@@ -28,7 +25,9 @@ public class ShiftPatternRequestDTO implements ConstraintRequestDTO {
   @Nonnull
   private final ConstraintType type = ConstraintType.SHIFT_PATTERN_CONSTRAINT;
   @Nonnull
+  @Setter
   private String id;
+  @Nonnull
   private String owner;
   @Nonnull
   private List<@Nonnull WorkShifts> shiftPattern;

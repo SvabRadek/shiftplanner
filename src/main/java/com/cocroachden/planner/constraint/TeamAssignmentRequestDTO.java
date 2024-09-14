@@ -2,10 +2,7 @@ package com.cocroachden.planner.constraint;
 
 import com.cocroachden.planner.solver.constraints.specific.teamassignment.request.TeamAssignmentRequest;
 import dev.hilla.Nonnull;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -25,6 +22,7 @@ public class TeamAssignmentRequestDTO implements ConstraintRequestDTO {
   @Nonnull
   private final ConstraintType type = ConstraintType.TEAM_ASSIGNMENT;
   @Nonnull
+  @Setter
   private String id;
   @Nonnull
   private String owner;

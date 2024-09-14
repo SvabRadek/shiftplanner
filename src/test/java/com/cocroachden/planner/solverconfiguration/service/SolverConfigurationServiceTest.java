@@ -44,6 +44,7 @@ class SolverConfigurationServiceTest extends AbstractMessagingTest {
         assignmentRepository.deleteAll();
         configurationRepository.deleteAll();
         employeeRepository.deleteAll();
+        constraintRepository.deleteAll();
     }
 
     @Test
@@ -160,7 +161,7 @@ class SolverConfigurationServiceTest extends AbstractMessagingTest {
     @Test
     public void itRemovesOrphanedConstraintsAfterConfigurationHasBeenRemoved() {
         SolverConfigurationId configurationId = new SolverConfigurationId("config-id");
-        String constraintId = "id";
+        ConstraintId constraintId = new ConstraintId("constraint-id");
         var saveConfigCommand = new SaveSolverConfigurationCommand(
                 configurationId,
                 "Test Configuraiton",
@@ -168,12 +169,13 @@ class SolverConfigurationServiceTest extends AbstractMessagingTest {
                 LocalDate.now().plusDays(1),
                 List.of(),
                 List.of(
-                        new EmployeesPerShiftRequestDTO(constraintId, WorkShifts.DAY, 1, 1, 1, 1, 1, 1)
+                        new EmployeesPerShiftRequestDTO(constraintId.getId(), WorkShifts.DAY, 1, 1, 1, 1, 1, 1)
                 )
         );
         this.givenCommandHasBeenSent(saveConfigCommand);
+        Assertions.assertThat(this.constraintRepository.existsById(new ConstraintId(constraintId.getId()))).isTrue();
         var testedCommand = new DeleteSolverConfigurationCommand(configurationId);
         this.whenCommandHasBeenSent(testedCommand);
-        Assertions.assertThat(this.constraintRepository.existsById(new ConstraintId(constraintId))).isFalse();
+        Assertions.assertThat(this.constraintRepository.existsById(new ConstraintId(constraintId.getId()))).isFalse();
     }
 }

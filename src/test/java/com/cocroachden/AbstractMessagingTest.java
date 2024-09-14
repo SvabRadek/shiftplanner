@@ -26,10 +26,10 @@ public class AbstractMessagingTest extends AbstractSpringBootContextTest {
 
     protected void givenCommandHasBeenSent(Command command) {
         publisher.publishEvent(command);
-        applicationEvents.clear();
     }
 
     protected void whenCommandHasBeenSent(Command command) {
+        applicationEvents.clear();
         publisher.publishEvent(command);
     }
 

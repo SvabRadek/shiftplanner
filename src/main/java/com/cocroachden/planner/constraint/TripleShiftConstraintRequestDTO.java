@@ -2,10 +2,7 @@ package com.cocroachden.planner.constraint;
 
 import com.cocroachden.planner.solver.constraints.specific.tripleshift.request.TripleShiftConstraintRequest;
 import dev.hilla.Nonnull;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -23,6 +20,7 @@ public class TripleShiftConstraintRequestDTO implements ConstraintRequestDTO {
     @Nonnull
     private final ConstraintType type = ConstraintType.TRIPLE_SHIFTS_CONSTRAINT;
     @Nonnull
+    @Setter
     private String id;
     @Nonnull
     private String owner;

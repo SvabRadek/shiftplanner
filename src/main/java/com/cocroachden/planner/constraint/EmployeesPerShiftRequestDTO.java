@@ -4,10 +4,7 @@ package com.cocroachden.planner.constraint;
 import com.cocroachden.planner.solver.constraints.specific.employeespershift.request.EmployeesPerShiftRequest;
 import com.cocroachden.planner.solver.api.WorkShifts;
 import dev.hilla.Nonnull;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -28,6 +25,7 @@ public class EmployeesPerShiftRequestDTO implements ConstraintRequestDTO {
   @Nonnull
   private final ConstraintType type = ConstraintType.EMPLOYEES_PER_SHIFT;
   @Nonnull
+  @Setter
   private String id;
   @Nonnull
   private WorkShifts targetShift;

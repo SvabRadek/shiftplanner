@@ -1,6 +1,5 @@
 package com.cocroachden.planner.constraint;
 
-import com.fasterxml.jackson.core.JacksonException;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonDeserializer;
@@ -35,7 +34,7 @@ public class ConstraintRequestDTODeserializer extends JsonDeserializer<Constrain
   public ConstraintRequestDTO deserialize(
       JsonParser jsonParser,
       DeserializationContext deserializationContext
-  ) throws IOException, JacksonException {
+  ) throws IOException {
     var node = jsonParser.readValueAsTree();
     var type = node.get("type").toString().replace("\"", "");
     var serializationType = ConstraintType.valueOf(type);
