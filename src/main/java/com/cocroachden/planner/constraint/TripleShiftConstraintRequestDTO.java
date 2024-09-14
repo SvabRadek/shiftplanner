@@ -1,6 +1,5 @@
 package com.cocroachden.planner.constraint;
 
-import com.cocroachden.planner.employee.EmployeeId;
 import com.cocroachden.planner.solver.constraints.specific.tripleshift.request.TripleShiftConstraintRequest;
 import dev.hilla.Nonnull;
 import lombok.AccessLevel;
@@ -15,19 +14,18 @@ public class TripleShiftConstraintRequestDTO implements ConstraintRequestDTO {
     public static TripleShiftConstraintRequestDTO from(String id, TripleShiftConstraintRequest request) {
         return new TripleShiftConstraintRequestDTO(
                 id,
-                ConstraintType.TRIPLE_SHIFTS_CONSTRAINT,
-                request.getOwner(),
+                request.getOwner().getId(),
                 request.getPenaltyForShiftTripletOutsideWeekend(),
                 request.getAreAllowed()
         );
     }
 
     @Nonnull
+    private final ConstraintType type = ConstraintType.TRIPLE_SHIFTS_CONSTRAINT;
+    @Nonnull
     private String id;
     @Nonnull
-    private ConstraintType type;
-    @Nonnull
-    private EmployeeId owner;
+    private String owner;
     @Nonnull
     private Integer penaltyForShiftTripletOutsideWeekend;
     @Nonnull

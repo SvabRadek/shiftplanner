@@ -2,7 +2,6 @@ package com.cocroachden.planner.solver.constraints.specific.teamassignment;
 
 import com.cocroachden.planner.solver.constraints.ConstraintApplier;
 import com.cocroachden.planner.solver.constraints.ConstraintRequest;
-import com.cocroachden.planner.solver.constraints.specific.AbstractEmployeeSpecificConstraint;
 import com.cocroachden.planner.solver.constraints.specific.teamassignment.request.TeamAssignmentRequest;
 import com.cocroachden.planner.solver.service.SolutionObjectives;
 import com.cocroachden.planner.solver.service.schedule.SchedulePlan;
@@ -20,7 +19,7 @@ public class TeamAssignmentConstraintApplier implements ConstraintApplier {
                 .filter(r -> r.getTeamId().equals(teamRequest.getTeamId()))
                 .filter(TeamAssignmentRequest::getIsLeader)
                 .findFirst()
-                .map(AbstractEmployeeSpecificConstraint::getOwner)
+                .map(TeamAssignmentRequest::getOwner)
                 .orElseThrow(() -> new IllegalArgumentException("There is no team leader in team [%s].".formatted(teamRequest.getTeamId())));
         schedulePlan.getAllScheduleDatesAsStream()
                 .forEach(date -> {

@@ -1,7 +1,6 @@
 package com.cocroachden.planner.solver.constraints;
 
 import com.cocroachden.planner.constraint.ConstraintType;
-import com.cocroachden.planner.solver.constraints.specific.AbstractEmployeeSpecificConstraint;
 import com.cocroachden.planner.solver.constraints.specific.AbstractMinMaxRequest;
 import com.cocroachden.planner.solver.constraints.specific.consecutiveworkingdays.request.ConsecutiveWorkingDaysRequest;
 import com.cocroachden.planner.solver.constraints.specific.evenshiftdistribution.request.EvenShiftDistributionRequest;
@@ -30,7 +29,6 @@ import java.io.Serializable;
     @JsonSubTypes.Type(value = ShiftPatternConstraintRequest.class, name = "ShiftPatternConstraintRequest"),
     @JsonSubTypes.Type(value = ShiftsPerScheduleRequest.class, name = "ShiftsPerScheduleRequest"),
     @JsonSubTypes.Type(value = EmployeesPerShiftRequest.class, name = "EmployeesPerShiftRequest"),
-    @JsonSubTypes.Type(value = AbstractEmployeeSpecificConstraint.class, name = "AbstractEmployeeSpecificConstraint"),
     @JsonSubTypes.Type(value = AbstractMinMaxRequest.class, name = "AbstractMinMaxRequest"),
     @JsonSubTypes.Type(value = ConsecutiveWorkingDaysRequest.class, name = "ConsecutiveWorkingDaysRequest"),
     @JsonSubTypes.Type(value = TripleShiftConstraintRequest.class, name = "TripleShiftConstraintRequest"),

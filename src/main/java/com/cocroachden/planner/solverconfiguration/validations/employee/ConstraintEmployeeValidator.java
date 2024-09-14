@@ -52,14 +52,14 @@ public class ConstraintEmployeeValidator {
     var optimisticCountOfAvailableDaysForWorkAssignments = daysInSchedule - requestedDaysOff;
     if (requestedWorkingShifts > shiftPerSchedule.getHardMax()) {
       issues.add(new EmployeeValidationIssue(
-          shiftPerSchedule.getOwner().getId(),
+          shiftPerSchedule.getOwner(),
           IssueSeverity.ERROR,
           "Pracovník vyžaduje více směn, než je nastavený maximální limit pro počet směn na rozvrh."
       ));
     }
     if (optimisticCountOfAvailableDaysForWorkAssignments < shiftPerSchedule.getHardMin()) {
       issues.add(new EmployeeValidationIssue(
-          shiftPerSchedule.getOwner().getId(),
+          shiftPerSchedule.getOwner(),
           IssueSeverity.ERROR,
           "Pracovník nemá dostatek dní, kdy by mohl pracovat, aby splnil požadavek na minimální počet přiřazených směn."
       ));
@@ -86,7 +86,7 @@ public class ConstraintEmployeeValidator {
                 var datesOfWorkRequests = constraints.stream()
                     .filter(c1 -> c1 instanceof EmployeeShiftRequestDTO)
                     .map(c1 -> (EmployeeShiftRequestDTO) c1)
-                    .filter(c1 -> c1.getOwner().getId().equals(assignment.getEmployee().getId()))
+                    .filter(c1 -> c1.getOwner().equals(assignment.getEmployee().getId()))
                     .filter(c1 -> c1.getRequestedShift().isSameAs(WorkShifts.WORKING_SHIFTS))
                     .map(EmployeeShiftRequestDTO::getDate)
                     .collect(Collectors.toMap(Function.identity(), Function.identity()));

@@ -1,8 +1,12 @@
 package com.cocroachden.planner.solverconfiguration.service;
 
 import com.cocroachden.AbstractMessagingTest;
+import com.cocroachden.planner.constraint.ConstraintId;
+import com.cocroachden.planner.constraint.EmployeesPerShiftRequestDTO;
+import com.cocroachden.planner.constraint.repository.ConstraintRepository;
 import com.cocroachden.planner.employee.EmployeeId;
 import com.cocroachden.planner.employee.repository.EmployeeRepository;
+import com.cocroachden.planner.solver.api.WorkShifts;
 import com.cocroachden.planner.solverconfiguration.EmployeeAssignmentDTO;
 import com.cocroachden.planner.solverconfiguration.SolverConfigurationId;
 import com.cocroachden.planner.solverconfiguration.command.deleteconfiguration.DeleteSolverConfigurationCommand;
@@ -31,6 +35,9 @@ class SolverConfigurationServiceTest extends AbstractMessagingTest {
 
     @Autowired
     private EmployeeRepository employeeRepository;
+
+    @Autowired
+    private ConstraintRepository constraintRepository;
 
     @BeforeEach
     void setUp() {
@@ -148,5 +155,25 @@ class SolverConfigurationServiceTest extends AbstractMessagingTest {
                 List.of()
         );
         this.thenCommandThrowsException(updateCommand, IllegalArgumentException.class);
+    }
+
+    @Test
+    public void itRemovesOrphanedConstraintsAfterConfigurationHasBeenRemoved() {
+        SolverConfigurationId configurationId = new SolverConfigurationId("config-id");
+        String constraintId = "id";
+        var saveConfigCommand = new SaveSolverConfigurationCommand(
+                configurationId,
+                "Test Configuraiton",
+                LocalDate.now(),
+                LocalDate.now().plusDays(1),
+                List.of(),
+                List.of(
+                        new EmployeesPerShiftRequestDTO(constraintId, WorkShifts.DAY, 1, 1, 1, 1, 1, 1)
+                )
+        );
+        this.givenCommandHasBeenSent(saveConfigCommand);
+        var testedCommand = new DeleteSolverConfigurationCommand(configurationId);
+        this.whenCommandHasBeenSent(testedCommand);
+        Assertions.assertThat(this.constraintRepository.existsById(new ConstraintId(constraintId))).isFalse();
     }
 }

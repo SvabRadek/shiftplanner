@@ -1,6 +1,6 @@
 package com.cocroachden.planner.solverconfiguration.repository;
 
-import com.cocroachden.planner.constraint.repository.ConstraintRequestRecord;
+import com.cocroachden.planner.constraint.repository.ConstraintRecord;
 import com.cocroachden.planner.solverconfiguration.SolverConfigurationId;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -31,7 +31,7 @@ public class SolverConfigurationRecord {
   private LocalDate startDate;
   private LocalDate endDate;
   @OneToMany(mappedBy = "parent", cascade = CascadeType.ALL, orphanRemoval = true)
-  private List<ConstraintRequestRecord> constraintRequestRecords = new ArrayList<>();
+  private List<ConstraintRecord> constraintRecords = new ArrayList<>();
   @OneToMany(mappedBy = "configuration", cascade = CascadeType.ALL, orphanRemoval = true)
   private List<EmployeeAssignmentRecord> employeeAssignments = new ArrayList<>();
 
@@ -47,10 +47,10 @@ public class SolverConfigurationRecord {
     this.endDate = endDate;
   }
 
-  public void setConstraintRequestRecords(List<ConstraintRequestRecord> constraintRequestRecords) {
-    this.constraintRequestRecords.clear();
-    if (constraintRequestRecords != null) {
-      this.constraintRequestRecords.addAll(constraintRequestRecords);
+  public void setConstraintRecords(List<ConstraintRecord> constraintRecords) {
+    this.constraintRecords.clear();
+    if (constraintRecords != null) {
+      this.constraintRecords.addAll(constraintRecords);
     }
   }
 

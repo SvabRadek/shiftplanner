@@ -1,6 +1,6 @@
 package com.cocroachden.planner.solverconfiguration;
 
-import com.cocroachden.planner.constraint.service.ConstraintMapper;
+import com.cocroachden.planner.constraint.mapping.ConstraintMapper;
 import com.cocroachden.planner.constraint.ConstraintRequestDTO;
 import com.cocroachden.planner.solverconfiguration.repository.EmployeeAssignmentRecord;
 import com.cocroachden.planner.solverconfiguration.repository.SolverConfigurationRecord;
@@ -31,7 +31,7 @@ public class SolverConfigurationDTO {
             .sorted(Comparator.comparing(EmployeeAssignmentRecord::getIndex))
             .map(EmployeeAssignmentDTO::from)
             .toList(),
-        record.getConstraintRequestRecords().stream()
+        record.getConstraintRecords().stream()
             .map(ConstraintMapper::fromRecord)
             .toList()
     );

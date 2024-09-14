@@ -1,4 +1,4 @@
-package com.cocroachden.planner.constraint.endpoint;
+package com.cocroachden.planner.solverconfiguration.endpoint;
 
 import com.cocroachden.planner.constraint.*;
 import com.cocroachden.planner.constraint.query.ConstraintQuery;

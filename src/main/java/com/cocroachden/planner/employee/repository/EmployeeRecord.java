@@ -1,6 +1,6 @@
 package com.cocroachden.planner.employee.repository;
 
-import com.cocroachden.planner.constraint.repository.ConstraintRequestRecord;
+import com.cocroachden.planner.constraint.repository.ConstraintRecord;
 import com.cocroachden.planner.employee.EmployeeId;
 import com.cocroachden.planner.solverconfiguration.repository.EmployeeAssignmentRecord;
 import dev.hilla.Nonnull;
@@ -22,7 +22,7 @@ public final class EmployeeRecord {
     private String firstName;
     private String lastName;
     @OneToMany(mappedBy = "owner", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<ConstraintRequestRecord> requests = new ArrayList<>();
+    private List<ConstraintRecord> requests = new ArrayList<>();
     @OneToMany(mappedBy = "employee", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<EmployeeAssignmentRecord> assignments = new ArrayList<>();
 

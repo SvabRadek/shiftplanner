@@ -2,13 +2,13 @@ package com.cocroachden.planner.solverconfiguration.service;
 
 import com.cocroachden.planner.constraint.ConstraintId;
 import com.cocroachden.planner.constraint.ConstraintRequestDTO;
-import com.cocroachden.planner.constraint.repository.ConstraintRequestRecord;
-import com.cocroachden.planner.constraint.repository.ConstraintRequestRepository;
-import com.cocroachden.planner.constraint.service.ConstraintMapper;
+import com.cocroachden.planner.constraint.repository.ConstraintRecord;
+import com.cocroachden.planner.constraint.repository.ConstraintRepository;
+import com.cocroachden.planner.constraint.mapping.ConstraintMapper;
 import com.cocroachden.planner.employee.EmployeeId;
 import com.cocroachden.planner.employee.repository.EmployeeRecord;
 import com.cocroachden.planner.employee.repository.EmployeeRepository;
-import com.cocroachden.planner.solver.constraints.specific.AbstractEmployeeSpecificConstraint;
+import com.cocroachden.planner.solver.constraints.specific.EmployeeConstraint;
 import com.cocroachden.planner.solverconfiguration.EmployeeAssignmentDTO;
 import com.cocroachden.planner.solverconfiguration.SolverConfigurationId;
 import com.cocroachden.planner.solverconfiguration.command.deleteconfiguration.DeleteSolverConfigurationCommand;
@@ -37,7 +37,7 @@ public class SolverConfigurationService {
     private final EmployeeAssignmentRepository assignmentRepository;
     private final SolverConfigurationRepository configurationRepository;
     private final EmployeeRepository employeeRepository;
-    private final ConstraintRequestRepository constraintRequestRepository;
+    private final ConstraintRepository constraintRepository;
 
     @EventListener
     public SolverConfigurationHasBeenSaved handle(SaveSolverConfigurationCommand command) {
@@ -92,7 +92,9 @@ public class SolverConfigurationService {
             List<EmployeeAssignmentDTO> assignedEmployees,
             List<ConstraintRequestDTO> constraints
     ) {
-        var solverConfigurationRecord = new SolverConfigurationRecord(id, name, startDate, endDate);
+        var savedConfigurationRecord = configurationRepository.save(
+                new SolverConfigurationRecord(id, name, startDate, endDate)
+        );
         var assignedEmployeeIds = assignedEmployees.stream()
                 .map(EmployeeAssignmentDTO::getEmployee)
                 .toList();
@@ -105,7 +107,7 @@ public class SolverConfigurationService {
                     var employeeId = new EmployeeId(assignment.getEmployee().getId());
                     var employeeRecord = this.getEmployee(employeeId, assignedEmployeeRecords);
                     var assignmentRecord = new EmployeeAssignmentRecord(
-                            solverConfigurationRecord,
+                            savedConfigurationRecord,
                             employeeRecord,
                             assignment.getIndex(),
                             assignment.getWeight()
@@ -117,14 +119,14 @@ public class SolverConfigurationService {
         constraints.stream()
                 .map(dto -> {
                     var constraint = ConstraintMapper.fromDto(dto);
-                    var constraintRecord = new ConstraintRequestRecord(ConstraintId.random(), constraint, solverConfigurationRecord);
-                    if (constraint instanceof AbstractEmployeeSpecificConstraint aesc) {
-                        var employeeRecord = this.getEmployee(aesc.getOwner(), assignedEmployeeRecords);
+                    var constraintRecord = new ConstraintRecord(ConstraintId.random(), constraint, savedConfigurationRecord);
+                    if (constraint instanceof EmployeeConstraint employeeConstraint) {
+                        var employeeRecord = this.getEmployee(employeeConstraint.getOwner(), assignedEmployeeRecords);
                         constraintRecord.setOwner(employeeRecord);
                     }
                     return constraintRecord;
-                }).forEach(constraintRequestRepository::save);
-        return configurationRepository.save(solverConfigurationRecord);
+                }).forEach(constraintRepository::save);
+        return configurationRepository.save(savedConfigurationRecord);
     }
 
     private EmployeeRecord getEmployee(EmployeeId employeeId, List<EmployeeRecord> records) {
@@ -133,6 +135,4 @@ public class SolverConfigurationService {
                 .findAny()
                 .orElseThrow(() -> new IllegalArgumentException("Employee with id [" + employeeId + "] does not exists!"));
     }
-
-
 }

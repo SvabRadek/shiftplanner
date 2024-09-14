@@ -1,8 +1,7 @@
 package com.cocroachden.planner.constraint;
 
-import com.cocroachden.planner.employee.EmployeeId;
-import com.cocroachden.planner.solver.constraints.specific.shiftpattern.request.ShiftPatternConstraintRequest;
 import com.cocroachden.planner.solver.api.WorkShifts;
+import com.cocroachden.planner.solver.constraints.specific.shiftpattern.request.ShiftPatternConstraintRequest;
 import dev.hilla.Nonnull;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -19,8 +18,7 @@ public class ShiftPatternRequestDTO implements ConstraintRequestDTO {
   public static ShiftPatternRequestDTO from(String id, ShiftPatternConstraintRequest request) {
     return new ShiftPatternRequestDTO(
         id,
-        ShiftPatternConstraintRequest.ID,
-        request.getOwner(),
+        request.getOwner().getId(),
         Arrays.stream(request.getShiftPattern()).toList(),
         request.getReward(),
         request.getStartDateIndex()
@@ -28,10 +26,10 @@ public class ShiftPatternRequestDTO implements ConstraintRequestDTO {
   }
 
   @Nonnull
-  private String id;
+  private final ConstraintType type = ConstraintType.SHIFT_PATTERN_CONSTRAINT;
   @Nonnull
-  private ConstraintType type;
-  private EmployeeId owner;
+  private String id;
+  private String owner;
   @Nonnull
   private List<@Nonnull WorkShifts> shiftPattern;
   @Nonnull

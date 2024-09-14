@@ -15,11 +15,9 @@ import lombok.NoArgsConstructor;
 @JsonTypeName("ShiftsPerScheduleRequest")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class ShiftsPerScheduleRequest extends AbstractMinMaxRequest {
-  public static final ConstraintType ID = ConstraintType.SHIFT_PER_SCHEDULE;
-
   public static ShiftsPerScheduleRequest from(ShiftsPerScheduleRequestDTO dto) {
     return new ShiftsPerScheduleRequest(
-        dto.getOwner(),
+        EmployeeId.from(dto.getOwner()),
         dto.getTargetShift(),
         dto.getHardMin(),
         dto.getSoftMin(),
@@ -30,6 +28,8 @@ public class ShiftsPerScheduleRequest extends AbstractMinMaxRequest {
     );
   }
 
+  private final ConstraintType type = ConstraintType.SHIFT_PER_SCHEDULE;
+  private EmployeeId owner;
   private WorkShifts targetShift;
 
   public ShiftsPerScheduleRequest(
@@ -54,7 +54,8 @@ public class ShiftsPerScheduleRequest extends AbstractMinMaxRequest {
       Integer maxPenalty,
       Integer hardMax
   ) {
-    super(ID, owner, hardMin, softMin, minPenalty, softMax, maxPenalty, hardMax);
+    super(hardMin, softMin, minPenalty, softMax, maxPenalty, hardMax);
+    this.owner = owner;
     this.targetShift = targetShift;
   }
 

@@ -16,7 +16,6 @@ public class EmployeesPerShiftRequestDTO implements ConstraintRequestDTO {
   public static EmployeesPerShiftRequestDTO from(String id, EmployeesPerShiftRequest request) {
     return new EmployeesPerShiftRequestDTO(
         id,
-        request.getType(),
         request.getShift(),
         request.getHardMin(),
         request.getSoftMin(),
@@ -27,9 +26,9 @@ public class EmployeesPerShiftRequestDTO implements ConstraintRequestDTO {
     );
   }
   @Nonnull
-  private String id;
+  private final ConstraintType type = ConstraintType.EMPLOYEES_PER_SHIFT;
   @Nonnull
-  private ConstraintType type;
+  private String id;
   @Nonnull
   private WorkShifts targetShift;
   @Nonnull

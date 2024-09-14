@@ -4,47 +4,34 @@ package com.cocroachden.planner.solver.constraints.specific.shiftfollowuprestric
 import com.cocroachden.planner.constraint.ShiftFollowupRestrictionRequestDTO;
 import com.cocroachden.planner.constraint.ConstraintType;
 import com.cocroachden.planner.employee.EmployeeId;
-import com.cocroachden.planner.solver.constraints.specific.AbstractEmployeeSpecificConstraint;
 import com.cocroachden.planner.solver.api.WorkShifts;
+import com.cocroachden.planner.solver.constraints.specific.EmployeeConstraint;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Getter
 @JsonTypeName("ShiftFollowUpRestrictionRequest")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class ShiftFollowUpRestrictionRequest extends AbstractEmployeeSpecificConstraint {
-  public static final ConstraintType ID = ConstraintType.SHIFT_FOLLOW_UP_RESTRICTION;
-
+@AllArgsConstructor
+public class ShiftFollowUpRestrictionRequest implements EmployeeConstraint {
   public static ShiftFollowUpRestrictionRequest from(ShiftFollowupRestrictionRequestDTO dto) {
     return new ShiftFollowUpRestrictionRequest(
-        dto.getFirstShift(),
-        dto.getForbiddenFollowup(),
-        dto.getPenalty()
+            EmployeeId.from(dto.getOwner()),
+            dto.getFirstShift(),
+            dto.getForbiddenFollowup(),
+            dto.getPenalty()
     );
 
   }
 
+  private final ConstraintType type = ConstraintType.SHIFT_FOLLOW_UP_RESTRICTION;
+  private EmployeeId owner;
   private WorkShifts firstShift;
   private WorkShifts forbiddenFollowup;
   private Integer penalty;
-
-  public ShiftFollowUpRestrictionRequest(WorkShifts firstShift, WorkShifts forbiddenFollowup) {
-    this(null, firstShift, forbiddenFollowup, 0);
-  }
-
-  public ShiftFollowUpRestrictionRequest(WorkShifts firstShift, WorkShifts forbiddenFollowup, Integer penalty) {
-    this(null, firstShift, forbiddenFollowup, penalty);
-  }
-
-  public ShiftFollowUpRestrictionRequest(EmployeeId owner, WorkShifts firstShift, WorkShifts forbiddenFollowup, Integer penalty) {
-    super(ID, owner);
-    this.firstShift = firstShift;
-    this.forbiddenFollowup = forbiddenFollowup;
-    this.penalty = penalty;
-  }
-
 
   @Override
   public String toString() {

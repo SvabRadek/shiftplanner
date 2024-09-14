@@ -1,7 +1,6 @@
 package com.cocroachden.planner.constraint;
 
 
-import com.cocroachden.planner.employee.EmployeeId;
 import com.cocroachden.planner.solver.api.WorkShifts;
 import com.cocroachden.planner.solver.constraints.specific.shiftperschedule.request.ShiftsPerScheduleRequest;
 import dev.hilla.Nonnull;
@@ -17,8 +16,7 @@ public class ShiftsPerScheduleRequestDTO implements ConstraintRequestDTO {
     public static ShiftsPerScheduleRequestDTO from(String id, ShiftsPerScheduleRequest request) {
         return new ShiftsPerScheduleRequestDTO(
                 id,
-                request.getOwner(),
-                request.getType(),
+                request.getOwner().getId(),
                 request.getTargetShift(),
                 request.getHardMin(),
                 request.getSoftMin(),
@@ -30,11 +28,11 @@ public class ShiftsPerScheduleRequestDTO implements ConstraintRequestDTO {
     }
 
     @Nonnull
+    private final ConstraintType type = ConstraintType.SHIFT_PER_SCHEDULE;
+    @Nonnull
     private String id;
     @Nonnull
-    private EmployeeId owner;
-    @Nonnull
-    private ConstraintType type;
+    private String owner;
     @Nonnull
     private WorkShifts targetShift;
     @Nonnull

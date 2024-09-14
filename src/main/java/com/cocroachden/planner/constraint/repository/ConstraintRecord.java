@@ -10,14 +10,13 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-@Entity(name = "ConstraintRequest")
-@Table(name = "constraint_request")
+@Entity(name = "constraint_record")
 @NoArgsConstructor
 @Getter
 @Setter
-public class ConstraintRequestRecord {
+public class ConstraintRecord {
   @EmbeddedId
-  @AttributeOverride(name = "id", column = @Column(name = "constraint_request_id"))
+  @AttributeOverride(name = "id", column = @Column(name = "constraint_record_id"))
   private ConstraintId id;
 
   @ManyToOne(fetch = FetchType.LAZY)
@@ -31,17 +30,18 @@ public class ConstraintRequestRecord {
   @Column(length = 1024)
   private ConstraintRequest request;
 
-  public ConstraintRequestRecord(
+  public ConstraintRecord(
           ConstraintId constraintId,
           ConstraintRequest request,
-          SolverConfigurationRecord parent) {
+          SolverConfigurationRecord parent
+  ) {
     this.id = constraintId;
     this.request = request;
     this.type = request.getType();
     this.parent = parent;
   }
 
-  public ConstraintRequestRecord(
+  public ConstraintRecord(
           ConstraintId constraintId,
           ConstraintRequest request,
           SolverConfigurationRecord parent,

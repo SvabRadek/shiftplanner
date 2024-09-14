@@ -1,6 +1,5 @@
 package com.cocroachden.planner.constraint;
 
-import com.cocroachden.planner.employee.EmployeeId;
 import com.cocroachden.planner.solver.constraints.specific.teamassignment.request.TeamAssignmentRequest;
 import dev.hilla.Nonnull;
 import lombok.AccessLevel;
@@ -16,8 +15,7 @@ public class TeamAssignmentRequestDTO implements ConstraintRequestDTO {
   public static TeamAssignmentRequestDTO from(String id, TeamAssignmentRequest request) {
     return new TeamAssignmentRequestDTO(
         id,
-        request.getOwner(),
-        TeamAssignmentRequest.TYPE_ID,
+        request.getOwner().getId(),
         request.getTeamId(),
         request.getIsLeader(),
         request.getPenalty()
@@ -25,11 +23,11 @@ public class TeamAssignmentRequestDTO implements ConstraintRequestDTO {
   }
 
   @Nonnull
+  private final ConstraintType type = ConstraintType.TEAM_ASSIGNMENT;
+  @Nonnull
   private String id;
   @Nonnull
-  private EmployeeId owner;
-  @Nonnull
-  private ConstraintType type;
+  private String owner;
   @Nonnull
   private Integer teamId;
   @Nonnull

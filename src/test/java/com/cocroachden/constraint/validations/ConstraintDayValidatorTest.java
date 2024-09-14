@@ -22,7 +22,6 @@ class ConstraintDayValidatorTest {
     public void itCanFindIssueWithMoreWorkersRequestingWorkingShiftsThanAllowed() {
         var limitingRequest = new EmployeesPerShiftRequestDTO(
                 UUID.randomUUID().toString(),
-                ConstraintType.EMPLOYEES_PER_SHIFT,
                 WorkShifts.WORKING_SHIFTS,
                 0,
                 1,
@@ -55,7 +54,6 @@ class ConstraintDayValidatorTest {
     public void itCanFindIssueWithLessWorkersAvailableForWorkThanMinimumRequiredForGivenDay() {
         var limitingRequest = new EmployeesPerShiftRequestDTO(
                 randomId(),
-                ConstraintType.EMPLOYEES_PER_SHIFT,
                 WorkShifts.WORKING_SHIFTS,
                 2,
                 3,
@@ -91,8 +89,7 @@ class ConstraintDayValidatorTest {
     ) {
         return new EmployeeShiftRequestDTO(
                 UUID.randomUUID().toString(),
-                ConstraintType.EMPLOYEE_SHIFT_REQUEST,
-                owner,
+                owner.getId(),
                 date,
                 shift
         );

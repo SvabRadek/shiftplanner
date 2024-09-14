@@ -1,6 +1,6 @@
 package com.cocroachden.planner.solver.endpoint;
 
-import com.cocroachden.planner.constraint.repository.ConstraintRequestRecord;
+import com.cocroachden.planner.constraint.repository.ConstraintRecord;
 import com.cocroachden.planner.solverconfiguration.SolverConfigurationId;
 import com.cocroachden.planner.solver.api.SolutionStatus;
 import com.cocroachden.planner.solver.api.SolverSolutionDTO;
@@ -35,8 +35,8 @@ public class SolverEndpoint {
         solverConfigRecord.getEmployeeAssignments().stream()
             .map(ScheduleEmployee::from)
             .toList(),
-        solverConfigRecord.getConstraintRequestRecords().stream()
-            .map(ConstraintRequestRecord::getRequest)
+        solverConfigRecord.getConstraintRecords().stream()
+            .map(ConstraintRecord::getRequest)
             .toList()
     );
     var flux = Flux

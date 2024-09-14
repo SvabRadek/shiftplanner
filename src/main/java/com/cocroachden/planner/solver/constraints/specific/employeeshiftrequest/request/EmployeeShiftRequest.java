@@ -1,14 +1,16 @@
 package com.cocroachden.planner.solver.constraints.specific.employeeshiftrequest.request;
 
 
-import com.cocroachden.planner.constraint.EmployeeShiftRequestDTO;
 import com.cocroachden.planner.constraint.ConstraintType;
+import com.cocroachden.planner.constraint.EmployeeShiftRequestDTO;
 import com.cocroachden.planner.employee.EmployeeId;
-import com.cocroachden.planner.solver.constraints.specific.AbstractEmployeeSpecificConstraint;
 import com.cocroachden.planner.solver.api.WorkShifts;
+import com.cocroachden.planner.solver.constraints.ConstraintRequest;
+import com.cocroachden.planner.solver.constraints.specific.EmployeeConstraint;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -17,34 +19,28 @@ import java.time.LocalDate;
 @Getter
 @JsonTypeName("EmployeeShiftRequest")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class EmployeeShiftRequest extends AbstractEmployeeSpecificConstraint {
-  public static final ConstraintType TYPE = ConstraintType.EMPLOYEE_SHIFT_REQUEST;
+@AllArgsConstructor
+public class EmployeeShiftRequest implements ConstraintRequest, EmployeeConstraint {
+    public static EmployeeShiftRequest from(EmployeeShiftRequestDTO dto) {
+        return new EmployeeShiftRequest(
+                EmployeeId.from(dto.getOwner()),
+                dto.getRequestedShift(), dto.getDate()
+        );
+    }
 
-  public static EmployeeShiftRequest from(EmployeeShiftRequestDTO dto) {
-    return new EmployeeShiftRequest(
-        dto.getOwner(),
-        dto.getDate(),
-        dto.getRequestedShift()
-    );
-  }
+    private final ConstraintType type = ConstraintType.EMPLOYEE_SHIFT_REQUEST;
+    private EmployeeId owner;
+    private WorkShifts requestedShift;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd/MM/yyyy")
+    private LocalDate date;
 
-  @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd/MM/yyyy")
-  private LocalDate date;
-  private WorkShifts requestedShift;
-
-  public EmployeeShiftRequest(EmployeeId owner, LocalDate date, WorkShifts requestedShift) {
-    super(TYPE, owner);
-    this.date = date;
-    this.requestedShift = requestedShift;
-  }
-
-  @Override
-  public String toString() {
-    return "{ " +
-        "type: " + this.getType() +
-        ", owner: " + this.getOwner() +
-        ", date: " + date +
-        ", requestedShift: " + requestedShift +
-        " }";
-  }
+    @Override
+    public String toString() {
+        return "{ " +
+                "type: " + this.getType() +
+                ", owner: " + this.getOwner() +
+                ", date: " + date +
+                ", requestedShift: " + requestedShift +
+                " }";
+    }
 }

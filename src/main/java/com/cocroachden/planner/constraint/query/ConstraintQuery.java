@@ -1,9 +1,9 @@
 package com.cocroachden.planner.constraint.query;
 
 import com.cocroachden.planner.constraint.ConstraintId;
-import com.cocroachden.planner.constraint.service.ConstraintMapper;
+import com.cocroachden.planner.constraint.mapping.ConstraintMapper;
 import com.cocroachden.planner.constraint.ConstraintRequestDTO;
-import com.cocroachden.planner.constraint.repository.ConstraintRequestRepository;
+import com.cocroachden.planner.constraint.repository.ConstraintRepository;
 import com.cocroachden.planner.employee.EmployeeId;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -14,7 +14,7 @@ import java.util.stream.StreamSupport;
 @Service
 @AllArgsConstructor
 public class ConstraintQuery {
-    private final ConstraintRequestRepository repository;
+    private final ConstraintRepository repository;
 
     public List<ConstraintRequestDTO> getAllRequestsRelatedToEmployee(EmployeeId employeeId) {
         return repository.findByOwner_Id(employeeId).stream()

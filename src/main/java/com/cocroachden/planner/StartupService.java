@@ -43,7 +43,7 @@ public class StartupService {
                     return assignment;
                 }).toList();
         savedConfiguration.setEmployeeAssignments(assignments);
-        savedConfiguration.setConstraintRequestRecords(
+        savedConfiguration.setConstraintRecords(
                 DefaultSolverConfiguration.constraintRequests().stream()
                         .peek(c -> c.setParent(savedConfiguration))
                         .toList()

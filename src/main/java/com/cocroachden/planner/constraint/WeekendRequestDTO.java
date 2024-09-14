@@ -1,6 +1,5 @@
 package com.cocroachden.planner.constraint;
 
-import com.cocroachden.planner.employee.EmployeeId;
 import com.cocroachden.planner.solver.constraints.specific.weekends.request.WeekendRequest;
 import dev.hilla.Nonnull;
 import lombok.AccessLevel;
@@ -15,19 +14,18 @@ public class WeekendRequestDTO implements ConstraintRequestDTO {
   public static WeekendRequestDTO from(String id, WeekendRequest request) {
     return new WeekendRequestDTO(
         id,
-        ConstraintType.WEEKEND_REQUEST,
-        request.getOwner(),
+        request.getOwner().getId(),
         request.getAssignOnlyFullWorkingWeekends(),
         request.getFullWorkWeekendPenalty()
     );
   }
 
   @Nonnull
+  private final ConstraintType type = ConstraintType.WEEKEND_REQUEST;
+  @Nonnull
   private String id;
   @Nonnull
-  private ConstraintType type;
-  @Nonnull
-  private EmployeeId owner;
+  private String owner;
   @Nonnull
   private Boolean assignOnlyFullWorkingWeekends;
   @Nonnull

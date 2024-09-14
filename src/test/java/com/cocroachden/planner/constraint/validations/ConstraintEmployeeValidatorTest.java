@@ -1,13 +1,12 @@
 package com.cocroachden.planner.constraint.validations;
 
-import com.cocroachden.planner.constraint.ConstraintType;
 import com.cocroachden.planner.constraint.EmployeeShiftRequestDTO;
 import com.cocroachden.planner.constraint.ShiftsPerScheduleRequestDTO;
-import com.cocroachden.planner.solverconfiguration.validations.employee.ConstraintEmployeeValidator;
 import com.cocroachden.planner.employee.EmployeeId;
+import com.cocroachden.planner.solver.api.WorkShifts;
 import com.cocroachden.planner.solverconfiguration.EmployeeAssignmentDTO;
 import com.cocroachden.planner.solverconfiguration.SolverConfigurationDTO;
-import com.cocroachden.planner.solver.api.WorkShifts;
+import com.cocroachden.planner.solverconfiguration.validations.employee.ConstraintEmployeeValidator;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -23,8 +22,7 @@ class ConstraintEmployeeValidatorTest {
     var employeeId = EmployeeId.random();
     var shiftsPerSchedule = new ShiftsPerScheduleRequestDTO(
         UUID.randomUUID().toString(),
-        employeeId,
-        ConstraintType.SHIFT_PER_SCHEDULE,
+        employeeId.getId(),
         WorkShifts.WORKING_SHIFTS,
         3, 4, 1, 5, 1, 6
     );
@@ -51,22 +49,19 @@ class ConstraintEmployeeValidatorTest {
     var employeeId = EmployeeId.random();
     var shiftsPerSchedule = new ShiftsPerScheduleRequestDTO(
         UUID.randomUUID().toString(),
-        employeeId,
-        ConstraintType.SHIFT_PER_SCHEDULE,
+        employeeId.getId(),
         WorkShifts.WORKING_SHIFTS,
         0, 1, 1, 1, 1, 1
     );
     var spec1 = new EmployeeShiftRequestDTO(
         UUID.randomUUID().toString(),
-        ConstraintType.EMPLOYEE_SHIFT_REQUEST,
-        employeeId,
+        employeeId.getId(),
         LocalDate.of(1, 1, 1),
         WorkShifts.DAY
     );
     var spec2 = new EmployeeShiftRequestDTO(
         UUID.randomUUID().toString(),
-        ConstraintType.EMPLOYEE_SHIFT_REQUEST,
-        employeeId,
+        employeeId.getId(),
         LocalDate.of(1, 1, 2),
         WorkShifts.DAY
     );
