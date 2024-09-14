@@ -13,7 +13,7 @@ public class EmployeeShiftRequestConstraintApplier implements ConstraintApplier 
   public void apply(SchedulePlan schedulePlan, CpModel model, SolutionObjectives objective, ConstraintRequest constraintRequest) {
     var request = ((EmployeeShiftRequest) constraintRequest);
     var workDay = schedulePlan.getSpecificDay(
-        request.getOwner().orElseThrow(),
+        request.getOwner(),
         request.getDate()
     );
     var requestedShift = request.getRequestedShift();

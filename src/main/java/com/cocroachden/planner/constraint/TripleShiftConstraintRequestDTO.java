@@ -16,7 +16,7 @@ public class TripleShiftConstraintRequestDTO implements ConstraintRequestDTO {
         return new TripleShiftConstraintRequestDTO(
                 id,
                 ConstraintType.TRIPLE_SHIFTS_CONSTRAINT,
-                request.getOwner().orElse(null),
+                request.getOwner(),
                 request.getPenaltyForShiftTripletOutsideWeekend(),
                 request.getAreAllowed()
         );

@@ -20,8 +20,8 @@ public class TripleShiftConstraintApplier implements ConstraintApplier {
     @Override
     public void apply(SchedulePlan schedulePlan, CpModel model, SolutionObjectives objective, ConstraintRequest constraintRequest) {
         var tripletRequest = (TripleShiftConstraintRequest) constraintRequest;
+        var employee = tripletRequest.getOwner();
         if (!tripletRequest.getAreAllowed()) {
-            var employee = tripletRequest.getOwner().orElseThrow();
             var days = schedulePlan.getAllDaysForEmployee(employee);
             for (int i = 0; i < days.size() - 2; i++) {
                 var day = days.get(i);
@@ -42,17 +42,9 @@ public class TripleShiftConstraintApplier implements ConstraintApplier {
             return;
         }
         //detect tripleshift, middle shift has to be on weekend -> otherwise apply penalty
-        tripletRequest.getOwner()
-                .ifPresentOrElse(
-                        owner -> {
-                            var assignments = schedulePlan.getAssignments().get(owner);
-                            var weightForEmployee = schedulePlan.getWeightForEmployee(owner);
-                            this.applyConstraint(schedulePlan, model, objective, weightForEmployee, assignments, tripletRequest);
-                        },
-                        () -> schedulePlan.getAssignments().forEach((employeeId, days) ->
-                                this.applyConstraint(schedulePlan, model, objective, 1, days, tripletRequest)
-                        )
-                );
+        var assignments = schedulePlan.getAssignments().get(employee);
+        var weightForEmployee = schedulePlan.getWeightForEmployee(employee);
+        this.applyConstraint(schedulePlan, model, objective, weightForEmployee, assignments, tripletRequest);
     }
 
     private void applyConstraint(

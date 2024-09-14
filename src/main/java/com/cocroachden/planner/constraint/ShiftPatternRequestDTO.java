@@ -20,7 +20,7 @@ public class ShiftPatternRequestDTO implements ConstraintRequestDTO {
     return new ShiftPatternRequestDTO(
         id,
         ShiftPatternConstraintRequest.ID,
-        request.getOwner().orElse(null),
+        request.getOwner(),
         Arrays.stream(request.getShiftPattern()).toList(),
         request.getReward(),
         request.getStartDateIndex()

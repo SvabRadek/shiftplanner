@@ -19,7 +19,7 @@ public class EvenShiftDistributionConstraintApplier implements ConstraintApplier
         var request = (EvenShiftDistributionRequest) constraintRequest;
         if (request.getDistributeShiftsEvenlyThroughoutSchedule()) {
             List<LinearExpr> assignmentWeeks = new ArrayList<>();
-            var workersDays = schedulePlan.getAllDaysForEmployee(request.getOwner().orElseThrow());
+            var workersDays = schedulePlan.getAllDaysForEmployee(request.getOwner());
             var currentWeek = LinearExpr.newBuilder();
             //Get all work assignments for each week in schedule
             for (var currentDay : workersDays) {

@@ -15,48 +15,42 @@ import java.util.ArrayList;
 import java.util.Map;
 
 public class ConsecutiveWorkingDaysConstraintApplier implements ConstraintApplier {
-  @Override
-  public void apply(SchedulePlan schedulePlan, CpModel model, SolutionObjectives objective, ConstraintRequest constraintRequest) {
-    var request = (ConsecutiveWorkingDaysRequest) constraintRequest;
-    var owner = request.getOwner();
-    if (owner.isEmpty()) {
-      schedulePlan.getAssignments().forEach((employeeId, assignments) ->
-          this.applyConstraint(model, objective, assignments, request, schedulePlan.getWeightForEmployee(employeeId))
-      );
-    } else {
-      var assignments = schedulePlan.getAssignments().get(owner.get());
-      this.applyConstraint(model, objective, assignments, request, schedulePlan.getWeightForEmployee(owner.get()));
+    @Override
+    public void apply(SchedulePlan schedulePlan, CpModel model, SolutionObjectives objective, ConstraintRequest constraintRequest) {
+        var request = (ConsecutiveWorkingDaysRequest) constraintRequest;
+        var owner = request.getOwner();
+        var assignments = schedulePlan.getAssignments().get(owner);
+        this.applyConstraint(model, objective, assignments, request, schedulePlan.getWeightForEmployee(owner));
     }
-  }
 
-  private void applyConstraint(
-      CpModel model,
-      SolutionObjectives objective,
-      Map<LocalDate, ScheduleDay> assignments,
-      ConsecutiveWorkingDaysRequest request,
-      Integer weight
-  ) {
-    var hardMax = request.getHardMax();
-    assignments.forEach((date, workDay) -> {
-      var shifts = new ArrayList<BoolVar>();
-      date.datesUntil(date.plusDays(hardMax + 1)).forEach(day -> {
-        if (assignments.containsKey(day)) {
-          shifts.addAll(assignments.get(day).getShifts(request.getTargetShift()));
-        }
-      });
-      MinMaxConstraint.apply(
-          request,
-          shifts.toArray(new BoolVar[]{}),
-          request.getHardMax(),
-          model,
-          objective,
-          weight
-      );
-    });
-  }
+    private void applyConstraint(
+            CpModel model,
+            SolutionObjectives objective,
+            Map<LocalDate, ScheduleDay> assignments,
+            ConsecutiveWorkingDaysRequest request,
+            Integer weight
+    ) {
+        var hardMax = request.getHardMax();
+        assignments.forEach((date, workDay) -> {
+            var shifts = new ArrayList<BoolVar>();
+            date.datesUntil(date.plusDays(hardMax + 1)).forEach(day -> {
+                if (assignments.containsKey(day)) {
+                    shifts.addAll(assignments.get(day).getShifts(request.getTargetShift()));
+                }
+            });
+            MinMaxConstraint.apply(
+                    request,
+                    shifts.toArray(new BoolVar[]{}),
+                    request.getHardMax(),
+                    model,
+                    objective,
+                    weight
+            );
+        });
+    }
 
-  @Override
-  public boolean supports(ConstraintRequest request) {
-    return request instanceof ConsecutiveWorkingDaysRequest;
-  }
+    @Override
+    public boolean supports(ConstraintRequest request) {
+        return request instanceof ConsecutiveWorkingDaysRequest;
+    }
 }

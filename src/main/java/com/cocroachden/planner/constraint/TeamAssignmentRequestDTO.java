@@ -16,7 +16,7 @@ public class TeamAssignmentRequestDTO implements ConstraintRequestDTO {
   public static TeamAssignmentRequestDTO from(String id, TeamAssignmentRequest request) {
     return new TeamAssignmentRequestDTO(
         id,
-        request.getOwner().orElseThrow(),
+        request.getOwner(),
         TeamAssignmentRequest.TYPE_ID,
         request.getTeamId(),
         request.getIsLeader(),

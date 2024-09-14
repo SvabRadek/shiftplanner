@@ -27,7 +27,7 @@ public class WeekendRequestsApplier implements ConstraintApplier {
     //TODO make working weekend spaced evenly
     //TODO make weekend either working or not working
     var request = (WeekendRequest) constraintRequest;
-    var owner = request.getOwner().orElseThrow();
+    var owner = request.getOwner();
     var weekends = new ArrayList<ScheduleWeekend>();
     schedulePlan.getAllDaysForEmployee(owner).stream()
         .filter(day -> isWeekend(day.date().getDayOfWeek()))

@@ -16,7 +16,7 @@ public class EvenShiftDistributionRequestDTO implements ConstraintRequestDTO {
         return new EvenShiftDistributionRequestDTO(
                 id,
                 EvenShiftDistributionRequest.TYPE_ID,
-                request.getOwner().orElse(null),
+                request.getOwner(),
                 request.getDistributeShiftsEvenlyThroughoutSchedule(),
                 request.getPenaltyForDeviationFromWeeksAverage()
         );

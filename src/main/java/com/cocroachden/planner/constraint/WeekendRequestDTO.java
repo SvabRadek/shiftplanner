@@ -16,7 +16,7 @@ public class WeekendRequestDTO implements ConstraintRequestDTO {
     return new WeekendRequestDTO(
         id,
         ConstraintType.WEEKEND_REQUEST,
-        request.getOwner().orElse(null),
+        request.getOwner(),
         request.getAssignOnlyFullWorkingWeekends(),
         request.getFullWorkWeekendPenalty()
     );

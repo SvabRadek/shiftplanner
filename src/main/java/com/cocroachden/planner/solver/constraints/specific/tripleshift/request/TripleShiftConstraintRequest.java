@@ -41,7 +41,7 @@ public class TripleShiftConstraintRequest extends AbstractEmployeeSpecificConstr
         return "{ type: %s, owner: %s, penaltyForShiftTripletOutsideWeekend: %s }"
                 .formatted(
                         this.getType(),
-                        this.getOwner().orElse(null),
+                        this.getOwner(),
                         this.penaltyForShiftTripletOutsideWeekend
                 );
     }

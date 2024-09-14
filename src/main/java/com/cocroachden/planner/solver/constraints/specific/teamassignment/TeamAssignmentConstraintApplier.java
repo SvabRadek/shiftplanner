@@ -2,6 +2,7 @@ package com.cocroachden.planner.solver.constraints.specific.teamassignment;
 
 import com.cocroachden.planner.solver.constraints.ConstraintApplier;
 import com.cocroachden.planner.solver.constraints.ConstraintRequest;
+import com.cocroachden.planner.solver.constraints.specific.AbstractEmployeeSpecificConstraint;
 import com.cocroachden.planner.solver.constraints.specific.teamassignment.request.TeamAssignmentRequest;
 import com.cocroachden.planner.solver.service.SolutionObjectives;
 import com.cocroachden.planner.solver.service.schedule.SchedulePlan;
@@ -13,14 +14,13 @@ public class TeamAssignmentConstraintApplier implements ConstraintApplier {
     @Override
     public void apply(SchedulePlan schedulePlan, CpModel model, SolutionObjectives objective, ConstraintRequest constraintRequest) {
         var teamRequest = (TeamAssignmentRequest) constraintRequest;
-        if (teamRequest.getOwner().isEmpty()) return;
         if (teamRequest.getIsLeader()) return;
-        var employee = teamRequest.getOwner().orElseThrow();
+        var employee = teamRequest.getOwner();
         var teamLeader = schedulePlan.getAllConstraintsOfType(TeamAssignmentRequest.class).stream()
                 .filter(r -> r.getTeamId().equals(teamRequest.getTeamId()))
                 .filter(TeamAssignmentRequest::getIsLeader)
                 .findFirst()
-                .map(request -> request.getOwner().orElseThrow())
+                .map(AbstractEmployeeSpecificConstraint::getOwner)
                 .orElseThrow(() -> new IllegalArgumentException("There is no team leader in team [%s].".formatted(teamRequest.getTeamId())));
         schedulePlan.getAllScheduleDatesAsStream()
                 .forEach(date -> {

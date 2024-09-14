@@ -63,7 +63,7 @@ public class ShiftsPerScheduleRequest extends AbstractMinMaxRequest {
     return "{ type: %s, owner: %s, targetShift: %s, hardMin: %s, softMin: %s, minPenalty: %s, softMax: %s, maxPenalty: %s, hardMax: %s }"
         .formatted(
             this.getType(),
-            this.getOwner().isPresent() ? getOwner().get().getId() : "null",
+            this.getOwner().getId(),
             this.getTargetShift().getSymbol(),
             this.getHardMin(),
             this.getSoftMin(),

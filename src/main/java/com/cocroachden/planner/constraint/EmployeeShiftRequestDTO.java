@@ -19,7 +19,7 @@ public class EmployeeShiftRequestDTO implements ConstraintRequestDTO {
     return new EmployeeShiftRequestDTO(
         id,
         EmployeeShiftRequest.TYPE,
-        request.getOwner().orElseThrow(),
+        request.getOwner(),
         request.getDate(),
         request.getRequestedShift()
     );

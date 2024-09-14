@@ -7,23 +7,19 @@ import com.cocroachden.planner.solver.constraints.ConstraintRequest;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
-
-import java.util.Optional;
 
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @JsonTypeName("AbstractEmployeeSpecificConstraint")
 public abstract class AbstractEmployeeSpecificConstraint implements ConstraintRequest {
   private ConstraintType type;
+  @Getter
   private EmployeeId owner;
 
   @Override
   public ConstraintType getType() {
     return this.type;
-  }
-
-  public Optional<EmployeeId> getOwner() {
-    return Optional.ofNullable(this.owner);
   }
 }

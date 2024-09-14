@@ -13,42 +13,36 @@ import java.time.LocalDate;
 import java.util.Map;
 
 public class ShiftPatternConstraintApplier implements ConstraintApplier {
-  @Override
-  public void apply(SchedulePlan schedulePlan, CpModel model, SolutionObjectives objective, ConstraintRequest constraintRequest) {
-    var request = (ShiftPatternConstraintRequest) constraintRequest;
-    var owner = request.getOwner();
-    if (owner.isEmpty()) {
-      schedulePlan.getAssignments().forEach((employeeId, assignments) -> {
-        this.applyConstraint(model, objective, assignments, request, schedulePlan.getWeightForEmployee(employeeId));
-      });
-    } else {
-      var assignments = schedulePlan.getAssignments().get(owner.get());
-      this.applyConstraint(model, objective, assignments, request, schedulePlan.getWeightForEmployee(owner.get()));
+    @Override
+    public void apply(SchedulePlan schedulePlan, CpModel model, SolutionObjectives objective, ConstraintRequest constraintRequest) {
+        var request = (ShiftPatternConstraintRequest) constraintRequest;
+        var owner = request.getOwner();
+        var assignments = schedulePlan.getAssignments().get(owner);
+        this.applyConstraint(model, objective, assignments, request, schedulePlan.getWeightForEmployee(owner));
     }
-  }
 
-  private void applyConstraint(
-      CpModel model,
-      SolutionObjectives objective,
-      Map<LocalDate, ScheduleDay> assignments,
-      ShiftPatternConstraintRequest request,
-      Integer weight
-  ) {
-    var pattern = request.getShiftPattern();
-    var patternSize = request.getShiftPattern().length;
-    var startIndex = request.getStartDateIndex();
+    private void applyConstraint(
+            CpModel model,
+            SolutionObjectives objective,
+            Map<LocalDate, ScheduleDay> assignments,
+            ShiftPatternConstraintRequest request,
+            Integer weight
+    ) {
+        var pattern = request.getShiftPattern();
+        var patternSize = request.getShiftPattern().length;
+        var startIndex = request.getStartDateIndex();
 
-    var workDays = assignments.values().stream().toList();
-    for (int i = 0; i < assignments.size(); i++) {
-      var adjustedIndex = (i + startIndex) % patternSize;
-      var shiftForGivenDay = pattern[adjustedIndex];
-      workDays.get(adjustedIndex).getShifts(shiftForGivenDay)
-          .forEach(s -> objective.addBoolCost(s, (request.getReward() * -1) * weight));
+        var workDays = assignments.values().stream().toList();
+        for (int i = 0; i < assignments.size(); i++) {
+            var adjustedIndex = (i + startIndex) % patternSize;
+            var shiftForGivenDay = pattern[adjustedIndex];
+            workDays.get(adjustedIndex).getShifts(shiftForGivenDay)
+                    .forEach(s -> objective.addBoolCost(s, (request.getReward() * -1) * weight));
+        }
     }
-  }
 
-  @Override
-  public boolean supports(ConstraintRequest request) {
-    return request instanceof ShiftPatternConstraintRequest;
-  }
+    @Override
+    public boolean supports(ConstraintRequest request) {
+        return request instanceof ShiftPatternConstraintRequest;
+    }
 }

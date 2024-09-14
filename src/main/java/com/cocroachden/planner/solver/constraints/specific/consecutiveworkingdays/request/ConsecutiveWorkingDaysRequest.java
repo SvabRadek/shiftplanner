@@ -67,7 +67,7 @@ public class ConsecutiveWorkingDaysRequest extends AbstractMinMaxRequest {
         ", softMax: " + this.getSoftMax() +
         ", maxPenalty: " + this.getMaxPenalty() +
         ", hardMax: " + this.getHardMax() +
-        ", owner: " + (this.getOwner().isPresent() ? this.getOwner().get() : "none") +
+        ", owner: " + this.getOwner() +
         " }";
   }
 }

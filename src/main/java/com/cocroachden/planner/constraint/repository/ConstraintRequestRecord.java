@@ -31,14 +31,26 @@ public class ConstraintRequestRecord {
   @Column(length = 1024)
   private ConstraintRequest request;
 
-  public ConstraintRequestRecord(ConstraintRequest request) {
+  public ConstraintRequestRecord(
+          ConstraintId constraintId,
+          ConstraintRequest request,
+          SolverConfigurationRecord parent) {
+    this.id = constraintId;
     this.request = request;
     this.type = request.getType();
+    this.parent = parent;
   }
 
-  public ConstraintRequestRecord(EmployeeRecord owner, ConstraintRequest request) {
+  public ConstraintRequestRecord(
+          ConstraintId constraintId,
+          ConstraintRequest request,
+          SolverConfigurationRecord parent,
+          EmployeeRecord owner
+  ) {
+    this.id = constraintId;
     this.owner = owner;
     this.request = request;
     this.type = request.getType();
+    this.parent = parent;
   }
 }

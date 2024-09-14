@@ -42,7 +42,7 @@ public class EmployeeShiftRequest extends AbstractEmployeeSpecificConstraint {
   public String toString() {
     return "{ " +
         "type: " + this.getType() +
-        ", owner: " + this.getOwner().orElse(null) +
+        ", owner: " + this.getOwner() +
         ", date: " + date +
         ", requestedShift: " + requestedShift +
         " }";
