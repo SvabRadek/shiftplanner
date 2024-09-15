@@ -2,101 +2,101 @@ package com.cocroachden.planner.constraint.mapping;
 
 import com.cocroachden.planner.constraint.*;
 import com.cocroachden.planner.constraint.repository.ConstraintRecord;
-import com.cocroachden.planner.solver.constraints.ConstraintRequest;
-import com.cocroachden.planner.solver.constraints.specific.consecutiveworkingdays.request.ConsecutiveWorkingDaysRequest;
-import com.cocroachden.planner.solver.constraints.specific.employeeshiftrequest.request.EmployeeShiftRequest;
-import com.cocroachden.planner.solver.constraints.specific.employeespershift.request.EmployeesPerShiftRequest;
-import com.cocroachden.planner.solver.constraints.specific.evenshiftdistribution.request.EvenShiftDistributionRequest;
-import com.cocroachden.planner.solver.constraints.specific.shiftfollowuprestriction.request.ShiftFollowUpRestrictionRequest;
-import com.cocroachden.planner.solver.constraints.specific.shiftpattern.request.ShiftPatternConstraintRequest;
-import com.cocroachden.planner.solver.constraints.specific.shiftperschedule.request.ShiftsPerScheduleRequest;
-import com.cocroachden.planner.solver.constraints.specific.teamassignment.request.TeamAssignmentRequest;
-import com.cocroachden.planner.solver.constraints.specific.tripleshift.request.TripleShiftConstraintRequest;
-import com.cocroachden.planner.solver.constraints.specific.weekends.request.WeekendRequest;
+import com.cocroachden.planner.solver.constraints.SolverConstraint;
+import com.cocroachden.planner.solver.constraints.specific.consecutiveworkingdays.request.ConsecutiveWorkingDaysConstraint;
+import com.cocroachden.planner.solver.constraints.specific.employeeshiftrequest.request.RequestedShiftConstraint;
+import com.cocroachden.planner.solver.constraints.specific.employeespershift.request.EmployeesPerShiftConstraint;
+import com.cocroachden.planner.solver.constraints.specific.evenshiftdistribution.request.EvenShiftDistributionConstraint;
+import com.cocroachden.planner.solver.constraints.specific.shiftfollowuprestriction.request.ShiftFollowUpRestrictionConstraint;
+import com.cocroachden.planner.solver.constraints.specific.shiftpattern.request.ShiftPatternConstraint;
+import com.cocroachden.planner.solver.constraints.specific.shiftperschedule.request.ShiftsPerScheduleConstraint;
+import com.cocroachden.planner.solver.constraints.specific.teamassignment.request.TeamAssignmentConstraint;
+import com.cocroachden.planner.solver.constraints.specific.tripleshift.request.TripleShiftConstraint;
+import com.cocroachden.planner.solver.constraints.specific.weekends.request.WeekendConstraint;
 
 public class ConstraintMapper {
 
-    public static ConstraintRequestDTO fromRecord(ConstraintRecord record) {
+    public static ConstraintDTO fromRecord(ConstraintRecord record) {
         var request = record.getRequest();
         switch (record.getType()) {
-            case EMPLOYEE_SHIFT_REQUEST -> {
-                return EmployeeShiftRequestDTO.from(record.getId(), (EmployeeShiftRequest) record.getRequest());
+            case REQUESTED_SHIFT_CONSTRAINT -> {
+                return EmployeeShiftConstraintDTO.from(record.getId(), (RequestedShiftConstraint) record.getRequest());
             }
-            case SHIFT_PER_SCHEDULE -> {
-                return ShiftsPerScheduleRequestDTO.from(record.getId(), (ShiftsPerScheduleRequest) record.getRequest());
+            case SHIFTS_PER_SCHEDULE -> {
+                return ShiftsPerScheduleConstraintDTO.from(record.getId(), (ShiftsPerScheduleConstraint) record.getRequest());
             }
             case CONSECUTIVE_WORKING_DAYS -> {
-                return ConsecutiveWorkingDaysRequestDTO.from(
+                return ConsecutiveWorkingDaysConstraintDTO.from(
                         record.getId(),
-                        (ConsecutiveWorkingDaysRequest) record.getRequest()
+                        (ConsecutiveWorkingDaysConstraint) record.getRequest()
                 );
             }
             case ONE_SHIFT_PER_DAY -> {
                 return null;
             }
             case SHIFT_FOLLOW_UP_RESTRICTION -> {
-                return ShiftFollowupRestrictionRequestDTO.from(
+                return ShiftFollowupRestrictionConstraintDTO.from(
                         record.getId(),
-                        (ShiftFollowUpRestrictionRequest) record.getRequest()
+                        (ShiftFollowUpRestrictionConstraint) record.getRequest()
                 );
             }
             case SHIFT_PATTERN_CONSTRAINT -> {
-                return ShiftPatternRequestDTO.from(record.getId(), (ShiftPatternConstraintRequest) record.getRequest());
+                return ShiftPatternConstraintDTO.from(record.getId(), (ShiftPatternConstraint) record.getRequest());
             }
             case EMPLOYEES_PER_SHIFT -> {
-                return EmployeesPerShiftRequestDTO.from(record.getId(), (EmployeesPerShiftRequest) record.getRequest());
+                return EmployeesPerShiftConstraintDTO.from(record.getId(), (EmployeesPerShiftConstraint) record.getRequest());
             }
             case TRIPLE_SHIFTS_CONSTRAINT -> {
-                return TripleShiftConstraintRequestDTO.from(record.getId(), (TripleShiftConstraintRequest) record.getRequest());
+                return TripleShiftConstraintDTO.from(record.getId(), (TripleShiftConstraint) record.getRequest());
             }
             case TEAM_ASSIGNMENT -> {
-                return TeamAssignmentRequestDTO.from(record.getId(), (TeamAssignmentRequest) record.getRequest());
+                return TeamAssignmentConstraintDTO.from(record.getId(), (TeamAssignmentConstraint) record.getRequest());
             }
-            case WEEKEND_REQUEST -> {
-                return WeekendRequestDTO.from(record.getId(), (WeekendRequest) record.getRequest());
+            case WEEKEND_CONSTRAINT -> {
+                return WeekendConstraintDTO.from(record.getId(), (WeekendConstraint) record.getRequest());
             }
             case EVEN_SHIFT_DISTRIBUTION -> {
-                return EvenShiftDistributionRequestDTO.from(record.getId(), (EvenShiftDistributionRequest) record.getRequest());
+                return EvenShiftDistributionConstraintDTO.from(record.getId(), (EvenShiftDistributionConstraint) record.getRequest());
             }
         }
         throw new IllegalArgumentException("Cannot remap requested type: " + request.getType());
     }
 
-    public static <T extends ConstraintRequestDTO> T specificFromRecord(ConstraintRecord record, Class<T> clazz) {
+    public static <T extends ConstraintDTO> T specificFromRecord(ConstraintRecord record, Class<T> clazz) {
         return clazz.cast(fromRecord(record));
     }
 
-    public static ConstraintRequest fromDto(ConstraintRequestDTO dto) {
+    public static SolverConstraint fromDto(ConstraintDTO dto) {
         switch (dto.getType()) {
-            case EMPLOYEE_SHIFT_REQUEST -> {
-                return EmployeeShiftRequest.from((EmployeeShiftRequestDTO) dto);
+            case REQUESTED_SHIFT_CONSTRAINT -> {
+                return RequestedShiftConstraint.from((EmployeeShiftConstraintDTO) dto);
             }
-            case SHIFT_PER_SCHEDULE -> {
-                return ShiftsPerScheduleRequest.from((ShiftsPerScheduleRequestDTO) dto);
+            case SHIFTS_PER_SCHEDULE -> {
+                return ShiftsPerScheduleConstraint.from((ShiftsPerScheduleConstraintDTO) dto);
             }
             case CONSECUTIVE_WORKING_DAYS -> {
-                return ConsecutiveWorkingDaysRequest.from((ConsecutiveWorkingDaysRequestDTO) dto);
+                return ConsecutiveWorkingDaysConstraint.from((ConsecutiveWorkingDaysConstraintDTO) dto);
             }
             case SHIFT_FOLLOW_UP_RESTRICTION -> {
-                return ShiftFollowUpRestrictionRequest.from((ShiftFollowupRestrictionRequestDTO) dto);
+                return ShiftFollowUpRestrictionConstraint.from((ShiftFollowupRestrictionConstraintDTO) dto);
             }
             case SHIFT_PATTERN_CONSTRAINT -> {
-                return ShiftPatternConstraintRequest.from((ShiftPatternRequestDTO) dto);
+                return ShiftPatternConstraint.from((ShiftPatternConstraintDTO) dto);
             }
             case EMPLOYEES_PER_SHIFT -> {
-                return EmployeesPerShiftRequest.from((EmployeesPerShiftRequestDTO) dto);
+                return EmployeesPerShiftConstraint.from((EmployeesPerShiftConstraintDTO) dto);
             }
             case TRIPLE_SHIFTS_CONSTRAINT -> {
-                return TripleShiftConstraintRequest.from((TripleShiftConstraintRequestDTO) dto);
+                return TripleShiftConstraint.from((TripleShiftConstraintDTO) dto);
             }
             case TEAM_ASSIGNMENT -> {
-                return TeamAssignmentRequest.from((TeamAssignmentRequestDTO) dto);
+                return TeamAssignmentConstraint.from((TeamAssignmentConstraintDTO) dto);
             }
-            case WEEKEND_REQUEST -> {
-                return WeekendRequest.from((WeekendRequestDTO) dto);
+            case WEEKEND_CONSTRAINT -> {
+                return WeekendConstraint.from((WeekendConstraintDTO) dto);
             }
             case EVEN_SHIFT_DISTRIBUTION -> {
-                return EvenShiftDistributionRequest.from((EvenShiftDistributionRequestDTO) dto);
+                return EvenShiftDistributionConstraint.from((EvenShiftDistributionConstraintDTO) dto);
             }
             case ONE_SHIFT_PER_DAY -> throw new IllegalArgumentException("Should not be part of api exchange");
         }

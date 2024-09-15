@@ -1,8 +1,8 @@
 package com.cocroachden.planner.solver.constraints.specific.tripleshift;
 
 import com.cocroachden.planner.solver.constraints.ConstraintApplier;
-import com.cocroachden.planner.solver.constraints.ConstraintRequest;
-import com.cocroachden.planner.solver.constraints.specific.tripleshift.request.TripleShiftConstraintRequest;
+import com.cocroachden.planner.solver.constraints.SolverConstraint;
+import com.cocroachden.planner.solver.constraints.specific.tripleshift.request.TripleShiftConstraint;
 import com.cocroachden.planner.solver.service.SolutionObjectives;
 import com.cocroachden.planner.solver.service.schedule.SchedulePlan;
 import com.cocroachden.planner.solver.service.schedule.ScheduleDay;
@@ -18,8 +18,8 @@ import java.util.Map;
 
 public class TripleShiftConstraintApplier implements ConstraintApplier {
     @Override
-    public void apply(SchedulePlan schedulePlan, CpModel model, SolutionObjectives objective, ConstraintRequest constraintRequest) {
-        var tripletRequest = (TripleShiftConstraintRequest) constraintRequest;
+    public void apply(SchedulePlan schedulePlan, CpModel model, SolutionObjectives objective, SolverConstraint solverConstraint) {
+        var tripletRequest = (TripleShiftConstraint) solverConstraint;
         var employee = tripletRequest.getOwner();
         if (!tripletRequest.getAreAllowed()) {
             var days = schedulePlan.getAllDaysForEmployee(employee);
@@ -53,7 +53,7 @@ public class TripleShiftConstraintApplier implements ConstraintApplier {
             SolutionObjectives objective,
             Integer weight,
             Map<LocalDate, ScheduleDay> days,
-            TripleShiftConstraintRequest tripletRequest
+            TripleShiftConstraint tripletRequest
     ) {
         schedulePlan.getStartDate().plusDays(1).datesUntil(schedulePlan.getLastDate())
                 .forEach(date -> {
@@ -82,8 +82,8 @@ public class TripleShiftConstraintApplier implements ConstraintApplier {
     }
 
     @Override
-    public boolean supports(ConstraintRequest request) {
-        return request instanceof TripleShiftConstraintRequest;
+    public boolean supports(SolverConstraint request) {
+        return request instanceof TripleShiftConstraint;
     }
 
     private boolean isWeekend(LocalDate date) {

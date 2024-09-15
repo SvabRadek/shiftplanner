@@ -1,9 +1,9 @@
 package com.cocroachden.planner.solverconfiguration.validations.employee;
 
-import com.cocroachden.planner.constraint.ConsecutiveWorkingDaysRequestDTO;
-import com.cocroachden.planner.constraint.ConstraintRequestDTO;
-import com.cocroachden.planner.constraint.EmployeeShiftRequestDTO;
-import com.cocroachden.planner.constraint.ShiftsPerScheduleRequestDTO;
+import com.cocroachden.planner.constraint.ConsecutiveWorkingDaysConstraintDTO;
+import com.cocroachden.planner.constraint.ConstraintDTO;
+import com.cocroachden.planner.constraint.EmployeeShiftConstraintDTO;
+import com.cocroachden.planner.constraint.ShiftsPerScheduleConstraintDTO;
 import com.cocroachden.planner.solverconfiguration.validations.IssueSeverity;
 import com.cocroachden.planner.solverconfiguration.SolverConfigurationDTO;
 import com.cocroachden.planner.solver.api.WorkShifts;
@@ -21,8 +21,8 @@ public class ConstraintEmployeeValidator {
     var constraints = solverConfig.getConstraints();
     issues.addAll(
         solverConfig.getConstraints().stream()
-            .filter(c -> c instanceof ShiftsPerScheduleRequestDTO)
-            .map(c -> (ShiftsPerScheduleRequestDTO) c)
+            .filter(c -> c instanceof ShiftsPerScheduleConstraintDTO)
+            .map(c -> (ShiftsPerScheduleConstraintDTO) c)
             .map(r -> validateShiftsPerSchedule(r, solverConfig))
             .flatMap(Collection::stream)
             .toList()
@@ -32,15 +32,15 @@ public class ConstraintEmployeeValidator {
   }
 
   private static List<EmployeeValidationIssue> validateShiftsPerSchedule(
-      ShiftsPerScheduleRequestDTO shiftPerSchedule,
+      ShiftsPerScheduleConstraintDTO shiftPerSchedule,
       SolverConfigurationDTO configuration
   ) {
     var issues = new ArrayList<EmployeeValidationIssue>();
     var daysInSchedule = configuration.getStartDate().datesUntil(configuration.getEndDate()).count();
     var constraints = configuration.getConstraints();
     var employeeSpecificRequests = constraints.stream()
-        .filter(r -> r instanceof EmployeeShiftRequestDTO)
-        .map(r -> (EmployeeShiftRequestDTO) r)
+        .filter(r -> r instanceof EmployeeShiftConstraintDTO)
+        .map(r -> (EmployeeShiftConstraintDTO) r)
         .filter(r -> r.getOwner().equals(shiftPerSchedule.getOwner()))
         .toList();
     var requestedDaysOff = employeeSpecificRequests.stream()
@@ -69,11 +69,11 @@ public class ConstraintEmployeeValidator {
 
   private static List<EmployeeValidationIssue> validateConsecutiveWorkingDays(
       SolverConfigurationDTO configuration,
-      List<ConstraintRequestDTO> constraints
+      List<ConstraintDTO> constraints
   ) {
     var consecutiveWorkingDaysRequests = constraints.stream()
-        .filter(c -> c instanceof ConsecutiveWorkingDaysRequestDTO)
-        .map(c -> (ConsecutiveWorkingDaysRequestDTO) c)
+        .filter(c -> c instanceof ConsecutiveWorkingDaysConstraintDTO)
+        .map(c -> (ConsecutiveWorkingDaysConstraintDTO) c)
         .toList();
     return consecutiveWorkingDaysRequests.stream()
         .filter(c -> c.getTargetShift().equals(WorkShifts.WORKING_SHIFTS))
@@ -84,11 +84,11 @@ public class ConstraintEmployeeValidator {
           return configuration.getEmployees().stream()
               .map(assignment -> {
                 var datesOfWorkRequests = constraints.stream()
-                    .filter(c1 -> c1 instanceof EmployeeShiftRequestDTO)
-                    .map(c1 -> (EmployeeShiftRequestDTO) c1)
+                    .filter(c1 -> c1 instanceof EmployeeShiftConstraintDTO)
+                    .map(c1 -> (EmployeeShiftConstraintDTO) c1)
                     .filter(c1 -> c1.getOwner().equals(assignment.getEmployeeId()))
                     .filter(c1 -> c1.getRequestedShift().isSameAs(WorkShifts.WORKING_SHIFTS))
-                    .map(EmployeeShiftRequestDTO::getDate)
+                    .map(EmployeeShiftConstraintDTO::getDate)
                     .collect(Collectors.toMap(Function.identity(), Function.identity()));
 
                 var isOverLimit = datesOfWorkRequests.values().stream()

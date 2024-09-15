@@ -2,11 +2,11 @@ package com.cocroachden.planner.solver.constraints.specific.shiftperday.request;
 
 
 import com.cocroachden.planner.constraint.ConstraintType;
-import com.cocroachden.planner.solver.constraints.ConstraintRequest;
+import com.cocroachden.planner.solver.constraints.SolverConstraint;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 
-@JsonTypeName("OneShiftPerDayRequest")
-public class OneShiftPerDayRequest implements ConstraintRequest {
+@JsonTypeName("OneShiftPerDayConstraint")
+public class OneShiftPerDayConstraint implements SolverConstraint {
   @Override
   public ConstraintType getType() {
     return ConstraintType.ONE_SHIFT_PER_DAY;

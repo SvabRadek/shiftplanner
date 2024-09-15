@@ -2,7 +2,7 @@ package com.cocroachden.planner.constraint.repository;
 
 import com.cocroachden.planner.constraint.ConstraintType;
 import com.cocroachden.planner.employee.repository.EmployeeRecord;
-import com.cocroachden.planner.solver.constraints.ConstraintRequest;
+import com.cocroachden.planner.solver.constraints.SolverConstraint;
 import com.cocroachden.planner.solverconfiguration.repository.SolverConfigurationRecord;
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -28,9 +28,9 @@ public class ConstraintRecord {
   private ConstraintType type;
 
   @Column(length = 1024)
-  private ConstraintRequest request;
+  private SolverConstraint request;
 
-  public ConstraintRecord setRequest(ConstraintRequest request) {
+  public ConstraintRecord setRequest(SolverConstraint request) {
     this.type = request.getType();
     this.request = request;
     return this;

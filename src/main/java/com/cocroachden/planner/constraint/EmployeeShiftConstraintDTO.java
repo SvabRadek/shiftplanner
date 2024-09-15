@@ -1,7 +1,7 @@
 package com.cocroachden.planner.constraint;
 
 import com.cocroachden.planner.solver.api.WorkShifts;
-import com.cocroachden.planner.solver.constraints.specific.employeeshiftrequest.request.EmployeeShiftRequest;
+import com.cocroachden.planner.solver.constraints.specific.employeeshiftrequest.request.RequestedShiftConstraint;
 import dev.hilla.Nonnull;
 import lombok.*;
 
@@ -10,9 +10,9 @@ import java.time.LocalDate;
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
-public class EmployeeShiftRequestDTO implements ConstraintRequestDTO {
-    public static EmployeeShiftRequestDTO from(String id, EmployeeShiftRequest request) {
-        return new EmployeeShiftRequestDTO(
+public class EmployeeShiftConstraintDTO implements ConstraintDTO {
+    public static EmployeeShiftConstraintDTO from(String id, RequestedShiftConstraint request) {
+        return new EmployeeShiftConstraintDTO(
                 id,
                 request.getOwner().getId(),
                 request.getDate(),
@@ -21,7 +21,7 @@ public class EmployeeShiftRequestDTO implements ConstraintRequestDTO {
     }
 
     @Nonnull
-    private final ConstraintType type = ConstraintType.EMPLOYEE_SHIFT_REQUEST;
+    private final ConstraintType type = ConstraintType.REQUESTED_SHIFT_CONSTRAINT;
     @Nonnull
     @Setter
     private String id;

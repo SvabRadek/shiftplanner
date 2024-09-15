@@ -1,9 +1,9 @@
 package com.cocroachden.planner.solver.constraints.specific.tripleshift.request;
 
-import com.cocroachden.planner.constraint.TripleShiftConstraintRequestDTO;
+import com.cocroachden.planner.constraint.TripleShiftConstraintDTO;
 import com.cocroachden.planner.constraint.ConstraintType;
 import com.cocroachden.planner.employee.EmployeeId;
-import com.cocroachden.planner.solver.constraints.specific.EmployeeConstraint;
+import com.cocroachden.planner.solver.constraints.specific.EmployeeSolverConstraint;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -11,12 +11,12 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Getter
-@JsonTypeName("TripleShiftConstraintRequest")
+@JsonTypeName("TripleShiftConstraint")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
-public class TripleShiftConstraintRequest implements EmployeeConstraint {
-    public static TripleShiftConstraintRequest from(TripleShiftConstraintRequestDTO requestDTO) {
-        return new TripleShiftConstraintRequest(
+public class TripleShiftConstraint implements EmployeeSolverConstraint {
+    public static TripleShiftConstraint from(TripleShiftConstraintDTO requestDTO) {
+        return new TripleShiftConstraint(
                 EmployeeId.from(requestDTO.getOwner()),
                 requestDTO.getAreAllowed(),
                 requestDTO.getPenaltyForShiftTripletOutsideWeekend()

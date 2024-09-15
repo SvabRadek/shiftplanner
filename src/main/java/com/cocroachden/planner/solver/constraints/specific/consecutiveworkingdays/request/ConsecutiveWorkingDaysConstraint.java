@@ -1,24 +1,23 @@
 package com.cocroachden.planner.solver.constraints.specific.consecutiveworkingdays.request;
 
 
-import com.cocroachden.planner.constraint.ConsecutiveWorkingDaysRequestDTO;
+import com.cocroachden.planner.constraint.ConsecutiveWorkingDaysConstraintDTO;
 import com.cocroachden.planner.constraint.ConstraintType;
 import com.cocroachden.planner.employee.EmployeeId;
 import com.cocroachden.planner.solver.api.WorkShifts;
-import com.cocroachden.planner.solver.constraints.ConstraintRequest;
-import com.cocroachden.planner.solver.constraints.specific.AbstractMinMaxRequest;
-import com.cocroachden.planner.solver.constraints.specific.EmployeeConstraint;
+import com.cocroachden.planner.solver.constraints.specific.AbstractMinMaxConstraint;
+import com.cocroachden.planner.solver.constraints.specific.EmployeeSolverConstraint;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Getter
-@JsonTypeName("ConsecutiveWorkingDaysRequest")
+@JsonTypeName("ConsecutiveWorkingDaysConstraint")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class ConsecutiveWorkingDaysRequest extends AbstractMinMaxRequest implements EmployeeConstraint {
-    public static ConsecutiveWorkingDaysRequest from(ConsecutiveWorkingDaysRequestDTO dto) {
-        return new ConsecutiveWorkingDaysRequest(
+public class ConsecutiveWorkingDaysConstraint extends AbstractMinMaxConstraint implements EmployeeSolverConstraint {
+    public static ConsecutiveWorkingDaysConstraint from(ConsecutiveWorkingDaysConstraintDTO dto) {
+        return new ConsecutiveWorkingDaysConstraint(
                 EmployeeId.from(dto.getOwner()),
                 dto.getTargetShift(),
                 dto.getHardMin(),
@@ -33,7 +32,7 @@ public class ConsecutiveWorkingDaysRequest extends AbstractMinMaxRequest impleme
     private EmployeeId owner;
     private WorkShifts targetShift;
 
-    public ConsecutiveWorkingDaysRequest(
+    public ConsecutiveWorkingDaysConstraint(
             EmployeeId owner,
             WorkShifts targetShift,
             Integer hardMin,

@@ -1,15 +1,15 @@
 package com.cocroachden.planner.constraint;
 
-import com.cocroachden.planner.solver.constraints.specific.evenshiftdistribution.request.EvenShiftDistributionRequest;
+import com.cocroachden.planner.solver.constraints.specific.evenshiftdistribution.request.EvenShiftDistributionConstraint;
 import dev.hilla.Nonnull;
 import lombok.*;
 
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
-public class EvenShiftDistributionRequestDTO implements ConstraintRequestDTO {
-    public static EvenShiftDistributionRequestDTO from(String id, EvenShiftDistributionRequest request) {
-        return new EvenShiftDistributionRequestDTO(
+public class EvenShiftDistributionConstraintDTO implements ConstraintDTO {
+    public static EvenShiftDistributionConstraintDTO from(String id, EvenShiftDistributionConstraint request) {
+        return new EvenShiftDistributionConstraintDTO(
                 id,
                 request.getOwner().getId(),
                 request.getDistributeShiftsEvenlyThroughoutSchedule(),

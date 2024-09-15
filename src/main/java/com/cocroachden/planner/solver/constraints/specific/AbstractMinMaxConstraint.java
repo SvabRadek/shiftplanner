@@ -1,7 +1,7 @@
 package com.cocroachden.planner.solver.constraints.specific;
 
 
-import com.cocroachden.planner.solver.constraints.ConstraintRequest;
+import com.cocroachden.planner.solver.constraints.SolverConstraint;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -9,15 +9,15 @@ import lombok.NoArgsConstructor;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@JsonTypeName("AbstractMinMaxRequest")
-public abstract class AbstractMinMaxRequest implements ConstraintRequest {
+@JsonTypeName("AbstractMinMaxConstraint")
+public abstract class AbstractMinMaxConstraint implements SolverConstraint {
   private Integer softMin;
   private Integer minPenalty;
   private Integer hardMin;
   private Integer softMax;
   private Integer maxPenalty;
   private Integer hardMax;
-  public AbstractMinMaxRequest(
+  public AbstractMinMaxConstraint(
       Integer hardMin,
       Integer softMin,
       Integer minPenalty,

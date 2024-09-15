@@ -1,15 +1,15 @@
 package com.cocroachden.planner.constraint;
 
-import com.cocroachden.planner.solver.constraints.specific.tripleshift.request.TripleShiftConstraintRequest;
+import com.cocroachden.planner.solver.constraints.specific.tripleshift.request.TripleShiftConstraint;
 import dev.hilla.Nonnull;
 import lombok.*;
 
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
-public class TripleShiftConstraintRequestDTO implements ConstraintRequestDTO {
-    public static TripleShiftConstraintRequestDTO from(String id, TripleShiftConstraintRequest request) {
-        return new TripleShiftConstraintRequestDTO(
+public class TripleShiftConstraintDTO implements ConstraintDTO {
+    public static TripleShiftConstraintDTO from(String id, TripleShiftConstraint request) {
+        return new TripleShiftConstraintDTO(
                 id,
                 request.getOwner().getId(),
                 request.getPenaltyForShiftTripletOutsideWeekend(),

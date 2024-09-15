@@ -1,16 +1,15 @@
 package com.cocroachden.planner.constraint;
 
-import com.cocroachden.planner.solver.constraints.specific.weekends.request.WeekendRequest;
+import com.cocroachden.planner.solver.constraints.specific.weekends.request.WeekendConstraint;
 import dev.hilla.Nonnull;
 import lombok.*;
-import org.checkerframework.common.value.qual.StringVal;
 
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
-public class WeekendRequestDTO implements ConstraintRequestDTO {
-  public static WeekendRequestDTO from(String id, WeekendRequest request) {
-    return new WeekendRequestDTO(
+public class WeekendConstraintDTO implements ConstraintDTO {
+  public static WeekendConstraintDTO from(String id, WeekendConstraint request) {
+    return new WeekendConstraintDTO(
         id,
         request.getOwner().getId(),
         request.getAssignOnlyFullWorkingWeekends(),
@@ -19,7 +18,7 @@ public class WeekendRequestDTO implements ConstraintRequestDTO {
   }
 
   @Nonnull
-  private final ConstraintType type = ConstraintType.WEEKEND_REQUEST;
+  private final ConstraintType type = ConstraintType.WEEKEND_CONSTRAINT;
   @Nonnull
   @Setter
   private String id;

@@ -1,8 +1,7 @@
 package com.cocroachden.constraint.validations;
 
-import com.cocroachden.planner.constraint.ConstraintType;
-import com.cocroachden.planner.constraint.EmployeeShiftRequestDTO;
-import com.cocroachden.planner.constraint.EmployeesPerShiftRequestDTO;
+import com.cocroachden.planner.constraint.EmployeeShiftConstraintDTO;
+import com.cocroachden.planner.constraint.EmployeesPerShiftConstraintDTO;
 import com.cocroachden.planner.solverconfiguration.validations.day.ConstraintDayValidator;
 import com.cocroachden.planner.employee.EmployeeId;
 import com.cocroachden.planner.solverconfiguration.EmployeeAssignmentDTO;
@@ -20,7 +19,7 @@ class ConstraintDayValidatorTest {
 
     @Test
     public void itCanFindIssueWithMoreWorkersRequestingWorkingShiftsThanAllowed() {
-        var limitingRequest = new EmployeesPerShiftRequestDTO(
+        var limitingRequest = new EmployeesPerShiftConstraintDTO(
                 UUID.randomUUID().toString(),
                 WorkShifts.WORKING_SHIFTS,
                 0,
@@ -52,7 +51,7 @@ class ConstraintDayValidatorTest {
 
     @Test
     public void itCanFindIssueWithLessWorkersAvailableForWorkThanMinimumRequiredForGivenDay() {
-        var limitingRequest = new EmployeesPerShiftRequestDTO(
+        var limitingRequest = new EmployeesPerShiftConstraintDTO(
                 randomId(),
                 WorkShifts.WORKING_SHIFTS,
                 2,
@@ -82,12 +81,12 @@ class ConstraintDayValidatorTest {
                 "Zdá se, že lidí, kterým se dá přiřadit pracovní směna, je méně než povolené minimum.");
     }
 
-    private EmployeeShiftRequestDTO createSpecificShiftRequest(
+    private EmployeeShiftConstraintDTO createSpecificShiftRequest(
             EmployeeId owner,
             LocalDate date,
             WorkShifts shift
     ) {
-        return new EmployeeShiftRequestDTO(
+        return new EmployeeShiftConstraintDTO(
                 UUID.randomUUID().toString(),
                 owner.getId(),
                 date,

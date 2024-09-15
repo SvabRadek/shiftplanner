@@ -1,7 +1,7 @@
 package com.cocroachden.planner.solverconfiguration.validations.day;
 
-import com.cocroachden.planner.constraint.EmployeeShiftRequestDTO;
-import com.cocroachden.planner.constraint.EmployeesPerShiftRequestDTO;
+import com.cocroachden.planner.constraint.EmployeeShiftConstraintDTO;
+import com.cocroachden.planner.constraint.EmployeesPerShiftConstraintDTO;
 import com.cocroachden.planner.solverconfiguration.validations.IssueSeverity;
 import com.cocroachden.planner.solverconfiguration.SolverConfigurationDTO;
 import com.cocroachden.planner.solver.api.WorkShifts;
@@ -15,15 +15,15 @@ public class ConstraintDayValidator {
   public static List<DayValidationIssueDTO> validate(SolverConfigurationDTO configurationRecord) {
     var issues = new ArrayList<DayValidationIssueDTO>();
     configurationRecord.getConstraints().stream()
-        .filter(c -> c instanceof EmployeesPerShiftRequestDTO)
-        .map(c -> (EmployeesPerShiftRequestDTO) c)
+        .filter(c -> c instanceof EmployeesPerShiftConstraintDTO)
+        .map(c -> (EmployeesPerShiftConstraintDTO) c)
         .map(r -> validateEmployeesPerShiftLimit(r, configurationRecord))
         .forEach(issues::addAll);
     return issues;
   }
 
   private static List<DayValidationIssueDTO> validateEmployeesPerShiftLimit(
-      EmployeesPerShiftRequestDTO perShiftRequestDTO,
+      EmployeesPerShiftConstraintDTO perShiftRequestDTO,
       SolverConfigurationDTO configurationRecord
   ) {
     var constraints = configurationRecord.getConstraints();
@@ -32,8 +32,8 @@ public class ConstraintDayValidator {
     return startDate.datesUntil(endDate)
         .map(day -> {
           var shiftRequestsForGivenDay = constraints.stream()
-              .filter(c -> c instanceof EmployeeShiftRequestDTO)
-              .map(c -> (EmployeeShiftRequestDTO) c)
+              .filter(c -> c instanceof EmployeeShiftConstraintDTO)
+              .map(c -> (EmployeeShiftConstraintDTO) c)
               .filter(c -> c.getDate().equals(day))
               .toList();
           return evaluateGivenDay(configurationRecord, perShiftRequestDTO, day, shiftRequestsForGivenDay);
@@ -43,9 +43,9 @@ public class ConstraintDayValidator {
 
   private static List<DayValidationIssueDTO> evaluateGivenDay(
       SolverConfigurationDTO configurationDTO,
-      EmployeesPerShiftRequestDTO employeesPerShiftRequestDTO,
+      EmployeesPerShiftConstraintDTO employeesPerShiftRequestDTO,
       LocalDate day,
-      List<EmployeeShiftRequestDTO> requests
+      List<EmployeeShiftConstraintDTO> requests
   ) {
     var issues = new ArrayList<DayValidationIssueDTO>();
     var peopleInSchedule = configurationDTO.getEmployees().size();

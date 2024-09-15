@@ -1,7 +1,7 @@
 package com.cocroachden.planner.constraint.validations;
 
-import com.cocroachden.planner.constraint.EmployeeShiftRequestDTO;
-import com.cocroachden.planner.constraint.ShiftsPerScheduleRequestDTO;
+import com.cocroachden.planner.constraint.EmployeeShiftConstraintDTO;
+import com.cocroachden.planner.constraint.ShiftsPerScheduleConstraintDTO;
 import com.cocroachden.planner.employee.EmployeeId;
 import com.cocroachden.planner.solver.api.WorkShifts;
 import com.cocroachden.planner.solverconfiguration.EmployeeAssignmentDTO;
@@ -20,7 +20,7 @@ class ConstraintEmployeeValidatorTest {
   @Test
   public void itCanFindIssueWhenWorkerIsNotAvailableForMinimumNumberOfShiftsPerSchedule() {
     var employeeId = EmployeeId.random();
-    var shiftsPerSchedule = new ShiftsPerScheduleRequestDTO(
+    var shiftsPerSchedule = new ShiftsPerScheduleConstraintDTO(
         UUID.randomUUID().toString(),
         employeeId.getId(),
         WorkShifts.WORKING_SHIFTS,
@@ -47,19 +47,19 @@ class ConstraintEmployeeValidatorTest {
   @Test
   public void itCanFindIssueWhenWorkerRequestsMoreThanMaximumNumberOfShiftsPerSchedule() {
     var employeeId = EmployeeId.random();
-    var shiftsPerSchedule = new ShiftsPerScheduleRequestDTO(
+    var shiftsPerSchedule = new ShiftsPerScheduleConstraintDTO(
         UUID.randomUUID().toString(),
         employeeId.getId(),
         WorkShifts.WORKING_SHIFTS,
         0, 1, 1, 1, 1, 1
     );
-    var spec1 = new EmployeeShiftRequestDTO(
+    var spec1 = new EmployeeShiftConstraintDTO(
         UUID.randomUUID().toString(),
         employeeId.getId(),
         LocalDate.of(1, 1, 1),
         WorkShifts.DAY
     );
-    var spec2 = new EmployeeShiftRequestDTO(
+    var spec2 = new EmployeeShiftConstraintDTO(
         UUID.randomUUID().toString(),
         employeeId.getId(),
         LocalDate.of(1, 1, 2),

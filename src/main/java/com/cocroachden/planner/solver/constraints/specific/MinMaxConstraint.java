@@ -10,7 +10,7 @@ import com.google.ortools.sat.LinearExpr;
 public class MinMaxConstraint {
 
   public static void apply(
-      AbstractMinMaxRequest minMaxRequest,
+      AbstractMinMaxConstraint minMaxRequest,
       BoolVar[] shifts,
       Integer maxExcess,
       CpModel model,

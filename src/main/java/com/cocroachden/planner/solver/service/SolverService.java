@@ -5,7 +5,7 @@ import com.cocroachden.planner.solver.SolverConfiguration;
 import com.cocroachden.planner.solver.api.SolutionStatus;
 import com.cocroachden.planner.solver.api.SolverSolutionDTO;
 import com.cocroachden.planner.solver.constraints.GenericConstraintApplier;
-import com.cocroachden.planner.solver.constraints.specific.shiftperday.request.OneShiftPerDayRequest;
+import com.cocroachden.planner.solver.constraints.specific.shiftperday.request.OneShiftPerDayConstraint;
 import com.cocroachden.planner.solver.service.schedule.SchedulePlan;
 import com.cocroachden.planner.solver.service.solution.SolverSolutionCallback;
 import com.google.ortools.Loader;
@@ -41,12 +41,12 @@ public class SolverService {
     var model = new CpModel();
     var objectives = new SolutionObjectives();
     var schedulePlan = new SchedulePlan(solverConfiguration, model);
-    solverConfiguration.constraintRequests().forEach(request ->
+    solverConfiguration.solverConstraints().forEach(request ->
         constraintApplier.apply(schedulePlan, model, objectives, request)
     );
-    if (solverConfiguration.constraintRequests().stream().noneMatch(c -> c instanceof OneShiftPerDayRequest)) {
+    if (solverConfiguration.solverConstraints().stream().noneMatch(c -> c instanceof OneShiftPerDayConstraint)) {
       //Apply constraint to assign only one shift per day. It is so basic constraint it feels useless to have it in configuration
-      constraintApplier.apply(schedulePlan, model, objectives, new OneShiftPerDayRequest());
+      constraintApplier.apply(schedulePlan, model, objectives, new OneShiftPerDayConstraint());
     }
     this.cpSolver = new CpSolver();
     this.cpSolver.getParameters().setLinearizationLevel(0);

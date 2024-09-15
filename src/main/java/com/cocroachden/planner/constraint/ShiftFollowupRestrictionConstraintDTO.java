@@ -1,16 +1,16 @@
 package com.cocroachden.planner.constraint;
 
 import com.cocroachden.planner.solver.api.WorkShifts;
-import com.cocroachden.planner.solver.constraints.specific.shiftfollowuprestriction.request.ShiftFollowUpRestrictionRequest;
+import com.cocroachden.planner.solver.constraints.specific.shiftfollowuprestriction.request.ShiftFollowUpRestrictionConstraint;
 import dev.hilla.Nonnull;
 import lombok.*;
 
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
-public class ShiftFollowupRestrictionRequestDTO implements ConstraintRequestDTO {
-  public static ShiftFollowupRestrictionRequestDTO from(String id, ShiftFollowUpRestrictionRequest request) {
-    return new ShiftFollowupRestrictionRequestDTO(
+public class ShiftFollowupRestrictionConstraintDTO implements ConstraintDTO {
+  public static ShiftFollowupRestrictionConstraintDTO from(String id, ShiftFollowUpRestrictionConstraint request) {
+    return new ShiftFollowupRestrictionConstraintDTO(
         id,
         request.getOwner().getId(),
         request.getFirstShift(),

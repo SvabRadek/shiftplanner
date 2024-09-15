@@ -2,8 +2,8 @@ package com.cocroachden.planner.solver.constraints.specific.shiftperday;
 
 
 import com.cocroachden.planner.solver.constraints.ConstraintApplier;
-import com.cocroachden.planner.solver.constraints.ConstraintRequest;
-import com.cocroachden.planner.solver.constraints.specific.shiftperday.request.OneShiftPerDayRequest;
+import com.cocroachden.planner.solver.constraints.SolverConstraint;
+import com.cocroachden.planner.solver.constraints.specific.shiftperday.request.OneShiftPerDayConstraint;
 import com.cocroachden.planner.solver.service.SolutionObjectives;
 import com.cocroachden.planner.solver.service.schedule.SchedulePlan;
 import com.google.ortools.sat.CpModel;
@@ -12,7 +12,7 @@ import com.google.ortools.sat.LinearExpr;
 public class OneShiftPerDayConstraintApplier implements ConstraintApplier {
 
   @Override
-  public void apply(SchedulePlan schedulePlan, CpModel model, SolutionObjectives objective, ConstraintRequest constraintRequest) {
+  public void apply(SchedulePlan schedulePlan, CpModel model, SolutionObjectives objective, SolverConstraint solverConstraint) {
     schedulePlan.getAssignments().values().forEach(assignments -> {
       assignments.values().forEach(workDay -> {
         var shiftsInADay = LinearExpr.newBuilder()
@@ -25,7 +25,7 @@ public class OneShiftPerDayConstraintApplier implements ConstraintApplier {
   }
 
   @Override
-  public boolean supports(ConstraintRequest request) {
-    return request instanceof OneShiftPerDayRequest;
+  public boolean supports(SolverConstraint request) {
+    return request instanceof OneShiftPerDayConstraint;
   }
 }

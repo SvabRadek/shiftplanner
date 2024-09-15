@@ -22,12 +22,12 @@ public class GenericConstraintApplier {
       SchedulePlan schedulePlan,
       CpModel model,
       SolutionObjectives solutionObjectives,
-      ConstraintRequest request
+      SolverConstraint request
   ) {
       this.getSupportingConstraint(request).apply(schedulePlan, model, solutionObjectives, request);
   }
 
-  private ConstraintApplier getSupportingConstraint(ConstraintRequest request) {
+  private ConstraintApplier getSupportingConstraint(SolverConstraint request) {
     var supportingConstraints = this.constraintApplierList.stream()
         .filter(constraint -> constraint.supports(request))
         .toList();

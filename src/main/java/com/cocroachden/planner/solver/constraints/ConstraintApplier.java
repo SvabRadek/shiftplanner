@@ -6,7 +6,7 @@ import com.cocroachden.planner.solver.service.schedule.SchedulePlan;
 import com.google.ortools.sat.CpModel;
 
 public interface ConstraintApplier {
-  void apply(SchedulePlan schedulePlan, CpModel model, SolutionObjectives objective, ConstraintRequest constraintRequest);
+  void apply(SchedulePlan schedulePlan, CpModel model, SolutionObjectives objective, SolverConstraint solverConstraint);
 
-  boolean supports(ConstraintRequest request);
+  boolean supports(SolverConstraint request);
 }

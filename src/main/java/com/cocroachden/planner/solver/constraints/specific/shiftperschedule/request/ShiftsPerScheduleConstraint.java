@@ -1,10 +1,10 @@
 package com.cocroachden.planner.solver.constraints.specific.shiftperschedule.request;
 
 
-import com.cocroachden.planner.constraint.ShiftsPerScheduleRequestDTO;
+import com.cocroachden.planner.constraint.ShiftsPerScheduleConstraintDTO;
 import com.cocroachden.planner.constraint.ConstraintType;
 import com.cocroachden.planner.employee.EmployeeId;
-import com.cocroachden.planner.solver.constraints.specific.AbstractMinMaxRequest;
+import com.cocroachden.planner.solver.constraints.specific.AbstractMinMaxConstraint;
 import com.cocroachden.planner.solver.api.WorkShifts;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import lombok.AccessLevel;
@@ -12,11 +12,11 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Getter
-@JsonTypeName("ShiftsPerScheduleRequest")
+@JsonTypeName("ShiftsPerScheduleConstraint")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class ShiftsPerScheduleRequest extends AbstractMinMaxRequest {
-  public static ShiftsPerScheduleRequest from(ShiftsPerScheduleRequestDTO dto) {
-    return new ShiftsPerScheduleRequest(
+public class ShiftsPerScheduleConstraint extends AbstractMinMaxConstraint {
+  public static ShiftsPerScheduleConstraint from(ShiftsPerScheduleConstraintDTO dto) {
+    return new ShiftsPerScheduleConstraint(
         EmployeeId.from(dto.getOwner()),
         dto.getTargetShift(),
         dto.getHardMin(),
@@ -28,11 +28,11 @@ public class ShiftsPerScheduleRequest extends AbstractMinMaxRequest {
     );
   }
 
-  private final ConstraintType type = ConstraintType.SHIFT_PER_SCHEDULE;
+  private final ConstraintType type = ConstraintType.SHIFTS_PER_SCHEDULE;
   private EmployeeId owner;
   private WorkShifts targetShift;
 
-  public ShiftsPerScheduleRequest(
+  public ShiftsPerScheduleConstraint(
       EmployeeId owner,
       Integer hardMin,
       Integer softMin,
@@ -44,7 +44,7 @@ public class ShiftsPerScheduleRequest extends AbstractMinMaxRequest {
     this(owner, WorkShifts.WORKING_SHIFTS, hardMin, softMin, minPenalty, softMax, maxPenalty, hardMax);
   }
 
-  public ShiftsPerScheduleRequest(
+  public ShiftsPerScheduleConstraint(
       EmployeeId owner,
       WorkShifts targetShift,
       Integer hardMin,

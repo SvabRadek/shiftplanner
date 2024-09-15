@@ -1,16 +1,16 @@
 package com.cocroachden.planner.constraint;
 
-import com.cocroachden.planner.solver.constraints.specific.teamassignment.request.TeamAssignmentRequest;
+import com.cocroachden.planner.solver.constraints.specific.teamassignment.request.TeamAssignmentConstraint;
 import dev.hilla.Nonnull;
 import lombok.*;
 
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
-public class TeamAssignmentRequestDTO implements ConstraintRequestDTO {
+public class TeamAssignmentConstraintDTO implements ConstraintDTO {
 
-  public static TeamAssignmentRequestDTO from(String id, TeamAssignmentRequest request) {
-    return new TeamAssignmentRequestDTO(
+  public static TeamAssignmentConstraintDTO from(String id, TeamAssignmentConstraint request) {
+    return new TeamAssignmentConstraintDTO(
         id,
         request.getOwner().getId(),
         request.getTeamId(),

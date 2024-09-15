@@ -1,9 +1,9 @@
 package com.cocroachden.planner.solver.constraints.specific.consecutiveworkingdays;
 
 import com.cocroachden.planner.solver.constraints.ConstraintApplier;
-import com.cocroachden.planner.solver.constraints.ConstraintRequest;
+import com.cocroachden.planner.solver.constraints.SolverConstraint;
 import com.cocroachden.planner.solver.constraints.specific.MinMaxConstraint;
-import com.cocroachden.planner.solver.constraints.specific.consecutiveworkingdays.request.ConsecutiveWorkingDaysRequest;
+import com.cocroachden.planner.solver.constraints.specific.consecutiveworkingdays.request.ConsecutiveWorkingDaysConstraint;
 import com.cocroachden.planner.solver.service.SolutionObjectives;
 import com.cocroachden.planner.solver.service.schedule.SchedulePlan;
 import com.cocroachden.planner.solver.service.schedule.ScheduleDay;
@@ -16,8 +16,8 @@ import java.util.Map;
 
 public class ConsecutiveWorkingDaysConstraintApplier implements ConstraintApplier {
     @Override
-    public void apply(SchedulePlan schedulePlan, CpModel model, SolutionObjectives objective, ConstraintRequest constraintRequest) {
-        var request = (ConsecutiveWorkingDaysRequest) constraintRequest;
+    public void apply(SchedulePlan schedulePlan, CpModel model, SolutionObjectives objective, SolverConstraint solverConstraint) {
+        var request = (ConsecutiveWorkingDaysConstraint) solverConstraint;
         var owner = request.getOwner();
         var assignments = schedulePlan.getAssignments().get(owner);
         this.applyConstraint(model, objective, assignments, request, schedulePlan.getWeightForEmployee(owner));
@@ -27,7 +27,7 @@ public class ConsecutiveWorkingDaysConstraintApplier implements ConstraintApplie
             CpModel model,
             SolutionObjectives objective,
             Map<LocalDate, ScheduleDay> assignments,
-            ConsecutiveWorkingDaysRequest request,
+            ConsecutiveWorkingDaysConstraint request,
             Integer weight
     ) {
         var hardMax = request.getHardMax();
@@ -50,7 +50,7 @@ public class ConsecutiveWorkingDaysConstraintApplier implements ConstraintApplie
     }
 
     @Override
-    public boolean supports(ConstraintRequest request) {
-        return request instanceof ConsecutiveWorkingDaysRequest;
+    public boolean supports(SolverConstraint request) {
+        return request instanceof ConsecutiveWorkingDaysConstraint;
     }
 }

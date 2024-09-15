@@ -1,9 +1,9 @@
 package com.cocroachden.planner.solver.constraints.specific.employeespershift;
 
 import com.cocroachden.planner.solver.constraints.ConstraintApplier;
-import com.cocroachden.planner.solver.constraints.ConstraintRequest;
+import com.cocroachden.planner.solver.constraints.SolverConstraint;
 import com.cocroachden.planner.solver.constraints.specific.MinMaxConstraint;
-import com.cocroachden.planner.solver.constraints.specific.employeespershift.request.EmployeesPerShiftRequest;
+import com.cocroachden.planner.solver.constraints.specific.employeespershift.request.EmployeesPerShiftConstraint;
 import com.cocroachden.planner.solver.service.SolutionObjectives;
 import com.cocroachden.planner.solver.service.schedule.SchedulePlan;
 import com.google.ortools.sat.BoolVar;
@@ -13,8 +13,8 @@ import java.util.Collection;
 
 public class EmployeesPerShiftConstraintApplier implements ConstraintApplier {
   @Override
-  public void apply(SchedulePlan schedulePlan, CpModel model, SolutionObjectives objective, ConstraintRequest constraintRequest) {
-    var request = (EmployeesPerShiftRequest) constraintRequest;
+  public void apply(SchedulePlan schedulePlan, CpModel model, SolutionObjectives objective, SolverConstraint solverConstraint) {
+    var request = (EmployeesPerShiftConstraint) solverConstraint;
     var assignmentsByDate = schedulePlan.getAllAssignmentsByDate();
     assignmentsByDate.forEach((date, workDays) -> {
       var shiftAssignmentsInOneDay = workDays.stream()
@@ -33,7 +33,7 @@ public class EmployeesPerShiftConstraintApplier implements ConstraintApplier {
   }
 
   @Override
-  public boolean supports(ConstraintRequest request) {
-    return request instanceof EmployeesPerShiftRequest;
+  public boolean supports(SolverConstraint request) {
+    return request instanceof EmployeesPerShiftConstraint;
   }
 }

@@ -1,7 +1,7 @@
 package com.cocroachden.planner.solverconfiguration.command.updateconfiguration;
 
 import com.cocroachden.planner.common.messaging.Command;
-import com.cocroachden.planner.constraint.ConstraintRequestDTO;
+import com.cocroachden.planner.constraint.ConstraintDTO;
 import com.cocroachden.planner.solverconfiguration.EmployeeAssignmentDTO;
 import com.cocroachden.planner.solverconfiguration.SolverConfigurationId;
 
@@ -14,6 +14,6 @@ public record UpdateSolverConfigurationCommand(
         LocalDate startDate,
         LocalDate endDate,
         List<EmployeeAssignmentDTO> assignedEmployees,
-        List<ConstraintRequestDTO> constraints
+        List<ConstraintDTO> constraints
 ) implements Command {
 }

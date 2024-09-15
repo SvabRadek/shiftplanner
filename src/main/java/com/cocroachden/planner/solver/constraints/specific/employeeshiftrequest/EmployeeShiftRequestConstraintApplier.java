@@ -1,8 +1,8 @@
 package com.cocroachden.planner.solver.constraints.specific.employeeshiftrequest;
 
 import com.cocroachden.planner.solver.constraints.ConstraintApplier;
-import com.cocroachden.planner.solver.constraints.ConstraintRequest;
-import com.cocroachden.planner.solver.constraints.specific.employeeshiftrequest.request.EmployeeShiftRequest;
+import com.cocroachden.planner.solver.constraints.SolverConstraint;
+import com.cocroachden.planner.solver.constraints.specific.employeeshiftrequest.request.RequestedShiftConstraint;
 import com.cocroachden.planner.solver.service.SolutionObjectives;
 import com.cocroachden.planner.solver.service.schedule.SchedulePlan;
 import com.cocroachden.planner.solver.api.WorkShifts;
@@ -10,8 +10,8 @@ import com.google.ortools.sat.CpModel;
 
 public class EmployeeShiftRequestConstraintApplier implements ConstraintApplier {
   @Override
-  public void apply(SchedulePlan schedulePlan, CpModel model, SolutionObjectives objective, ConstraintRequest constraintRequest) {
-    var request = ((EmployeeShiftRequest) constraintRequest);
+  public void apply(SchedulePlan schedulePlan, CpModel model, SolutionObjectives objective, SolverConstraint solverConstraint) {
+    var request = ((RequestedShiftConstraint) solverConstraint);
     var workDay = schedulePlan.getSpecificDay(
         request.getOwner(),
         request.getDate()
@@ -27,7 +27,7 @@ public class EmployeeShiftRequestConstraintApplier implements ConstraintApplier 
   }
 
   @Override
-  public boolean supports(ConstraintRequest request) {
-    return request instanceof EmployeeShiftRequest;
+  public boolean supports(SolverConstraint request) {
+    return request instanceof RequestedShiftConstraint;
   }
 }

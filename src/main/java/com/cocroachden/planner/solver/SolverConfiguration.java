@@ -1,7 +1,7 @@
 package com.cocroachden.planner.solver;
 
 
-import com.cocroachden.planner.solver.constraints.ConstraintRequest;
+import com.cocroachden.planner.solver.constraints.SolverConstraint;
 import com.cocroachden.planner.solver.service.schedule.ScheduleEmployee;
 import org.apache.commons.lang3.StringUtils;
 
@@ -12,7 +12,7 @@ public record SolverConfiguration(
     LocalDate startDate,
     LocalDate endDate,
     List<ScheduleEmployee> scheduleEmployees,
-    List<ConstraintRequest> constraintRequests
+    List<SolverConstraint> solverConstraints
 ) {
   @Override
   public String toString() {

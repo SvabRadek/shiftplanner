@@ -1,9 +1,9 @@
 package com.cocroachden.planner.solver.constraints.specific.teamassignment.request;
 
 import com.cocroachden.planner.constraint.ConstraintType;
-import com.cocroachden.planner.constraint.TeamAssignmentRequestDTO;
+import com.cocroachden.planner.constraint.TeamAssignmentConstraintDTO;
 import com.cocroachden.planner.employee.EmployeeId;
-import com.cocroachden.planner.solver.constraints.specific.EmployeeConstraint;
+import com.cocroachden.planner.solver.constraints.specific.EmployeeSolverConstraint;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -11,13 +11,13 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Getter
-@JsonTypeName("TeamAssignmentRequest")
+@JsonTypeName("TeamAssignmentConstraint")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
-public class TeamAssignmentRequest implements EmployeeConstraint {
+public class TeamAssignmentConstraint implements EmployeeSolverConstraint {
 
-  public static TeamAssignmentRequest from(TeamAssignmentRequestDTO dto) {
-    return new TeamAssignmentRequest(
+  public static TeamAssignmentConstraint from(TeamAssignmentConstraintDTO dto) {
+    return new TeamAssignmentConstraint(
             EmployeeId.from(dto.getOwner()),
             dto.getTeamId(),
             dto.getIsLeader(),

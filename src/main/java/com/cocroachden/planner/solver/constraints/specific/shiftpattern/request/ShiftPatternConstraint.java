@@ -1,22 +1,22 @@
 package com.cocroachden.planner.solver.constraints.specific.shiftpattern.request;
 
 
-import com.cocroachden.planner.constraint.ShiftPatternRequestDTO;
+import com.cocroachden.planner.constraint.ShiftPatternConstraintDTO;
 import com.cocroachden.planner.constraint.ConstraintType;
 import com.cocroachden.planner.employee.EmployeeId;
 import com.cocroachden.planner.solver.api.WorkShifts;
-import com.cocroachden.planner.solver.constraints.specific.EmployeeConstraint;
+import com.cocroachden.planner.solver.constraints.specific.EmployeeSolverConstraint;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Getter
-@JsonTypeName("ShiftPatternConstraintRequest")
+@JsonTypeName("ShiftPatternConstraint")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class ShiftPatternConstraintRequest implements EmployeeConstraint {
-  public static ShiftPatternConstraintRequest from(ShiftPatternRequestDTO dto) {
-    return new ShiftPatternConstraintRequest(
+public class ShiftPatternConstraint implements EmployeeSolverConstraint {
+  public static ShiftPatternConstraint from(ShiftPatternConstraintDTO dto) {
+    return new ShiftPatternConstraint(
             EmployeeId.from(dto.getOwner()),
             dto.getStartDayIndex(),
             dto.getReward(),
@@ -30,7 +30,7 @@ public class ShiftPatternConstraintRequest implements EmployeeConstraint {
   private WorkShifts[] shiftPattern;
   private Integer reward;
 
-  public ShiftPatternConstraintRequest(EmployeeId owner, Integer startDateIndex, Integer reward, WorkShifts... shiftPattern) {
+  public ShiftPatternConstraint(EmployeeId owner, Integer startDateIndex, Integer reward, WorkShifts... shiftPattern) {
     this.owner = owner;
     this.startDateIndex = startDateIndex;
     this.shiftPattern = shiftPattern;

@@ -1,7 +1,7 @@
 package com.cocroachden.planner.constraint;
 
 
-import com.cocroachden.planner.solver.constraints.specific.employeespershift.request.EmployeesPerShiftRequest;
+import com.cocroachden.planner.solver.constraints.specific.employeespershift.request.EmployeesPerShiftConstraint;
 import com.cocroachden.planner.solver.api.WorkShifts;
 import dev.hilla.Nonnull;
 import lombok.*;
@@ -9,9 +9,9 @@ import lombok.*;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
-public class EmployeesPerShiftRequestDTO implements ConstraintRequestDTO {
-  public static EmployeesPerShiftRequestDTO from(String id, EmployeesPerShiftRequest request) {
-    return new EmployeesPerShiftRequestDTO(
+public class EmployeesPerShiftConstraintDTO implements ConstraintDTO {
+  public static EmployeesPerShiftConstraintDTO from(String id, EmployeesPerShiftConstraint request) {
+    return new EmployeesPerShiftConstraintDTO(
         id,
         request.getShift(),
         request.getHardMin(),

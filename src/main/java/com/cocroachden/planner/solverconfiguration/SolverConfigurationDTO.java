@@ -1,6 +1,6 @@
 package com.cocroachden.planner.solverconfiguration;
 
-import com.cocroachden.planner.constraint.ConstraintRequestDTO;
+import com.cocroachden.planner.constraint.ConstraintDTO;
 import com.cocroachden.planner.constraint.mapping.ConstraintMapper;
 import com.cocroachden.planner.solverconfiguration.repository.EmployeeAssignmentRecord;
 import com.cocroachden.planner.solverconfiguration.repository.SolverConfigurationRecord;
@@ -53,5 +53,5 @@ public class SolverConfigurationDTO {
   @Nonnull
   private List<@Nonnull EmployeeAssignmentDTO> employees;
   @Nonnull
-  private List<@Nonnull ConstraintRequestDTO> constraints;
+  private List<@Nonnull ConstraintDTO> constraints;
 }

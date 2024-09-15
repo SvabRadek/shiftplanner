@@ -2,14 +2,13 @@ package com.cocroachden.planner.solver.constraints.specific.weekends;
 
 import com.cocroachden.planner.solver.api.WorkShifts;
 import com.cocroachden.planner.solver.constraints.ConstraintApplier;
-import com.cocroachden.planner.solver.constraints.ConstraintRequest;
-import com.cocroachden.planner.solver.constraints.specific.weekends.request.WeekendRequest;
+import com.cocroachden.planner.solver.constraints.SolverConstraint;
+import com.cocroachden.planner.solver.constraints.specific.weekends.request.WeekendConstraint;
 import com.cocroachden.planner.solver.service.SolutionObjectives;
 import com.cocroachden.planner.solver.service.schedule.ScheduleDay;
 import com.cocroachden.planner.solver.service.schedule.SchedulePlan;
 import com.google.ortools.sat.BoolVar;
 import com.google.ortools.sat.CpModel;
-import com.google.ortools.sat.LinearArgument;
 import com.google.ortools.sat.LinearExpr;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -23,10 +22,10 @@ import java.util.Optional;
 
 public class WeekendRequestsApplier implements ConstraintApplier {
   @Override
-  public void apply(SchedulePlan schedulePlan, CpModel model, SolutionObjectives objective, ConstraintRequest constraintRequest) {
+  public void apply(SchedulePlan schedulePlan, CpModel model, SolutionObjectives objective, SolverConstraint solverConstraint) {
     //TODO make working weekend spaced evenly
     //TODO make weekend either working or not working
-    var request = (WeekendRequest) constraintRequest;
+    var request = (WeekendConstraint) solverConstraint;
     var owner = request.getOwner();
     var weekends = new ArrayList<ScheduleWeekend>();
     schedulePlan.getAllDaysForEmployee(owner).stream()
@@ -50,7 +49,7 @@ public class WeekendRequestsApplier implements ConstraintApplier {
     }
   }
 
-  private void applyFullWorkingWeekendConstraint(WeekendRequest request, ScheduleWeekend weekend, CpModel model, SolutionObjectives objective) {
+  private void applyFullWorkingWeekendConstraint(WeekendConstraint request, ScheduleWeekend weekend, CpModel model, SolutionObjectives objective) {
     var isComplete = weekend.isComplete();
     if (isComplete) {
       var shifts = new ArrayList<BoolVar>();
@@ -72,8 +71,8 @@ public class WeekendRequestsApplier implements ConstraintApplier {
 
 
   @Override
-  public boolean supports(ConstraintRequest request) {
-    return request instanceof WeekendRequest;
+  public boolean supports(SolverConstraint request) {
+    return request instanceof WeekendConstraint;
   }
 
   private boolean isWeekend(DayOfWeek day) {

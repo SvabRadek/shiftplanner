@@ -1,8 +1,8 @@
 package com.cocroachden.planner.solver.constraints.specific.evenshiftdistribution;
 
 import com.cocroachden.planner.solver.constraints.ConstraintApplier;
-import com.cocroachden.planner.solver.constraints.ConstraintRequest;
-import com.cocroachden.planner.solver.constraints.specific.evenshiftdistribution.request.EvenShiftDistributionRequest;
+import com.cocroachden.planner.solver.constraints.SolverConstraint;
+import com.cocroachden.planner.solver.constraints.specific.evenshiftdistribution.request.EvenShiftDistributionConstraint;
 import com.cocroachden.planner.solver.service.SolutionObjectives;
 import com.cocroachden.planner.solver.service.schedule.SchedulePlan;
 import com.google.ortools.sat.CpModel;
@@ -15,8 +15,8 @@ import java.util.List;
 
 public class EvenShiftDistributionConstraintApplier implements ConstraintApplier {
     @Override
-    public void apply(SchedulePlan schedulePlan, CpModel model, SolutionObjectives objective, ConstraintRequest constraintRequest) {
-        var request = (EvenShiftDistributionRequest) constraintRequest;
+    public void apply(SchedulePlan schedulePlan, CpModel model, SolutionObjectives objective, SolverConstraint solverConstraint) {
+        var request = (EvenShiftDistributionConstraint) solverConstraint;
         if (request.getDistributeShiftsEvenlyThroughoutSchedule()) {
             List<LinearExpr> assignmentWeeks = new ArrayList<>();
             var workersDays = schedulePlan.getAllDaysForEmployee(request.getOwner());
@@ -61,7 +61,7 @@ public class EvenShiftDistributionConstraintApplier implements ConstraintApplier
     }
 
     @Override
-    public boolean supports(ConstraintRequest request) {
-        return request instanceof EvenShiftDistributionRequest;
+    public boolean supports(SolverConstraint request) {
+        return request instanceof EvenShiftDistributionConstraint;
     }
 }

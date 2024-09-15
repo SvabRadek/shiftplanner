@@ -2,7 +2,7 @@ package com.cocroachden.planner.solver.service.schedule;
 
 
 import com.cocroachden.planner.employee.EmployeeId;
-import com.cocroachden.planner.solver.constraints.ConstraintRequest;
+import com.cocroachden.planner.solver.constraints.SolverConstraint;
 import com.cocroachden.planner.solver.SolverConfiguration;
 import com.google.ortools.sat.CpModel;
 import lombok.Getter;
@@ -18,7 +18,7 @@ public class SchedulePlan {
 
   private final Map<EmployeeId, Map<LocalDate, ScheduleDay>> assignments;
   private final Map<EmployeeId, ScheduleEmployee> employees;
-  private final List<ConstraintRequest> constraints;
+  private final List<SolverConstraint> constraints;
 
   public SchedulePlan(SolverConfiguration configuration, CpModel model) {
     var endDateExclusive = configuration.endDate().plusDays(1);
@@ -35,10 +35,10 @@ public class SchedulePlan {
         .collect(Collectors.toMap(ScheduleEmployee::employeeId, scheduleEmployee -> scheduleEmployee));
     this.assignments = assignments;
     this.employees = employeeMap;
-    this.constraints = configuration.constraintRequests();
+    this.constraints = configuration.solverConstraints();
   }
 
-  public <T extends ConstraintRequest> List<T> getAllConstraintsOfType(Class<T> type) {
+  public <T extends SolverConstraint> List<T> getAllConstraintsOfType(Class<T> type) {
     return (List<T>) this.constraints.stream()
         .filter(c -> c.getClass().isAssignableFrom(type))
         .toList();

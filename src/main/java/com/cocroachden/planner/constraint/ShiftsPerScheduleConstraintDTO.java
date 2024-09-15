@@ -2,16 +2,16 @@ package com.cocroachden.planner.constraint;
 
 
 import com.cocroachden.planner.solver.api.WorkShifts;
-import com.cocroachden.planner.solver.constraints.specific.shiftperschedule.request.ShiftsPerScheduleRequest;
+import com.cocroachden.planner.solver.constraints.specific.shiftperschedule.request.ShiftsPerScheduleConstraint;
 import dev.hilla.Nonnull;
 import lombok.*;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
-public class ShiftsPerScheduleRequestDTO implements ConstraintRequestDTO {
-    public static ShiftsPerScheduleRequestDTO from(String id, ShiftsPerScheduleRequest request) {
-        return new ShiftsPerScheduleRequestDTO(
+public class ShiftsPerScheduleConstraintDTO implements ConstraintDTO {
+    public static ShiftsPerScheduleConstraintDTO from(String id, ShiftsPerScheduleConstraint request) {
+        return new ShiftsPerScheduleConstraintDTO(
                 id,
                 request.getOwner().getId(),
                 request.getTargetShift(),
@@ -25,7 +25,7 @@ public class ShiftsPerScheduleRequestDTO implements ConstraintRequestDTO {
     }
 
     @Nonnull
-    private final ConstraintType type = ConstraintType.SHIFT_PER_SCHEDULE;
+    private final ConstraintType type = ConstraintType.SHIFTS_PER_SCHEDULE;
     @Nonnull
     @Setter
     private String id;

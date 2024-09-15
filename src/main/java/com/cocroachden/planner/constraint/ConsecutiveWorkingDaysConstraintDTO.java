@@ -1,6 +1,6 @@
 package com.cocroachden.planner.constraint;
 
-import com.cocroachden.planner.solver.constraints.specific.consecutiveworkingdays.request.ConsecutiveWorkingDaysRequest;
+import com.cocroachden.planner.solver.constraints.specific.consecutiveworkingdays.request.ConsecutiveWorkingDaysConstraint;
 import com.cocroachden.planner.solver.api.WorkShifts;
 import dev.hilla.Nonnull;
 import lombok.*;
@@ -8,9 +8,9 @@ import lombok.*;
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
-public class ConsecutiveWorkingDaysRequestDTO implements ConstraintRequestDTO {
-  public static ConsecutiveWorkingDaysRequestDTO from(String id, ConsecutiveWorkingDaysRequest request) {
-    return new ConsecutiveWorkingDaysRequestDTO(
+public class ConsecutiveWorkingDaysConstraintDTO implements ConstraintDTO {
+  public static ConsecutiveWorkingDaysConstraintDTO from(String id, ConsecutiveWorkingDaysConstraint request) {
+    return new ConsecutiveWorkingDaysConstraintDTO(
         id,
         request.getOwner().getId(),
         request.getTargetShift(),

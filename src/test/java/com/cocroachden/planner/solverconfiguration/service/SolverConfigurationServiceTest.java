@@ -2,8 +2,8 @@ package com.cocroachden.planner.solverconfiguration.service;
 
 import com.cocroachden.AbstractMessagingTest;
 import com.cocroachden.planner.constraint.ConstraintId;
-import com.cocroachden.planner.constraint.EmployeesPerShiftRequestDTO;
-import com.cocroachden.planner.constraint.TeamAssignmentRequestDTO;
+import com.cocroachden.planner.constraint.EmployeesPerShiftConstraintDTO;
+import com.cocroachden.planner.constraint.TeamAssignmentConstraintDTO;
 import com.cocroachden.planner.constraint.repository.ConstraintRepository;
 import com.cocroachden.planner.employee.EmployeeId;
 import com.cocroachden.planner.employee.command.saveemployee.SaveEmployeeCommand;
@@ -20,7 +20,6 @@ import com.cocroachden.planner.solverconfiguration.command.updateconfiguration.U
 import com.cocroachden.planner.solverconfiguration.repository.EmployeeAssignmentRepository;
 import com.cocroachden.planner.solverconfiguration.repository.SolverConfigurationRepository;
 import org.assertj.core.api.Assertions;
-import org.assertj.core.api.Condition;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -178,7 +177,7 @@ class SolverConfigurationServiceTest extends AbstractMessagingTest {
                 LocalDate.now().plusDays(1),
                 List.of(),
                 List.of(
-                        new EmployeesPerShiftRequestDTO(constraintId.getId(), WorkShifts.DAY, 1, 1, 1, 1, 1, 1)
+                        new EmployeesPerShiftConstraintDTO(constraintId.getId(), WorkShifts.DAY, 1, 1, 1, 1, 1, 1)
                 )
         );
         this.givenCommandHasBeenSent(saveConfigCommand);
@@ -209,7 +208,7 @@ class SolverConfigurationServiceTest extends AbstractMessagingTest {
                         new EmployeeAssignmentDTO(employeeId.getId(), 0, 1)
                 ),
                 List.of(
-                        new TeamAssignmentRequestDTO(constraintId.getId(), employeeId.getId(), 0, true, 1)
+                        new TeamAssignmentConstraintDTO(constraintId.getId(), employeeId.getId(), 0, true, 1)
                 )
         );
 

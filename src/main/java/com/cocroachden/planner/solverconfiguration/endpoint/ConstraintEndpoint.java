@@ -15,78 +15,78 @@ import java.util.List;
 public class ConstraintEndpoint {
   private final ConstraintQuery constraintQuery;
 
-  public @Nonnull List<@Nonnull ConstraintRequestDTO> findConstraints(@Nonnull List<@Nonnull String> constraintIds) {
+  public @Nonnull List<@Nonnull ConstraintDTO> findConstraints(@Nonnull List<@Nonnull String> constraintIds) {
     var typedIds = constraintIds.stream().map(ConstraintId::new).toList();
     return constraintQuery.findByIds(typedIds);
   }
 
-  public @Nonnull List<@Nonnull EmployeeShiftRequestDTO> findSpecificShiftRequests(
+  public @Nonnull List<@Nonnull EmployeeShiftConstraintDTO> findSpecificShiftRequests(
       @Nonnull List<@Nonnull String> requestIds
   ) {
     var typedIds = requestIds.stream().map(ConstraintId::new).toList();
-    return constraintQuery.findSpecificById(typedIds, EmployeeShiftRequestDTO.class);
+    return constraintQuery.findSpecificById(typedIds, EmployeeShiftConstraintDTO.class);
   }
 
-  public @Nonnull List<@Nonnull ShiftsPerScheduleRequestDTO> findShiftsPerScheduleRequests(
+  public @Nonnull List<@Nonnull ShiftsPerScheduleConstraintDTO> findShiftsPerScheduleRequests(
       @Nonnull List<@Nonnull String> requestIds
   ) {
     var typedIds = requestIds.stream().map(ConstraintId::new).toList();
-    return constraintQuery.findSpecificById(typedIds, ShiftsPerScheduleRequestDTO.class);
+    return constraintQuery.findSpecificById(typedIds, ShiftsPerScheduleConstraintDTO.class);
   }
 
-  public @Nonnull List<@Nonnull ConsecutiveWorkingDaysRequestDTO> findConsecutiveWorkingDaysRequests(
+  public @Nonnull List<@Nonnull ConsecutiveWorkingDaysConstraintDTO> findConsecutiveWorkingDaysRequests(
       @Nonnull List<@Nonnull String> requestIds
   ) {
     var typedIds = requestIds.stream().map(ConstraintId::new).toList();
-    return constraintQuery.findSpecificById(typedIds, ConsecutiveWorkingDaysRequestDTO.class);
+    return constraintQuery.findSpecificById(typedIds, ConsecutiveWorkingDaysConstraintDTO.class);
   }
 
-  public @Nonnull List<@Nonnull EmployeesPerShiftRequestDTO> findEmployeesPerShiftRequests(
+  public @Nonnull List<@Nonnull EmployeesPerShiftConstraintDTO> findEmployeesPerShiftRequests(
       @Nonnull List<@Nonnull String> requestIds
   ) {
     var typedIds = requestIds.stream().map(ConstraintId::new).toList();
-    return constraintQuery.findSpecificById(typedIds, EmployeesPerShiftRequestDTO.class);
+    return constraintQuery.findSpecificById(typedIds, EmployeesPerShiftConstraintDTO.class);
   }
 
-  public @Nonnull List<@Nonnull ShiftFollowupRestrictionRequestDTO> findShiftFollowupRestrictionRequests(
+  public @Nonnull List<@Nonnull ShiftFollowupRestrictionConstraintDTO> findShiftFollowupRestrictionRequests(
       @Nonnull List<@Nonnull String> requestIds
   ) {
     var typedIds = requestIds.stream().map(ConstraintId::new).toList();
-    return constraintQuery.findSpecificById(typedIds, ShiftFollowupRestrictionRequestDTO.class);
+    return constraintQuery.findSpecificById(typedIds, ShiftFollowupRestrictionConstraintDTO.class);
   }
 
-  public @Nonnull List<@Nonnull ShiftPatternRequestDTO> findShiftPatternRequests(
+  public @Nonnull List<@Nonnull ShiftPatternConstraintDTO> findShiftPatternRequests(
       @Nonnull List<@Nonnull String> requestIds
   ) {
     var typedIds = requestIds.stream().map(ConstraintId::new).toList();
-    return constraintQuery.findSpecificById(typedIds, ShiftPatternRequestDTO.class);
+    return constraintQuery.findSpecificById(typedIds, ShiftPatternConstraintDTO.class);
   }
 
-  public @Nonnull List<@Nonnull TripleShiftConstraintRequestDTO> findTripleShiftConstraintRequests(
+  public @Nonnull List<@Nonnull TripleShiftConstraintDTO> findTripleShiftConstraintRequests(
       @Nonnull List<@Nonnull String> requestIds
   ) {
     var typedIds = requestIds.stream().map(ConstraintId::new).toList();
-    return constraintQuery.findSpecificById(typedIds, TripleShiftConstraintRequestDTO.class);
+    return constraintQuery.findSpecificById(typedIds, TripleShiftConstraintDTO.class);
   }
 
-  public @Nonnull List<@Nonnull TeamAssignmentRequestDTO> findTeamAssignmentsConstraintRequests(
+  public @Nonnull List<@Nonnull TeamAssignmentConstraintDTO> findTeamAssignmentsConstraintRequests(
       @Nonnull List<@Nonnull String> requestIds
   ) {
     var typedIds = requestIds.stream().map(ConstraintId::new).toList();
-    return constraintQuery.findSpecificById(typedIds, TeamAssignmentRequestDTO.class);
+    return constraintQuery.findSpecificById(typedIds, TeamAssignmentConstraintDTO.class);
   }
 
-  public @Nonnull List<@Nonnull WeekendRequestDTO> findWeekendConstraintRequests(
+  public @Nonnull List<@Nonnull WeekendConstraintDTO> findWeekendConstraintRequests(
       @Nonnull List<@Nonnull String> requestIds
   ) {
     var typedIds = requestIds.stream().map(ConstraintId::new).toList();
-    return constraintQuery.findSpecificById(typedIds, WeekendRequestDTO.class);
+    return constraintQuery.findSpecificById(typedIds, WeekendConstraintDTO.class);
   }
 
-  public @Nonnull List<@Nonnull EvenShiftDistributionRequestDTO> findEvenShiftDistributionRequests(
+  public @Nonnull List<@Nonnull EvenShiftDistributionConstraintDTO> findEvenShiftDistributionRequests(
       @Nonnull List<@Nonnull String> requestIds
   ) {
     var typedIds = requestIds.stream().map(ConstraintId::new).toList();
-    return constraintQuery.findSpecificById(typedIds, EvenShiftDistributionRequestDTO.class);
+    return constraintQuery.findSpecificById(typedIds, EvenShiftDistributionConstraintDTO.class);
   }
 }

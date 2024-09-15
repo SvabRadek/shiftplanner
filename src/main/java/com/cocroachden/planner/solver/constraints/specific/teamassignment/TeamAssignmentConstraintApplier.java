@@ -1,8 +1,8 @@
 package com.cocroachden.planner.solver.constraints.specific.teamassignment;
 
 import com.cocroachden.planner.solver.constraints.ConstraintApplier;
-import com.cocroachden.planner.solver.constraints.ConstraintRequest;
-import com.cocroachden.planner.solver.constraints.specific.teamassignment.request.TeamAssignmentRequest;
+import com.cocroachden.planner.solver.constraints.SolverConstraint;
+import com.cocroachden.planner.solver.constraints.specific.teamassignment.request.TeamAssignmentConstraint;
 import com.cocroachden.planner.solver.service.SolutionObjectives;
 import com.cocroachden.planner.solver.service.schedule.SchedulePlan;
 import com.google.ortools.sat.CpModel;
@@ -11,15 +11,15 @@ import com.google.ortools.sat.LinearExpr;
 public class TeamAssignmentConstraintApplier implements ConstraintApplier {
 
     @Override
-    public void apply(SchedulePlan schedulePlan, CpModel model, SolutionObjectives objective, ConstraintRequest constraintRequest) {
-        var teamRequest = (TeamAssignmentRequest) constraintRequest;
+    public void apply(SchedulePlan schedulePlan, CpModel model, SolutionObjectives objective, SolverConstraint solverConstraint) {
+        var teamRequest = (TeamAssignmentConstraint) solverConstraint;
         if (teamRequest.getIsLeader()) return;
         var employee = teamRequest.getOwner();
-        var teamLeader = schedulePlan.getAllConstraintsOfType(TeamAssignmentRequest.class).stream()
+        var teamLeader = schedulePlan.getAllConstraintsOfType(TeamAssignmentConstraint.class).stream()
                 .filter(r -> r.getTeamId().equals(teamRequest.getTeamId()))
-                .filter(TeamAssignmentRequest::getIsLeader)
+                .filter(TeamAssignmentConstraint::getIsLeader)
                 .findFirst()
-                .map(TeamAssignmentRequest::getOwner)
+                .map(TeamAssignmentConstraint::getOwner)
                 .orElseThrow(() -> new IllegalArgumentException("There is no team leader in team [%s].".formatted(teamRequest.getTeamId())));
         schedulePlan.getAllScheduleDatesAsStream()
                 .forEach(date -> {
@@ -45,7 +45,7 @@ public class TeamAssignmentConstraintApplier implements ConstraintApplier {
     }
 
     @Override
-    public boolean supports(ConstraintRequest request) {
-        return request instanceof TeamAssignmentRequest;
+    public boolean supports(SolverConstraint request) {
+        return request instanceof TeamAssignmentConstraint;
     }
 }

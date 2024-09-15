@@ -1,8 +1,8 @@
 package com.cocroachden.planner.solver.constraints.specific.shiftpattern;
 
 
-import com.cocroachden.planner.solver.constraints.ConstraintRequest;
-import com.cocroachden.planner.solver.constraints.specific.shiftpattern.request.ShiftPatternConstraintRequest;
+import com.cocroachden.planner.solver.constraints.SolverConstraint;
+import com.cocroachden.planner.solver.constraints.specific.shiftpattern.request.ShiftPatternConstraint;
 import com.cocroachden.planner.solver.service.SolutionObjectives;
 import com.cocroachden.planner.solver.service.schedule.SchedulePlan;
 import com.cocroachden.planner.solver.service.schedule.ScheduleDay;
@@ -14,8 +14,8 @@ import java.util.Map;
 
 public class ShiftPatternConstraintApplier implements ConstraintApplier {
     @Override
-    public void apply(SchedulePlan schedulePlan, CpModel model, SolutionObjectives objective, ConstraintRequest constraintRequest) {
-        var request = (ShiftPatternConstraintRequest) constraintRequest;
+    public void apply(SchedulePlan schedulePlan, CpModel model, SolutionObjectives objective, SolverConstraint solverConstraint) {
+        var request = (ShiftPatternConstraint) solverConstraint;
         var owner = request.getOwner();
         var assignments = schedulePlan.getAssignments().get(owner);
         this.applyConstraint(model, objective, assignments, request, schedulePlan.getWeightForEmployee(owner));
@@ -25,7 +25,7 @@ public class ShiftPatternConstraintApplier implements ConstraintApplier {
             CpModel model,
             SolutionObjectives objective,
             Map<LocalDate, ScheduleDay> assignments,
-            ShiftPatternConstraintRequest request,
+            ShiftPatternConstraint request,
             Integer weight
     ) {
         var pattern = request.getShiftPattern();
@@ -42,7 +42,7 @@ public class ShiftPatternConstraintApplier implements ConstraintApplier {
     }
 
     @Override
-    public boolean supports(ConstraintRequest request) {
-        return request instanceof ShiftPatternConstraintRequest;
+    public boolean supports(SolverConstraint request) {
+        return request instanceof ShiftPatternConstraint;
     }
 }

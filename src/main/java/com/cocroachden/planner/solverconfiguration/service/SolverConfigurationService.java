@@ -1,13 +1,12 @@
 package com.cocroachden.planner.solverconfiguration.service;
 
-import com.cocroachden.planner.constraint.ConstraintId;
-import com.cocroachden.planner.constraint.ConstraintRequestDTO;
+import com.cocroachden.planner.constraint.ConstraintDTO;
 import com.cocroachden.planner.constraint.mapping.ConstraintMapper;
 import com.cocroachden.planner.constraint.repository.ConstraintRecord;
 import com.cocroachden.planner.constraint.repository.ConstraintRepository;
 import com.cocroachden.planner.employee.EmployeeId;
 import com.cocroachden.planner.employee.repository.EmployeeRepository;
-import com.cocroachden.planner.solver.constraints.specific.EmployeeConstraint;
+import com.cocroachden.planner.solver.constraints.specific.EmployeeSolverConstraint;
 import com.cocroachden.planner.solverconfiguration.EmployeeAssignmentDTO;
 import com.cocroachden.planner.solverconfiguration.SolverConfigurationId;
 import com.cocroachden.planner.solverconfiguration.command.deleteconfiguration.DeleteSolverConfigurationCommand;
@@ -20,7 +19,6 @@ import com.cocroachden.planner.solverconfiguration.repository.EmployeeAssignment
 import com.cocroachden.planner.solverconfiguration.repository.EmployeeAssignmentRepository;
 import com.cocroachden.planner.solverconfiguration.repository.SolverConfigurationRecord;
 import com.cocroachden.planner.solverconfiguration.repository.SolverConfigurationRepository;
-import jakarta.persistence.EntityManager;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -108,7 +106,7 @@ public class SolverConfigurationService {
             LocalDate startDate,
             LocalDate endDate,
             List<EmployeeAssignmentDTO> assignedEmployees,
-            List<ConstraintRequestDTO> constraints
+            List<ConstraintDTO> constraints
     ) {
         var configRecord = configurationRepository.save(
                 new SolverConfigurationRecord()
@@ -134,7 +132,7 @@ public class SolverConfigurationService {
                             .setId(constraintDto.getId())
                             .setRequest(constraint)
                             .setParent(configRecord);
-                    if (constraint instanceof EmployeeConstraint employeeConstraint) {
+                    if (constraint instanceof EmployeeSolverConstraint employeeConstraint) {
                         employeeRepository.findById(employeeConstraint.getOwner().getId())
                                 .ifPresent(constraintRecord::setOwner);
                     }
