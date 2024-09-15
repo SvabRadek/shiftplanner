@@ -6,18 +6,21 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.experimental.Accessors;
 
 import java.io.Serializable;
 
 @Entity(name = "employee_assignment")
 @NoArgsConstructor
 @Getter
-@Setter
+@Accessors(chain = true)
 public class EmployeeAssignmentRecord implements Serializable {
 
   @EmbeddedId
-  private EmployeeAssignmentId id;
+  private EmployeeAssignmentId id = new EmployeeAssignmentId();
+  @Setter
   private Integer index;
+  @Setter
   private Integer weight = 1;
   @ManyToOne(fetch = FetchType.LAZY)
   @MapsId("employeeId")
@@ -25,19 +28,6 @@ public class EmployeeAssignmentRecord implements Serializable {
   @ManyToOne(fetch = FetchType.LAZY)
   @MapsId("configurationId")
   private SolverConfigurationRecord configuration;
-
-  public EmployeeAssignmentRecord(
-          SolverConfigurationRecord configuration,
-          EmployeeRecord employee,
-          Integer index,
-          Integer weight
-  ) {
-    this.id = new EmployeeAssignmentId(employee.getId(), configuration.getId());
-    this.index = index;
-    this.weight = weight;
-    this.employee = employee;
-    this.configuration = configuration;
-  }
 
   @Override
   public int hashCode() {
@@ -50,5 +40,19 @@ public class EmployeeAssignmentRecord implements Serializable {
       return this.id.equals(other.id);
     }
     return false;
+  }
+
+  public EmployeeAssignmentRecord setEmployee(EmployeeRecord employee) {
+    if(employee == null) return this;
+    employee.addAssignment(this);
+    this.employee = employee;
+    return this;
+  }
+
+  public EmployeeAssignmentRecord setConfiguration(SolverConfigurationRecord configuration) {
+    if(configuration == null) return this;
+    configuration.addAssignment(this);
+    this.configuration = configuration;
+    return this;
   }
 }

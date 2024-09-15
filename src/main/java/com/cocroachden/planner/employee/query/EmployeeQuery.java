@@ -25,12 +25,12 @@ public class EmployeeQuery {
     }
 
     public List<EmployeeDTO> findAllByIds(List<EmployeeId> ids) {
-        return StreamSupport.stream(employeeRepository.findAllById(ids).spliterator(), false)
+        return StreamSupport.stream(employeeRepository.findAllById(ids.stream().map(EmployeeId::getId).toList()).spliterator(), false)
                 .map(EmployeeDTO::from)
                 .toList();
     }
 
     public List<EmployeeDTO> allExceptTheseIds(List<EmployeeId> ids) {
-        return employeeRepository.findAllByIdNotIn(ids).stream().map(EmployeeDTO::from).toList();
+        return employeeRepository.findAllByIdNotIn(ids.stream().map(EmployeeId::getId).toList()).stream().map(EmployeeDTO::from).toList();
     }
 }

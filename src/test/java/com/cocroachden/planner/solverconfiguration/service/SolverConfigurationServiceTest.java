@@ -3,8 +3,10 @@ package com.cocroachden.planner.solverconfiguration.service;
 import com.cocroachden.AbstractMessagingTest;
 import com.cocroachden.planner.constraint.ConstraintId;
 import com.cocroachden.planner.constraint.EmployeesPerShiftRequestDTO;
+import com.cocroachden.planner.constraint.TeamAssignmentRequestDTO;
 import com.cocroachden.planner.constraint.repository.ConstraintRepository;
 import com.cocroachden.planner.employee.EmployeeId;
+import com.cocroachden.planner.employee.command.saveemployee.SaveEmployeeCommand;
 import com.cocroachden.planner.employee.repository.EmployeeRepository;
 import com.cocroachden.planner.solver.api.WorkShifts;
 import com.cocroachden.planner.solverconfiguration.EmployeeAssignmentDTO;
@@ -18,12 +20,15 @@ import com.cocroachden.planner.solverconfiguration.command.updateconfiguration.U
 import com.cocroachden.planner.solverconfiguration.repository.EmployeeAssignmentRepository;
 import com.cocroachden.planner.solverconfiguration.repository.SolverConfigurationRepository;
 import org.assertj.core.api.Assertions;
+import org.assertj.core.api.Condition;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.NoSuchElementException;
 
 class SolverConfigurationServiceTest extends AbstractMessagingTest {
 
@@ -39,18 +44,22 @@ class SolverConfigurationServiceTest extends AbstractMessagingTest {
     @Autowired
     private ConstraintRepository constraintRepository;
 
+    @Autowired
+    private EmployeeAssignmentRepository employeeAssignmentRepository;
+
     @BeforeEach
     void setUp() {
         assignmentRepository.deleteAll();
         configurationRepository.deleteAll();
         employeeRepository.deleteAll();
         constraintRepository.deleteAll();
+        employeeAssignmentRepository.deleteAll();
     }
 
     @Test
     public void itCanSaveSolverConfiguration() {
         var testConfigurationName = "Test Configuration";
-        var id = new SolverConfigurationId("config-id");
+        var id = new SolverConfigurationId("config-employeeId");
         var command = new SaveSolverConfigurationCommand(
                 id,
                 testConfigurationName,
@@ -61,14 +70,14 @@ class SolverConfigurationServiceTest extends AbstractMessagingTest {
         );
         this.whenCommandHasBeenSent(command);
         this.thenExactlyOneEventHasBeenDispatched(SolverConfigurationHasBeenSaved.class);
-        var savedConfig = configurationRepository.findById(command.id()).orElseThrow();
+        var savedConfig = configurationRepository.findById(command.id().getId()).orElseThrow();
         Assertions.assertThat(savedConfig.getName()).isEqualTo(testConfigurationName);
     }
 
     @Test
     public void itThrowsWhenSavingDuplicateSolverConfiguration() {
         var command = new SaveSolverConfigurationCommand(
-                new SolverConfigurationId("config-id"),
+                new SolverConfigurationId("config-employeeId"),
                 "Test Configuration",
                 LocalDate.now(),
                 LocalDate.now().plusDays(1),
@@ -82,19 +91,19 @@ class SolverConfigurationServiceTest extends AbstractMessagingTest {
     @Test
     public void itThrowsWhenEmployeeAssignedDoesNotExist() {
         var command = new SaveSolverConfigurationCommand(
-                new SolverConfigurationId("config-id"),
+                new SolverConfigurationId("config-employeeId"),
                 "Test Configuration",
                 LocalDate.now(),
                 LocalDate.now().plusDays(1),
-                List.of(new EmployeeAssignmentDTO(EmployeeId.from("non-existent-id"), 1, 10)),
+                List.of(new EmployeeAssignmentDTO("non-existent-employeeId", 1, 10)),
                 List.of()
         );
-        this.thenCommandThrowsException(command, IllegalArgumentException.class);
+        this.thenCommandThrowsException(command, NoSuchElementException.class);
     }
 
     @Test
     public void itCanDeleteSolverConfiguration() {
-        var id = new SolverConfigurationId("config-id");
+        var id = new SolverConfigurationId("config-employeeId");
         var saveCommand = new SaveSolverConfigurationCommand(
                 id,
                 "Test Configuration",
@@ -107,19 +116,19 @@ class SolverConfigurationServiceTest extends AbstractMessagingTest {
         var testedCommand = new DeleteSolverConfigurationCommand(id);
         this.whenCommandHasBeenSent(testedCommand);
         this.thenExactlyOneEventHasBeenDispatched(SolverConfigurationHasBeenDeleted.class);
-        Assertions.assertThat(configurationRepository.existsById(id)).isFalse();
+        Assertions.assertThat(configurationRepository.existsById(id.getId())).isFalse();
     }
 
     @Test
     public void itIgnoresWhenDeletingNonExistingSolverConfiguration() {
-        var deleteCommand = new DeleteSolverConfigurationCommand(new SolverConfigurationId("non-existent-config-id"));
+        var deleteCommand = new DeleteSolverConfigurationCommand(new SolverConfigurationId("non-existent-config-employeeId"));
         this.whenCommandHasBeenSent(deleteCommand);
         this.thenNoEventsOfTypeHaveBeenDispatched(SolverConfigurationHasBeenDeleted.class);
     }
 
     @Test
     public void itCanUpdateSolverConfiguration() {
-        SolverConfigurationId id = new SolverConfigurationId("config-id");
+        SolverConfigurationId id = new SolverConfigurationId("config-employeeId");
         var saveCommand = new SaveSolverConfigurationCommand(
                 id,
                 "Test Configuration",
@@ -148,7 +157,7 @@ class SolverConfigurationServiceTest extends AbstractMessagingTest {
     @Test
     public void itThrowsWhenUpdatingNonExistingSolverConfiguration() {
         var updateCommand = new UpdateSolverConfigurationCommand(
-                new SolverConfigurationId("non-existent-config-id"),
+                new SolverConfigurationId("non-existent-config-employeeId"),
                 "Non-existent Configuration",
                 LocalDate.now(),
                 LocalDate.now().plusDays(1),
@@ -160,8 +169,8 @@ class SolverConfigurationServiceTest extends AbstractMessagingTest {
 
     @Test
     public void itRemovesOrphanedConstraintsAfterConfigurationHasBeenRemoved() {
-        SolverConfigurationId configurationId = new SolverConfigurationId("config-id");
-        ConstraintId constraintId = new ConstraintId("constraint-id");
+        SolverConfigurationId configurationId = new SolverConfigurationId("config-employeeId");
+        ConstraintId constraintId = new ConstraintId("constraint-employeeId");
         var saveConfigCommand = new SaveSolverConfigurationCommand(
                 configurationId,
                 "Test Configuraiton",
@@ -173,9 +182,72 @@ class SolverConfigurationServiceTest extends AbstractMessagingTest {
                 )
         );
         this.givenCommandHasBeenSent(saveConfigCommand);
-        Assertions.assertThat(this.constraintRepository.existsById(new ConstraintId(constraintId.getId()))).isTrue();
+        Assertions.assertThat(this.constraintRepository.existsById(constraintId.getId())).isTrue();
         var testedCommand = new DeleteSolverConfigurationCommand(configurationId);
         this.whenCommandHasBeenSent(testedCommand);
-        Assertions.assertThat(this.constraintRepository.existsById(new ConstraintId(constraintId.getId()))).isFalse();
+        Assertions.assertThat(this.constraintRepository.existsById(constraintId.getId())).isFalse();
+    }
+
+    @Test
+    @Transactional
+    public void itCanSaveConfigurationWithAssignmentsAndConstraints() {
+        var configurationId = SolverConfigurationId.random();
+        var employeeId = EmployeeId.random();
+        var constraintId = ConstraintId.random();
+        var saveEmployeeCommand = new SaveEmployeeCommand(
+                employeeId,
+                "John",
+                "Doe"
+        );
+        this.givenCommandHasBeenSent(saveEmployeeCommand);
+        var saveConfigCommand = new SaveSolverConfigurationCommand(
+                configurationId,
+                "Test Configuraiton",
+                LocalDate.now(),
+                LocalDate.now().plusDays(1),
+                List.of(
+                        new EmployeeAssignmentDTO(employeeId.getId(), 0, 1)
+                ),
+                List.of(
+                        new TeamAssignmentRequestDTO(constraintId.getId(), employeeId.getId(), 0, true, 1)
+                )
+        );
+
+        this.whenCommandHasBeenSent(saveConfigCommand);
+        var savedConfig = this.thenExactlyOneEventHasBeenDispatched(SolverConfigurationHasBeenSaved.class).record();
+        Assertions.assertThat(savedConfig.getConstraintRecords()).hasSize(1);
+        Assertions.assertThat(savedConfig.getEmployeeAssignments()).hasSize(1);
+        var employee = savedConfig.getEmployeeAssignments().get(0).getEmployee();
+        Assertions.assertThat(employee.getAssignments()).hasSize(1);
+        Assertions.assertThat(employee.getConstraints()).hasSize(1);
+    }
+
+    @Test
+    @Transactional
+    public void itRemovesOrphanedEmployeeAssignmentsWhenConfigHasBeenRemoved() {
+        var configurationId = SolverConfigurationId.random();
+        var employeeId = EmployeeId.random();
+        var saveEmployeeCommand = new SaveEmployeeCommand(
+                employeeId,
+                "John",
+                "Doe"
+        );
+        this.givenCommandHasBeenSent(saveEmployeeCommand);
+        var saveConfigCommand = new SaveSolverConfigurationCommand(
+                configurationId,
+                "Test Configuraiton",
+                LocalDate.now(),
+                LocalDate.now().plusDays(1),
+                List.of(
+                        new EmployeeAssignmentDTO(employeeId.getId(), 0, 1)
+                ),
+                List.of()
+        );
+        this.givenCommandHasBeenSent(saveConfigCommand);
+        Assertions.assertThat(this.employeeRepository.findById(employeeId.getId()).orElseThrow().getAssignments()).hasSize(1);
+        var testedCommand = new DeleteSolverConfigurationCommand(configurationId);
+        this.whenCommandHasBeenSent(testedCommand);
+        this.thenExactlyOneEventHasBeenDispatched(SolverConfigurationHasBeenDeleted.class);;
+        Assertions.assertThat(this.employeeRepository.findById(employeeId.getId()).orElseThrow().getAssignments()).hasSize(0);
     }
 }

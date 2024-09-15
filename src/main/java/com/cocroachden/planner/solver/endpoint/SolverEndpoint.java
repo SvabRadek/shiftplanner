@@ -28,7 +28,7 @@ public class SolverEndpoint {
   @Transactional
   public EndpointSubscription<@Nonnull SolverSolutionDTO> solve(String configurationId) {
     log.debug("Solving configuration: {}", configurationId);
-    var solverConfigRecord = solverConfigurationRepository.getById(new SolverConfigurationId(configurationId));
+    var solverConfigRecord = solverConfigurationRepository.getById(configurationId);
     var solverConfig = new SolverConfiguration(
         solverConfigRecord.getStartDate(),
         solverConfigRecord.getEndDate(),

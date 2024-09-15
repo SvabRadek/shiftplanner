@@ -1,20 +1,22 @@
 package com.cocroachden.planner.solverconfiguration;
 
-import com.cocroachden.planner.employee.EmployeeId;
 import jakarta.persistence.Embeddable;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.io.Serializable;
 import java.util.Objects;
 
 @Embeddable
 @Getter
-@Setter
+@NoArgsConstructor
 @AllArgsConstructor
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Setter
 public class EmployeeAssignmentId implements Serializable {
-  private EmployeeId employeeId;
-  private SolverConfigurationId configurationId;
+  private String employeeId;
+  private String configurationId;
   @Override
   public boolean equals(Object obj) {
     if (obj instanceof EmployeeAssignmentId other) {
@@ -25,6 +27,6 @@ public class EmployeeAssignmentId implements Serializable {
 
   @Override
   public int hashCode() {
-    return Objects.hashCode(employeeId.getId() + configurationId.getId());
+    return Objects.hashCode(employeeId + configurationId);
   }
 }

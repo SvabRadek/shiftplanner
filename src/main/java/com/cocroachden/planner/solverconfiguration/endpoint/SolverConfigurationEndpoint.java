@@ -27,6 +27,7 @@ public class SolverConfigurationEndpoint {
     public @Nonnull String save(@Nonnull SolverConfigurationDTO configDTO) {
         String randomId = UUID.randomUUID().toString();
         configDTO.setId(randomId);
+        configDTO.getConstraints().forEach(constraintDTO -> constraintDTO.setId(UUID.randomUUID().toString()));
         publisher.publishEvent(SaveSolverConfigurationCommand.from(configDTO));
         return randomId;
     }

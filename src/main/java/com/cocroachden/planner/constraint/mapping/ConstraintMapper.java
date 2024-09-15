@@ -20,14 +20,14 @@ public class ConstraintMapper {
         var request = record.getRequest();
         switch (record.getType()) {
             case EMPLOYEE_SHIFT_REQUEST -> {
-                return EmployeeShiftRequestDTO.from(record.getId().getId(), (EmployeeShiftRequest) record.getRequest());
+                return EmployeeShiftRequestDTO.from(record.getId(), (EmployeeShiftRequest) record.getRequest());
             }
             case SHIFT_PER_SCHEDULE -> {
-                return ShiftsPerScheduleRequestDTO.from(record.getId().getId(), (ShiftsPerScheduleRequest) record.getRequest());
+                return ShiftsPerScheduleRequestDTO.from(record.getId(), (ShiftsPerScheduleRequest) record.getRequest());
             }
             case CONSECUTIVE_WORKING_DAYS -> {
                 return ConsecutiveWorkingDaysRequestDTO.from(
-                        record.getId().getId(),
+                        record.getId(),
                         (ConsecutiveWorkingDaysRequest) record.getRequest()
                 );
             }
@@ -36,27 +36,27 @@ public class ConstraintMapper {
             }
             case SHIFT_FOLLOW_UP_RESTRICTION -> {
                 return ShiftFollowupRestrictionRequestDTO.from(
-                        record.getId().getId(),
+                        record.getId(),
                         (ShiftFollowUpRestrictionRequest) record.getRequest()
                 );
             }
             case SHIFT_PATTERN_CONSTRAINT -> {
-                return ShiftPatternRequestDTO.from(record.getId().getId(), (ShiftPatternConstraintRequest) record.getRequest());
+                return ShiftPatternRequestDTO.from(record.getId(), (ShiftPatternConstraintRequest) record.getRequest());
             }
             case EMPLOYEES_PER_SHIFT -> {
-                return EmployeesPerShiftRequestDTO.from(record.getId().getId(), (EmployeesPerShiftRequest) record.getRequest());
+                return EmployeesPerShiftRequestDTO.from(record.getId(), (EmployeesPerShiftRequest) record.getRequest());
             }
             case TRIPLE_SHIFTS_CONSTRAINT -> {
-                return TripleShiftConstraintRequestDTO.from(record.getId().getId(), (TripleShiftConstraintRequest) record.getRequest());
+                return TripleShiftConstraintRequestDTO.from(record.getId(), (TripleShiftConstraintRequest) record.getRequest());
             }
             case TEAM_ASSIGNMENT -> {
-                return TeamAssignmentRequestDTO.from(record.getId().getId(), (TeamAssignmentRequest) record.getRequest());
+                return TeamAssignmentRequestDTO.from(record.getId(), (TeamAssignmentRequest) record.getRequest());
             }
             case WEEKEND_REQUEST -> {
-                return WeekendRequestDTO.from(record.getId().getId(), (WeekendRequest) record.getRequest());
+                return WeekendRequestDTO.from(record.getId(), (WeekendRequest) record.getRequest());
             }
             case EVEN_SHIFT_DISTRIBUTION -> {
-                return EvenShiftDistributionRequestDTO.from(record.getId().getId(), (EvenShiftDistributionRequest) record.getRequest());
+                return EvenShiftDistributionRequestDTO.from(record.getId(), (EvenShiftDistributionRequest) record.getRequest());
             }
         }
         throw new IllegalArgumentException("Cannot remap requested type: " + request.getType());

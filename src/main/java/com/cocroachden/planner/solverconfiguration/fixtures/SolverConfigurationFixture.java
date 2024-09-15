@@ -33,7 +33,7 @@ public class SolverConfigurationFixture implements SpecificFixtureGenerator {
                                 IntStream.range(0, fixtureEmployees.size())
                                         .mapToObj(i -> {
                                             var e = fixtureEmployees.get(i);
-                                            return new EmployeeAssignmentDTO(EmployeeId.from(e.getId()), i, 1);
+                                            return new EmployeeAssignmentDTO(e.getId(), i, 1);
                                         }).toList(),
                                 List.of()
                         )

@@ -86,7 +86,7 @@ public class ConstraintEmployeeValidator {
                 var datesOfWorkRequests = constraints.stream()
                     .filter(c1 -> c1 instanceof EmployeeShiftRequestDTO)
                     .map(c1 -> (EmployeeShiftRequestDTO) c1)
-                    .filter(c1 -> c1.getOwner().equals(assignment.getEmployee().getId()))
+                    .filter(c1 -> c1.getOwner().equals(assignment.getEmployeeId()))
                     .filter(c1 -> c1.getRequestedShift().isSameAs(WorkShifts.WORKING_SHIFTS))
                     .map(EmployeeShiftRequestDTO::getDate)
                     .collect(Collectors.toMap(Function.identity(), Function.identity()));
@@ -102,7 +102,7 @@ public class ConstraintEmployeeValidator {
                     });
                 if (isOverLimit) {
                   return new EmployeeValidationIssue(
-                      assignment.getEmployee().getId(),
+                      assignment.getEmployeeId(),
                       IssueSeverity.ERROR,
                       "Pracovnik zada vic smen v rade, nez je povolene maximum!"
                   );

@@ -11,8 +11,8 @@ public record ScheduleEmployee(
 
   public static ScheduleEmployee from(EmployeeAssignmentRecord assignment) {
     return new ScheduleEmployee(
-        assignment.getEmployee().getId(),
-        assignment.getWeight()
+            EmployeeId.from(assignment.getEmployee().getId()),
+            assignment.getWeight()
     );
   }
 

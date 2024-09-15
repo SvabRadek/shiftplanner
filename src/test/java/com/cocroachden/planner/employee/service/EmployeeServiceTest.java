@@ -32,7 +32,7 @@ class EmployeeServiceTest extends AbstractMessagingTest {
         var command = new SaveEmployeeCommand(id,"John","Doe");
         this.whenCommandHasBeenSent(command);
         this.thenExactlyOneEventHasBeenDispatched(EmployeeHasBeenSaved.class);
-        Assertions.assertThat(employeeRepository.findById(id)).isPresent();
+        Assertions.assertThat(employeeRepository.findById(id.getId())).isPresent();
     }
 
     @Test
@@ -51,12 +51,12 @@ class EmployeeServiceTest extends AbstractMessagingTest {
         var deleteCommand = new DeleteEmployeeCommand(id);
         this.whenCommandHasBeenSent(deleteCommand);
         this.thenExactlyOneEventHasBeenDispatched(EmployeeHasBeenDeleted.class);
-        Assertions.assertThat(employeeRepository.existsById(id)).isFalse();
+        Assertions.assertThat(employeeRepository.existsById(id.getId())).isFalse();
     }
 
     @Test
     public void itIgnoresWhenDeletingNonExistingEmployee() {
-        var employeeId = new EmployeeId("non-existent-id");
+        var employeeId = new EmployeeId("non-existent-employeeId");
         var deleteCommand = new DeleteEmployeeCommand(employeeId);
         this.whenCommandHasBeenSent(deleteCommand);
         this.thenNoEventsOfTypeHaveBeenDispatched(EmployeeHasBeenDeleted.class);

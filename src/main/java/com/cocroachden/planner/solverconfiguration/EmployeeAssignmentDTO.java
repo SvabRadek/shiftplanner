@@ -1,6 +1,5 @@
 package com.cocroachden.planner.solverconfiguration;
 
-import com.cocroachden.planner.employee.EmployeeId;
 import com.cocroachden.planner.solverconfiguration.repository.EmployeeAssignmentRecord;
 import dev.hilla.Nonnull;
 import lombok.AccessLevel;
@@ -21,7 +20,7 @@ public class EmployeeAssignmentDTO {
     );
   }
 
-  private @Nonnull EmployeeId employee;
+  private @Nonnull String employeeId;
   private @Nonnull Integer index;
   private @Nonnull Integer weight;
 

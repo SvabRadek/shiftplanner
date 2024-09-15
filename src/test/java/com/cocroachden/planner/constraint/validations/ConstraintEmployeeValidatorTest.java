@@ -85,7 +85,7 @@ class ConstraintEmployeeValidatorTest {
 
   private EmployeeAssignmentDTO createEmployee(String id) {
     return new EmployeeAssignmentDTO(
-            EmployeeId.from(id),
+            id,
         0,
         1
     );

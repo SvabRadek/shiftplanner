@@ -97,7 +97,7 @@ class ConstraintDayValidatorTest {
 
     private EmployeeAssignmentDTO createAssignment(String id) {
         return new EmployeeAssignmentDTO(
-                EmployeeId.from(id),
+                id,
                 0,
                 1
         );

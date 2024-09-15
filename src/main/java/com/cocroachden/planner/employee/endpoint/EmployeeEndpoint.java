@@ -19,14 +19,14 @@ import java.util.List;
 @BrowserCallable
 @AnonymousAllowed
 @AllArgsConstructor
-public class EmployeeEndpoint extends CrudRepositoryService<EmployeeRecord, EmployeeId, EmployeeRepository> {
+public class EmployeeEndpoint extends CrudRepositoryService<EmployeeRecord, String, EmployeeRepository> {
     private EmployeeQuery employeeQuery;
     private ApplicationEventPublisher publisher;
 
     @Override
     @Transactional
-    public void delete(@Nonnull EmployeeId employeeId) {
-        publisher.publishEvent(new DeleteEmployeeCommand(employeeId));
+    public void delete(@Nonnull String employeeId) {
+        publisher.publishEvent(new DeleteEmployeeCommand(new EmployeeId(employeeId)));
     }
 
     @Nonnull

@@ -15,12 +15,12 @@ public class SolverConfigurationQuery {
     private final SolverConfigurationRepository repository;
 
     public Boolean exists(SolverConfigurationId configurationId) {
-        return repository.existsById(configurationId);
+        return repository.existsById(configurationId.getId());
     }
 
     public SolverConfigurationDTO getSolverConfigurationById(SolverConfigurationId configurationId) {
-        return SolverConfigurationDTO.from(repository.findById(configurationId)
-                .orElseThrow(() -> new IllegalArgumentException("Solver configuration with id [" + configurationId + "] not found!"))
+        return SolverConfigurationDTO.from(repository.findById(configurationId.getId())
+                .orElseThrow(() -> new IllegalArgumentException("Solver configuration with employeeId [" + configurationId + "] not found!"))
         );
     }
 

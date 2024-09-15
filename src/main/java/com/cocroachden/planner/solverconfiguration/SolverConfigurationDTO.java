@@ -1,7 +1,7 @@
 package com.cocroachden.planner.solverconfiguration;
 
-import com.cocroachden.planner.constraint.mapping.ConstraintMapper;
 import com.cocroachden.planner.constraint.ConstraintRequestDTO;
+import com.cocroachden.planner.constraint.mapping.ConstraintMapper;
 import com.cocroachden.planner.solverconfiguration.repository.EmployeeAssignmentRecord;
 import com.cocroachden.planner.solverconfiguration.repository.SolverConfigurationRecord;
 import dev.hilla.Nonnull;
@@ -21,7 +21,7 @@ import java.util.List;
 public class SolverConfigurationDTO {
   public static SolverConfigurationDTO from(SolverConfigurationRecord record) {
     return new SolverConfigurationDTO(
-        record.getId().getId(),
+        record.getId(),
         record.getName(),
         record.getCreatedAt(),
         record.getLastUpdated(),

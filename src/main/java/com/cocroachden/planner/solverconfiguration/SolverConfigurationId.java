@@ -9,7 +9,6 @@ import lombok.NoArgsConstructor;
 import java.io.Serializable;
 import java.util.UUID;
 
-@Embeddable
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
@@ -18,6 +17,10 @@ public class SolverConfigurationId implements Serializable {
 
     public static SolverConfigurationId random() {
         return new SolverConfigurationId(UUID.randomUUID().toString());
+    }
+
+    public static SolverConfigurationId from(String id) {
+        return new SolverConfigurationId(id);
     }
 
     @Override

@@ -1,23 +1,13 @@
 package com.cocroachden.planner;
 
 
-import com.cocroachden.planner.constraint.ConstraintId;
 import com.cocroachden.planner.constraint.repository.ConstraintRecord;
 import com.cocroachden.planner.employee.EmployeeId;
 import com.cocroachden.planner.employee.repository.EmployeeRecord;
-import com.cocroachden.planner.solver.constraints.ConstraintRequest;
-import com.cocroachden.planner.solver.constraints.specific.consecutiveworkingdays.request.ConsecutiveWorkingDaysRequest;
-import com.cocroachden.planner.solver.constraints.specific.shiftfollowuprestriction.request.ShiftFollowUpRestrictionRequest;
-import com.cocroachden.planner.solver.constraints.specific.shiftperschedule.request.ShiftsPerScheduleRequest;
-import com.cocroachden.planner.solver.constraints.specific.employeespershift.request.EmployeesPerShiftRequest;
-import com.cocroachden.planner.solver.constraints.specific.tripleshift.request.TripleShiftConstraintRequest;
-import com.cocroachden.planner.solver.constraints.specific.weekends.request.WeekendRequest;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
-
-import static com.cocroachden.planner.solver.api.WorkShifts.*;
 
 public class DefaultSolverConfiguration {
     private static final LocalDate FIRST_DAY = LocalDate.of(2023, 11, 1);
@@ -118,11 +108,10 @@ public class DefaultSolverConfiguration {
     }
 
     private static EmployeeRecord createEmployee(String firstName, String lastName) {
-        return new EmployeeRecord(
-                EmployeeId.random(),
-                firstName,
-                lastName
-        );
+        return new EmployeeRecord()
+                .setId(EmployeeId.random().getId())
+                .setFirstName(firstName)
+                .setLastName(lastName);
     }
 
 }

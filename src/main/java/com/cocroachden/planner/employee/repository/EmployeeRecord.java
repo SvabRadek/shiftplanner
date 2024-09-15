@@ -3,39 +3,39 @@ package com.cocroachden.planner.employee.repository;
 import com.cocroachden.planner.constraint.repository.ConstraintRecord;
 import com.cocroachden.planner.employee.EmployeeId;
 import com.cocroachden.planner.solverconfiguration.repository.EmployeeAssignmentRecord;
-import dev.hilla.Nonnull;
 import jakarta.persistence.*;
 import lombok.*;
+import lombok.experimental.Accessors;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @Entity(name = "employee")
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@NoArgsConstructor
 @Getter
-@Setter
+@Accessors(chain = true)
 public final class EmployeeRecord {
 
-    @EmbeddedId
-    @AttributeOverride(name = "id", column = @Column(name = "employee_id"))
-    private EmployeeId id;
+    @Setter
+    @Id
+    private String id;
+    @Setter
     private String firstName;
+    @Setter
     private String lastName;
     @OneToMany(mappedBy = "owner", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<ConstraintRecord> requests = new ArrayList<>();
-    @OneToMany(mappedBy = "employee", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<ConstraintRecord> constraints = new ArrayList<>();
+    @OneToMany(mappedBy = "employee")
     private List<EmployeeAssignmentRecord> assignments = new ArrayList<>();
 
-    public EmployeeRecord(@Nonnull EmployeeId id, @Nonnull String firstName, @Nonnull String lastName) {
-        this.id = id;
-        this.firstName = firstName;
-        this.lastName = lastName;
+    public void addConstraint(ConstraintRecord constraint) {
+        if (constraint == null) return;
+        constraints.add(constraint);
     }
 
-    public EmployeeRecord(@Nonnull String firstName, @Nonnull String lastName) {
-        this.id = EmployeeId.random();
-        this.firstName = firstName;
-        this.lastName = lastName;
+    public void addAssignment(EmployeeAssignmentRecord assignment) {
+        if (assignment == null) return;
+        assignments.add(assignment);
     }
 
     @Override

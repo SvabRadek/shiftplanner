@@ -1,7 +1,6 @@
 package com.cocroachden.planner;
 
 import com.cocroachden.planner.employee.repository.EmployeeRepository;
-import com.cocroachden.planner.solverconfiguration.SolverConfigurationId;
 import com.cocroachden.planner.solverconfiguration.repository.EmployeeAssignmentRecord;
 import com.cocroachden.planner.solverconfiguration.repository.EmployeeAssignmentRepository;
 import com.cocroachden.planner.solverconfiguration.repository.SolverConfigurationRecord;
@@ -27,27 +26,23 @@ public class StartupService {
         if (isThereAnyConfig(configRepo)) {
             return;
         }
-        var configRecord = new SolverConfigurationRecord();
-        configRecord.setId(SolverConfigurationId.random());
-        configRecord.setStartDate(LocalDate.now());
-        configRecord.setEndDate(LocalDate.now().plusDays(30));
-        configRecord.setName("Příklad konfigurace");
+        var configRecord = new SolverConfigurationRecord()
+                .setId("9b314fa8-b459-427e-b3d8-2db53dc48d73")
+                .setStartDate(LocalDate.now())
+                .setEndDate(LocalDate.now().plusDays(30))
+                .setName("Příklad konfigurace");
         var savedConfiguration = configRepo.save(configRecord);
         var employeeRecords = DefaultSolverConfiguration.employees();
         var index = new AtomicInteger(0);
         var assignments = employeeRecords.stream()
                 .map(employeeRepo::save)
-                .map(e -> {
-                    var assignment = new EmployeeAssignmentRecord(savedConfiguration, e, index.getAndIncrement(), 1);
-                    e.getAssignments().add(assignment);
-                    return assignment;
-                }).toList();
-        savedConfiguration.setEmployeeAssignments(assignments);
-        savedConfiguration.setConstraintRecords(
-                DefaultSolverConfiguration.constraintRequests().stream()
-                        .peek(c -> c.setParent(savedConfiguration))
-                        .toList()
-        );
+                .map(e -> new EmployeeAssignmentRecord()
+                        .setIndex(index.getAndIncrement())
+                        .setWeight(1)
+                        .setConfiguration(savedConfiguration)
+                        .setEmployee(e)
+                ).toList();
+        DefaultSolverConfiguration.constraintRequests().forEach(c -> c.setParent(savedConfiguration));
         configRepo.save(savedConfiguration);
         assignmentRepo.saveAll(assignments);
         employeeRepo.saveAll(employeeRecords);

@@ -17,7 +17,7 @@ public class EmployeeDTO {
 
   public static EmployeeDTO from(EmployeeRecord record) {
     return new EmployeeDTO(
-        record.getId().getId(),
+        record.getId(),
         record.getFirstName(),
         record.getLastName()
     );
