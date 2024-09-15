@@ -49,4 +49,17 @@ public class ConstraintRecord {
     this.owner = owner;
     return this;
   }
+
+  @Override
+  public boolean equals(Object obj) {
+    if (obj instanceof ConstraintRecord other) {
+      return this.id.equals(other.id);
+    }
+    return false;
+  }
+
+  @Override
+  public int hashCode() {
+    return id.hashCode();
+  }
 }

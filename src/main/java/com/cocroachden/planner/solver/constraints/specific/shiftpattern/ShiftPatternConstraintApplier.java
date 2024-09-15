@@ -8,10 +8,12 @@ import com.cocroachden.planner.solver.service.schedule.SchedulePlan;
 import com.cocroachden.planner.solver.service.schedule.ScheduleDay;
 import com.google.ortools.sat.CpModel;
 import com.cocroachden.planner.solver.constraints.ConstraintApplier;
+import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.util.Map;
 
+@Service
 public class ShiftPatternConstraintApplier implements ConstraintApplier {
     @Override
     public void apply(SchedulePlan schedulePlan, CpModel model, SolutionObjectives objective, SolverConstraint solverConstraint) {

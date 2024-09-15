@@ -1,4 +1,4 @@
-package com.cocroachden.planner.solver.api;
+package com.cocroachden.planner.solver;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

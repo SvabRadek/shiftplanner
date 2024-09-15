@@ -4,8 +4,8 @@ package com.cocroachden.planner.solver.constraints.specific.shiftpattern.request
 import com.cocroachden.planner.constraint.ShiftPatternConstraintDTO;
 import com.cocroachden.planner.constraint.ConstraintType;
 import com.cocroachden.planner.employee.EmployeeId;
-import com.cocroachden.planner.solver.api.WorkShifts;
-import com.cocroachden.planner.solver.constraints.specific.EmployeeSolverConstraint;
+import com.cocroachden.planner.solver.WorkShifts;
+import com.cocroachden.planner.solver.constraints.specific.EmployeeConstraint;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -14,7 +14,7 @@ import lombok.NoArgsConstructor;
 @Getter
 @JsonTypeName("ShiftPatternConstraint")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class ShiftPatternConstraint implements EmployeeSolverConstraint {
+public class ShiftPatternConstraint implements EmployeeConstraint {
   public static ShiftPatternConstraint from(ShiftPatternConstraintDTO dto) {
     return new ShiftPatternConstraint(
             EmployeeId.from(dto.getOwner()),

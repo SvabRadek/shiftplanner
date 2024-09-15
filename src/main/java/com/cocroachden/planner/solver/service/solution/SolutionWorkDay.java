@@ -1,7 +1,7 @@
 package com.cocroachden.planner.solver.service.solution;
 
 
-import com.cocroachden.planner.solver.api.WorkShifts;
+import com.cocroachden.planner.solver.WorkShifts;
 
 import java.time.LocalDate;
 

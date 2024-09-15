@@ -6,16 +6,18 @@ import com.cocroachden.planner.solver.constraints.specific.tripleshift.request.T
 import com.cocroachden.planner.solver.service.SolutionObjectives;
 import com.cocroachden.planner.solver.service.schedule.SchedulePlan;
 import com.cocroachden.planner.solver.service.schedule.ScheduleDay;
-import com.cocroachden.planner.solver.api.WorkShifts;
+import com.cocroachden.planner.solver.WorkShifts;
 import com.google.ortools.sat.BoolVar;
 import com.google.ortools.sat.CpModel;
 import com.google.ortools.sat.LinearArgument;
 import com.google.ortools.sat.LinearExpr;
+import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Map;
 
+@Service
 public class TripleShiftConstraintApplier implements ConstraintApplier {
     @Override
     public void apply(SchedulePlan schedulePlan, CpModel model, SolutionObjectives objective, SolverConstraint solverConstraint) {

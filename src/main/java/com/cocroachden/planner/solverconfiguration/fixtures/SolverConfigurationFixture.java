@@ -6,7 +6,7 @@ import com.cocroachden.planner.employee.EmployeeDTO;
 import com.cocroachden.planner.employee.EmployeeId;
 import com.cocroachden.planner.employee.fixtures.EmployeeFixturesData;
 import com.cocroachden.planner.fixtures.SpecificFixtureGenerator;
-import com.cocroachden.planner.solver.api.WorkShifts;
+import com.cocroachden.planner.solver.WorkShifts;
 import com.cocroachden.planner.solverconfiguration.EmployeeAssignmentDTO;
 import com.cocroachden.planner.solverconfiguration.SolverConfigurationId;
 import com.cocroachden.planner.solverconfiguration.command.saveconfiguration.SaveSolverConfigurationCommand;
@@ -22,7 +22,7 @@ import java.util.stream.IntStream;
 @AllArgsConstructor
 public class SolverConfigurationFixture implements SpecificFixtureGenerator {
 
-    private final static SolverConfigurationId DEFAULT_ID = new SolverConfigurationId("4e8c8725-3fc8-4895-bf4a-8d1af153c7c5");
+    public final static SolverConfigurationId DEFAULT_ID = new SolverConfigurationId("4e8c8725-3fc8-4895-bf4a-8d1af153c7c5");
 
     @Override
     public List<Command> generateCommands() {
@@ -85,7 +85,7 @@ public class SolverConfigurationFixture implements SpecificFixtureGenerator {
     }
 
     private List<ConstraintDTO> generateFixtureConstrainsForEmployee(EmployeeId employeeId) {
-        return List.of(
+        return new ArrayList<>(List.of(
                 new ShiftsPerScheduleConstraintDTO(
                         ConstraintId.random().getId(),
                         employeeId.getId(),
@@ -121,6 +121,6 @@ public class SolverConfigurationFixture implements SpecificFixtureGenerator {
                         1,
                         3
                 )
-        );
+        ));
     }
 }

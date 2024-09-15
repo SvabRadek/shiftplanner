@@ -1,6 +1,6 @@
 package com.cocroachden.planner.solver.constraints.specific.weekends;
 
-import com.cocroachden.planner.solver.api.WorkShifts;
+import com.cocroachden.planner.solver.WorkShifts;
 import com.cocroachden.planner.solver.constraints.ConstraintApplier;
 import com.cocroachden.planner.solver.constraints.SolverConstraint;
 import com.cocroachden.planner.solver.constraints.specific.weekends.request.WeekendConstraint;
@@ -13,6 +13,7 @@ import com.google.ortools.sat.LinearExpr;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.springframework.lang.Nullable;
+import org.springframework.stereotype.Service;
 
 import java.time.DayOfWeek;
 import java.time.LocalDate;
@@ -20,6 +21,7 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Optional;
 
+@Service
 public class WeekendRequestsApplier implements ConstraintApplier {
   @Override
   public void apply(SchedulePlan schedulePlan, CpModel model, SolutionObjectives objective, SolverConstraint solverConstraint) {

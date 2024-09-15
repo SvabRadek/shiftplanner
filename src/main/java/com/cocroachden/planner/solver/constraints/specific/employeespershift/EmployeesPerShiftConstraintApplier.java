@@ -8,9 +8,11 @@ import com.cocroachden.planner.solver.service.SolutionObjectives;
 import com.cocroachden.planner.solver.service.schedule.SchedulePlan;
 import com.google.ortools.sat.BoolVar;
 import com.google.ortools.sat.CpModel;
+import org.springframework.stereotype.Service;
 
 import java.util.Collection;
 
+@Service
 public class EmployeesPerShiftConstraintApplier implements ConstraintApplier {
   @Override
   public void apply(SchedulePlan schedulePlan, CpModel model, SolutionObjectives objective, SolverConstraint solverConstraint) {

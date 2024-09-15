@@ -5,9 +5,11 @@ import com.cocroachden.planner.solver.constraints.SolverConstraint;
 import com.cocroachden.planner.solver.constraints.specific.employeeshiftrequest.request.RequestedShiftConstraint;
 import com.cocroachden.planner.solver.service.SolutionObjectives;
 import com.cocroachden.planner.solver.service.schedule.SchedulePlan;
-import com.cocroachden.planner.solver.api.WorkShifts;
+import com.cocroachden.planner.solver.WorkShifts;
 import com.google.ortools.sat.CpModel;
+import org.springframework.stereotype.Service;
 
+@Service
 public class EmployeeShiftRequestConstraintApplier implements ConstraintApplier {
   @Override
   public void apply(SchedulePlan schedulePlan, CpModel model, SolutionObjectives objective, SolverConstraint solverConstraint) {

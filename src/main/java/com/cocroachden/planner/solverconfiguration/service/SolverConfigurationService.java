@@ -6,7 +6,7 @@ import com.cocroachden.planner.constraint.repository.ConstraintRecord;
 import com.cocroachden.planner.constraint.repository.ConstraintRepository;
 import com.cocroachden.planner.employee.EmployeeId;
 import com.cocroachden.planner.employee.repository.EmployeeRepository;
-import com.cocroachden.planner.solver.constraints.specific.EmployeeSolverConstraint;
+import com.cocroachden.planner.solver.constraints.specific.EmployeeConstraint;
 import com.cocroachden.planner.solverconfiguration.EmployeeAssignmentDTO;
 import com.cocroachden.planner.solverconfiguration.SolverConfigurationId;
 import com.cocroachden.planner.solverconfiguration.command.deleteconfiguration.DeleteSolverConfigurationCommand;
@@ -27,6 +27,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.NoSuchElementException;
 
 @Service
 @AllArgsConstructor
@@ -115,31 +116,33 @@ public class SolverConfigurationService {
                         .setStartDate(startDate)
                         .setEndDate(endDate)
         );
-        var assignedEmployeeRecords = assignedEmployees.stream()
-                .map(assignment -> {
-                    var employeeId = EmployeeId.from(assignment.getEmployeeId());
-                    var employeeRecord = employeeRepository.findById(employeeId.getId()).orElseThrow();
-                    return new EmployeeAssignmentRecord()
-                            .setIndex(assignment.getIndex())
-                            .setWeight(assignment.getWeight())
-                            .setEmployee(employeeRecord)
-                            .setConfiguration(configRecord);
-                }).toList();
-        var constraintRecords = constraints.stream()
-                .map(constraintDto -> {
-                    var constraint = ConstraintMapper.fromDto(constraintDto);
-                    var constraintRecord = new ConstraintRecord()
-                            .setId(constraintDto.getId())
-                            .setRequest(constraint)
-                            .setParent(configRecord);
-                    if (constraint instanceof EmployeeSolverConstraint employeeConstraint) {
-                        employeeRepository.findById(employeeConstraint.getOwner().getId())
-                                .ifPresent(constraintRecord::setOwner);
-                    }
-                    return constraintRecord;
-                }).toList();
-        assignmentRepository.saveAll(assignedEmployeeRecords);
-        constraintRepository.saveAll(constraintRecords);
+        assignedEmployees.forEach(assignment -> {
+            var employeeId = EmployeeId.from(assignment.getEmployeeId());
+            var employeeRecord = employeeRepository.findById(employeeId.getId())
+                    .orElseThrow(() -> new NoSuchElementException("Employee [%s] was not found!".formatted(employeeId.getId())));
+            assignmentRepository.save(new EmployeeAssignmentRecord()
+                    .setIndex(assignment.getIndex())
+                    .setWeight(assignment.getWeight())
+                    .setEmployee(employeeRecord)
+                    .setConfiguration(configRecord)
+            );
+        });
+        constraints.forEach(constraintDto -> {
+            var constraint = ConstraintMapper.fromDto(constraintDto);
+            log.debug("Setting id to {}", constraintDto.getId());
+            var constraintRecord = new ConstraintRecord()
+                    .setId(constraintDto.getId())
+                    .setRequest(constraint)
+                    .setParent(configRecord);
+            if (constraint instanceof EmployeeConstraint employeeConstraint) {
+                var employeeId = employeeConstraint.getOwner().getId();
+                var employeeRecord = employeeRepository.findById(employeeId)
+                        .orElseThrow(() -> new NoSuchElementException("Employee [%s] was not found!".formatted(employeeId)));
+                constraintRecord.setOwner(employeeRecord);
+            }
+            log.debug("Saving constraint -> Type: {}, Id: {}", constraintRecord.getType(), constraintRecord.getId());
+            constraintRepository.save(constraintRecord);
+        });
         return configurationRepository.save(configRecord);
     }
 }

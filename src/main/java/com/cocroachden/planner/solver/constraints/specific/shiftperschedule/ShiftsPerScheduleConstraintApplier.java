@@ -10,10 +10,12 @@ import com.cocroachden.planner.solver.service.schedule.SchedulePlan;
 import com.google.ortools.sat.BoolVar;
 import com.google.ortools.sat.CpModel;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 
 @Slf4j
+@Service
 public class ShiftsPerScheduleConstraintApplier implements ConstraintApplier {
   @Override
   public void apply(SchedulePlan schedulePlan, CpModel model, SolutionObjectives objective, SolverConstraint solverConstraint) {

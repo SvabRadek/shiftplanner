@@ -4,9 +4,9 @@ package com.cocroachden.planner.solver.constraints.specific.employeeshiftrequest
 import com.cocroachden.planner.constraint.ConstraintType;
 import com.cocroachden.planner.constraint.RequestedShiftConstraintDTO;
 import com.cocroachden.planner.employee.EmployeeId;
-import com.cocroachden.planner.solver.api.WorkShifts;
+import com.cocroachden.planner.solver.WorkShifts;
 import com.cocroachden.planner.solver.constraints.SolverConstraint;
-import com.cocroachden.planner.solver.constraints.specific.EmployeeSolverConstraint;
+import com.cocroachden.planner.solver.constraints.specific.EmployeeConstraint;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import lombok.AccessLevel;
@@ -20,7 +20,7 @@ import java.time.LocalDate;
 @JsonTypeName("RequestedShiftConstraint")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
-public class RequestedShiftConstraint implements SolverConstraint, EmployeeSolverConstraint {
+public class RequestedShiftConstraint implements SolverConstraint, EmployeeConstraint {
     public static RequestedShiftConstraint from(RequestedShiftConstraintDTO dto) {
         return new RequestedShiftConstraint(
                 EmployeeId.from(dto.getOwner()),

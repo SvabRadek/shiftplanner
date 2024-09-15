@@ -4,9 +4,9 @@ package com.cocroachden.planner.solver.constraints.specific.consecutiveworkingda
 import com.cocroachden.planner.constraint.ConsecutiveWorkingDaysConstraintDTO;
 import com.cocroachden.planner.constraint.ConstraintType;
 import com.cocroachden.planner.employee.EmployeeId;
-import com.cocroachden.planner.solver.api.WorkShifts;
+import com.cocroachden.planner.solver.WorkShifts;
 import com.cocroachden.planner.solver.constraints.specific.AbstractMinMaxConstraint;
-import com.cocroachden.planner.solver.constraints.specific.EmployeeSolverConstraint;
+import com.cocroachden.planner.solver.constraints.specific.EmployeeConstraint;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -15,7 +15,7 @@ import lombok.NoArgsConstructor;
 @Getter
 @JsonTypeName("ConsecutiveWorkingDaysConstraint")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class ConsecutiveWorkingDaysConstraint extends AbstractMinMaxConstraint implements EmployeeSolverConstraint {
+public class ConsecutiveWorkingDaysConstraint extends AbstractMinMaxConstraint implements EmployeeConstraint {
     public static ConsecutiveWorkingDaysConstraint from(ConsecutiveWorkingDaysConstraintDTO dto) {
         return new ConsecutiveWorkingDaysConstraint(
                 EmployeeId.from(dto.getOwner()),

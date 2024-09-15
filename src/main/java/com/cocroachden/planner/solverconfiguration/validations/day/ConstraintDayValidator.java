@@ -4,7 +4,7 @@ import com.cocroachden.planner.constraint.RequestedShiftConstraintDTO;
 import com.cocroachden.planner.constraint.EmployeesPerShiftConstraintDTO;
 import com.cocroachden.planner.solverconfiguration.validations.IssueSeverity;
 import com.cocroachden.planner.solverconfiguration.SolverConfigurationDTO;
-import com.cocroachden.planner.solver.api.WorkShifts;
+import com.cocroachden.planner.solver.WorkShifts;
 
 import java.time.LocalDate;
 import java.util.ArrayList;

@@ -3,7 +3,7 @@ package com.cocroachden.planner.solver.constraints.specific.teamassignment.reque
 import com.cocroachden.planner.constraint.ConstraintType;
 import com.cocroachden.planner.constraint.TeamAssignmentConstraintDTO;
 import com.cocroachden.planner.employee.EmployeeId;
-import com.cocroachden.planner.solver.constraints.specific.EmployeeSolverConstraint;
+import com.cocroachden.planner.solver.constraints.specific.EmployeeConstraint;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -14,7 +14,7 @@ import lombok.NoArgsConstructor;
 @JsonTypeName("TeamAssignmentConstraint")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
-public class TeamAssignmentConstraint implements EmployeeSolverConstraint {
+public class TeamAssignmentConstraint implements EmployeeConstraint {
 
   public static TeamAssignmentConstraint from(TeamAssignmentConstraintDTO dto) {
     return new TeamAssignmentConstraint(

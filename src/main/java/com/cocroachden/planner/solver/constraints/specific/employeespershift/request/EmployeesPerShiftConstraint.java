@@ -4,7 +4,7 @@ package com.cocroachden.planner.solver.constraints.specific.employeespershift.re
 import com.cocroachden.planner.constraint.EmployeesPerShiftConstraintDTO;
 import com.cocroachden.planner.constraint.ConstraintType;
 import com.cocroachden.planner.solver.constraints.specific.AbstractMinMaxConstraint;
-import com.cocroachden.planner.solver.api.WorkShifts;
+import com.cocroachden.planner.solver.WorkShifts;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import lombok.AccessLevel;
 import lombok.Getter;

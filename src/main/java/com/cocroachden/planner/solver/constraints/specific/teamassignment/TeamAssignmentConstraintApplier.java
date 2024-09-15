@@ -7,7 +7,9 @@ import com.cocroachden.planner.solver.service.SolutionObjectives;
 import com.cocroachden.planner.solver.service.schedule.SchedulePlan;
 import com.google.ortools.sat.CpModel;
 import com.google.ortools.sat.LinearExpr;
+import org.springframework.stereotype.Service;
 
+@Service
 public class TeamAssignmentConstraintApplier implements ConstraintApplier {
 
     @Override

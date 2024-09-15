@@ -8,11 +8,13 @@ import com.cocroachden.planner.solver.service.schedule.SchedulePlan;
 import com.google.ortools.sat.CpModel;
 import com.google.ortools.sat.LinearArgument;
 import com.google.ortools.sat.LinearExpr;
+import org.springframework.stereotype.Service;
 
 import java.time.DayOfWeek;
 import java.util.ArrayList;
 import java.util.List;
 
+@Service
 public class EvenShiftDistributionConstraintApplier implements ConstraintApplier {
     @Override
     public void apply(SchedulePlan schedulePlan, CpModel model, SolutionObjectives objective, SolverConstraint solverConstraint) {

@@ -4,8 +4,8 @@ package com.cocroachden.planner.solver.constraints.specific.shiftfollowuprestric
 import com.cocroachden.planner.constraint.ShiftFollowupRestrictionConstraintDTO;
 import com.cocroachden.planner.constraint.ConstraintType;
 import com.cocroachden.planner.employee.EmployeeId;
-import com.cocroachden.planner.solver.api.WorkShifts;
-import com.cocroachden.planner.solver.constraints.specific.EmployeeSolverConstraint;
+import com.cocroachden.planner.solver.WorkShifts;
+import com.cocroachden.planner.solver.constraints.specific.EmployeeConstraint;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -16,7 +16,7 @@ import lombok.NoArgsConstructor;
 @JsonTypeName("ShiftFollowUpRestrictionConstraint")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
-public class ShiftFollowUpRestrictionConstraint implements EmployeeSolverConstraint {
+public class ShiftFollowUpRestrictionConstraint implements EmployeeConstraint {
   public static ShiftFollowUpRestrictionConstraint from(ShiftFollowupRestrictionConstraintDTO dto) {
     return new ShiftFollowUpRestrictionConstraint(
             EmployeeId.from(dto.getOwner()),

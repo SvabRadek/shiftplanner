@@ -2,7 +2,7 @@ package com.cocroachden.planner.constraint;
 
 
 import com.cocroachden.planner.solver.constraints.specific.employeespershift.request.EmployeesPerShiftConstraint;
-import com.cocroachden.planner.solver.api.WorkShifts;
+import com.cocroachden.planner.solver.WorkShifts;
 import dev.hilla.Nonnull;
 import lombok.*;
 

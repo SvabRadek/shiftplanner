@@ -8,7 +8,7 @@ import com.cocroachden.planner.constraint.repository.ConstraintRepository;
 import com.cocroachden.planner.employee.EmployeeId;
 import com.cocroachden.planner.employee.command.saveemployee.SaveEmployeeCommand;
 import com.cocroachden.planner.employee.repository.EmployeeRepository;
-import com.cocroachden.planner.solver.api.WorkShifts;
+import com.cocroachden.planner.solver.WorkShifts;
 import com.cocroachden.planner.solverconfiguration.EmployeeAssignmentDTO;
 import com.cocroachden.planner.solverconfiguration.SolverConfigurationId;
 import com.cocroachden.planner.solverconfiguration.command.deleteconfiguration.DeleteSolverConfigurationCommand;

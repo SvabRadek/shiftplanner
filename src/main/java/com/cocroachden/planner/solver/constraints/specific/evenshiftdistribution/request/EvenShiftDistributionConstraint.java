@@ -3,7 +3,7 @@ package com.cocroachden.planner.solver.constraints.specific.evenshiftdistributio
 import com.cocroachden.planner.constraint.ConstraintType;
 import com.cocroachden.planner.constraint.EvenShiftDistributionConstraintDTO;
 import com.cocroachden.planner.employee.EmployeeId;
-import com.cocroachden.planner.solver.constraints.specific.EmployeeSolverConstraint;
+import com.cocroachden.planner.solver.constraints.specific.EmployeeConstraint;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -14,7 +14,7 @@ import lombok.NoArgsConstructor;
 @JsonTypeName("EvenShiftDistributionConstraint")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
-public class EvenShiftDistributionConstraint implements EmployeeSolverConstraint {
+public class EvenShiftDistributionConstraint implements EmployeeConstraint {
     public static EvenShiftDistributionConstraint from(EvenShiftDistributionConstraintDTO dto) {
         return new EvenShiftDistributionConstraint(
                 EmployeeId.from(dto.getOwner()),

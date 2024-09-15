@@ -1,6 +1,6 @@
 package com.cocroachden.planner.constraint;
 
-import com.cocroachden.planner.solver.api.WorkShifts;
+import com.cocroachden.planner.solver.WorkShifts;
 import com.cocroachden.planner.solver.constraints.specific.employeeshiftrequest.request.RequestedShiftConstraint;
 import dev.hilla.Nonnull;
 import lombok.*;

@@ -2,9 +2,9 @@ package com.cocroachden.planner.solver.service.solution;
 
 
 import com.cocroachden.planner.employee.EmployeeId;
-import com.cocroachden.planner.solver.api.SolutionStatus;
-import com.cocroachden.planner.solver.api.SolverSolutionDTO;
-import com.cocroachden.planner.solver.api.WorkShifts;
+import com.cocroachden.planner.solver.SolutionStatus;
+import com.cocroachden.planner.solver.SolverSolutionDTO;
+import com.cocroachden.planner.solver.WorkShifts;
 import com.cocroachden.planner.solver.service.schedule.SchedulePlan;
 import com.google.ortools.sat.CpSolverSolutionCallback;
 import lombok.Getter;

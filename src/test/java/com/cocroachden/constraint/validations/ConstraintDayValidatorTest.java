@@ -6,7 +6,7 @@ import com.cocroachden.planner.solverconfiguration.validations.day.ConstraintDay
 import com.cocroachden.planner.employee.EmployeeId;
 import com.cocroachden.planner.solverconfiguration.EmployeeAssignmentDTO;
 import com.cocroachden.planner.solverconfiguration.SolverConfigurationDTO;
-import com.cocroachden.planner.solver.api.WorkShifts;
+import com.cocroachden.planner.solver.WorkShifts;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 

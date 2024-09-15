@@ -3,7 +3,7 @@ package com.cocroachden.planner.constraint.validations;
 import com.cocroachden.planner.constraint.RequestedShiftConstraintDTO;
 import com.cocroachden.planner.constraint.ShiftsPerScheduleConstraintDTO;
 import com.cocroachden.planner.employee.EmployeeId;
-import com.cocroachden.planner.solver.api.WorkShifts;
+import com.cocroachden.planner.solver.WorkShifts;
 import com.cocroachden.planner.solverconfiguration.EmployeeAssignmentDTO;
 import com.cocroachden.planner.solverconfiguration.SolverConfigurationDTO;
 import com.cocroachden.planner.solverconfiguration.validations.employee.ConstraintEmployeeValidator;

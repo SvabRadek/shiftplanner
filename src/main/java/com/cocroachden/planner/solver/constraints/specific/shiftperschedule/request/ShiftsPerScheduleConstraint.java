@@ -5,7 +5,8 @@ import com.cocroachden.planner.constraint.ShiftsPerScheduleConstraintDTO;
 import com.cocroachden.planner.constraint.ConstraintType;
 import com.cocroachden.planner.employee.EmployeeId;
 import com.cocroachden.planner.solver.constraints.specific.AbstractMinMaxConstraint;
-import com.cocroachden.planner.solver.api.WorkShifts;
+import com.cocroachden.planner.solver.WorkShifts;
+import com.cocroachden.planner.solver.constraints.specific.EmployeeConstraint;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -14,7 +15,7 @@ import lombok.NoArgsConstructor;
 @Getter
 @JsonTypeName("ShiftsPerScheduleConstraint")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class ShiftsPerScheduleConstraint extends AbstractMinMaxConstraint {
+public class ShiftsPerScheduleConstraint extends AbstractMinMaxConstraint implements EmployeeConstraint {
   public static ShiftsPerScheduleConstraint from(ShiftsPerScheduleConstraintDTO dto) {
     return new ShiftsPerScheduleConstraint(
         EmployeeId.from(dto.getOwner()),
@@ -31,18 +32,6 @@ public class ShiftsPerScheduleConstraint extends AbstractMinMaxConstraint {
   private final ConstraintType type = ConstraintType.SHIFTS_PER_SCHEDULE;
   private EmployeeId owner;
   private WorkShifts targetShift;
-
-  public ShiftsPerScheduleConstraint(
-      EmployeeId owner,
-      Integer hardMin,
-      Integer softMin,
-      Integer minPenalty,
-      Integer softMax,
-      Integer maxPenalty,
-      Integer hardMax
-  ) {
-    this(owner, WorkShifts.WORKING_SHIFTS, hardMin, softMin, minPenalty, softMax, maxPenalty, hardMax);
-  }
 
   public ShiftsPerScheduleConstraint(
       EmployeeId owner,

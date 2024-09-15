@@ -3,7 +3,7 @@ package com.cocroachden.planner.solver.constraints.specific.tripleshift.request;
 import com.cocroachden.planner.constraint.TripleShiftConstraintDTO;
 import com.cocroachden.planner.constraint.ConstraintType;
 import com.cocroachden.planner.employee.EmployeeId;
-import com.cocroachden.planner.solver.constraints.specific.EmployeeSolverConstraint;
+import com.cocroachden.planner.solver.constraints.specific.EmployeeConstraint;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -14,7 +14,7 @@ import lombok.NoArgsConstructor;
 @JsonTypeName("TripleShiftConstraint")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
-public class TripleShiftConstraint implements EmployeeSolverConstraint {
+public class TripleShiftConstraint implements EmployeeConstraint {
     public static TripleShiftConstraint from(TripleShiftConstraintDTO requestDTO) {
         return new TripleShiftConstraint(
                 EmployeeId.from(requestDTO.getOwner()),

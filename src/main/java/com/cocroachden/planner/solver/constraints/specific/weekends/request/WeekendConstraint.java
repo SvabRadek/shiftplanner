@@ -3,7 +3,7 @@ package com.cocroachden.planner.solver.constraints.specific.weekends.request;
 import com.cocroachden.planner.constraint.ConstraintType;
 import com.cocroachden.planner.constraint.WeekendConstraintDTO;
 import com.cocroachden.planner.employee.EmployeeId;
-import com.cocroachden.planner.solver.constraints.specific.EmployeeSolverConstraint;
+import com.cocroachden.planner.solver.constraints.specific.EmployeeConstraint;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -14,7 +14,7 @@ import lombok.NoArgsConstructor;
 @JsonTypeName("WeekendConstraint")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
-public class WeekendConstraint implements EmployeeSolverConstraint {
+public class WeekendConstraint implements EmployeeConstraint {
   public static WeekendConstraint from(WeekendConstraintDTO dto) {
     return new WeekendConstraint(
             EmployeeId.from(dto.getOwner()),

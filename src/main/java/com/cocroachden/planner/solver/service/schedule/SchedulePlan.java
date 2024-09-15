@@ -3,7 +3,7 @@ package com.cocroachden.planner.solver.service.schedule;
 
 import com.cocroachden.planner.employee.EmployeeId;
 import com.cocroachden.planner.solver.constraints.SolverConstraint;
-import com.cocroachden.planner.solver.SolverConfiguration;
+import com.cocroachden.planner.solver.SolverProblemConfiguration;
 import com.google.ortools.sat.CpModel;
 import lombok.Getter;
 import lombok.SneakyThrows;
@@ -20,7 +20,7 @@ public class SchedulePlan {
   private final Map<EmployeeId, ScheduleEmployee> employees;
   private final List<SolverConstraint> constraints;
 
-  public SchedulePlan(SolverConfiguration configuration, CpModel model) {
+  public SchedulePlan(SolverProblemConfiguration configuration, CpModel model) {
     var endDateExclusive = configuration.endDate().plusDays(1);
     var assignments = new HashMap<EmployeeId, Map<LocalDate, ScheduleDay>>();
     configuration.scheduleEmployees().forEach(employee -> {
