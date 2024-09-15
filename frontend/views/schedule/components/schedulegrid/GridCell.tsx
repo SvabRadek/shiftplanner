@@ -6,7 +6,7 @@ import WorkShifts from "Frontend/generated/com/cocroachden/planner/solver/api/Wo
 export type Cell = {
   shift: WorkShifts
   index: number
-  employeeId: number
+  employeeId: string
   date: Date
   isHighlighted: boolean
   requestId?: string

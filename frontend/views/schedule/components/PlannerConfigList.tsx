@@ -4,9 +4,9 @@ import { GridColumn } from "@hilla/react-components/GridColumn";
 import { CrudAction, CRUDActions } from "Frontend/util/utils";
 import { Button } from "@hilla/react-components/Button";
 import { Icon } from "@hilla/react-components/Icon";
-import SolverConfigurationMetadata
-  from "Frontend/generated/com/cocroachden/planner/solver/repository/SolverConfigurationMetadata";
 import "@vaadin/icons";
+import SolverConfigurationMetadata
+  from "Frontend/generated/com/cocroachden/planner/solverconfiguration/SolverConfigurationMetadata";
 
 type Props = {
   configList: SolverConfigurationMetadata[]

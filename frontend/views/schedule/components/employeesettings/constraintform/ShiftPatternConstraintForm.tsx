@@ -1,4 +1,3 @@
-import ShiftPatternRequestDTO from "Frontend/generated/com/cocroachden/planner/constraint/api/ShiftPatternRequestDTO";
 import { arePatternsSame, CrudAction, CRUDActions } from "Frontend/util/utils";
 import { Card } from "Frontend/components/Card";
 import { HorizontalLayout } from "@hilla/react-components/HorizontalLayout";
@@ -12,10 +11,11 @@ import { GridCell } from "Frontend/views/schedule/components/schedulegrid/GridCe
 import { apolinarPattern, classicPattern } from "Frontend/views/schedule/DefaultEmptyConstraints";
 import WorkShifts from "Frontend/generated/com/cocroachden/planner/solver/api/WorkShifts";
 import "@vaadin/icons";
+import ShiftPatternConstraintDTO from "Frontend/generated/com/cocroachden/planner/constraint/ShiftPatternConstraintDTO";
 
 type Props = {
-  request: ShiftPatternRequestDTO
-  onAction: (action: CrudAction<ShiftPatternRequestDTO>) => void
+  request: ShiftPatternConstraintDTO
+  onAction: (action: CrudAction<ShiftPatternConstraintDTO>) => void
 }
 
 const selectItems: SelectItem[] = [
@@ -50,7 +50,7 @@ export function ShiftPatternConstraintForm(props: Props) {
     })
   }
 
-  function handleUpdate(value: Partial<ShiftPatternRequestDTO>) {
+  function handleUpdate(value: Partial<ShiftPatternConstraintDTO>) {
     props.onAction({
       type: CRUDActions.UPDATE,
       payload: {
@@ -151,7 +151,7 @@ export function ShiftPatternConstraintForm(props: Props) {
                     cell={{
                       shift: shift,
                       index: index,
-                      employeeId: props.request.owner!.id,
+                      employeeId: props.request.owner,
                       date: new Date(0, 0, 0),
                       requestId: props.request.id,
                       isHighlighted: index === props.request.startDayIndex,

@@ -1,8 +1,8 @@
 import { VerticalLayout } from "@hilla/react-components/VerticalLayout";
 import { Tooltip } from "@hilla/react-components/Tooltip";
 import { CSSProperties } from "react";
-import DayValidationIssue
-  from "Frontend/generated/com/cocroachden/planner/constraint/validations/day/DayValidationIssue";
+import DayValidationIssueDTO
+  from "Frontend/generated/com/cocroachden/planner/solverconfiguration/validations/day/DayValidationIssueDTO";
 
 const defaultStyle: CSSProperties = {
   display: "flex",
@@ -22,7 +22,7 @@ type Props = {
   secondaryTitle?: string,
   hint?: string,
   style?: CSSProperties
-  issues: DayValidationIssue[]
+  issues: DayValidationIssueDTO[]
 }
 
 export function FirstRowCell(props: Props) {

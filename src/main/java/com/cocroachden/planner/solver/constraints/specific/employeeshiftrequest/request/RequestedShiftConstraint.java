@@ -2,7 +2,7 @@ package com.cocroachden.planner.solver.constraints.specific.employeeshiftrequest
 
 
 import com.cocroachden.planner.constraint.ConstraintType;
-import com.cocroachden.planner.constraint.EmployeeShiftConstraintDTO;
+import com.cocroachden.planner.constraint.RequestedShiftConstraintDTO;
 import com.cocroachden.planner.employee.EmployeeId;
 import com.cocroachden.planner.solver.api.WorkShifts;
 import com.cocroachden.planner.solver.constraints.SolverConstraint;
@@ -21,7 +21,7 @@ import java.time.LocalDate;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 public class RequestedShiftConstraint implements SolverConstraint, EmployeeSolverConstraint {
-    public static RequestedShiftConstraint from(EmployeeShiftConstraintDTO dto) {
+    public static RequestedShiftConstraint from(RequestedShiftConstraintDTO dto) {
         return new RequestedShiftConstraint(
                 EmployeeId.from(dto.getOwner()),
                 dto.getRequestedShift(), dto.getDate()

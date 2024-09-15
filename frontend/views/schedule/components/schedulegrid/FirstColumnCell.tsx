@@ -1,12 +1,12 @@
 import {CrudAction, CRUDActions} from "Frontend/util/utils";
 import {Tooltip} from "@hilla/react-components/Tooltip";
 import {CSSProperties, ReactNode} from "react";
-import EmployeeId from "Frontend/generated/com/cocroachden/planner/employee/api/EmployeeId";
-import EmployeeValidationIssue
-    from "Frontend/generated/com/cocroachden/planner/constraint/validations/employee/EmployeeValidationIssue";
-import AssignedEmployeeDTO from "Frontend/generated/com/cocroachden/planner/solver/api/AssignedEmployeeDTO";
 import {VerticalLayout} from "@hilla/react-components/VerticalLayout";
 import {GridProperties} from "Frontend/views/schedule/components/schedulegrid/GridProperties";
+import EmployeeAssignmentDTO
+    from "Frontend/generated/com/cocroachden/planner/solverconfiguration/EmployeeAssignmentDTO";
+import EmployeeValidationIssueDTO
+    from "Frontend/generated/com/cocroachden/planner/solverconfiguration/validations/employee/EmployeeValidationIssueDTO";
 
 const defaultStyle: CSSProperties = {
     cursor: "pointer",
@@ -25,10 +25,10 @@ const defaultStyle: CSSProperties = {
 }
 
 type Props = {
-    owner: EmployeeId,
+    owner: string,
     title: ReactNode
-    onAssignmentAction: (action: CrudAction<Pick<AssignedEmployeeDTO["employee"], "id">>) => void
-    issues: EmployeeValidationIssue[]
+    onAssignmentAction: (action: CrudAction<Pick<EmployeeAssignmentDTO, "employeeId">>) => void
+    issues: EmployeeValidationIssueDTO[]
     readonly?: boolean
     style?: CSSProperties
 }
@@ -40,7 +40,7 @@ export function FirstColumnCell(props: Props) {
     function handleLeftClick() {
         props.onAssignmentAction({
             type: CRUDActions.READ,
-            payload: props.owner
+            payload: { employeeId: props.owner }
         })
     }
 

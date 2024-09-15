@@ -3,25 +3,25 @@ import { HorizontalLayout } from "@hilla/react-components/HorizontalLayout";
 import { NumberField } from "@hilla/react-components/NumberField";
 import { useContext } from "react";
 import { ScheduleMode, ScheduleModeCtx } from "Frontend/views/schedule/ScheduleModeCtxProvider";
-import ShiftFollowupRestrictionRequestDTO
-  from "Frontend/generated/com/cocroachden/planner/constraint/api/ShiftFollowupRestrictionRequestDTO";
 import { ShiftSelect } from "Frontend/components/ShiftSelect";
 import { CrudAction, CRUDActions } from "Frontend/util/utils";
 import { Icon } from "@hilla/react-components/Icon";
 import { Button } from "@hilla/react-components/Button";
 import { CardFooter } from "Frontend/components/CardFooter";
 import "@vaadin/icons";
+import ShiftFollowupRestrictionConstraintDTO
+  from "Frontend/generated/com/cocroachden/planner/constraint/ShiftFollowupRestrictionConstraintDTO";
 
 type Props = {
-  request: ShiftFollowupRestrictionRequestDTO
-  onAction: (action: CrudAction<ShiftFollowupRestrictionRequestDTO>) => void
+  request: ShiftFollowupRestrictionConstraintDTO
+  onAction: (action: CrudAction<ShiftFollowupRestrictionConstraintDTO>) => void
 }
 
 export function ShiftFollowupRestrictionForm(props: Props) {
 
   const modeCtx = useContext(ScheduleModeCtx);
 
-  function handleUpdate(value: Partial<ShiftFollowupRestrictionRequestDTO>) {
+  function handleUpdate(value: Partial<ShiftFollowupRestrictionConstraintDTO>) {
     props.onAction({
       type: CRUDActions.UPDATE,
       payload: {

@@ -4,7 +4,7 @@ import com.cocroachden.planner.solverconfiguration.SolverConfigurationDTO;
 import com.cocroachden.planner.solverconfiguration.validations.day.ConstraintDayValidator;
 import com.cocroachden.planner.solverconfiguration.validations.day.DayValidationIssueDTO;
 import com.cocroachden.planner.solverconfiguration.validations.employee.ConstraintEmployeeValidator;
-import com.cocroachden.planner.solverconfiguration.validations.employee.EmployeeValidationIssue;
+import com.cocroachden.planner.solverconfiguration.validations.employee.EmployeeValidationIssueDTO;
 import com.vaadin.flow.server.auth.AnonymousAllowed;
 import dev.hilla.BrowserCallable;
 import dev.hilla.Nonnull;
@@ -19,7 +19,7 @@ public class SolverConfigurationValidationEndpoint {
     return ConstraintDayValidator.validate(configuration);
   }
 
-  public @Nonnull List<@Nonnull EmployeeValidationIssue> validateEmployees(@Nonnull SolverConfigurationDTO configuration) {
+  public @Nonnull List<@Nonnull EmployeeValidationIssueDTO> validateEmployees(@Nonnull SolverConfigurationDTO configuration) {
     return ConstraintEmployeeValidator.validate(configuration);
   }
 }

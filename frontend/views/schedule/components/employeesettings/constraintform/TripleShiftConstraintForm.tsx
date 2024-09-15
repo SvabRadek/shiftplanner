@@ -1,6 +1,4 @@
 import {CrudAction, CRUDActions} from "Frontend/util/utils";
-import TripleShiftConstraintRequestDTO
-  from "Frontend/generated/com/cocroachden/planner/constraint/api/TripleShiftConstraintRequestDTO";
 import {Card} from "Frontend/components/Card";
 import {HorizontalLayout} from "@hilla/react-components/HorizontalLayout";
 import {NumberField} from "@hilla/react-components/NumberField";
@@ -10,17 +8,18 @@ import {Icon} from "@hilla/react-components/Icon";
 import {Button} from "@hilla/react-components/Button";
 import {Checkbox} from "@hilla/react-components/Checkbox";
 import "@vaadin/icons";
+import TripleShiftConstraintDTO from "Frontend/generated/com/cocroachden/planner/constraint/TripleShiftConstraintDTO";
 
 type Props = {
-  request: TripleShiftConstraintRequestDTO,
-  onAction: (action: CrudAction<TripleShiftConstraintRequestDTO>) => void
+  request: TripleShiftConstraintDTO,
+  onAction: (action: CrudAction<TripleShiftConstraintDTO>) => void
 }
 
 export function TripleShiftConstraintForm(props: Props) {
 
   const { mode } = useContext(ScheduleModeCtx);
 
-  function handleUpdate(update: Partial<TripleShiftConstraintRequestDTO>) {
+  function handleUpdate(update: Partial<TripleShiftConstraintDTO>) {
     props.onAction({
       type: CRUDActions.UPDATE,
       payload: {

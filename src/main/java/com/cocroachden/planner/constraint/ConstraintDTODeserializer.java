@@ -19,7 +19,7 @@ public class ConstraintDTODeserializer extends JsonDeserializer<ConstraintDTO> {
 
   static {
     DESERIALIZATION_MAP.put(ConstraintType.CONSECUTIVE_WORKING_DAYS, ConsecutiveWorkingDaysConstraintDTO.class);
-    DESERIALIZATION_MAP.put(ConstraintType.REQUESTED_SHIFT_CONSTRAINT, EmployeeShiftConstraintDTO.class);
+    DESERIALIZATION_MAP.put(ConstraintType.REQUESTED_SHIFT_CONSTRAINT, RequestedShiftConstraintDTO.class);
     DESERIALIZATION_MAP.put(ConstraintType.SHIFT_PATTERN_CONSTRAINT, ShiftPatternConstraintDTO.class);
     DESERIALIZATION_MAP.put(ConstraintType.EMPLOYEES_PER_SHIFT, EmployeesPerShiftConstraintDTO.class);
     DESERIALIZATION_MAP.put(ConstraintType.SHIFT_FOLLOW_UP_RESTRICTION, ShiftFollowupRestrictionConstraintDTO.class);

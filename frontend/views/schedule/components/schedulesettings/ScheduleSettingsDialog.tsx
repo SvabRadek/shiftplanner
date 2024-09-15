@@ -6,31 +6,33 @@ import { EmployeeTab } from "Frontend/views/schedule/components/schedulesettings
 import { Button } from "@hilla/react-components/Button";
 import { HorizontalLayout } from "@hilla/react-components/HorizontalLayout";
 import { GlobalTab } from "Frontend/views/schedule/components/schedulesettings/GlobalTab";
-import EmployeesPerShiftRequestDTO
-  from "Frontend/generated/com/cocroachden/planner/constraint/api/EmployeesPerShiftRequestDTO";
-import ConsecutiveWorkingDaysRequestDTO
-  from "Frontend/generated/com/cocroachden/planner/constraint/api/ConsecutiveWorkingDaysRequestDTO";
-import ShiftFollowupRestrictionRequestDTO
-  from "Frontend/generated/com/cocroachden/planner/constraint/api/ShiftFollowupRestrictionRequestDTO";
 import { CrudAction } from "Frontend/util/utils";
 import { VerticalLayout } from "@hilla/react-components/VerticalLayout";
-import SolverConfigurationDTO from "Frontend/generated/com/cocroachden/planner/solver/api/SolverConfigurationDTO";
-import EmployeeDTO from "Frontend/generated/com/cocroachden/planner/employee/api/EmployeeDTO";
-import AssignedEmployeeDTO from "Frontend/generated/com/cocroachden/planner/solver/api/AssignedEmployeeDTO";
 import "@vaadin/icons";
+import EmployeeDTO from "Frontend/generated/com/cocroachden/planner/employee/EmployeeDTO";
+import EmployeeAssignmentDTO
+  from "Frontend/generated/com/cocroachden/planner/solverconfiguration/EmployeeAssignmentDTO";
+import SolverConfigurationDTO
+  from "Frontend/generated/com/cocroachden/planner/solverconfiguration/SolverConfigurationDTO";
+import ConsecutiveWorkingDaysConstraintDTO
+  from "Frontend/generated/com/cocroachden/planner/constraint/ConsecutiveWorkingDaysConstraintDTO";
+import EmployeesPerShiftConstraintDTO
+  from "Frontend/generated/com/cocroachden/planner/constraint/EmployeesPerShiftConstraintDTO";
+import ShiftFollowupRestrictionConstraintDTO
+  from "Frontend/generated/com/cocroachden/planner/constraint/ShiftFollowupRestrictionConstraintDTO";
 
 type Props = {
   isOpen: boolean
   onOpenChanged: (value: boolean) => void
   employees: EmployeeDTO[]
-  onAssignmentAction: (action: CrudAction<AssignedEmployeeDTO>) => void
+  onAssignmentAction: (action: CrudAction<EmployeeAssignmentDTO>) => void
   request: SolverConfigurationDTO
-  consecutiveWorkingDays: ConsecutiveWorkingDaysRequestDTO[]
-  onConsecutiveWorkingDaysAction: (action: CrudAction<ConsecutiveWorkingDaysRequestDTO>) => void
-  employeesPerShift: EmployeesPerShiftRequestDTO[]
-  onEmployeePerShiftAction: (a: CrudAction<EmployeesPerShiftRequestDTO>) => void
-  shiftFollowupRestriction: ShiftFollowupRestrictionRequestDTO[]
-  onShiftFollowupRestrictionAction: (a: CrudAction<ShiftFollowupRestrictionRequestDTO>) => void
+  consecutiveWorkingDays: ConsecutiveWorkingDaysConstraintDTO[]
+  onConsecutiveWorkingDaysAction: (action: CrudAction<ConsecutiveWorkingDaysConstraintDTO>) => void
+  employeesPerShift: EmployeesPerShiftConstraintDTO[]
+  onEmployeePerShiftAction: (a: CrudAction<EmployeesPerShiftConstraintDTO>) => void
+  shiftFollowupRestriction: ShiftFollowupRestrictionConstraintDTO[]
+  onShiftFollowupRestrictionAction: (a: CrudAction<ShiftFollowupRestrictionConstraintDTO>) => void
 }
 
 export function ScheduleSettingsDialog(props: Props) {

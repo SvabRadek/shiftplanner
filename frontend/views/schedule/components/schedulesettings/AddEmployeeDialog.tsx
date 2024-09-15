@@ -5,14 +5,14 @@ import { HorizontalLayout } from "@hilla/react-components/HorizontalLayout";
 import { GridColumn } from "@hilla/react-components/GridColumn";
 import { Grid } from "@hilla/react-components/Grid";
 import { Icon } from "@hilla/react-components/Icon";
-import EmployeeRecord from "Frontend/generated/com/cocroachden/planner/employee/repository/EmployeeRecord";
-import EmployeeDTO from "Frontend/generated/com/cocroachden/planner/employee/api/EmployeeDTO";
-import AssignedEmployeeDTO from "Frontend/generated/com/cocroachden/planner/solver/api/AssignedEmployeeDTO";
 import "@vaadin/icons";
+import EmployeeDTO from "Frontend/generated/com/cocroachden/planner/employee/EmployeeDTO";
+import EmployeeAssignmentDTO
+    from "Frontend/generated/com/cocroachden/planner/solverconfiguration/EmployeeAssignmentDTO";
 
 type Props = {
   employees: EmployeeDTO[]
-  onAssignmentAdd: (value: Omit<AssignedEmployeeDTO, "index">) => void
+  onAssignmentAdd: (value: Omit<EmployeeAssignmentDTO, "index">) => void
   onOpenChanged: (value: boolean) => void
   isOpen: boolean
 }
@@ -36,7 +36,7 @@ export function AddEmployeeDialog(props: Props) {
               <GridColumn header={"Akce"} flexGrow={0}>
                 {(props1) => (
                   <Button theme={"icon"}
-                          onClick={() => props.onAssignmentAdd?.({ employee: props1.item as EmployeeDTO, weight: 1 })}>
+                          onClick={() => props.onAssignmentAdd?.({ employeeId: props1.item.id as string, weight: 1 })}>
                     <Icon icon={"vaadin:plus"}/>
                   </Button>
                 )}

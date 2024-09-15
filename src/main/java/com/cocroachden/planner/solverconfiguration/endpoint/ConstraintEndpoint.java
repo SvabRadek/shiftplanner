@@ -20,11 +20,11 @@ public class ConstraintEndpoint {
     return constraintQuery.findByIds(typedIds);
   }
 
-  public @Nonnull List<@Nonnull EmployeeShiftConstraintDTO> findSpecificShiftRequests(
+  public @Nonnull List<@Nonnull RequestedShiftConstraintDTO> findSpecificShiftRequests(
       @Nonnull List<@Nonnull String> requestIds
   ) {
     var typedIds = requestIds.stream().map(ConstraintId::new).toList();
-    return constraintQuery.findSpecificById(typedIds, EmployeeShiftConstraintDTO.class);
+    return constraintQuery.findSpecificById(typedIds, RequestedShiftConstraintDTO.class);
   }
 
   public @Nonnull List<@Nonnull ShiftsPerScheduleConstraintDTO> findShiftsPerScheduleRequests(

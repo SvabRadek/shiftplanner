@@ -1,14 +1,6 @@
-
-import ShiftsPerScheduleRequestDTO
-  from "Frontend/generated/com/cocroachden/planner/constraint/api/ShiftsPerScheduleRequestDTO";
-import EmployeesPerShiftRequestDTO
-  from "Frontend/generated/com/cocroachden/planner/constraint/api/EmployeesPerShiftRequestDTO";
-import ShiftFollowupRestrictionRequestDTO
-  from "Frontend/generated/com/cocroachden/planner/constraint/api/ShiftFollowupRestrictionRequestDTO";
-import ConsecutiveWorkingDaysRequestDTO
-  from "Frontend/generated/com/cocroachden/planner/constraint/api/ConsecutiveWorkingDaysRequestDTO";
 import WorkShifts from "Frontend/generated/com/cocroachden/planner/solver/api/WorkShifts";
-import EmployeeShiftRequestDTO from "Frontend/generated/com/cocroachden/planner/constraint/api/EmployeeShiftRequestDTO";
+import RequestedShiftConstraintDTO
+  from "Frontend/generated/com/cocroachden/planner/constraint/RequestedShiftConstraintDTO";
 
 export enum CRUDActions {
   CREATE,
@@ -44,45 +36,10 @@ export function getDistanceInDaysNumeric(startDate: Date, endDate: Date): number
   return diffTimeInMillis / (1000 * 60 * 60 * 24)
 }
 
-type IdentifiableSpecificShiftRequestDTO = Pick<EmployeeShiftRequestDTO, "owner" | "date">
+type IdentifiableSpecificShiftRequestDTO = Pick<RequestedShiftConstraintDTO, "owner" | "date">
 
 export function areShiftRequestsSame(r1: IdentifiableSpecificShiftRequestDTO, r2: IdentifiableSpecificShiftRequestDTO): boolean {
-  return [r1.owner.id, r1.date].join() === [r2.owner.id, r2.date].join()
-}
-
-type IdentifiableShiftsPerScheduleRequestDTO = Pick<ShiftsPerScheduleRequestDTO, "owner" | "targetShift">
-export function areShiftPerScheduleSame(
-  r1: IdentifiableShiftsPerScheduleRequestDTO,
-  r2: IdentifiableShiftsPerScheduleRequestDTO
-): boolean {
-  return (r1.owner.id + r1.targetShift.toString()) === (r2.owner.id + r2.targetShift.toString())
-}
-
-type IdentifiableEmployeesPerShiftRequestDTO = Pick<EmployeesPerShiftRequestDTO, "targetShift">
-
-export function areEmployeesPerShiftSame(
-  r1: IdentifiableEmployeesPerShiftRequestDTO,
-  r2: IdentifiableEmployeesPerShiftRequestDTO
-) {
-  return r1.targetShift.toString() === r2.targetShift.toString()
-}
-
-type IdentifiableShiftFollowupRestrictionRequestDTO = Pick<ShiftFollowupRestrictionRequestDTO, "firstShift" | "forbiddenFollowup">
-
-export function areShiftFollowupRestrictionsSame(
-  r1: IdentifiableShiftFollowupRestrictionRequestDTO,
-  r2: IdentifiableShiftFollowupRestrictionRequestDTO
-) {
-  return r1.firstShift.toString() + r1.forbiddenFollowup.toString() === r2.firstShift.toString() + r2.forbiddenFollowup.toString()
-}
-
-type IdentifiableConsecutiveWorkingDaysRequestDTO = Pick<ConsecutiveWorkingDaysRequestDTO, "type">
-
-export function areConsecutiveWorkingDaysRequestsSame(
-  r1: IdentifiableConsecutiveWorkingDaysRequestDTO,
-  r2: IdentifiableConsecutiveWorkingDaysRequestDTO
-) {
-  return r1.type === r2.type
+  return [r1.owner, r1.date].join() === [r2.owner, r2.date].join()
 }
 
 export function generateUUID() { // Public Domain/MIT

@@ -1,17 +1,18 @@
-import { createContext, ReactNode, useMemo, useState } from "react";
-import DayValidationIssue
-  from "Frontend/generated/com/cocroachden/planner/constraint/validations/day/DayValidationIssue";
-import { ConstraintValidationEndpoint } from "Frontend/generated/endpoints";
-import IssueSeverity from "Frontend/generated/com/cocroachden/planner/constraint/validations/IssueSeverity";
-import SolverConfigurationDTO from "Frontend/generated/com/cocroachden/planner/solver/api/SolverConfigurationDTO";
-import EmployeeValidationIssue
-  from "Frontend/generated/com/cocroachden/planner/constraint/validations/employee/EmployeeValidationIssue";
+import {createContext, ReactNode, useMemo, useState} from "react";
+import DayValidationIssueDTO
+  from "Frontend/generated/com/cocroachden/planner/solverconfiguration/validations/day/DayValidationIssueDTO";
+import EmployeeValidationIssueDTO
+  from "Frontend/generated/com/cocroachden/planner/solverconfiguration/validations/employee/EmployeeValidationIssueDTO";
+import SolverConfigurationDTO
+  from "Frontend/generated/com/cocroachden/planner/solverconfiguration/SolverConfigurationDTO";
+import IssueSeverity from "Frontend/generated/com/cocroachden/planner/solverconfiguration/validations/IssueSeverity";
+import {SolverConfigurationValidationEndpoint} from "Frontend/generated/endpoints";
 
 type ScheduleValidationCtxType = {
-  dayIssues: DayValidationIssue[]
-  employeeIssues: EmployeeValidationIssue[]
-  dayIssueMap: Map<string, DayValidationIssue[]>
-  employeeIssueMap: Map<number, EmployeeValidationIssue[]>
+  dayIssues: DayValidationIssueDTO[]
+  employeeIssues: EmployeeValidationIssueDTO[]
+  dayIssueMap: Map<string, DayValidationIssueDTO[]>
+  employeeIssueMap: Map<string, EmployeeValidationIssueDTO[]>
   validate: (config: SolverConfigurationDTO) => void
   clear: () => void
   containsIssues: boolean
@@ -33,8 +34,8 @@ export const ValidationContext = createContext<ScheduleValidationCtxType>({
 });
 
 type IssueContainer = {
-  dayIssues: DayValidationIssue[],
-  employeeIssues: EmployeeValidationIssue[]
+  dayIssues: DayValidationIssueDTO[],
+  employeeIssues: EmployeeValidationIssueDTO[]
 }
 
 export function ScheduleValidationCtxProvider({ children }: { children: ReactNode }) {
@@ -45,7 +46,7 @@ export function ScheduleValidationCtxProvider({ children }: { children: ReactNod
   });
 
   const dayIssueMap = useMemo(() => {
-    const map = new Map<string, DayValidationIssue[]>
+    const map = new Map<string, DayValidationIssueDTO[]>
     issues.dayIssues.forEach(i => {
       const existing = map.get(i.localDate)
       map.set(i.localDate, existing ? [...existing, i] : [i])
@@ -54,7 +55,7 @@ export function ScheduleValidationCtxProvider({ children }: { children: ReactNod
   }, [issues.dayIssues])
 
   const employeeIssueMap = useMemo(() => {
-    const map = new Map<number, EmployeeValidationIssue[]>
+    const map = new Map<string, EmployeeValidationIssueDTO[]>
     issues.employeeIssues.forEach(i => {
       const existing = map.get(i.employeeId)
       map.set(i.employeeId, existing ? [...existing, i] : [i])
@@ -63,8 +64,8 @@ export function ScheduleValidationCtxProvider({ children }: { children: ReactNod
   }, [issues.employeeIssues])
 
   function handleValidation(config: SolverConfigurationDTO) {
-    ConstraintValidationEndpoint.validateDays(config).then(dayIssues => {
-      ConstraintValidationEndpoint.validateEmployees(config).then(employeeIssues => {
+    SolverConfigurationValidationEndpoint.validateDays(config).then(dayIssues => {
+      SolverConfigurationValidationEndpoint.validateEmployees(config).then(employeeIssues => {
         setIssues({
           employeeIssues: employeeIssues,
           dayIssues: dayIssues

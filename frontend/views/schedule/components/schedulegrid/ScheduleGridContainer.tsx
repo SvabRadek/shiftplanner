@@ -2,21 +2,23 @@ import {useMemo, useState} from "react";
 import {CrudAction, dateToString, stringToDate} from "Frontend/util/utils";
 import {Row, ScheduleGrid} from "Frontend/views/schedule/components/schedulegrid/ScheduleGrid";
 import {Cell} from "Frontend/views/schedule/components/schedulegrid/GridCell";
-import ShiftsPerScheduleRequestDTO
-    from "Frontend/generated/com/cocroachden/planner/constraint/api/ShiftsPerScheduleRequestDTO";
-import ShiftPatternRequestDTO from "Frontend/generated/com/cocroachden/planner/constraint/api/ShiftPatternRequestDTO";
 import {HorizontalLayout} from "@hilla/react-components/HorizontalLayout";
-import SolverConfigurationDTO from "Frontend/generated/com/cocroachden/planner/solver/api/SolverConfigurationDTO";
 import SolverSolutionDTO from "Frontend/generated/com/cocroachden/planner/solver/api/SolverSolutionDTO";
 import WorkShifts from "Frontend/generated/com/cocroachden/planner/solver/api/WorkShifts";
-import ConstraintType from "Frontend/generated/com/cocroachden/planner/constraint/api/ConstraintType";
-import EmployeeShiftRequestDTO from "Frontend/generated/com/cocroachden/planner/constraint/api/EmployeeShiftRequestDTO";
-import EmployeeId from "Frontend/generated/com/cocroachden/planner/employee/api/EmployeeId";
-import EmployeeDTO from "Frontend/generated/com/cocroachden/planner/employee/api/EmployeeDTO";
-import AssignedEmployeeDTO from "Frontend/generated/com/cocroachden/planner/solver/api/AssignedEmployeeDTO";
 import {VerticalLayout} from "@hilla/react-components/VerticalLayout";
-import TeamAssignmentRequestDTO
-    from "Frontend/generated/com/cocroachden/planner/constraint/api/TeamAssignmentRequestDTO";
+import SolverConfigurationDTO
+    from "Frontend/generated/com/cocroachden/planner/solverconfiguration/SolverConfigurationDTO";
+import RequestedShiftConstraintDTO
+    from "Frontend/generated/com/cocroachden/planner/constraint/RequestedShiftConstraintDTO";
+import ShiftPatternConstraintDTO from "Frontend/generated/com/cocroachden/planner/constraint/ShiftPatternConstraintDTO";
+import TeamAssignmentConstraintDTO
+    from "Frontend/generated/com/cocroachden/planner/constraint/TeamAssignmentConstraintDTO";
+import ShiftsPerScheduleConstraintDTO
+    from "Frontend/generated/com/cocroachden/planner/constraint/ShiftsPerScheduleConstraintDTO";
+import EmployeeAssignmentDTO
+    from "Frontend/generated/com/cocroachden/planner/solverconfiguration/EmployeeAssignmentDTO";
+import ConstraintType from "Frontend/generated/com/cocroachden/planner/constraint/ConstraintType";
+import EmployeeDTO from "Frontend/generated/com/cocroachden/planner/employee/EmployeeDTO";
 
 export enum GridDisplayMode {
     RESULT,
@@ -48,12 +50,13 @@ type CellShiftAndColor = {
 
 type Props = {
     request: SolverConfigurationDTO
-    shiftPatterns: ShiftPatternRequestDTO[]
-    shiftRequests: EmployeeShiftRequestDTO[]
-    teamAssignments: TeamAssignmentRequestDTO[]
-    shiftPerScheduleRequests: ShiftsPerScheduleRequestDTO[]
-    onAssignmentAction: (action: CrudAction<AssignedEmployeeDTO>) => void
-    onShiftRequestsChanged?: (changedRequests: Omit<EmployeeShiftRequestDTO, "id">[]) => void
+    employees: EmployeeDTO[]
+    shiftPatterns: ShiftPatternConstraintDTO[]
+    shiftRequests: RequestedShiftConstraintDTO[]
+    teamAssignments: TeamAssignmentConstraintDTO[]
+    shiftPerScheduleRequests: ShiftsPerScheduleConstraintDTO[]
+    onAssignmentAction: (action: CrudAction<EmployeeAssignmentDTO>) => void
+    onShiftRequestsChanged?: (changedRequests: Omit<RequestedShiftConstraintDTO, "id">[]) => void
     displayMode: GridDisplayMode
     result?: SolverSolutionDTO
 }
@@ -83,8 +86,8 @@ export function ScheduleGridContainer(props: Props) {
     function handleShiftChange(updatedCell: Cell) {
         props.onShiftRequestsChanged?.([
             {
-                type: ConstraintType.EMPLOYEE_SHIFT_REQUEST,
-                owner: {id: updatedCell.employeeId},
+                type: ConstraintType.REQUESTED_SHIFT_CONSTRAINT,
+                owner: updatedCell.employeeId,
                 date: dateToString(updatedCell.date),
                 requestedShift: updatedCell.shift
             }
@@ -95,31 +98,31 @@ export function ScheduleGridContainer(props: Props) {
         const originDate = originCell.index < endCell.index ? originCell.date : endCell.date
         const lowEnd = originCell.index < endCell.index ? originCell.index : endCell.index
         const highEnd = originCell.index > endCell.index ? originCell.index : endCell.index
-        const requests: Omit<EmployeeShiftRequestDTO, "id">[] = []
+        const requests: Omit<RequestedShiftConstraintDTO, "id">[] = []
         for (let i = lowEnd; i <= highEnd; i++) {
             const index = i - lowEnd
             const requestDate = new Date(originDate)
             requestDate.setDate(requestDate.getDate() + index)
             requests.push({
-                    type: ConstraintType.EMPLOYEE_SHIFT_REQUEST,
-                    owner: {id: originCell.employeeId},
+                    type: ConstraintType.REQUESTED_SHIFT_CONSTRAINT,
+                    owner: originCell.employeeId,
                     requestedShift: originCell.shift,
                     date: dateToString(requestDate)
-                } as Omit<EmployeeShiftRequestDTO, "id">
+                } as Omit<RequestedShiftConstraintDTO, "id">
             )
         }
         props.onShiftRequestsChanged?.(requests)
     }
 
     const shiftRequestMap = useMemo(() => {
-        const map = new Map<string, EmployeeShiftRequestDTO>()
-        props.shiftRequests.forEach(r => map.set(r.date + r.owner.id, r))
+        const map = new Map<string, RequestedShiftConstraintDTO>()
+        props.shiftRequests.forEach(r => map.set(r.date + r.owner, r))
         return map
     }, [props.shiftRequests])
 
     const shiftPatternMap = useMemo(() => {
-        const map = new Map<PlainEmployeeId, ShiftPatternRequestDTO>()
-        props.shiftPatterns.forEach(r => map.set(r.owner?.id || -1, r))
+        const map = new Map<string, ShiftPatternConstraintDTO>()
+        props.shiftPatterns.forEach(r => map.set(r.owner, r))
         return map
     }, [props.shiftPatterns])
 
@@ -128,6 +131,7 @@ export function ScheduleGridContainer(props: Props) {
             rows={
                 createRows(
                     props.request,
+                    props.employees,
                     shiftRequestMap,
                     shiftPatternMap,
                     props.shiftPerScheduleRequests,
@@ -142,7 +146,7 @@ export function ScheduleGridContainer(props: Props) {
             onLeftClick={handleCellLeftClick}
             onAssignmentAction={a => props.onAssignmentAction({
                 type: a.type,
-                payload: props.request.employees.find(e => e.employee.id === a.payload.id)!
+                payload: props.request.employees.find(e => e.employeeId === a.payload.employeeId)!
             })}
         />
     );
@@ -160,10 +164,11 @@ function getDistanceInDays(startDate: Date, endDate: Date): Index[] {
 
 function createRows(
     request: SolverConfigurationDTO,
-    shiftRequests: Map<string, EmployeeShiftRequestDTO>,
-    shiftPatterns: Map<PlainEmployeeId, ShiftPatternRequestDTO>,
-    shiftPerSchedule: ShiftsPerScheduleRequestDTO[],
-    teamAssignments: TeamAssignmentRequestDTO[],
+    employees: EmployeeDTO[],
+    shiftRequests: Map<string, RequestedShiftConstraintDTO>,
+    shiftPatterns: Map<string, ShiftPatternConstraintDTO>,
+    shiftPerSchedule: ShiftsPerScheduleConstraintDTO[],
+    teamAssignments: TeamAssignmentConstraintDTO[],
     highlightInfo: Highlight,
     mode: GridDisplayMode,
     results?: SolverSolutionDTO
@@ -174,20 +179,20 @@ function createRows(
     return request.employees
         .sort((a, b) => a.index - b.index)
         .map(assignment => {
-            const employeeDto = assignment.employee
+            const employeeId = assignment.employeeId
             let highLightIndexes: number[] = []
-            if (highlightInfo.originCell && highlightInfo.originCell.employeeId === employeeDto.id) {
+            if (highlightInfo.originCell && highlightInfo.originCell.employeeId === employeeId) {
                 highLightIndexes = getIndexesBetweenCells(highlightInfo.originCell, highlightInfo.lastCell!)
             }
-            const relatedPattern = shiftPatterns.get(employeeDto.id)
+            const relatedPattern = shiftPatterns.get(employeeId)
             const cells = dayIndexes
                 .map(dayOffset => {
                     const cellDate = new Date(startDate)
                     cellDate.setDate(startDate.getDate() + dayOffset)
-                    const relatedRequest = shiftRequests.get(dateToString(cellDate) + employeeDto.id)
+                    const relatedRequest = shiftRequests.get(dateToString(cellDate) + employeeId)
                     const cellShiftAndColor = getResultingShiftAndColor(
                         results,
-                        employeeDto,
+                        employeeId,
                         cellDate,
                         dayOffset,
                         relatedRequest,
@@ -198,14 +203,14 @@ function createRows(
                     return {
                         shift: cellShiftAndColor.shift,
                         index: dayOffset,
-                        employeeId: employeeDto.id,
+                        employeeId: employeeId,
                         date: cellDate,
                         isHighlighted: highLightIndexes.find(i => i === dayOffset) !== undefined,
                         requestId: relatedRequest?.id,
                         color: cellShiftAndColor.color
                     } as Cell
                 })
-            const relatedShiftPerScheduleRequests = shiftPerSchedule.filter(r => r.owner.id === employeeDto.id)
+            const relatedShiftPerScheduleRequests = shiftPerSchedule.filter(r => r.owner === employeeId)
             const displayShiftCount = relatedShiftPerScheduleRequests
                 .map(r => Math.floor((r.softMin + r.softMax) / 2))
                 .reduce((previousValue, currentValue) => previousValue + currentValue, 0)
@@ -214,12 +219,12 @@ function createRows(
                     .reduce((previousValue, currentValue) => previousValue + currentValue, 0)
                 / relatedShiftPerScheduleRequests.length)
 
-            const assignments = results ? Object.values(results?.assignments[employeeDto.id]!) : []
-            const assignedTeam = teamAssignments.find(a => a.owner?.id === employeeDto.id)
+            const assignments = results ? Object.values(results?.assignments[employeeId]!) : []
+            const assignedTeam = teamAssignments.find(a => a.owner === employeeId)
 
             return {
-                owner: employeeDto,
-                rowTitle: createRowTitle(employeeDto, displayShiftCount, allowedDeviation, assignments, assignedTeam),
+                owner: employeeId,
+                rowTitle: createRowTitle(employees.find(e => e.id === employeeId)!, displayShiftCount, allowedDeviation, assignments, assignedTeam),
                 cells,
                 issues: []
             } as Row
@@ -231,7 +236,7 @@ function createRowTitle(
     displayShiftCount: number,
     allowedDeviation: number,
     assignedWorkShifts: WorkShifts[],
-    teamAssignment?: TeamAssignmentRequestDTO
+    teamAssignment?: TeamAssignmentConstraintDTO
 ) {
     let title = referencedEmployee.lastName + " " + referencedEmployee.firstName + " (" + displayShiftCount
     const assignedWorkShiftCount = assignedWorkShifts.filter(s => s === WorkShifts.DAY || s === WorkShifts.NIGHT).length
@@ -261,15 +266,15 @@ function createRowTitle(
 
 function getResultingShiftAndColor(
     results: SolverSolutionDTO | undefined,
-    employeeId: EmployeeId,
+    employeeId: string,
     cellDate: Date,
     cellIndex: number,
-    shiftRequest: EmployeeShiftRequestDTO | undefined,
-    patternRequest: ShiftPatternRequestDTO | undefined,
+    shiftRequest: RequestedShiftConstraintDTO | undefined,
+    patternRequest: ShiftPatternConstraintDTO | undefined,
     mode: GridDisplayMode
 ): CellShiftAndColor {
     if (results && mode === GridDisplayMode.RESULT) {
-        const assignedShift = results.assignments[employeeId.id][dateToString(cellDate)] || WorkShifts.ANY
+        const assignedShift = results.assignments[employeeId][dateToString(cellDate)] || WorkShifts.ANY
         return {
             shift: assignedShift === WorkShifts.OFF ? WorkShifts.ANY : assignedShift,
             color: undefined

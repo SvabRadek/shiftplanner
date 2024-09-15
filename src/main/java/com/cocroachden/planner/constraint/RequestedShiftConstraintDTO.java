@@ -10,9 +10,9 @@ import java.time.LocalDate;
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
-public class EmployeeShiftConstraintDTO implements ConstraintDTO {
-    public static EmployeeShiftConstraintDTO from(String id, RequestedShiftConstraint request) {
-        return new EmployeeShiftConstraintDTO(
+public class RequestedShiftConstraintDTO implements ConstraintDTO {
+    public static RequestedShiftConstraintDTO from(String id, RequestedShiftConstraint request) {
+        return new RequestedShiftConstraintDTO(
                 id,
                 request.getOwner().getId(),
                 request.getDate(),

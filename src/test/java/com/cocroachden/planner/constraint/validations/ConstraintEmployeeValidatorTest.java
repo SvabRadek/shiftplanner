@@ -1,6 +1,6 @@
 package com.cocroachden.planner.constraint.validations;
 
-import com.cocroachden.planner.constraint.EmployeeShiftConstraintDTO;
+import com.cocroachden.planner.constraint.RequestedShiftConstraintDTO;
 import com.cocroachden.planner.constraint.ShiftsPerScheduleConstraintDTO;
 import com.cocroachden.planner.employee.EmployeeId;
 import com.cocroachden.planner.solver.api.WorkShifts;
@@ -53,13 +53,13 @@ class ConstraintEmployeeValidatorTest {
         WorkShifts.WORKING_SHIFTS,
         0, 1, 1, 1, 1, 1
     );
-    var spec1 = new EmployeeShiftConstraintDTO(
+    var spec1 = new RequestedShiftConstraintDTO(
         UUID.randomUUID().toString(),
         employeeId.getId(),
         LocalDate.of(1, 1, 1),
         WorkShifts.DAY
     );
-    var spec2 = new EmployeeShiftConstraintDTO(
+    var spec2 = new RequestedShiftConstraintDTO(
         UUID.randomUUID().toString(),
         employeeId.getId(),
         LocalDate.of(1, 1, 2),

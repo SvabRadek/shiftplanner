@@ -1,6 +1,6 @@
 package com.cocroachden.constraint.validations;
 
-import com.cocroachden.planner.constraint.EmployeeShiftConstraintDTO;
+import com.cocroachden.planner.constraint.RequestedShiftConstraintDTO;
 import com.cocroachden.planner.constraint.EmployeesPerShiftConstraintDTO;
 import com.cocroachden.planner.solverconfiguration.validations.day.ConstraintDayValidator;
 import com.cocroachden.planner.employee.EmployeeId;
@@ -81,12 +81,12 @@ class ConstraintDayValidatorTest {
                 "Zdá se, že lidí, kterým se dá přiřadit pracovní směna, je méně než povolené minimum.");
     }
 
-    private EmployeeShiftConstraintDTO createSpecificShiftRequest(
+    private RequestedShiftConstraintDTO createSpecificShiftRequest(
             EmployeeId owner,
             LocalDate date,
             WorkShifts shift
     ) {
-        return new EmployeeShiftConstraintDTO(
+        return new RequestedShiftConstraintDTO(
                 UUID.randomUUID().toString(),
                 owner.getId(),
                 date,

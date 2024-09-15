@@ -1,8 +1,6 @@
 import { Card } from "Frontend/components/Card";
 import { HorizontalLayout } from "@hilla/react-components/HorizontalLayout";
 import { NumberField } from "@hilla/react-components/NumberField";
-import EmployeesPerShiftRequestDTO
-  from "Frontend/generated/com/cocroachden/planner/constraint/api/EmployeesPerShiftRequestDTO";
 import { useContext } from "react";
 import { ScheduleMode, ScheduleModeCtx } from "Frontend/views/schedule/ScheduleModeCtxProvider";
 import { ShiftSelect } from "Frontend/components/ShiftSelect";
@@ -12,17 +10,19 @@ import { Icon } from "@hilla/react-components/Icon";
 import { CardFooter } from "Frontend/components/CardFooter";
 import WorkShifts from "Frontend/generated/com/cocroachden/planner/solver/api/WorkShifts";
 import "@vaadin/icons";
+import EmployeesPerShiftConstraintDTO
+  from "Frontend/generated/com/cocroachden/planner/constraint/EmployeesPerShiftConstraintDTO";
 
 type Props = {
-  request: EmployeesPerShiftRequestDTO
+  request: EmployeesPerShiftConstraintDTO
   excludedShifts: WorkShifts[]
-  onAction: (action: CrudAction<EmployeesPerShiftRequestDTO>) => void
+  onAction: (action: CrudAction<EmployeesPerShiftConstraintDTO>) => void
 }
 
 export function EmployeesPerShiftForm(props: Props) {
 
   const modeCtx = useContext(ScheduleModeCtx);
-  function handleUpdate(value: Partial<EmployeesPerShiftRequestDTO>) {
+  function handleUpdate(value: Partial<EmployeesPerShiftConstraintDTO>) {
     props.onAction({
       type: CRUDActions.UPDATE,
       payload: {

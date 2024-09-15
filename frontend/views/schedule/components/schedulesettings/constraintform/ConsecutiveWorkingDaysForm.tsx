@@ -1,5 +1,3 @@
-import ConsecutiveWorkingDaysRequestDTO
-  from "Frontend/generated/com/cocroachden/planner/constraint/api/ConsecutiveWorkingDaysRequestDTO";
 import { Card } from "Frontend/components/Card";
 import { HorizontalLayout } from "@hilla/react-components/HorizontalLayout";
 import { NumberField } from "@hilla/react-components/NumberField";
@@ -11,17 +9,19 @@ import { Icon } from "@hilla/react-components/Icon";
 import { CardFooter } from "Frontend/components/CardFooter";
 import { ShiftSelect } from "Frontend/components/ShiftSelect";
 import "@vaadin/icons";
+import ConsecutiveWorkingDaysConstraintDTO
+  from "Frontend/generated/com/cocroachden/planner/constraint/ConsecutiveWorkingDaysConstraintDTO";
 
 type Props = {
-  request: ConsecutiveWorkingDaysRequestDTO
-  onAction: (action: CrudAction<ConsecutiveWorkingDaysRequestDTO>) => void
+  request: ConsecutiveWorkingDaysConstraintDTO
+  onAction: (action: CrudAction<ConsecutiveWorkingDaysConstraintDTO>) => void
 }
 
 export function ConsecutiveWorkingDaysForm(props: Props) {
 
   const modeCtx = useContext(ScheduleModeCtx);
 
-  function handleUpdate(value: Partial<ConsecutiveWorkingDaysRequestDTO>) {
+  function handleUpdate(value: Partial<ConsecutiveWorkingDaysConstraintDTO>) {
     props.onAction({
       type: CRUDActions.UPDATE,
       payload: {

@@ -2,12 +2,6 @@ import { Card } from "Frontend/components/Card";
 import { HorizontalLayout } from "@hilla/react-components/HorizontalLayout";
 import { Button } from "@hilla/react-components/Button";
 import { Icon } from "@hilla/react-components/Icon";
-import EmployeesPerShiftRequestDTO
-  from "Frontend/generated/com/cocroachden/planner/constraint/api/EmployeesPerShiftRequestDTO";
-import ConsecutiveWorkingDaysRequestDTO
-  from "Frontend/generated/com/cocroachden/planner/constraint/api/ConsecutiveWorkingDaysRequestDTO";
-import ShiftFollowupRestrictionRequestDTO
-  from "Frontend/generated/com/cocroachden/planner/constraint/api/ShiftFollowupRestrictionRequestDTO";
 import { EmployeesPerShiftForm } from "Frontend/views/schedule/components/schedulesettings/constraintform/EmployeesPerShiftForm";
 import {
   ShiftFollowupRestrictionForm
@@ -20,14 +14,20 @@ import { CSSProperties, useContext } from "react";
 import { ScheduleMode, ScheduleModeCtx } from "Frontend/views/schedule/ScheduleModeCtxProvider";
 import { defaultConstraints } from "Frontend/views/schedule/DefaultEmptyConstraints";
 import "@vaadin/icons";
+import ConsecutiveWorkingDaysConstraintDTO
+    from "Frontend/generated/com/cocroachden/planner/constraint/ConsecutiveWorkingDaysConstraintDTO";
+import ShiftFollowupRestrictionConstraintDTO
+    from "Frontend/generated/com/cocroachden/planner/constraint/ShiftFollowupRestrictionConstraintDTO";
+import EmployeesPerShiftConstraintDTO
+    from "Frontend/generated/com/cocroachden/planner/constraint/EmployeesPerShiftConstraintDTO";
 
 type Props = {
-  consecutiveWorkingDays: ConsecutiveWorkingDaysRequestDTO[]
-  onConsecutiveWorkingDaysAction: (action: CrudAction<ConsecutiveWorkingDaysRequestDTO>) => void
-  shiftFollowupRestriction: ShiftFollowupRestrictionRequestDTO[]
-  onShiftFollowupRestrictionAction: (a: CrudAction<ShiftFollowupRestrictionRequestDTO>) => void
-  employeesPerShift: EmployeesPerShiftRequestDTO[]
-  onEmployeePerShiftAction: (a: CrudAction<EmployeesPerShiftRequestDTO>) => void
+  consecutiveWorkingDays: ConsecutiveWorkingDaysConstraintDTO[]
+  onConsecutiveWorkingDaysAction: (action: CrudAction<ConsecutiveWorkingDaysConstraintDTO>) => void
+  shiftFollowupRestriction: ShiftFollowupRestrictionConstraintDTO[]
+  onShiftFollowupRestrictionAction: (a: CrudAction<ShiftFollowupRestrictionConstraintDTO>) => void
+  employeesPerShift: EmployeesPerShiftConstraintDTO[]
+  onEmployeePerShiftAction: (a: CrudAction<EmployeesPerShiftConstraintDTO>) => void
 }
 
 export function GlobalTab(props: Props) {
@@ -47,7 +47,7 @@ export function GlobalTab(props: Props) {
         <Button
           onClick={() => props.onEmployeePerShiftAction({
             type: CRUDActions.CREATE,
-            payload: { ...defaultConstraints["EMPLOYEES_PER_SHIFT"].constraint, id: generateUUID() } as unknown as EmployeesPerShiftRequestDTO
+            payload: { ...defaultConstraints["EMPLOYEES_PER_SHIFT"].constraint, id: generateUUID() } as unknown as EmployeesPerShiftConstraintDTO
           })}
           disabled={modeCtx.mode !== ScheduleMode.EDIT}
           theme={"small icon"}>
@@ -64,7 +64,7 @@ export function GlobalTab(props: Props) {
       <HorizontalLayout theme={"spacing"} style={sectionStyle}>
         <Button onClick={() => props.onShiftFollowupRestrictionAction({
           type: CRUDActions.CREATE,
-          payload: { ...defaultConstraints.SHIFT_FOLLOW_UP_RESTRICTION.constraint, id: generateUUID() } as unknown as ShiftFollowupRestrictionRequestDTO
+          payload: { ...defaultConstraints.SHIFT_FOLLOW_UP_RESTRICTION.constraint, id: generateUUID() } as unknown as ShiftFollowupRestrictionConstraintDTO
         })} disabled={modeCtx.mode !== ScheduleMode.EDIT} theme={"small icon"}>
           <Icon icon={"vaadin:plus"}/>
         </Button>
@@ -79,7 +79,7 @@ export function GlobalTab(props: Props) {
         <Button
           onClick={() => props.onConsecutiveWorkingDaysAction({
             type: CRUDActions.CREATE,
-            payload: { ...defaultConstraints.CONSECUTIVE_WORKING_DAYS.constraint, id: generateUUID() } as unknown as ConsecutiveWorkingDaysRequestDTO
+            payload: { ...defaultConstraints.CONSECUTIVE_WORKING_DAYS.constraint, id: generateUUID() } as unknown as ConsecutiveWorkingDaysConstraintDTO
           })}
           disabled={modeCtx.mode !== ScheduleMode.EDIT}
           theme={"small icon"}>

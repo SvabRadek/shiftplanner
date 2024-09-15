@@ -6,21 +6,21 @@ import { ScheduleMode, ScheduleModeCtx } from "Frontend/views/schedule/ScheduleM
 import { useContext } from "react";
 import { Icon } from "@hilla/react-components/Icon";
 import { Button } from "@hilla/react-components/Button";
-import TeamAssignmentRequestDTO
-  from "Frontend/generated/com/cocroachden/planner/constraint/api/TeamAssignmentRequestDTO";
 import { Checkbox } from "@hilla/react-components/Checkbox";
 import "@vaadin/icons";
+import TeamAssignmentConstraintDTO
+  from "Frontend/generated/com/cocroachden/planner/constraint/TeamAssignmentConstraintDTO";
 
 type Props = {
-  request: TeamAssignmentRequestDTO,
-  onAction: (action: CrudAction<TeamAssignmentRequestDTO>) => void
+  request: TeamAssignmentConstraintDTO,
+  onAction: (action: CrudAction<TeamAssignmentConstraintDTO>) => void
 }
 
 export function TeamAssignmentConstraintForm(props: Props) {
 
   const { mode } = useContext(ScheduleModeCtx);
 
-  function handleUpdate(update: Partial<TeamAssignmentRequestDTO>) {
+  function handleUpdate(update: Partial<TeamAssignmentConstraintDTO>) {
     props.onAction({
       type: CRUDActions.UPDATE,
       payload: {

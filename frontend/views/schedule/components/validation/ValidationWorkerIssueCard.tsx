@@ -1,9 +1,9 @@
 import { Card } from "Frontend/components/Card";
-import EmployeeValidationIssue
-  from "Frontend/generated/com/cocroachden/planner/constraint/validations/employee/EmployeeValidationIssue";
+import EmployeeValidationIssueDTO
+    from "Frontend/generated/com/cocroachden/planner/solverconfiguration/validations/employee/EmployeeValidationIssueDTO";
 
 type Props = {
-  issue: EmployeeValidationIssue
+  issue: EmployeeValidationIssueDTO
 }
 
 export function ValidationWorkerIssueCard(props: Props) {

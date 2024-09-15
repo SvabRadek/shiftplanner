@@ -1,23 +1,24 @@
 import {dateToString, generateUUID} from "Frontend/util/utils";
-import ConstraintType from "Frontend/generated/com/cocroachden/planner/constraint/api/ConstraintType";
 import WorkShifts from "Frontend/generated/com/cocroachden/planner/solver/api/WorkShifts";
-import ShiftPatternRequestDTO from "Frontend/generated/com/cocroachden/planner/constraint/api/ShiftPatternRequestDTO";
-import TripleShiftConstraintRequestDTO
-  from "Frontend/generated/com/cocroachden/planner/constraint/api/TripleShiftConstraintRequestDTO";
-import ConsecutiveWorkingDaysRequestDTO
-  from "Frontend/generated/com/cocroachden/planner/constraint/api/ConsecutiveWorkingDaysRequestDTO";
-import ShiftFollowupRestrictionRequestDTO
-  from "Frontend/generated/com/cocroachden/planner/constraint/api/ShiftFollowupRestrictionRequestDTO";
-import ShiftsPerScheduleRequestDTO
-  from "Frontend/generated/com/cocroachden/planner/constraint/api/ShiftsPerScheduleRequestDTO";
-import EmployeesPerShiftRequestDTO
-  from "Frontend/generated/com/cocroachden/planner/constraint/api/EmployeesPerShiftRequestDTO";
-import EmployeeShiftRequestDTO from "Frontend/generated/com/cocroachden/planner/constraint/api/EmployeeShiftRequestDTO";
-import TeamAssignmentRequestDTO
-  from "Frontend/generated/com/cocroachden/planner/constraint/api/TeamAssignmentRequestDTO";
-import WeekendRequestDTO from "Frontend/generated/com/cocroachden/planner/constraint/api/WeekendRequestDTO";
-import EvenShiftDistributionRequestDTO
-  from "Frontend/generated/com/cocroachden/planner/constraint/api/EvenShiftDistributionRequestDTO";
+import ConstraintType from "Frontend/generated/com/cocroachden/planner/constraint/ConstraintType";
+import ShiftPatternConstraintDTO from "Frontend/generated/com/cocroachden/planner/constraint/ShiftPatternConstraintDTO";
+import RequestedShiftConstraintDTO
+  from "Frontend/generated/com/cocroachden/planner/constraint/RequestedShiftConstraintDTO";
+import TripleShiftConstraintDTO from "Frontend/generated/com/cocroachden/planner/constraint/TripleShiftConstraintDTO";
+import ConstraintDTO from "Frontend/generated/com/cocroachden/planner/constraint/ConstraintDTO";
+import ConsecutiveWorkingDaysConstraintDTO
+  from "Frontend/generated/com/cocroachden/planner/constraint/ConsecutiveWorkingDaysConstraintDTO";
+import ShiftFollowupRestrictionConstraintDTO
+  from "Frontend/generated/com/cocroachden/planner/constraint/ShiftFollowupRestrictionConstraintDTO";
+import ShiftsPerScheduleConstraintDTO
+  from "Frontend/generated/com/cocroachden/planner/constraint/ShiftsPerScheduleConstraintDTO";
+import EmployeesPerShiftConstraintDTO
+  from "Frontend/generated/com/cocroachden/planner/constraint/EmployeesPerShiftConstraintDTO";
+import TeamAssignmentConstraintDTO
+  from "Frontend/generated/com/cocroachden/planner/constraint/TeamAssignmentConstraintDTO";
+import WeekendConstraintDTO from "Frontend/generated/com/cocroachden/planner/constraint/WeekendConstraintDTO";
+import EvenShiftDistributionConstraintDTO
+  from "Frontend/generated/com/cocroachden/planner/constraint/EvenShiftDistributionConstraintDTO";
 
 type ConstraintBinding<T> = {
   label: string
@@ -25,16 +26,16 @@ type ConstraintBinding<T> = {
 }
 
 type DefaultConstraints = {
-  [ConstraintType.SHIFT_PATTERN_CONSTRAINT]: ConstraintBinding<ShiftPatternRequestDTO>
-  [ConstraintType.EMPLOYEE_SHIFT_REQUEST]: ConstraintBinding<EmployeeShiftRequestDTO>
-  [ConstraintType.TRIPLE_SHIFTS_CONSTRAINT]: ConstraintBinding<TripleShiftConstraintRequestDTO>
-  [ConstraintType.CONSECUTIVE_WORKING_DAYS]: ConstraintBinding<ConsecutiveWorkingDaysRequestDTO>
-  [ConstraintType.SHIFT_FOLLOW_UP_RESTRICTION]: ConstraintBinding<ShiftFollowupRestrictionRequestDTO>
-  [ConstraintType.SHIFT_PER_SCHEDULE]: ConstraintBinding<ShiftsPerScheduleRequestDTO>
-  [ConstraintType.EMPLOYEES_PER_SHIFT]: ConstraintBinding<EmployeesPerShiftRequestDTO>
-  [ConstraintType.TEAM_ASSIGNMENT]: ConstraintBinding<TeamAssignmentRequestDTO>
-  [ConstraintType.WEEKEND_REQUEST]: ConstraintBinding<WeekendRequestDTO>
-  [ConstraintType.EVEN_SHIFT_DISTRIBUTION]: ConstraintBinding<EvenShiftDistributionRequestDTO>
+  [ConstraintType.SHIFT_PATTERN_CONSTRAINT]: ConstraintBinding<ShiftPatternConstraintDTO>
+  [ConstraintType.REQUESTED_SHIFT_CONSTRAINT]: ConstraintBinding<RequestedShiftConstraintDTO>
+  [ConstraintType.TRIPLE_SHIFTS_CONSTRAINT]: ConstraintBinding<TripleShiftConstraintDTO>
+  [ConstraintType.CONSECUTIVE_WORKING_DAYS]: ConstraintBinding<ConsecutiveWorkingDaysConstraintDTO>
+  [ConstraintType.SHIFT_FOLLOW_UP_RESTRICTION]: ConstraintBinding<ShiftFollowupRestrictionConstraintDTO>
+  [ConstraintType.SHIFTS_PER_SCHEDULE]: ConstraintBinding<ShiftsPerScheduleConstraintDTO>
+  [ConstraintType.EMPLOYEES_PER_SHIFT]: ConstraintBinding<EmployeesPerShiftConstraintDTO>
+  [ConstraintType.TEAM_ASSIGNMENT]: ConstraintBinding<TeamAssignmentConstraintDTO>
+  [ConstraintType.WEEKEND_CONSTRAINT]: ConstraintBinding<WeekendConstraintDTO>
+  [ConstraintType.EVEN_SHIFT_DISTRIBUTION]: ConstraintBinding<EvenShiftDistributionConstraintDTO>
 }
 
 export const apolinarPattern: WorkShifts[] = [
@@ -104,6 +105,7 @@ export const defaultConstraints: DefaultConstraints = {
     constraint: {
       type: ConstraintType.CONSECUTIVE_WORKING_DAYS,
       id: generateUUID(),
+      owner: "default",
       targetShift: WorkShifts.WORKING_SHIFTS,
       hardMin: 0,
       softMin: 0,
@@ -132,6 +134,7 @@ export const defaultConstraints: DefaultConstraints = {
     constraint: {
       type: ConstraintType.SHIFT_FOLLOW_UP_RESTRICTION,
       id: generateUUID(),
+      owner: "default",
       firstShift: WorkShifts.NIGHT,
       forbiddenFollowup: WorkShifts.DAY,
       penalty: 0
@@ -142,28 +145,28 @@ export const defaultConstraints: DefaultConstraints = {
     constraint: {
       type: ConstraintType.SHIFT_PATTERN_CONSTRAINT,
       id: generateUUID(),
-      owner: { id: 0 },
+      owner: "default",
       shiftPattern: [],
       reward: 1,
       startDayIndex: 0
     }
   },
-  [ConstraintType.EMPLOYEE_SHIFT_REQUEST]: {
+  [ConstraintType.REQUESTED_SHIFT_CONSTRAINT]: {
     label: "Specifická směna na dané datum",
     constraint: {
-      type: ConstraintType.EMPLOYEE_SHIFT_REQUEST,
+      type: ConstraintType.REQUESTED_SHIFT_CONSTRAINT,
       id: generateUUID(),
-      owner: { id: 0 },
+      owner: "default",
       date: dateToString(new Date()),
       requestedShift: WorkShifts.ANY
     }
   },
-  [ConstraintType.SHIFT_PER_SCHEDULE]: {
+  [ConstraintType.SHIFTS_PER_SCHEDULE]: {
     label: "Počet směn v rozvrhu",
     constraint: {
       id: generateUUID(),
-      owner: { id: 0 },
-      type: ConstraintType.SHIFT_PER_SCHEDULE,
+      owner: "default",
+      type: ConstraintType.SHIFTS_PER_SCHEDULE,
       targetShift: WorkShifts.ANY,
       hardMin: 0,
       softMin: 0,
@@ -178,7 +181,7 @@ export const defaultConstraints: DefaultConstraints = {
     constraint: {
       type: ConstraintType.TRIPLE_SHIFTS_CONSTRAINT,
       id: generateUUID(),
-      owner: { id: 0 },
+      owner: "default",
       penaltyForShiftTripletOutsideWeekend: 50,
       areAllowed: true
     }
@@ -188,18 +191,18 @@ export const defaultConstraints: DefaultConstraints = {
     constraint: {
       type: ConstraintType.TEAM_ASSIGNMENT,
       id: generateUUID(),
-      owner: { id: 0 },
+      owner: "default",
       isLeader: false,
       teamId: 1,
       penalty: 50
     }
   },
-  [ConstraintType.WEEKEND_REQUEST]: {
+  [ConstraintType.WEEKEND_CONSTRAINT]: {
     label: "Nastavení víkendu",
     constraint: {
-      type: ConstraintType.WEEKEND_REQUEST,
+      type: ConstraintType.WEEKEND_CONSTRAINT,
       id: generateUUID(),
-      owner: { id: 0 },
+      owner: "default",
       assignOnlyFullWorkingWeekends: true,
       penaltyForNotFullWorkingWeekend: 50
     }
@@ -209,7 +212,7 @@ export const defaultConstraints: DefaultConstraints = {
     constraint: {
       type: ConstraintType.EVEN_SHIFT_DISTRIBUTION,
       id: generateUUID(),
-      owner: { id: 0 },
+      owner: "default",
       distributeShiftsEvenlyThroughoutSchedule: true,
       penaltyForDeviationFromWeeksAverage: 10
     }

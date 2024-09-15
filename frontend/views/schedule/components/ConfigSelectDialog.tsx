@@ -5,9 +5,9 @@ import { VerticalLayout } from "@hilla/react-components/VerticalLayout";
 import { PlannerConfigList } from "Frontend/views/schedule/components/PlannerConfigList";
 import { HorizontalLayout } from "@hilla/react-components/HorizontalLayout";
 import { CrudAction, CRUDActions } from "Frontend/util/utils";
-import SolverConfigurationMetadata
-  from "Frontend/generated/com/cocroachden/planner/solver/repository/SolverConfigurationMetadata";
 import "@vaadin/icons";
+import SolverConfigurationMetadata
+  from "Frontend/generated/com/cocroachden/planner/solverconfiguration/SolverConfigurationMetadata";
 
 type Props = {
   configMetaData: SolverConfigurationMetadata[]

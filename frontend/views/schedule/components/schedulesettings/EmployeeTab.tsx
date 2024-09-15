@@ -5,15 +5,19 @@ import { AddEmployeeDialog } from "Frontend/views/schedule/components/schedulese
 import { useContext, useState } from "react";
 import { CrudAction, CRUDActions } from "Frontend/util/utils";
 import { ScheduleMode, ScheduleModeCtx } from "Frontend/views/schedule/ScheduleModeCtxProvider";
-import SolverConfigurationDTO from "Frontend/generated/com/cocroachden/planner/solver/api/SolverConfigurationDTO";
-import EmployeeDTO from "Frontend/generated/com/cocroachden/planner/employee/api/EmployeeDTO";
-import AssignedEmployeeDTO from "Frontend/generated/com/cocroachden/planner/solver/api/AssignedEmployeeDTO";
 import "@vaadin/icons";
+import EmployeeDTO from "Frontend/generated/com/cocroachden/planner/employee/EmployeeDTO";
+import SolverConfigurationDTO
+    from "Frontend/generated/com/cocroachden/planner/solverconfiguration/SolverConfigurationDTO";
+import EmployeeAssignmentDTO
+    from "Frontend/generated/com/cocroachden/planner/solverconfiguration/EmployeeAssignmentDTO";
+import employeeDTO from "Frontend/generated/com/cocroachden/planner/employee/EmployeeDTO";
+import employeeId from "Frontend/generated/com/cocroachden/planner/employee/EmployeeId";
 
 type Props = {
   employees: EmployeeDTO[]
   request: SolverConfigurationDTO
-  onAssignmentAction: (action: CrudAction<AssignedEmployeeDTO>) => void
+  onAssignmentAction: (action: CrudAction<EmployeeAssignmentDTO>) => void
 }
 
 export function EmployeeTab(props: Props) {
@@ -23,11 +27,11 @@ export function EmployeeTab(props: Props) {
   const selectedAssignments = props.request.employees
     .sort((a, b) => a.index - b.index)
   const missingEmployees = props.employees
-    .filter(e => !props.request.employees.some(a1 => e.id === a1.employee.id))
+    .filter(e => !props.request.employees.some(a1 => e.id === a1.employeeId))
 
-  function renderEmployeeCard(assignment: AssignedEmployeeDTO) {
+  function renderEmployeeCard(assignment: EmployeeAssignmentDTO, employee: EmployeeDTO) {
     return (
-      <div key={assignment.employee.id}
+      <div key={assignment.employeeId}
            style={{
              width: "100%",
              marginBottom: "5px",
@@ -65,7 +69,7 @@ export function EmployeeTab(props: Props) {
             </Button>
           </HorizontalLayout>
           <div style={{ paddingLeft: "var(--lumo-space-l)", width: "100%" }}>
-            {assignment.employee.lastName + " " + assignment.employee.firstName}
+            {employee.lastName + " " + employee.firstName}
           </div>
           <HorizontalLayout theme={"spacing"}>
             <Button theme={"small icon"}
@@ -115,7 +119,7 @@ export function EmployeeTab(props: Props) {
         <h6>Seznam zaměstnanců</h6>
       </HorizontalLayout>
       <div style={{ width: "98%" }}>
-        {selectedAssignments.map(w => renderEmployeeCard(w))}
+        {selectedAssignments.map(w => renderEmployeeCard(w, props.employees.find(e => e.id === w.employeeId)!))}
       </div>
     </div>
 

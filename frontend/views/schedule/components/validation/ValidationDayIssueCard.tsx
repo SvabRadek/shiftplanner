@@ -1,8 +1,9 @@
 import { Card } from "Frontend/components/Card";
-import DayValidationIssue from "Frontend/generated/com/cocroachden/planner/constraint/validations/day/DayValidationIssue";
+import DayValidationIssueDTO
+    from "Frontend/generated/com/cocroachden/planner/solverconfiguration/validations/day/DayValidationIssueDTO";
 
 type Props = {
-  issue: DayValidationIssue
+  issue: DayValidationIssueDTO
 }
 
 export function ValidationDayIssueCard(props: Props) {

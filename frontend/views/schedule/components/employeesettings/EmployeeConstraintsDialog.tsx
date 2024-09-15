@@ -3,8 +3,6 @@ import { VerticalLayout } from "@hilla/react-components/VerticalLayout";
 import { TextField } from "@hilla/react-components/TextField";
 import { HorizontalLayout } from "@hilla/react-components/HorizontalLayout";
 import { Button } from "@hilla/react-components/Button";
-import ShiftsPerScheduleRequestDTO
-  from "Frontend/generated/com/cocroachden/planner/constraint/api/ShiftsPerScheduleRequestDTO";
 import {
   ShiftPerScheduleConstraintForm
 } from "Frontend/views/schedule/components/employeesettings/constraintform/ShiftPerScheduleConstraintForm";
@@ -12,60 +10,63 @@ import { Icon } from "@hilla/react-components/Icon";
 import { CrudAction, CRUDActions, generateUUID } from "Frontend/util/utils";
 import { Card } from "Frontend/components/Card";
 import { defaultConstraints } from "Frontend/views/schedule/DefaultEmptyConstraints";
-import ShiftPatternRequestDTO from "Frontend/generated/com/cocroachden/planner/constraint/api/ShiftPatternRequestDTO";
 import {
   ShiftPatternConstraintForm
 } from "Frontend/views/schedule/components/employeesettings/constraintform/ShiftPatternConstraintForm";
-import TripleShiftConstraintRequestDTO
-  from "Frontend/generated/com/cocroachden/planner/constraint/api/TripleShiftConstraintRequestDTO";
 import {
   TripleShiftConstraintForm
 } from "Frontend/views/schedule/components/employeesettings/constraintform/TripleShiftConstraintForm";
 import WorkShifts from "Frontend/generated/com/cocroachden/planner/solver/api/WorkShifts";
-import EmployeeId from "Frontend/generated/com/cocroachden/planner/employee/api/EmployeeId";
 import { NumberField } from "@hilla/react-components/NumberField";
-import AssignedEmployeeDTO from "Frontend/generated/com/cocroachden/planner/solver/api/AssignedEmployeeDTO";
-import TeamAssignmentRequestDTO
-  from "Frontend/generated/com/cocroachden/planner/constraint/api/TeamAssignmentRequestDTO";
 import {
   TeamAssignmentConstraintForm
 } from "Frontend/views/schedule/components/employeesettings/constraintform/TeamAssignmentConstraintForm";
 import {
   WeekendConstraintForm
 } from "Frontend/views/schedule/components/employeesettings/constraintform/WeekendConstraintForm";
-import WeekendRequestDTO from "Frontend/generated/com/cocroachden/planner/constraint/api/WeekendRequestDTO";
-import EvenShiftDistributionRequestDTO
-  from "Frontend/generated/com/cocroachden/planner/constraint/api/EvenShiftDistributionRequestDTO";
 import {
   EvenDistributionConstraintForm
 } from "Frontend/views/schedule/components/employeesettings/constraintform/EvenDistributionConstraintForm";
 import "@vaadin/icons";
+import EmployeeAssignmentDTO
+  from "Frontend/generated/com/cocroachden/planner/solverconfiguration/EmployeeAssignmentDTO";
+import ShiftsPerScheduleConstraintDTO
+  from "Frontend/generated/com/cocroachden/planner/constraint/ShiftsPerScheduleConstraintDTO";
+import ShiftPatternConstraintDTO from "Frontend/generated/com/cocroachden/planner/constraint/ShiftPatternConstraintDTO";
+import TripleShiftConstraintDTO from "Frontend/generated/com/cocroachden/planner/constraint/TripleShiftConstraintDTO";
+import TeamAssignmentConstraintDTO
+  from "Frontend/generated/com/cocroachden/planner/constraint/TeamAssignmentConstraintDTO";
+import WeekendConstraintDTO from "Frontend/generated/com/cocroachden/planner/constraint/WeekendConstraintDTO";
+import EvenShiftDistributionConstraintDTO
+  from "Frontend/generated/com/cocroachden/planner/constraint/EvenShiftDistributionConstraintDTO";
+import EmployeeDTO from "Frontend/generated/com/cocroachden/planner/employee/EmployeeDTO";
 
 type Props = {
-  assignment?: AssignedEmployeeDTO
+  assignment: EmployeeAssignmentDTO
+  employee: EmployeeDTO
   isOpen: boolean
   onOpenChanged: (value: boolean) => void
-  shiftsPerScheduleRequests: ShiftsPerScheduleRequestDTO[]
-  onShiftPerScheduleAction: (action: CrudAction<ShiftsPerScheduleRequestDTO>) => void
-  shiftPatternRequests: ShiftPatternRequestDTO[],
-  onShiftPatternRequestsAction: (action: CrudAction<ShiftPatternRequestDTO>) => void
-  tripleShiftConstraintRequest: TripleShiftConstraintRequestDTO[]
-  onTripleShiftConstraintAction: (action: CrudAction<TripleShiftConstraintRequestDTO>) => void
-  teamAssignmentRequests: TeamAssignmentRequestDTO[],
-  onTeamAssignmentRequestAction: (action: CrudAction<TeamAssignmentRequestDTO>) => void
-  weekendRequests: WeekendRequestDTO[],
-  onWeekendRequestRequestAction: (action: CrudAction<WeekendRequestDTO>) => void
-  evenDistributionRequests: EvenShiftDistributionRequestDTO[]
-  onEvenDistributionRequestsAction: (action: CrudAction<EvenShiftDistributionRequestDTO>) => void
-  onAssignmentAction: (action: CrudAction<AssignedEmployeeDTO>) => void
+  shiftsPerScheduleRequests: ShiftsPerScheduleConstraintDTO[]
+  onShiftPerScheduleAction: (action: CrudAction<ShiftsPerScheduleConstraintDTO>) => void
+  shiftPatternRequests: ShiftPatternConstraintDTO[],
+  onShiftPatternRequestsAction: (action: CrudAction<ShiftPatternConstraintDTO>) => void
+  tripleShiftConstraintRequest: TripleShiftConstraintDTO[]
+  onTripleShiftConstraintAction: (action: CrudAction<TripleShiftConstraintDTO>) => void
+  teamAssignmentRequests: TeamAssignmentConstraintDTO[],
+  onTeamAssignmentRequestAction: (action: CrudAction<TeamAssignmentConstraintDTO>) => void
+  weekendRequests: WeekendConstraintDTO[],
+  onWeekendRequestRequestAction: (action: CrudAction<WeekendConstraintDTO>) => void
+  evenDistributionRequests: EvenShiftDistributionConstraintDTO[]
+  onEvenDistributionRequestsAction: (action: CrudAction<EvenShiftDistributionConstraintDTO>) => void
+  onAssignmentAction: (action: CrudAction<EmployeeAssignmentDTO>) => void
   readonly?: boolean
 }
 
-export function EmployeeRequestConfigDialog(props: Props) {
+export function EmployeeConstraintsDialog(props: Props) {
 
   if (!props.assignment) return null
 
-  function handleUpdateAssignment(value: Partial<AssignedEmployeeDTO>) {
+  function handleUpdateAssignment(value: Partial<EmployeeAssignmentDTO>) {
     props.onAssignmentAction({
       type: CRUDActions.UPDATE,
       payload: {
@@ -79,7 +80,7 @@ export function EmployeeRequestConfigDialog(props: Props) {
     props.onShiftPerScheduleAction({
       type: CRUDActions.CREATE,
       payload: generateNewUniqueShiftsPerSchedule(
-        props.assignment!.employee.id,
+        props.assignment!.employeeId,
         props.shiftsPerScheduleRequests.map(r => r.targetShift)
       )
     });
@@ -88,7 +89,7 @@ export function EmployeeRequestConfigDialog(props: Props) {
   function handleCreateNewShiftPattern() {
     props.onShiftPatternRequestsAction({
         type: CRUDActions.CREATE,
-        payload: generateNewShiftPattern(props.assignment?.employee!)
+        payload: generateNewShiftPattern(props.assignment?.employeeId!)
       }
     )
   }
@@ -96,7 +97,7 @@ export function EmployeeRequestConfigDialog(props: Props) {
   function handleCreateNewTeamAssignment() {
     props.onTeamAssignmentRequestAction({
         type: CRUDActions.CREATE,
-        payload: generateNewTeamAssignment(props.assignment?.employee!)
+        payload: generateNewTeamAssignment(props.assignment?.employeeId!)
       }
     )
   }
@@ -104,7 +105,7 @@ export function EmployeeRequestConfigDialog(props: Props) {
   function handleCreateNewWeekendRequest() {
     props.onWeekendRequestRequestAction({
         type: CRUDActions.CREATE,
-        payload: generateNewWeekendRequest(props.assignment?.employee!)
+        payload: generateNewWeekendRequest(props.assignment?.employeeId!)
       }
     )
   }
@@ -112,7 +113,7 @@ export function EmployeeRequestConfigDialog(props: Props) {
   function handleCreateNewEvenDistributionRequest() {
     props.onEvenDistributionRequestsAction({
         type: CRUDActions.CREATE,
-        payload: generateNewEvenDistributionRequest(props.assignment?.employee!)
+        payload: generateNewEvenDistributionRequest(props.assignment?.employeeId!)
       }
     )
   }
@@ -140,7 +141,7 @@ export function EmployeeRequestConfigDialog(props: Props) {
   function handleCreateNewTripleShiftConstraint() {
     props.onTripleShiftConstraintAction({
       type: CRUDActions.CREATE,
-      payload: generateNewTripleShiftConstraintRequest(props.assignment?.employee!)
+      payload: generateNewTripleShiftConstraintRequest(props.assignment?.employeeId!)
     })
   }
 
@@ -160,8 +161,8 @@ export function EmployeeRequestConfigDialog(props: Props) {
       }}>
         <Card style={{ width: "100%" }}>
           <HorizontalLayout theme={"spacing"}>
-            <TextField label={"Jméno"} value={props.assignment.employee.firstName} readonly/>
-            <TextField label={"Příjmení"} value={props.assignment.employee.lastName} readonly/>
+            <TextField label={"Jméno"} value={props.employee.firstName} readonly/>
+            <TextField label={"Příjmení"} value={props.employee.lastName} readonly/>
             <NumberField
               label={"Váha"}
               value={props.assignment.weight.toString()}
@@ -177,7 +178,7 @@ export function EmployeeRequestConfigDialog(props: Props) {
         {renderSectionHeader("Pocet smen na rozvrh", "vaadin:plus", handleCreateNewShiftPerSchedule)}
         {props.shiftsPerScheduleRequests.map(request => (
           <ShiftPerScheduleConstraintForm
-            key={request.owner.id + request.targetShift}
+            key={request.owner + request.targetShift}
             request={request}
             onShiftCountAction={props.onShiftPerScheduleAction}
             excludedShifts={props.shiftsPerScheduleRequests.map(r => r.targetShift)}
@@ -216,51 +217,51 @@ export function EmployeeRequestConfigDialog(props: Props) {
   );
 }
 
-function generateNewUniqueShiftsPerSchedule(employeeId: number, excludeShifts: WorkShifts[]): ShiftsPerScheduleRequestDTO {
+function generateNewUniqueShiftsPerSchedule(employeeId: string, excludeShifts: WorkShifts[]): ShiftsPerScheduleConstraintDTO {
   const allowedShifts = Object.values(WorkShifts).filter(val => !excludeShifts.some(s => s === val))
   return {
-    ...defaultConstraints.SHIFT_PER_SCHEDULE.constraint,
+    ...defaultConstraints["SHIFTS_PER_SCHEDULE"].constraint,
     targetShift: allowedShifts[0],
-    owner: { id: employeeId },
+    owner: employeeId,
     id: generateUUID()
   }
 }
 
-function generateNewShiftPattern(employeeId: EmployeeId): ShiftPatternRequestDTO {
+function generateNewShiftPattern(employeeId: string): ShiftPatternConstraintDTO {
   return {
-    ...defaultConstraints.SHIFT_PATTERN_CONSTRAINT.constraint,
-    owner: { id: employeeId.id },
+    ...defaultConstraints["SHIFT_PATTERN_CONSTRAINT"].constraint,
+    owner: employeeId,
     id: generateUUID()
   }
 }
 
-function generateNewTeamAssignment(employeeId: EmployeeId): TeamAssignmentRequestDTO {
+function generateNewTeamAssignment(employeeId: string): TeamAssignmentConstraintDTO {
   return {
-    ...defaultConstraints.TEAM_ASSIGNMENT.constraint,
-    owner: { id: employeeId.id },
+    ...defaultConstraints["TEAM_ASSIGNMENT"].constraint,
+    owner: employeeId,
     id: generateUUID()
   }
 }
 
-function generateNewWeekendRequest(employeeId: EmployeeId): WeekendRequestDTO {
+function generateNewWeekendRequest(employeeId: string): WeekendConstraintDTO {
   return {
-    ...defaultConstraints.WEEKEND_REQUEST.constraint,
-    owner: { id: employeeId.id },
+    ...defaultConstraints["WEEKEND_CONSTRAINT"].constraint,
+    owner: employeeId,
     id: generateUUID()
   }
 }
 
-function generateNewEvenDistributionRequest(employeeId: EmployeeId): EvenShiftDistributionRequestDTO {
+function generateNewEvenDistributionRequest(employeeId: string): EvenShiftDistributionConstraintDTO {
   return {
-    ...defaultConstraints.EVEN_SHIFT_DISTRIBUTION.constraint,
-    owner: { id: employeeId.id },
+    ...defaultConstraints["EVEN_SHIFT_DISTRIBUTION"].constraint,
+    owner: employeeId,
     id: generateUUID()
   }
 }
 
-function generateNewTripleShiftConstraintRequest(employeeId: EmployeeId): TripleShiftConstraintRequestDTO {
+function generateNewTripleShiftConstraintRequest(employeeId: string): TripleShiftConstraintDTO {
   return {
-    ...defaultConstraints.TRIPLE_SHIFTS_CONSTRAINT.constraint,
-    owner: { id: employeeId.id }
+    ...defaultConstraints["TRIPLE_SHIFTS_CONSTRAINT"].constraint,
+    owner: employeeId
   }
 }

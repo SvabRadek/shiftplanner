@@ -1,7 +1,5 @@
 import { HorizontalLayout } from "@hilla/react-components/HorizontalLayout";
 import { NumberField } from "@hilla/react-components/NumberField";
-import ShiftsPerScheduleRequestDTO
-  from "Frontend/generated/com/cocroachden/planner/constraint/api/ShiftsPerScheduleRequestDTO";
 import { Button } from "@hilla/react-components/Button";
 import { Tooltip } from "@hilla/react-components/Tooltip";
 import { Card } from "Frontend/components/Card";
@@ -10,11 +8,13 @@ import { CrudAction, CRUDActions } from "Frontend/util/utils";
 import { Icon } from "@hilla/react-components/Icon";
 import WorkShifts from "Frontend/generated/com/cocroachden/planner/solver/api/WorkShifts";
 import "@vaadin/icons";
+import ShiftsPerScheduleConstraintDTO
+  from "Frontend/generated/com/cocroachden/planner/constraint/ShiftsPerScheduleConstraintDTO";
 
 type Props = {
-  request: ShiftsPerScheduleRequestDTO
+  request: ShiftsPerScheduleConstraintDTO
   excludedShifts: WorkShifts[]
-  onShiftCountAction: (action: CrudAction<ShiftsPerScheduleRequestDTO>) => void
+  onShiftCountAction: (action: CrudAction<ShiftsPerScheduleConstraintDTO>) => void
   readonly?: boolean
 }
 
@@ -27,7 +27,7 @@ export function ShiftPerScheduleConstraintForm(props: Props) {
     })
   }
 
-  function handleUpdate(partial: Partial<ShiftsPerScheduleRequestDTO>) {
+  function handleUpdate(partial: Partial<ShiftsPerScheduleConstraintDTO>) {
     props.onShiftCountAction({
       type: CRUDActions.UPDATE,
       payload: {

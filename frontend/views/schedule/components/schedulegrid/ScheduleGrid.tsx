@@ -5,10 +5,9 @@ import { FirstRowCell } from "Frontend/views/schedule/components/schedulegrid/Fi
 import { CrudAction, dateToString } from "Frontend/util/utils";
 import { ScheduleMode, ScheduleModeCtx } from "Frontend/views/schedule/ScheduleModeCtxProvider";
 import { ValidationContext } from "Frontend/views/schedule/components/validation/ScheduleValidationCtxProvider";
-import IssueSeverity from "Frontend/generated/com/cocroachden/planner/constraint/validations/IssueSeverity";
-import EmployeeId from "Frontend/generated/com/cocroachden/planner/employee/api/EmployeeId";
-import AssignedEmployeeDTO from "Frontend/generated/com/cocroachden/planner/solver/api/AssignedEmployeeDTO";
-import {HorizontalLayout} from "@hilla/react-components/HorizontalLayout";
+import EmployeeAssignmentDTO
+  from "Frontend/generated/com/cocroachden/planner/solverconfiguration/EmployeeAssignmentDTO";
+import IssueSeverity from "Frontend/generated/com/cocroachden/planner/solverconfiguration/validations/IssueSeverity";
 
 type TeamColor = {
   [key: number]: string
@@ -36,7 +35,7 @@ const teamColors: TeamColor = {
 }
 
 export type Row = {
-  owner: EmployeeId
+  owner: string
   rowTitle: ReactNode
   cells: Cell[]
   team?: number
@@ -47,7 +46,7 @@ type Props = {
   onCellChanged?: (cell: Cell) => void
   onLeftClick?: (cell: Cell) => void
   onMouseOverCell?: (cell: Cell) => void
-  onAssignmentAction: (action: CrudAction<Pick<AssignedEmployeeDTO["employee"], "id">>) => void
+  onAssignmentAction: (action: CrudAction<Pick<EmployeeAssignmentDTO, "employeeId">>) => void
 }
 
 export function ScheduleGrid(props: Props) {
@@ -62,7 +61,7 @@ export function ScheduleGrid(props: Props) {
       if (rowIndex === 0) {
         items.push(generateFirstRow(row))
       }
-      const workerIssues = validationCtx.employeeIssueMap.get(row.owner.id) || []
+      const workerIssues = validationCtx.employeeIssueMap.get(row.owner) || []
       const severity = validationCtx.getSeverityOfIssues(workerIssues)
       items.push(renderCell(
         rowIndex + 2,

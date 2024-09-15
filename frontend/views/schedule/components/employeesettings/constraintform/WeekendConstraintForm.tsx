@@ -6,20 +6,20 @@ import { ScheduleMode, ScheduleModeCtx } from "Frontend/views/schedule/ScheduleM
 import { useContext } from "react";
 import { Icon } from "@hilla/react-components/Icon";
 import { Button } from "@hilla/react-components/Button";
-import WeekendRequestDTO from "Frontend/generated/com/cocroachden/planner/constraint/api/WeekendRequestDTO";
 import { Checkbox } from "@hilla/react-components/Checkbox";
 import "@vaadin/icons";
+import WeekendConstraintDTO from "Frontend/generated/com/cocroachden/planner/constraint/WeekendConstraintDTO";
 
 type Props = {
-  request: WeekendRequestDTO,
-  onAction: (action: CrudAction<WeekendRequestDTO>) => void
+  request: WeekendConstraintDTO,
+  onAction: (action: CrudAction<WeekendConstraintDTO>) => void
 }
 
 export function WeekendConstraintForm(props: Props) {
 
   const { mode } = useContext(ScheduleModeCtx);
 
-  function handleUpdate(update: Partial<WeekendRequestDTO>) {
+  function handleUpdate(update: Partial<WeekendConstraintDTO>) {
     props.onAction({
       type: CRUDActions.UPDATE,
       payload: {

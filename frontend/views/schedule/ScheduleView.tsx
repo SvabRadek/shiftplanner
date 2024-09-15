@@ -7,49 +7,50 @@ import {TextField} from "@hilla/react-components/TextField";
 import {VerticalLayout} from "@hilla/react-components/VerticalLayout";
 import {GridDisplayMode, ScheduleGridContainer} from "./components/schedulegrid/ScheduleGridContainer";
 import {
-    EmployeeRequestConfigDialog
-} from "Frontend/views/schedule/components/employeesettings/EmployeeRequestConfigDialog";
+    EmployeeConstraintsDialog
+} from "Frontend/views/schedule/components/employeesettings/EmployeeConstraintsDialog";
 import {areShiftRequestsSame, CrudAction, CRUDActions, generateUUID} from "Frontend/util/utils";
 import {Notification} from "@hilla/react-components/Notification";
 import {Card} from "Frontend/components/Card";
 import {Icon} from "@hilla/react-components/Icon";
 import {Subscription} from "@hilla/frontend";
 import {ScheduleMode, ScheduleModeCtx} from "Frontend/views/schedule/ScheduleModeCtxProvider";
-import ConsecutiveWorkingDaysRequestDTO
-    from "Frontend/generated/com/cocroachden/planner/constraint/api/ConsecutiveWorkingDaysRequestDTO";
-import EmployeesPerShiftRequestDTO
-    from "Frontend/generated/com/cocroachden/planner/constraint/api/EmployeesPerShiftRequestDTO";
-import ShiftFollowupRestrictionRequestDTO
-    from "Frontend/generated/com/cocroachden/planner/constraint/api/ShiftFollowupRestrictionRequestDTO";
-import ShiftPatternRequestDTO from "Frontend/generated/com/cocroachden/planner/constraint/api/ShiftPatternRequestDTO";
 import {ScheduleSettingsDialog} from "Frontend/views/schedule/components/schedulesettings/ScheduleSettingsDialog";
 import {exportToExcel} from "Frontend/util/excel";
 import {HeaderStrip} from "Frontend/views/schedule/HeaderStrip";
-import ShiftsPerScheduleRequestDTO
-    from "Frontend/generated/com/cocroachden/planner/constraint/api/ShiftsPerScheduleRequestDTO";
-import ConstraintRequestDTO from "Frontend/generated/com/cocroachden/planner/constraint/api/ConstraintRequestDTO";
 import {ValidationContext} from "Frontend/views/schedule/components/validation/ScheduleValidationCtxProvider";
-import TripleShiftConstraintRequestDTO
-    from "Frontend/generated/com/cocroachden/planner/constraint/api/TripleShiftConstraintRequestDTO";
-import SolverConfigurationDTO from "Frontend/generated/com/cocroachden/planner/solver/api/SolverConfigurationDTO";
 import SolverSolutionDTO from "Frontend/generated/com/cocroachden/planner/solver/api/SolverSolutionDTO";
-import ConstraintType from "Frontend/generated/com/cocroachden/planner/constraint/api/ConstraintType";
 import WorkShifts from "Frontend/generated/com/cocroachden/planner/solver/api/WorkShifts";
 import SolutionStatus from "Frontend/generated/com/cocroachden/planner/solver/api/SolutionStatus";
-import EmployeeShiftRequestDTO from "Frontend/generated/com/cocroachden/planner/constraint/api/EmployeeShiftRequestDTO";
-import EmployeeId from "Frontend/generated/com/cocroachden/planner/employee/api/EmployeeId";
-import EmployeeDTO from "Frontend/generated/com/cocroachden/planner/employee/api/EmployeeDTO";
-import AssignedEmployeeDTO from "Frontend/generated/com/cocroachden/planner/solver/api/AssignedEmployeeDTO";
-import TeamAssignmentRequestDTO
-    from "Frontend/generated/com/cocroachden/planner/constraint/api/TeamAssignmentRequestDTO";
-import WeekendRequestDTO from "Frontend/generated/com/cocroachden/planner/constraint/api/WeekendRequestDTO";
-import EvenShiftDistributionRequestDTO
-    from "Frontend/generated/com/cocroachden/planner/constraint/api/EvenShiftDistributionRequestDTO";
 import "@vaadin/icons";
+import SolverConfigurationDTO
+    from "Frontend/generated/com/cocroachden/planner/solverconfiguration/SolverConfigurationDTO";
+import EmployeeDTO from "Frontend/generated/com/cocroachden/planner/employee/EmployeeDTO";
+import ShiftsPerScheduleConstraintDTO
+    from "Frontend/generated/com/cocroachden/planner/constraint/ShiftsPerScheduleConstraintDTO";
+import ConsecutiveWorkingDaysConstraintDTO
+    from "Frontend/generated/com/cocroachden/planner/constraint/ConsecutiveWorkingDaysConstraintDTO";
+import EmployeesPerShiftConstraintDTO
+    from "Frontend/generated/com/cocroachden/planner/constraint/EmployeesPerShiftConstraintDTO";
+import ShiftFollowupRestrictionConstraintDTO
+    from "Frontend/generated/com/cocroachden/planner/constraint/ShiftFollowupRestrictionConstraintDTO";
+import ShiftPatternConstraintDTO from "Frontend/generated/com/cocroachden/planner/constraint/ShiftPatternConstraintDTO";
+import TripleShiftConstraintDTO from "Frontend/generated/com/cocroachden/planner/constraint/TripleShiftConstraintDTO";
+import TeamAssignmentConstraintDTO
+    from "Frontend/generated/com/cocroachden/planner/constraint/TeamAssignmentConstraintDTO";
+import WeekendConstraintDTO from "Frontend/generated/com/cocroachden/planner/constraint/WeekendConstraintDTO";
+import EvenShiftDistributionConstraintDTO
+    from "Frontend/generated/com/cocroachden/planner/constraint/EvenShiftDistributionConstraintDTO";
+import ConstraintDTO from "Frontend/generated/com/cocroachden/planner/constraint/ConstraintDTO";
+import ConstraintType from "Frontend/generated/com/cocroachden/planner/constraint/ConstraintType";
+import RequestedShiftConstraintDTO
+    from "Frontend/generated/com/cocroachden/planner/constraint/RequestedShiftConstraintDTO";
+import EmployeeAssignmentDTO
+    from "Frontend/generated/com/cocroachden/planner/solverconfiguration/EmployeeAssignmentDTO";
 
 type EmployeeConfigDialogParams = {
     isOpen: boolean,
-    selectedEmployee?: EmployeeId
+    selectedEmployeeId?: string
 }
 
 export type ResultCache = {
@@ -75,16 +76,16 @@ export default function ScheduleView() {
     const [gridDisplayMode, setGridDisplayMode] = useState<GridDisplayMode>(GridDisplayMode.PLANNING);
 
     const [request, setRequest] = useState<SolverConfigurationDTO | undefined>();
-    const [shiftRequests, setShiftRequests] = useState<EmployeeShiftRequestDTO[]>([])
-    const [shiftPerScheduleRequests, setShiftPerScheduleRequests] = useState<ShiftsPerScheduleRequestDTO[]>([])
-    const [consecutiveWorkingDaysRequests, setConsecutiveWorkingDaysRequests] = useState<ConsecutiveWorkingDaysRequestDTO[]>([]);
-    const [employeesPerShiftRequests, setEmployeesPerShiftRequests] = useState<EmployeesPerShiftRequestDTO[]>([]);
-    const [shiftFollowupRestrictionRequests, setShiftFollowupRestrictionRequests] = useState<ShiftFollowupRestrictionRequestDTO[]>([]);
-    const [shiftPatternRequests, setShiftPatternRequests] = useState<ShiftPatternRequestDTO[]>([]);
-    const [tripleShiftConstraintRequests, setTripleShiftConstraintRequests] = useState<TripleShiftConstraintRequestDTO[]>([]);
-    const [teamAssignmentRequests, setTeamAssignmentRequests] = useState<TeamAssignmentRequestDTO[]>([]);
-    const [weekendRequests, setWeekendRequests] = useState<WeekendRequestDTO[]>([]);
-    const [evenDistributionRequests, setEvenDistributionRequests] = useState<EvenShiftDistributionRequestDTO[]>([]);
+    const [requestedShiftConstraints, setRequestedShiftConstraints] = useState<RequestedShiftConstraintDTO[]>([])
+    const [shiftPerScheduleRequests, setShiftPerScheduleRequests] = useState<ShiftsPerScheduleConstraintDTO[]>([])
+    const [consecutiveWorkingDaysRequests, setConsecutiveWorkingDaysRequests] = useState<ConsecutiveWorkingDaysConstraintDTO[]>([]);
+    const [employeesPerShiftRequests, setEmployeesPerShiftRequests] = useState<EmployeesPerShiftConstraintDTO[]>([]);
+    const [shiftFollowupRestrictionRequests, setShiftFollowupRestrictionRequests] = useState<ShiftFollowupRestrictionConstraintDTO[]>([]);
+    const [shiftPatternRequests, setShiftPatternRequests] = useState<ShiftPatternConstraintDTO[]>([]);
+    const [tripleShiftConstraintRequests, setTripleShiftConstraintRequests] = useState<TripleShiftConstraintDTO[]>([]);
+    const [teamAssignmentRequests, setTeamAssignmentRequests] = useState<TeamAssignmentConstraintDTO[]>([]);
+    const [weekendRequests, setWeekendRequests] = useState<WeekendConstraintDTO[]>([]);
+    const [evenDistributionRequests, setEvenDistributionRequests] = useState<EvenShiftDistributionConstraintDTO[]>([]);
 
     useEffect(() => {
         EmployeeEndpoint.getAllEmployees().then(setEmployees)
@@ -97,7 +98,7 @@ export default function ScheduleView() {
     useEffect(() => {
         //validate requests when shift request is made
         validateRequest()
-    }, [shiftRequests]);
+    }, [requestedShiftConstraints]);
 
     useEffect(() => {
         //validate requests when config dialog closes
@@ -106,7 +107,7 @@ export default function ScheduleView() {
         }
     }, [employeeConfigDialog, isScheduleConfigDialogOpen]);
 
-    function handleShiftPatternAction(action: CrudAction<ShiftPatternRequestDTO>) {
+    function handleShiftPatternAction(action: CrudAction<ShiftPatternConstraintDTO>) {
         setShiftPatternRequests(prevState => updateList(action, prevState))
     }
 
@@ -116,7 +117,7 @@ export default function ScheduleView() {
 
     function combineConstraints() {
         return [
-            ...shiftRequests,
+            ...requestedShiftConstraints,
             ...shiftPatternRequests,
             ...employeesPerShiftRequests,
             ...shiftFollowupRestrictionRequests,
@@ -126,7 +127,7 @@ export default function ScheduleView() {
             ...teamAssignmentRequests,
             ...weekendRequests,
             ...evenDistributionRequests
-        ] as ConstraintRequestDTO[]
+        ] as ConstraintDTO[]
     }
 
     async function handleSave() {
@@ -162,35 +163,35 @@ export default function ScheduleView() {
         SolverConfigurationEndpoint.getConfiguration(configId).then(configResponse => {
             validationCtx.clear()
             setResultCache({selectedIndex: 0, results: []})
-            setShiftRequests(
-                configResponse.constraints.filter(c => c.type === ConstraintType.EMPLOYEE_SHIFT_REQUEST) as EmployeeShiftRequestDTO[]
+            setRequestedShiftConstraints(
+                configResponse.constraints.filter(c => c.type === ConstraintType.REQUESTED_SHIFT_CONSTRAINT) as RequestedShiftConstraintDTO[]
             )
             setShiftPerScheduleRequests(
-                configResponse.constraints.filter(c => c.type === ConstraintType.SHIFT_PER_SCHEDULE) as ShiftsPerScheduleRequestDTO[]
+                configResponse.constraints.filter(c => c.type === ConstraintType.SHIFTS_PER_SCHEDULE) as ShiftsPerScheduleConstraintDTO[]
             )
             setConsecutiveWorkingDaysRequests(
-                configResponse.constraints.filter(c => c.type === ConstraintType.CONSECUTIVE_WORKING_DAYS) as ConsecutiveWorkingDaysRequestDTO[]
+                configResponse.constraints.filter(c => c.type === ConstraintType.CONSECUTIVE_WORKING_DAYS) as ConsecutiveWorkingDaysConstraintDTO[]
             )
             setEmployeesPerShiftRequests(
-                configResponse.constraints.filter(c => c.type === ConstraintType.EMPLOYEES_PER_SHIFT) as EmployeesPerShiftRequestDTO[]
+                configResponse.constraints.filter(c => c.type === ConstraintType.EMPLOYEES_PER_SHIFT) as EmployeesPerShiftConstraintDTO[]
             )
             setShiftFollowupRestrictionRequests(
-                configResponse.constraints.filter(c => c.type === ConstraintType.SHIFT_FOLLOW_UP_RESTRICTION) as ShiftFollowupRestrictionRequestDTO[]
+                configResponse.constraints.filter(c => c.type === ConstraintType.SHIFT_FOLLOW_UP_RESTRICTION) as ShiftFollowupRestrictionConstraintDTO[]
             )
             setShiftPatternRequests(
-                configResponse.constraints.filter(c => c.type === ConstraintType.SHIFT_PATTERN_CONSTRAINT) as ShiftPatternRequestDTO[]
+                configResponse.constraints.filter(c => c.type === ConstraintType.SHIFT_PATTERN_CONSTRAINT) as ShiftPatternConstraintDTO[]
             )
             setTripleShiftConstraintRequests(
-                configResponse.constraints.filter(c => c.type === ConstraintType.TRIPLE_SHIFTS_CONSTRAINT) as TripleShiftConstraintRequestDTO[]
+                configResponse.constraints.filter(c => c.type === ConstraintType.TRIPLE_SHIFTS_CONSTRAINT) as TripleShiftConstraintDTO[]
             )
             setTeamAssignmentRequests(
-                configResponse.constraints.filter(c => c.type === ConstraintType.TEAM_ASSIGNMENT) as TeamAssignmentRequestDTO[]
+                configResponse.constraints.filter(c => c.type === ConstraintType.TEAM_ASSIGNMENT) as TeamAssignmentConstraintDTO[]
             )
             setWeekendRequests(
-                configResponse.constraints.filter(c => c.type === ConstraintType.WEEKEND_REQUEST) as WeekendRequestDTO[]
+                configResponse.constraints.filter(c => c.type === ConstraintType.WEEKEND_CONSTRAINT) as WeekendConstraintDTO[]
             )
             setEvenDistributionRequests(
-                configResponse.constraints.filter(c => c.type === ConstraintType.EVEN_SHIFT_DISTRIBUTION) as EvenShiftDistributionRequestDTO[]
+                configResponse.constraints.filter(c => c.type === ConstraintType.EVEN_SHIFT_DISTRIBUTION) as EvenShiftDistributionConstraintDTO[]
             )
             configResponse["constraints"] = []
             setRequest(configResponse)
@@ -198,11 +199,11 @@ export default function ScheduleView() {
         modeCtx.setMode(ScheduleMode.READONLY)
     }
 
-    function handleAssignmentAction(action: CrudAction<AssignedEmployeeDTO>) {
+    function handleAssignmentAction(action: CrudAction<EmployeeAssignmentDTO>) {
         switch (action.type) {
             case CRUDActions.READ:
                 setEmployeeConfigDialog({
-                    selectedEmployee: {id: action.payload.employee.id},
+                    selectedEmployeeId: action.payload.employeeId,
                     isOpen: true
                 })
                 break
@@ -232,14 +233,14 @@ export default function ScheduleView() {
                     if (prevState == undefined) return undefined
                     return {
                         ...request!,
-                        employees: request!.employees.filter(a => a.employee.id !== action.payload.employee.id)
+                        employees: request!.employees.filter(a => a.employeeId !== action.payload.employeeId)
                     }
                 })
         }
     }
 
-    function handleShiftRequestsChanged(changedRequests: Omit<EmployeeShiftRequestDTO, "id">[]) {
-        setShiftRequests(prevState => {
+    function handleShiftRequestsChanged(changedRequests: Omit<RequestedShiftConstraintDTO, "id">[]) {
+        setRequestedShiftConstraints(prevState => {
             return [
                 ...prevState.filter(r => !changedRequests.some(changed => areShiftRequestsSame(r, changed))),
                 ...changedRequests.filter(r => r.requestedShift !== WorkShifts.ANY).map(r => ({
@@ -307,36 +308,36 @@ export default function ScheduleView() {
         }))
     }
 
-    function handleTripleShiftConstraintAction(action: CrudAction<TripleShiftConstraintRequestDTO>) {
+    function handleTripleShiftConstraintAction(action: CrudAction<TripleShiftConstraintDTO>) {
         setTripleShiftConstraintRequests(prevState => updateList(action, prevState))
     }
 
-    function handleEmployeePerShiftAction(action: CrudAction<EmployeesPerShiftRequestDTO>) {
+    function handleEmployeePerShiftAction(action: CrudAction<EmployeesPerShiftConstraintDTO>) {
         setEmployeesPerShiftRequests(prevState => updateList(action, prevState))
     }
 
-    function handleShiftFollowupRestrictionAction(action: CrudAction<ShiftFollowupRestrictionRequestDTO>) {
+    function handleShiftFollowupRestrictionAction(action: CrudAction<ShiftFollowupRestrictionConstraintDTO>) {
         setShiftFollowupRestrictionRequests(prevState => updateList(action, prevState))
     }
 
-    function handleConsecutiveWorkingDaysAction(action: CrudAction<ConsecutiveWorkingDaysRequestDTO>) {
+    function handleConsecutiveWorkingDaysAction(action: CrudAction<ConsecutiveWorkingDaysConstraintDTO>) {
         setConsecutiveWorkingDaysRequests(prevState => updateList(action, prevState))
     }
 
-    function handleShiftPerScheduleAction(action: CrudAction<ShiftsPerScheduleRequestDTO>) {
+    function handleShiftPerScheduleAction(action: CrudAction<ShiftsPerScheduleConstraintDTO>) {
         setShiftPerScheduleRequests(prevState => updateList(action, prevState))
     }
 
-    function handleWeekendRequestAction(action: CrudAction<WeekendRequestDTO>) {
+    function handleWeekendRequestAction(action: CrudAction<WeekendConstraintDTO>) {
         setWeekendRequests(prevState => updateList(action, prevState))
     }
 
-    function handleEvenDistributionRequestAction(action: CrudAction<EvenShiftDistributionRequestDTO>) {
+    function handleEvenDistributionRequestAction(action: CrudAction<EvenShiftDistributionConstraintDTO>) {
         setEvenDistributionRequests(prevState => updateList(action, prevState))
     }
 
-    function handleTeamAssignmentAction(action: CrudAction<TeamAssignmentRequestDTO>) {
-        function updateTeamAssignments(action: CrudAction<TeamAssignmentRequestDTO>, requests: TeamAssignmentRequestDTO[]) {
+    function handleTeamAssignmentAction(action: CrudAction<TeamAssignmentConstraintDTO>) {
+        function updateTeamAssignments(action: CrudAction<TeamAssignmentConstraintDTO>, requests: TeamAssignmentConstraintDTO[]) {
             switch (action.type) {
                 case CRUDActions.UPDATE:
                     const isNewLeader = action.payload.isLeader
@@ -420,7 +421,7 @@ export default function ScheduleView() {
                 onUpdate={handleUpdate}
                 onCancel={handleCancel}
                 onClearCache={() => setResultCache({results: [], selectedIndex: 0})}
-                onExportToExcel={() => exportToExcel(request!.name, request!.employees, resultCache.results[resultCache.selectedIndex])}
+                onExportToExcel={() => exportToExcel(request!.name, request!.employees, employees, resultCache.results[resultCache.selectedIndex])}
                 cacheSize={RESULT_CACHE_SIZE}
                 onResultSelectionChanged={handleResultSelectionChanged}
                 gridDisplayMode={gridDisplayMode}
@@ -442,24 +443,25 @@ export default function ScheduleView() {
                         consecutiveWorkingDays={consecutiveWorkingDaysRequests}
                         onConsecutiveWorkingDaysAction={handleConsecutiveWorkingDaysAction}
                     />
-                    <EmployeeRequestConfigDialog
-                        key={employeeConfigDialog.selectedEmployee?.id}
-                        assignment={request.employees.find(w => w.employee.id === employeeConfigDialog.selectedEmployee?.id)!}
+                    <EmployeeConstraintsDialog
+                        key={employeeConfigDialog.selectedEmployeeId}
+                        assignment={request.employees.find(w => w.employeeId === employeeConfigDialog.selectedEmployeeId)!}
+                        employee={employees.find(e => e.id === employeeConfigDialog.selectedEmployeeId)!}
                         isOpen={employeeConfigDialog.isOpen}
                         onShiftPerScheduleAction={handleShiftPerScheduleAction}
-                        shiftsPerScheduleRequests={shiftPerScheduleRequests.filter(r => r.owner.id === employeeConfigDialog.selectedEmployee?.id)}
+                        shiftsPerScheduleRequests={shiftPerScheduleRequests.filter(r => r.owner === employeeConfigDialog.selectedEmployeeId)}
                         onOpenChanged={(newValue) => setEmployeeConfigDialog(prevState => ({
                             ...prevState,
                             isOpen: newValue
                         }))}
-                        shiftPatternRequests={shiftPatternRequests.filter(r => r.owner!.id === employeeConfigDialog.selectedEmployee?.id)}
+                        shiftPatternRequests={shiftPatternRequests.filter(r => r.owner === employeeConfigDialog.selectedEmployeeId)}
                         onShiftPatternRequestsAction={handleShiftPatternAction}
-                        tripleShiftConstraintRequest={tripleShiftConstraintRequests.filter(r => r.owner.id === employeeConfigDialog.selectedEmployee?.id)}
+                        tripleShiftConstraintRequest={tripleShiftConstraintRequests.filter(r => r.owner === employeeConfigDialog.selectedEmployeeId)}
                         onTripleShiftConstraintAction={handleTripleShiftConstraintAction}
-                        teamAssignmentRequests={teamAssignmentRequests.filter(r => r.owner.id === employeeConfigDialog.selectedEmployee?.id)}
+                        teamAssignmentRequests={teamAssignmentRequests.filter(r => r.owner === employeeConfigDialog.selectedEmployeeId)}
                         onTeamAssignmentRequestAction={handleTeamAssignmentAction}
                         onAssignmentAction={handleAssignmentAction}
-                        weekendRequests={weekendRequests.filter(r => r.owner.id === employeeConfigDialog.selectedEmployee?.id)}
+                        weekendRequests={weekendRequests.filter(r => r.owner === employeeConfigDialog.selectedEmployeeId)}
                         onWeekendRequestRequestAction={handleWeekendRequestAction}
                         evenDistributionRequests={evenDistributionRequests}
                         onEvenDistributionRequestsAction={handleEvenDistributionRequestAction}
@@ -476,7 +478,8 @@ export default function ScheduleView() {
                     >
                         <ScheduleGridContainer
                             request={request}
-                            shiftRequests={shiftRequests}
+                            employees={employees}
+                            shiftRequests={requestedShiftConstraints}
                             shiftPatterns={shiftPatternRequests}
                             shiftPerScheduleRequests={shiftPerScheduleRequests}
                             teamAssignments={teamAssignmentRequests}
@@ -508,20 +511,20 @@ function updateList<T extends { id: string }>(action: CrudAction<T>, requests: T
     }
 }
 
-function updateAssignmentsWithIndexIntegrity(updated: AssignedEmployeeDTO, previousState: AssignedEmployeeDTO[]) {
-    const original = previousState.find(a => a.employee.id === updated.employee.id)
+function updateAssignmentsWithIndexIntegrity(updated: EmployeeAssignmentDTO, previousState: EmployeeAssignmentDTO[]) {
+    const original = previousState.find(a => a.employeeId === updated.employeeId)
     if (!original) {
         return [...previousState, updated]
             .sort((a, b) => a.index - b.index)
             .map((value, index) => ({...value, index}))
     }
     const neighbor = previousState.find(a => {
-        return a.employee.id != updated.employee.id && a.index === updated.index
+        return a.employeeId != updated.employeeId && a.index === updated.index
     })
     if (!neighbor) {
         return previousState
             .map(a => {
-                if (a.employee.id === updated.employee.id) {
+                if (a.employeeId === updated.employeeId) {
                     return updated
                 }
                 return a
@@ -530,10 +533,10 @@ function updateAssignmentsWithIndexIntegrity(updated: AssignedEmployeeDTO, previ
     }
     const offset = updated.index - original.index
     return previousState.map(a => {
-        if (a.employee.id === updated.employee.id) {
+        if (a.employeeId === updated.employeeId) {
             return updated
         }
-        if (a.employee.id === neighbor.employee.id) {
+        if (a.employeeId === neighbor.employeeId) {
             return {...neighbor, index: neighbor.index - offset}
         }
         return a

@@ -20,7 +20,7 @@ public class ConstraintMapper {
         var request = record.getRequest();
         switch (record.getType()) {
             case REQUESTED_SHIFT_CONSTRAINT -> {
-                return EmployeeShiftConstraintDTO.from(record.getId(), (RequestedShiftConstraint) record.getRequest());
+                return RequestedShiftConstraintDTO.from(record.getId(), (RequestedShiftConstraint) record.getRequest());
             }
             case SHIFTS_PER_SCHEDULE -> {
                 return ShiftsPerScheduleConstraintDTO.from(record.getId(), (ShiftsPerScheduleConstraint) record.getRequest());
@@ -69,7 +69,7 @@ public class ConstraintMapper {
     public static SolverConstraint fromDto(ConstraintDTO dto) {
         switch (dto.getType()) {
             case REQUESTED_SHIFT_CONSTRAINT -> {
-                return RequestedShiftConstraint.from((EmployeeShiftConstraintDTO) dto);
+                return RequestedShiftConstraint.from((RequestedShiftConstraintDTO) dto);
             }
             case SHIFTS_PER_SCHEDULE -> {
                 return ShiftsPerScheduleConstraint.from((ShiftsPerScheduleConstraintDTO) dto);

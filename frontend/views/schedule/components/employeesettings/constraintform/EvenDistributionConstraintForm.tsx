@@ -7,20 +7,20 @@ import {useContext} from "react";
 import {Icon} from "@hilla/react-components/Icon";
 import {Button} from "@hilla/react-components/Button";
 import {Checkbox} from "@hilla/react-components/Checkbox";
-import EvenShiftDistributionRequestDTO
-    from "Frontend/generated/com/cocroachden/planner/constraint/api/EvenShiftDistributionRequestDTO";
 import "@vaadin/icons";
+import EvenShiftDistributionConstraintDTO
+    from "Frontend/generated/com/cocroachden/planner/constraint/EvenShiftDistributionConstraintDTO";
 
 type Props = {
-    request: EvenShiftDistributionRequestDTO,
-    onAction: (action: CrudAction<EvenShiftDistributionRequestDTO>) => void
+    request: EvenShiftDistributionConstraintDTO,
+    onAction: (action: CrudAction<EvenShiftDistributionConstraintDTO>) => void
 }
 
 export function EvenDistributionConstraintForm(props: Props) {
 
     const {mode} = useContext(ScheduleModeCtx);
 
-    function handleUpdate(update: Partial<EvenShiftDistributionRequestDTO>) {
+    function handleUpdate(update: Partial<EvenShiftDistributionConstraintDTO>) {
         props.onAction({
             type: CRUDActions.UPDATE,
             payload: {

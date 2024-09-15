@@ -5,7 +5,7 @@ import dev.hilla.Nonnull;
 
 import java.io.Serializable;
 
-public record EmployeeValidationIssue(
+public record EmployeeValidationIssueDTO(
     @Nonnull String employeeId,
     @Nonnull IssueSeverity severity,
     @Nonnull String issue

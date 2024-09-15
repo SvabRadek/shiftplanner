@@ -1,10 +1,12 @@
-import { utils, writeFile } from "xlsx"
+import {utils, writeFile} from "xlsx"
 import WorkShifts from "Frontend/generated/com/cocroachden/planner/solver/api/WorkShifts";
 import SolverSolutionDTO from "Frontend/generated/com/cocroachden/planner/solver/api/SolverSolutionDTO";
-import { dateToString, stringToDate } from "Frontend/util/utils";
-import AssignedEmployeeDTO from "Frontend/generated/com/cocroachden/planner/solver/api/AssignedEmployeeDTO";
+import {dateToString, stringToDate} from "Frontend/util/utils";
+import EmployeeAssignmentDTO
+  from "Frontend/generated/com/cocroachden/planner/solverconfiguration/EmployeeAssignmentDTO";
+import EmployeeDTO from "Frontend/generated/com/cocroachden/planner/employee/EmployeeDTO";
 
-export function exportToExcel(filename: string, assignments: AssignedEmployeeDTO[], result: SolverSolutionDTO) {
+export function exportToExcel(filename: string, assignments: EmployeeAssignmentDTO[], employees: EmployeeDTO[], result: SolverSolutionDTO) {
   const rows: string[][] = []
   const employeeIds = Object.keys(result.assignments)
   const dates = Object.keys(result.assignments[employeeIds[0]])
@@ -19,7 +21,7 @@ export function exportToExcel(filename: string, assignments: AssignedEmployeeDTO
   rows.push(firstRow())
   employeeIds
     .map(id => {
-      const assignment = assignments.find(a => a.employee.id.toString() === id)
+      const assignment = assignments.find(a => a.employeeId.toString() === id)
       if (!assignment) {
         throw new Error("EmployeeId in received results was not found in original assignments. This should never happen!")
       }
@@ -27,8 +29,9 @@ export function exportToExcel(filename: string, assignments: AssignedEmployeeDTO
     }).sort((a, b) => a.index - b.index)
     .forEach(assignment => {
       const row: string[] = [];
-      const employeesAssignments = result.assignments[assignment.employee.id]
-      const employeeName = assignment.employee.lastName + " " + assignment.employee.firstName
+      const employee = employees.find(e => e.id === assignment.employeeId)!
+      const employeesAssignments = result.assignments[assignment.employeeId]
+      const employeeName = employee.lastName + " " + employee.firstName
       row.push(employeeName)
       dates.forEach(date => {
         const assignedShift = employeesAssignments[dateToString(date)]
