@@ -1,9 +1,3 @@
-logging:
-  level:
-    root: INFO
-    org.atmosphere: WARN
-    com.cocroachden.planner: DEBUG
-
 spring:
   datasource:
     url: jdbc:h2:mem:test-db
@@ -12,3 +6,9 @@ spring:
     database-platform: org.hibernate.dialect.H2Dialect
     hibernate:
       ddl-auto: create
+
+logging:
+  level:
+    root: INFO
+    org.atmosphere: WARN
+    com.cocroachden.planner: DEBUG

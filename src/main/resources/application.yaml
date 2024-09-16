@@ -1,11 +1,7 @@
-server:
-  port: 5000
+application:
+  solver:
+    default-solver-time-limit-in-sec: 60
 
-logging:
-  level:
-    root: INFO
-    org.atmosphere: WARN
-    com.cocroachden.planner: DEBUG
 spring:
   mustache:
     check-template-location: false
@@ -22,6 +18,16 @@ spring:
     database-platform: org.hibernate.dialect.H2Dialect
     hibernate:
       ddl-auto: update
+
+logging:
+  level:
+    root: INFO
+    org.atmosphere: WARN
+    com.cocroachden.planner: DEBUG
+
+server:
+  port: 5000
+
 management:
   endpoint:
     health:

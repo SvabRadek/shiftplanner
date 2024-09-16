@@ -7,7 +7,6 @@ import com.cocroachden.planner.solver.command.solveconfiguration.SolveConfigurat
 import com.cocroachden.planner.solver.service.testimplementation.TestSolver;
 import com.cocroachden.planner.solverconfiguration.SolverConfigurationId;
 import com.cocroachden.planner.solverconfiguration.command.saveconfiguration.SaveSolverConfigurationCommand;
-import com.cocroachden.planner.solverconfiguration.fixtures.SolverConfigurationFixture;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
@@ -23,7 +22,7 @@ class SolverServiceTest extends AbstractMessagingTest {
     @Test
     public void itCanStartSolvingProblems() {
         var subscriptionId = SolverSubscriptionId.random();
-        SolverConfigurationId configurationId = SolverConfigurationId.from("whatever");
+        SolverConfigurationId configurationId = SolverConfigurationId.from("irrelevant");
         var configCommand = new SaveSolverConfigurationCommand(
                 configurationId,
                 "irrelevant",

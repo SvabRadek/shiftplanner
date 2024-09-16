@@ -129,7 +129,6 @@ public class SolverConfigurationService {
         });
         constraints.forEach(constraintDto -> {
             var constraint = ConstraintMapper.fromDto(constraintDto);
-            log.debug("Setting id to {}", constraintDto.getId());
             var constraintRecord = new ConstraintRecord()
                     .setId(constraintDto.getId())
                     .setRequest(constraint)
@@ -140,7 +139,6 @@ public class SolverConfigurationService {
                         .orElseThrow(() -> new NoSuchElementException("Employee [%s] was not found!".formatted(employeeId)));
                 constraintRecord.setOwner(employeeRecord);
             }
-            log.debug("Saving constraint -> Type: {}, Id: {}", constraintRecord.getType(), constraintRecord.getId());
             constraintRepository.save(constraintRecord);
         });
         return configurationRepository.save(configRecord);

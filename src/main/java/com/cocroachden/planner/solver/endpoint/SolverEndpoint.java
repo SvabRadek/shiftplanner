@@ -1,59 +1,66 @@
 package com.cocroachden.planner.solver.endpoint;
 
-import com.cocroachden.planner.constraint.repository.ConstraintRecord;
-import com.cocroachden.planner.solver.SolutionStatus;
-import com.cocroachden.planner.solver.SolverProblemConfiguration;
 import com.cocroachden.planner.solver.SolverSolutionDTO;
-import com.cocroachden.planner.solver.service.Solver;
-import com.cocroachden.planner.solver.service.SolverOptions;
-import com.cocroachden.planner.solver.service.ScheduleSolver;
-import com.cocroachden.planner.solver.service.schedule.ScheduleEmployee;
-import com.cocroachden.planner.solverconfiguration.repository.SolverConfigurationRepository;
+import com.cocroachden.planner.solver.SolverSubscriptionId;
+import com.cocroachden.planner.solver.command.solveconfiguration.ConfigurationHasBeenSolved;
+import com.cocroachden.planner.solver.command.solveconfiguration.SolveConfigurationCommand;
+import com.cocroachden.planner.solver.command.stopsolver.StopSolverCommand;
+import com.cocroachden.planner.solverconfiguration.SolverConfigurationId;
 import com.vaadin.flow.server.auth.AnonymousAllowed;
 import dev.hilla.BrowserCallable;
 import dev.hilla.EndpointSubscription;
 import dev.hilla.Nonnull;
+import jakarta.annotation.PostConstruct;
 import jakarta.transaction.Transactional;
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.context.event.EventListener;
 import reactor.core.publisher.Flux;
+import reactor.core.publisher.FluxSink;
 
 @BrowserCallable
 @AnonymousAllowed
 @Slf4j
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class SolverEndpoint {
-    private final Solver scheduleSolver;
-    private final SolverConfigurationRepository solverConfigurationRepository;
+
+    @Value("${application.solver.default-solver-time-limit-in-sec}")
+    private final Integer solverDefaultTimeLimitInSec = 60;
+
+    private final ApplicationEventPublisher publisher;
+    private Flux<SolverSolutionDTO> solutionFlux;
+    private FluxSink<SolverSolutionDTO> sink;
+
+    @PostConstruct
+    public void init() {
+        this.solutionFlux = Flux.create(fluxSink -> this.sink = fluxSink);
+    }
 
     @Transactional
-    public EndpointSubscription<@Nonnull SolverSolutionDTO> solve(String configurationId) {
-        log.debug("Solving configuration: {}", configurationId);
-        var solverConfigRecord = solverConfigurationRepository.getById(configurationId);
-        var solverConfig = new SolverProblemConfiguration(
-                solverConfigRecord.getStartDate(),
-                solverConfigRecord.getEndDate(),
-                solverConfigRecord.getEmployeeAssignments().stream()
-                        .map(ScheduleEmployee::from)
-                        .toList(),
-                solverConfigRecord.getConstraintRecords().stream()
-                        .map(ConstraintRecord::getRequest)
-                        .toList()
+    public EndpointSubscription<@Nonnull SolverSolutionDTO> solveProblem(String configurationId) {
+        SolverSubscriptionId subscriptionId = SolverSubscriptionId.random();
+        var command = new SolveConfigurationCommand(
+                new SolverConfigurationId(configurationId),
+                subscriptionId,
+                solverDefaultTimeLimitInSec
         );
-        var flux = Flux
-                .<SolverSolutionDTO>create(fluxSink -> {
-                    scheduleSolver.solve(solverConfig, fluxSink::next, SolverOptions.builder().build());
-                }).takeWhile(solution -> solution.getSolutionStatus().equals(SolutionStatus.OK));
+        publisher.publishEvent(command);
         return EndpointSubscription.of(
-                flux,
-                () -> {
-                    scheduleSolver.stop();
-                    log.info("Subscription disconnected!");
-                }
+                solutionFlux,
+                () -> publisher.publishEvent(new StopSolverCommand(subscriptionId))
         );
     }
 
     public void stop() {
-        this.scheduleSolver.stop();
+        this.publisher.publishEvent(
+                new StopSolverCommand(new SolverSubscriptionId("to be implemented"))
+        );
+    }
+
+    @EventListener
+    public void on(ConfigurationHasBeenSolved event) {
+        sink.next(event.solution());
     }
 }

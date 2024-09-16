@@ -3,6 +3,8 @@ package com.cocroachden.planner.solver.service;
 import com.cocroachden.planner.solver.SolverProblemConfiguration;
 import com.cocroachden.planner.solver.command.solveconfiguration.ConfigurationHasBeenSolved;
 import com.cocroachden.planner.solver.command.solveconfiguration.SolveConfigurationCommand;
+import com.cocroachden.planner.solver.command.stopsolver.SolverHasBeenStopped;
+import com.cocroachden.planner.solver.command.stopsolver.StopSolverCommand;
 import com.cocroachden.planner.solverconfiguration.repository.SolverConfigurationRepository;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
@@ -25,15 +27,18 @@ public class SolverService {
         solver.solve(
                 SolverProblemConfiguration.from(configuration),
                 solution -> publisher.publishEvent(
-                        new ConfigurationHasBeenSolved(
-                                command.subscriptionId(),
-                                solution
-                        )
+                        new ConfigurationHasBeenSolved(command.subscriptionId(), solution)
                 ),
                 SolverOptions.builder()
                         .solvingLimitInSec(command.limitInSec())
                         .build()
         );
+    }
+
+    @EventListener
+    public SolverHasBeenStopped handle(StopSolverCommand command) {
+        solver.stop();
+        return new SolverHasBeenStopped(command.subscriptionId());
     }
 
 }
