@@ -19,9 +19,7 @@ import {ScheduleSettingsDialog} from "Frontend/views/schedule/components/schedul
 import {exportToExcel} from "Frontend/util/excel";
 import {HeaderStrip} from "Frontend/views/schedule/HeaderStrip";
 import {ValidationContext} from "Frontend/views/schedule/components/validation/ScheduleValidationCtxProvider";
-import SolverSolutionDTO from "Frontend/generated/com/cocroachden/planner/solver/api/SolverSolutionDTO";
-import WorkShifts from "Frontend/generated/com/cocroachden/planner/solver/api/WorkShifts";
-import SolutionStatus from "Frontend/generated/com/cocroachden/planner/solver/api/SolutionStatus";
+import WorkShifts from "Frontend/generated/com/cocroachden/planner/solver/WorkShifts";
 import "@vaadin/icons";
 import SolverConfigurationDTO
     from "Frontend/generated/com/cocroachden/planner/solverconfiguration/SolverConfigurationDTO";
@@ -47,6 +45,8 @@ import RequestedShiftConstraintDTO
     from "Frontend/generated/com/cocroachden/planner/constraint/RequestedShiftConstraintDTO";
 import EmployeeAssignmentDTO
     from "Frontend/generated/com/cocroachden/planner/solverconfiguration/EmployeeAssignmentDTO";
+import SolutionStatus from "Frontend/generated/com/cocroachden/planner/solver/SolutionStatus";
+import SolverSolutionDTO from "Frontend/generated/com/cocroachden/planner/solver/SolverSolutionDTO";
 
 type EmployeeConfigDialogParams = {
     isOpen: boolean,
@@ -266,7 +266,7 @@ export default function ScheduleView() {
     function handleStartCalculation() {
         handleStopCalculation()
         setGridDisplayMode(GridDisplayMode.RESULT)
-        setResultSubscription(SolverEndpoint.solve(request?.id)
+        setResultSubscription(SolverEndpoint.solveProblem(request?.id)
             .onNext(value => {
                 if (value.solutionStatus !== SolutionStatus.OK) {
                     Notification.show("Neřešitelné zadání!", {

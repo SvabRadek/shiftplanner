@@ -1,47 +1,45 @@
 package com.cocroachden.planner.solver.endpoint;
 
+import com.cocroachden.planner.security.Role;
+import com.cocroachden.planner.solver.SolutionStatus;
 import com.cocroachden.planner.solver.SolverSolutionDTO;
 import com.cocroachden.planner.solver.SolverSubscriptionId;
-import com.cocroachden.planner.solver.command.solveconfiguration.ConfigurationHasBeenSolved;
-import com.cocroachden.planner.solver.command.solveconfiguration.SolveConfigurationCommand;
+import com.cocroachden.planner.solver.command.solveconfiguration.SolutionHasBeenFound;
+import com.cocroachden.planner.solver.command.solveconfiguration.StartSolverCommand;
 import com.cocroachden.planner.solver.command.stopsolver.StopSolverCommand;
 import com.cocroachden.planner.solverconfiguration.SolverConfigurationId;
-import com.vaadin.flow.server.auth.AnonymousAllowed;
 import dev.hilla.BrowserCallable;
 import dev.hilla.EndpointSubscription;
 import dev.hilla.Nonnull;
-import jakarta.annotation.PostConstruct;
-import jakarta.transaction.Transactional;
-import lombok.RequiredArgsConstructor;
+import jakarta.annotation.security.RolesAllowed;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.event.EventListener;
 import reactor.core.publisher.Flux;
-import reactor.core.publisher.FluxSink;
+import reactor.core.publisher.Sinks;
 
 @BrowserCallable
-@AnonymousAllowed
 @Slf4j
-@RequiredArgsConstructor
+@RolesAllowed(Role.ROLE_USER)
 public class SolverEndpoint {
 
     @Value("${application.solver.default-solver-time-limit-in-sec}")
     private final Integer solverDefaultTimeLimitInSec = 60;
 
     private final ApplicationEventPublisher publisher;
-    private Flux<SolverSolutionDTO> solutionFlux;
-    private FluxSink<SolverSolutionDTO> sink;
+    private final Flux<SolverSolutionDTO> solutionFlux;
+    private final Sinks.Many<SolverSolutionDTO> sink;
 
-    @PostConstruct
-    public void init() {
-        this.solutionFlux = Flux.create(fluxSink -> this.sink = fluxSink);
+    public SolverEndpoint(ApplicationEventPublisher publisher) {
+        this.publisher = publisher;
+        this.sink = Sinks.many().unicast().onBackpressureBuffer();
+        this.solutionFlux = sink.asFlux().takeWhile(solution -> solution.getSolutionStatus().equals(SolutionStatus.OK));
     }
 
-    @Transactional
     public EndpointSubscription<@Nonnull SolverSolutionDTO> solveProblem(String configurationId) {
         SolverSubscriptionId subscriptionId = SolverSubscriptionId.random();
-        var command = new SolveConfigurationCommand(
+        var command = new StartSolverCommand(
                 new SolverConfigurationId(configurationId),
                 subscriptionId,
                 solverDefaultTimeLimitInSec
@@ -60,7 +58,7 @@ public class SolverEndpoint {
     }
 
     @EventListener
-    public void on(ConfigurationHasBeenSolved event) {
-        sink.next(event.solution());
+    protected void on(SolutionHasBeenFound event) {
+        sink.tryEmitNext(event.solution());
     }
 }

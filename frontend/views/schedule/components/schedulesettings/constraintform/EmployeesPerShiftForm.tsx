@@ -8,10 +8,10 @@ import { CrudAction, CRUDActions } from "Frontend/util/utils";
 import { Button } from "@hilla/react-components/Button";
 import { Icon } from "@hilla/react-components/Icon";
 import { CardFooter } from "Frontend/components/CardFooter";
-import WorkShifts from "Frontend/generated/com/cocroachden/planner/solver/api/WorkShifts";
 import "@vaadin/icons";
 import EmployeesPerShiftConstraintDTO
   from "Frontend/generated/com/cocroachden/planner/constraint/EmployeesPerShiftConstraintDTO";
+import WorkShifts from "Frontend/generated/com/cocroachden/planner/solver/WorkShifts";
 
 type Props = {
   request: EmployeesPerShiftConstraintDTO

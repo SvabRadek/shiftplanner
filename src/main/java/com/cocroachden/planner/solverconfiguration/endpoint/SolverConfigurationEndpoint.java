@@ -1,5 +1,6 @@
 package com.cocroachden.planner.solverconfiguration.endpoint;
 
+import com.cocroachden.planner.security.Role;
 import com.cocroachden.planner.solverconfiguration.SolverConfigurationDTO;
 import com.cocroachden.planner.solverconfiguration.SolverConfigurationId;
 import com.cocroachden.planner.solverconfiguration.SolverConfigurationMetadata;
@@ -9,6 +10,7 @@ import com.cocroachden.planner.solverconfiguration.query.SolverConfigurationQuer
 import com.vaadin.flow.server.auth.AnonymousAllowed;
 import dev.hilla.BrowserCallable;
 import dev.hilla.Nonnull;
+import jakarta.annotation.security.RolesAllowed;
 import lombok.AllArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.transaction.annotation.Transactional;
@@ -17,8 +19,8 @@ import java.util.List;
 import java.util.UUID;
 
 @BrowserCallable
-@AnonymousAllowed
 @AllArgsConstructor
+@RolesAllowed(Role.ROLE_USER)
 public class SolverConfigurationEndpoint {
     private final ApplicationEventPublisher publisher;
     private final SolverConfigurationQuery configurationQuery;

@@ -12,7 +12,6 @@ import { ResultSubHeaderStrip } from "Frontend/views/schedule/ResultSubHeaderStr
 import { ValidationIssuesDialog } from "Frontend/views/schedule/components/validation/ValidationIssuesDialog";
 import { Tooltip } from "@hilla/react-components/Tooltip";
 import { ValidationContext } from "Frontend/views/schedule/components/validation/ScheduleValidationCtxProvider";
-import SolverSolutionDTO from "Frontend/generated/com/cocroachden/planner/solver/api/SolverSolutionDTO";
 import { SolverConfigurationEndpoint } from "Frontend/generated/endpoints";
 import { GridDisplayMode } from "Frontend/views/schedule/components/schedulegrid/ScheduleGridContainer";
 import "@vaadin/icons";
@@ -20,6 +19,7 @@ import SolverConfigurationDTO
   from "Frontend/generated/com/cocroachden/planner/solverconfiguration/SolverConfigurationDTO";
 import SolverConfigurationMetadata
   from "Frontend/generated/com/cocroachden/planner/solverconfiguration/SolverConfigurationMetadata";
+import SolverSolutionDTO from "Frontend/generated/com/cocroachden/planner/solver/SolverSolutionDTO";
 
 type Props = {
   onStopCalculation: () => void

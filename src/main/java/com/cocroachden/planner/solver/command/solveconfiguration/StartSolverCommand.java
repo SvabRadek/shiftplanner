@@ -4,7 +4,7 @@ import com.cocroachden.planner.common.messaging.Command;
 import com.cocroachden.planner.solver.SolverSubscriptionId;
 import com.cocroachden.planner.solverconfiguration.SolverConfigurationId;
 
-public record SolveConfigurationCommand(
+public record StartSolverCommand(
         SolverConfigurationId configurationId,
         SolverSubscriptionId subscriptionId,
         Integer limitInSec

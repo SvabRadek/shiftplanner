@@ -6,6 +6,7 @@ import com.cocroachden.planner.employee.EmployeeId;
 import com.cocroachden.planner.solver.WorkShifts;
 import com.cocroachden.planner.solverconfiguration.EmployeeAssignmentDTO;
 import com.cocroachden.planner.solverconfiguration.SolverConfigurationDTO;
+import com.cocroachden.planner.solverconfiguration.SolverConfigurationId;
 import com.cocroachden.planner.solverconfiguration.validations.employee.ConstraintEmployeeValidator;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -28,7 +29,7 @@ class ConstraintEmployeeValidatorTest {
     );
     var issues = ConstraintEmployeeValidator.validate(
         new SolverConfigurationDTO(
-            UUID.randomUUID().toString(),
+                SolverConfigurationId.random(),
             "",
             Instant.now(),
             Instant.now(),
@@ -39,7 +40,7 @@ class ConstraintEmployeeValidatorTest {
         )
     );
     Assertions.assertThat(issues.size()).isEqualTo(1);
-    Assertions.assertThat(issues.get(0).issue())
+    Assertions.assertThat(issues.get(0).getIssue())
         .isEqualTo(
             "Pracovník nemá dostatek dní, kdy by mohl pracovat, aby splnil požadavek na minimální počet přiřazených směn.");
   }
@@ -67,7 +68,7 @@ class ConstraintEmployeeValidatorTest {
     );
     var issues = ConstraintEmployeeValidator.validate(
         new SolverConfigurationDTO(
-            UUID.randomUUID().toString(),
+            SolverConfigurationId.random(),
             "",
             Instant.now(),
             Instant.now(),
@@ -79,7 +80,7 @@ class ConstraintEmployeeValidatorTest {
     );
     Assertions.assertThat(issues.size())
         .isEqualTo(1);
-    Assertions.assertThat(issues.get(0).issue())
+    Assertions.assertThat(issues.get(0).getIssue())
         .isEqualTo("Pracovník vyžaduje více směn, než je nastavený maximální limit pro počet směn na rozvrh.");
   }
 

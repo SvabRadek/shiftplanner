@@ -1,10 +1,10 @@
 import {utils, writeFile} from "xlsx"
-import WorkShifts from "Frontend/generated/com/cocroachden/planner/solver/api/WorkShifts";
-import SolverSolutionDTO from "Frontend/generated/com/cocroachden/planner/solver/api/SolverSolutionDTO";
+import WorkShifts from "Frontend/generated/com/cocroachden/planner/solver/WorkShifts";
 import {dateToString, stringToDate} from "Frontend/util/utils";
 import EmployeeAssignmentDTO
   from "Frontend/generated/com/cocroachden/planner/solverconfiguration/EmployeeAssignmentDTO";
 import EmployeeDTO from "Frontend/generated/com/cocroachden/planner/employee/EmployeeDTO";
+import SolverSolutionDTO from "Frontend/generated/com/cocroachden/planner/solver/SolverSolutionDTO";
 
 export function exportToExcel(filename: string, assignments: EmployeeAssignmentDTO[], employees: EmployeeDTO[], result: SolverSolutionDTO) {
   const rows: string[][] = []

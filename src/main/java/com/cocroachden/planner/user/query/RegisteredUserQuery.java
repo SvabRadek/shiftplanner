@@ -2,9 +2,10 @@ package com.cocroachden.planner.user.query;
 
 import com.cocroachden.planner.user.RegisteredUserDTO;
 import com.cocroachden.planner.user.RegisteredUserId;
+import com.cocroachden.planner.security.Role;
 import com.cocroachden.planner.user.repository.RegisteredUserRepository;
 import lombok.AllArgsConstructor;
-import org.springframework.security.core.GrantedAuthority;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -13,6 +14,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.Optional;
 
+@Slf4j
 @Service
 @AllArgsConstructor
 public class RegisteredUserQuery implements UserDetailsService {
@@ -41,7 +43,7 @@ public class RegisteredUserQuery implements UserDetailsService {
                         true,
                         true,
                         true,
-                        user.getAuthorities().stream().map(a -> (GrantedAuthority) () -> a).toList()
+                        user.getAuthorities().stream().map(Role::new).toList()
                 )).orElseThrow(() -> new UsernameNotFoundException("Username %s was not found!".formatted(username)));
     }
 }

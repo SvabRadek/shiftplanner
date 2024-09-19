@@ -13,9 +13,9 @@ public class ServiceConfiguration {
   public Executor taskExecutor() {
     var executor = new ThreadPoolTaskExecutor();
     executor.setCorePoolSize(2);
-    executor.setMaxPoolSize(2);
+    executor.setMaxPoolSize(10);
     executor.setQueueCapacity(100);
-    executor.setThreadNamePrefix("CPSolver-");
+    executor.setThreadNamePrefix("Thread-");
     executor.initialize();
     return executor;
   }

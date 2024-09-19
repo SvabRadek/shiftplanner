@@ -57,4 +57,8 @@ public class SolverConfigurationRecord {
         if (assignment == null) return;
         this.employeeAssignments.add(assignment);
     }
+
+    public SolverConfigurationId getId() {
+        return SolverConfigurationId.from(id);
+    }
 }

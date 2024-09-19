@@ -8,8 +8,8 @@ import java.util.Arrays;
 @AllArgsConstructor
 @Getter
 public enum Authorities {
-    USER("USER"),
-    ADMIN("ADMIN");
+    USER(Role.ROLE_USER),
+    ADMIN(Role.ROLE_ADMIN);
     private final String role;
 
     public static Authorities fromRole(String role) {

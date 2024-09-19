@@ -1,7 +1,7 @@
 import { ContextMenu, ContextMenuItem, ContextMenuItemSelectedEvent } from "@hilla/react-components/ContextMenu";
 import { workShiftBindings } from "Frontend/views/schedule/WorkShiftBindigs";
 import { CSSProperties } from "react";
-import WorkShifts from "Frontend/generated/com/cocroachden/planner/solver/api/WorkShifts";
+import WorkShifts from "Frontend/generated/com/cocroachden/planner/solver/WorkShifts";
 
 export type Cell = {
   shift: WorkShifts

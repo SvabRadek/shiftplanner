@@ -30,7 +30,6 @@ public class SolverConfigurationFixture implements SpecificFixtureGenerator {
         var constraints = new ArrayList<>(
                 fixtureEmployees.stream()
                         .map(EmployeeDTO::getId)
-                        .map(EmployeeId::new)
                         .map(this::generateFixtureConstrainsForEmployee)
                         .flatMap(List::stream)
                         .toList()
@@ -60,7 +59,7 @@ public class SolverConfigurationFixture implements SpecificFixtureGenerator {
     }
 
     private List<ConstraintDTO> generateConstraintsForSchedule() {
-        return List.of(
+        return new ArrayList<>(List.of(
                 new EmployeesPerShiftConstraintDTO(
                         ConstraintId.random().getId(),
                         WorkShifts.NIGHT,
@@ -81,7 +80,7 @@ public class SolverConfigurationFixture implements SpecificFixtureGenerator {
                         1,
                         3
                 )
-        );
+        ));
     }
 
     private List<ConstraintDTO> generateFixtureConstrainsForEmployee(EmployeeId employeeId) {

@@ -16,7 +16,7 @@ import {
 import {
   TripleShiftConstraintForm
 } from "Frontend/views/schedule/components/employeesettings/constraintform/TripleShiftConstraintForm";
-import WorkShifts from "Frontend/generated/com/cocroachden/planner/solver/api/WorkShifts";
+import WorkShifts from "Frontend/generated/com/cocroachden/planner/solver/WorkShifts";
 import { NumberField } from "@hilla/react-components/NumberField";
 import {
   TeamAssignmentConstraintForm

@@ -2,16 +2,18 @@ package com.cocroachden.planner.solverconfiguration.endpoint;
 
 import com.cocroachden.planner.constraint.*;
 import com.cocroachden.planner.constraint.query.ConstraintQuery;
+import com.cocroachden.planner.security.Role;
 import com.vaadin.flow.server.auth.AnonymousAllowed;
 import dev.hilla.BrowserCallable;
 import dev.hilla.Nonnull;
+import jakarta.annotation.security.RolesAllowed;
 import lombok.AllArgsConstructor;
 
 import java.util.List;
 
 @BrowserCallable
-@AnonymousAllowed
 @AllArgsConstructor
+@RolesAllowed(Role.ROLE_USER)
 public class ConstraintEndpoint {
   private final ConstraintQuery constraintQuery;
 

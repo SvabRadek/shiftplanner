@@ -2,6 +2,7 @@ package com.cocroachden.constraint.validations;
 
 import com.cocroachden.planner.constraint.RequestedShiftConstraintDTO;
 import com.cocroachden.planner.constraint.EmployeesPerShiftConstraintDTO;
+import com.cocroachden.planner.solverconfiguration.SolverConfigurationId;
 import com.cocroachden.planner.solverconfiguration.validations.day.ConstraintDayValidator;
 import com.cocroachden.planner.employee.EmployeeId;
 import com.cocroachden.planner.solverconfiguration.EmployeeAssignmentDTO;
@@ -34,7 +35,7 @@ class ConstraintDayValidatorTest {
         var spec3 = this.createSpecificShiftRequest(new EmployeeId(UUID.randomUUID().toString()), LocalDate.of(1, 1, 1), WorkShifts.DAY);
         var issues = ConstraintDayValidator.validate(
                 new SolverConfigurationDTO(
-                        UUID.randomUUID().toString(),
+                        SolverConfigurationId.random(),
                         "",
                         Instant.now(),
                         Instant.now(),
@@ -65,7 +66,7 @@ class ConstraintDayValidatorTest {
         var spec2 = this.createSpecificShiftRequest(EmployeeId.random(), LocalDate.of(1, 1, 1), WorkShifts.OFF);
         var issues = ConstraintDayValidator.validate(
                 new SolverConfigurationDTO(
-                        UUID.randomUUID().toString(),
+                        SolverConfigurationId.random(),
                         "",
                         Instant.now(),
                         Instant.now(),

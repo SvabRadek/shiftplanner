@@ -1,8 +1,9 @@
 package com.cocroachden.planner.solver.service;
 
 import com.cocroachden.planner.solver.SolverProblemConfiguration;
-import com.cocroachden.planner.solver.command.solveconfiguration.ConfigurationHasBeenSolved;
-import com.cocroachden.planner.solver.command.solveconfiguration.SolveConfigurationCommand;
+import com.cocroachden.planner.solver.command.solveconfiguration.SolutionHasBeenFound;
+import com.cocroachden.planner.solver.command.solveconfiguration.SolverHasBeenStarted;
+import com.cocroachden.planner.solver.command.solveconfiguration.StartSolverCommand;
 import com.cocroachden.planner.solver.command.stopsolver.SolverHasBeenStopped;
 import com.cocroachden.planner.solver.command.stopsolver.StopSolverCommand;
 import com.cocroachden.planner.solverconfiguration.repository.SolverConfigurationRepository;
@@ -22,17 +23,18 @@ public class SolverService {
 
     @EventListener
     @Transactional
-    public void handle(SolveConfigurationCommand command) {
+    public SolverHasBeenStarted handle(StartSolverCommand command) {
         var configuration = solverConfigurationRepository.getById(command.configurationId().getId());
         solver.solve(
                 SolverProblemConfiguration.from(configuration),
                 solution -> publisher.publishEvent(
-                        new ConfigurationHasBeenSolved(command.subscriptionId(), solution)
+                        new SolutionHasBeenFound(command.subscriptionId(), solution)
                 ),
                 SolverOptions.builder()
                         .solvingLimitInSec(command.limitInSec())
                         .build()
         );
+        return new SolverHasBeenStarted(command.subscriptionId());
     }
 
     @EventListener

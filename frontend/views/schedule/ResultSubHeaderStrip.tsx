@@ -6,8 +6,8 @@ import { ProgressBar } from "@hilla/react-components/ProgressBar";
 import { VerticalLayout } from "@hilla/react-components/VerticalLayout";
 import { ResultCache } from "Frontend/views/schedule/ScheduleView";
 import { Subscription } from "@hilla/frontend";
-import SolverSolutionDTO from "Frontend/generated/com/cocroachden/planner/solver/api/SolverSolutionDTO";
 import "@vaadin/icons";
+import SolverSolutionDTO from "Frontend/generated/com/cocroachden/planner/solver/SolverSolutionDTO";
 
 type Props = {
   resultSubscription?: Subscription<SolverSolutionDTO>

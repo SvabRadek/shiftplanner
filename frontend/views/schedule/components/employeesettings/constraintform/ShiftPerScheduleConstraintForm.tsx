@@ -6,10 +6,10 @@ import { Card } from "Frontend/components/Card";
 import { ShiftSelect } from "Frontend/components/ShiftSelect";
 import { CrudAction, CRUDActions } from "Frontend/util/utils";
 import { Icon } from "@hilla/react-components/Icon";
-import WorkShifts from "Frontend/generated/com/cocroachden/planner/solver/api/WorkShifts";
 import "@vaadin/icons";
 import ShiftsPerScheduleConstraintDTO
   from "Frontend/generated/com/cocroachden/planner/constraint/ShiftsPerScheduleConstraintDTO";
+import WorkShifts from "Frontend/generated/com/cocroachden/planner/solver/WorkShifts";
 
 type Props = {
   request: ShiftsPerScheduleConstraintDTO

@@ -20,7 +20,7 @@ public record SaveSolverConfigurationCommand(
 
     public static SaveSolverConfigurationCommand from(SolverConfigurationDTO dto) {
         return new SaveSolverConfigurationCommand(
-                new SolverConfigurationId(dto.getId()),
+                dto.getId(),
                 dto.getName(),
                 dto.getStartDate(),
                 dto.getEndDate(),

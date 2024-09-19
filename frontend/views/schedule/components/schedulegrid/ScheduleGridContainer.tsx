@@ -3,8 +3,6 @@ import {CrudAction, dateToString, stringToDate} from "Frontend/util/utils";
 import {Row, ScheduleGrid} from "Frontend/views/schedule/components/schedulegrid/ScheduleGrid";
 import {Cell} from "Frontend/views/schedule/components/schedulegrid/GridCell";
 import {HorizontalLayout} from "@hilla/react-components/HorizontalLayout";
-import SolverSolutionDTO from "Frontend/generated/com/cocroachden/planner/solver/api/SolverSolutionDTO";
-import WorkShifts from "Frontend/generated/com/cocroachden/planner/solver/api/WorkShifts";
 import {VerticalLayout} from "@hilla/react-components/VerticalLayout";
 import SolverConfigurationDTO
     from "Frontend/generated/com/cocroachden/planner/solverconfiguration/SolverConfigurationDTO";
@@ -19,6 +17,8 @@ import EmployeeAssignmentDTO
     from "Frontend/generated/com/cocroachden/planner/solverconfiguration/EmployeeAssignmentDTO";
 import ConstraintType from "Frontend/generated/com/cocroachden/planner/constraint/ConstraintType";
 import EmployeeDTO from "Frontend/generated/com/cocroachden/planner/employee/EmployeeDTO";
+import WorkShifts from "Frontend/generated/com/cocroachden/planner/solver/WorkShifts";
+import SolverSolutionDTO from "Frontend/generated/com/cocroachden/planner/solver/SolverSolutionDTO";
 
 export enum GridDisplayMode {
     RESULT,

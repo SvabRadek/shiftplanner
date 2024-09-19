@@ -1,5 +1,5 @@
 import {dateToString, generateUUID} from "Frontend/util/utils";
-import WorkShifts from "Frontend/generated/com/cocroachden/planner/solver/api/WorkShifts";
+import WorkShifts from "Frontend/generated/com/cocroachden/planner/solver/WorkShifts";
 import ConstraintType from "Frontend/generated/com/cocroachden/planner/constraint/ConstraintType";
 import ShiftPatternConstraintDTO from "Frontend/generated/com/cocroachden/planner/constraint/ShiftPatternConstraintDTO";
 import RequestedShiftConstraintDTO

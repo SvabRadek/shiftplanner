@@ -1,11 +1,9 @@
 package com.cocroachden.planner.solver.command.solveconfiguration;
 
 import com.cocroachden.planner.common.messaging.Event;
-import com.cocroachden.planner.solver.SolverSolutionDTO;
 import com.cocroachden.planner.solver.SolverSubscriptionId;
 
-public record ConfigurationHasBeenSolved(
-        SolverSubscriptionId subscriptionId,
-        SolverSolutionDTO solution
+public record SolverHasBeenStarted(
+        SolverSubscriptionId subscriptionId
 ) implements Event {
 }

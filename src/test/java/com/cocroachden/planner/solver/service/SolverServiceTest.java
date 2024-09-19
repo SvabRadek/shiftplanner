@@ -2,8 +2,8 @@ package com.cocroachden.planner.solver.service;
 
 import com.cocroachden.AbstractMessagingTest;
 import com.cocroachden.planner.solver.SolverSubscriptionId;
-import com.cocroachden.planner.solver.command.solveconfiguration.ConfigurationHasBeenSolved;
-import com.cocroachden.planner.solver.command.solveconfiguration.SolveConfigurationCommand;
+import com.cocroachden.planner.solver.command.solveconfiguration.SolutionHasBeenFound;
+import com.cocroachden.planner.solver.command.solveconfiguration.StartSolverCommand;
 import com.cocroachden.planner.solver.service.testimplementation.TestSolver;
 import com.cocroachden.planner.solverconfiguration.SolverConfigurationId;
 import com.cocroachden.planner.solverconfiguration.command.saveconfiguration.SaveSolverConfigurationCommand;
@@ -32,13 +32,13 @@ class SolverServiceTest extends AbstractMessagingTest {
                 List.of()
         );
         this.givenCommandHasBeenSent(configCommand);
-        var command = new SolveConfigurationCommand(
+        var command = new StartSolverCommand(
                 configurationId,
                 subscriptionId,
                 10
         );
         this.whenCommandHasBeenSent(command);
-        this.thenExactlyOneEventHasBeenDispatched(ConfigurationHasBeenSolved.class);
+        this.thenExactlyOneEventHasBeenDispatched(SolutionHasBeenFound.class);
     }
 
     @TestConfiguration

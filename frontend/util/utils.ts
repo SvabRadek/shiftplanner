@@ -1,4 +1,4 @@
-import WorkShifts from "Frontend/generated/com/cocroachden/planner/solver/api/WorkShifts";
+import WorkShifts from "Frontend/generated/com/cocroachden/planner/solver/WorkShifts";
 import RequestedShiftConstraintDTO
   from "Frontend/generated/com/cocroachden/planner/constraint/RequestedShiftConstraintDTO";
 

@@ -13,13 +13,14 @@ spring:
   jpa:
     database-platform: org.hibernate.dialect.H2Dialect
     hibernate:
-      ddl-auto: update
+      ddl-auto: create
 
 logging:
   level:
     root: INFO
     org.atmosphere: WARN
     com.cocroachden.planner: DEBUG
+    org.springframework.security: DEBUG
 
 vaadin:
   launch-browser: false

@@ -5,7 +5,7 @@ import com.cocroachden.planner.constraint.mapping.ConstraintMapper;
 import com.cocroachden.planner.constraint.repository.ConstraintRecord;
 import com.cocroachden.planner.constraint.repository.ConstraintRepository;
 import com.cocroachden.planner.employee.EmployeeId;
-import com.cocroachden.planner.employee.repository.EmployeeRepository;
+import com.cocroachden.planner.employee.repository.EmployeeRecord;
 import com.cocroachden.planner.solver.constraints.specific.EmployeeConstraint;
 import com.cocroachden.planner.solverconfiguration.EmployeeAssignmentDTO;
 import com.cocroachden.planner.solverconfiguration.SolverConfigurationId;
@@ -19,6 +19,7 @@ import com.cocroachden.planner.solverconfiguration.repository.EmployeeAssignment
 import com.cocroachden.planner.solverconfiguration.repository.EmployeeAssignmentRepository;
 import com.cocroachden.planner.solverconfiguration.repository.SolverConfigurationRecord;
 import com.cocroachden.planner.solverconfiguration.repository.SolverConfigurationRepository;
+import jakarta.persistence.EntityManager;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -26,8 +27,8 @@ import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.util.HashMap;
 import java.util.List;
-import java.util.NoSuchElementException;
 
 @Service
 @AllArgsConstructor
@@ -36,8 +37,8 @@ import java.util.NoSuchElementException;
 public class SolverConfigurationService {
     private final EmployeeAssignmentRepository assignmentRepository;
     private final SolverConfigurationRepository configurationRepository;
-    private final EmployeeRepository employeeRepository;
     private final ConstraintRepository constraintRepository;
+    private final EntityManager entityManager;
 
     @EventListener
     public SolverConfigurationHasBeenSaved handle(SaveSolverConfigurationCommand command) {
@@ -46,7 +47,7 @@ public class SolverConfigurationService {
         if (configurationRepository.existsById(id.getId())) {
             throw new IllegalArgumentException("Solver configuration with employeeId [" + id + "] already exists!");
         }
-        var savedConfig = this.saveConfiguration(
+        var configurationId = this.saveConfiguration(
                 command.id(),
                 command.name(),
                 command.startDate(),
@@ -54,7 +55,7 @@ public class SolverConfigurationService {
                 command.assignedEmployees(),
                 command.constraints()
         );
-        return new SolverConfigurationHasBeenSaved(savedConfig);
+        return new SolverConfigurationHasBeenSaved(configurationId);
     }
 
     @EventListener
@@ -63,7 +64,7 @@ public class SolverConfigurationService {
         if (!configurationRepository.existsById(command.id().getId())) {
             throw new IllegalArgumentException("Solver configuration with employeeId [" + command.id() + "] does not exists!");
         }
-        var savedConfig = this.saveConfiguration(
+        var configurationId = this.saveConfiguration(
                 command.id(),
                 command.name(),
                 command.startDate(),
@@ -71,7 +72,7 @@ public class SolverConfigurationService {
                 command.assignedEmployees(),
                 command.constraints()
         );
-        return new SolverConfigurationHasBeenUpdated(savedConfig);
+        return new SolverConfigurationHasBeenUpdated(configurationId);
     }
 
     @EventListener
@@ -101,7 +102,7 @@ public class SolverConfigurationService {
         return new SolverConfigurationHasBeenDeleted(command.configurationId());
     }
 
-    protected SolverConfigurationRecord saveConfiguration(
+    private SolverConfigurationId saveConfiguration(
             SolverConfigurationId id,
             String name,
             LocalDate startDate,
@@ -109,23 +110,20 @@ public class SolverConfigurationService {
             List<EmployeeAssignmentDTO> assignedEmployees,
             List<ConstraintDTO> constraints
     ) {
-        var configRecord = configurationRepository.save(
-                new SolverConfigurationRecord()
-                        .setId(id.getId())
-                        .setName(name)
-                        .setStartDate(startDate)
-                        .setEndDate(endDate)
-        );
+        var cachedEmployees = new HashMap<EmployeeId, EmployeeRecord>();
+        var configRecord = new SolverConfigurationRecord()
+                .setId(id.getId())
+                .setName(name)
+                .setStartDate(startDate)
+                .setEndDate(endDate);
         assignedEmployees.forEach(assignment -> {
-            var employeeId = EmployeeId.from(assignment.getEmployeeId());
-            var employeeRecord = employeeRepository.findById(employeeId.getId())
-                    .orElseThrow(() -> new NoSuchElementException("Employee [%s] was not found!".formatted(employeeId.getId())));
-            assignmentRepository.save(new EmployeeAssignmentRecord()
+            var employeeId = assignment.getEmployeeId();
+            var employeeRecord = cachedEmployees.computeIfAbsent(employeeId, this::fetchEmployee);
+            new EmployeeAssignmentRecord()
                     .setIndex(assignment.getIndex())
                     .setWeight(assignment.getWeight())
                     .setEmployee(employeeRecord)
-                    .setConfiguration(configRecord)
-            );
+                    .setConfiguration(configRecord);
         });
         constraints.forEach(constraintDto -> {
             var constraint = ConstraintMapper.fromDto(constraintDto);
@@ -134,13 +132,17 @@ public class SolverConfigurationService {
                     .setRequest(constraint)
                     .setParent(configRecord);
             if (constraint instanceof EmployeeConstraint employeeConstraint) {
-                var employeeId = employeeConstraint.getOwner().getId();
-                var employeeRecord = employeeRepository.findById(employeeId)
-                        .orElseThrow(() -> new NoSuchElementException("Employee [%s] was not found!".formatted(employeeId)));
+                var employeeId = employeeConstraint.getOwner();
+                var employeeRecord = cachedEmployees.computeIfAbsent(employeeId, this::fetchEmployee);
                 constraintRecord.setOwner(employeeRecord);
             }
-            constraintRepository.save(constraintRecord);
         });
-        return configurationRepository.save(configRecord);
+//        configurationRepository.save(configRecord);
+        entityManager.persist(configRecord);
+        return configRecord.getId();
+    }
+
+    private EmployeeRecord fetchEmployee(EmployeeId employeeId) {
+        return entityManager.getReference(EmployeeRecord.class, employeeId.getId());
     }
 }
