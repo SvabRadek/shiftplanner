@@ -10,9 +10,14 @@ import java.util.List;
 @Repository
 public interface EmployeeRepository extends CrudRepository<EmployeeRecord, String>, JpaSpecificationExecutor<EmployeeRecord> {
 
-  List<EmployeeRecord> findByIdIn(Collection<String> ids);
+  List<EmployeeRecord> findByIdInAndUsername(Collection<String> ids, String username);
 
-  Boolean existsByFirstNameAndLastName(String firstName, String lastName);
+  Boolean existsByFirstNameAndLastNameAndUsername(String firstName, String lastName, String username);
 
-  List<EmployeeRecord> findAllByIdNotIn(Collection<String> ids);
+  List<EmployeeRecord> findAllByIdNotInAndUsername(Collection<String> ids, String username);
+  List<EmployeeRecord> findAllByIdInAndUsername(Collection<String> ids, String username);
+  List<EmployeeRecord> findAllByUsername(String username);
+  Boolean existsByIdAndUsername(String id, String username);
+  void deleteByIdAndUsername(String id, String username);
+  EmployeeRecord getByIdAndUsername(String id, String username);
 }

@@ -15,7 +15,8 @@ public class EmployeeFixtureGenerator implements SpecificFixtureGenerator {
                 .map(employeeDTO -> new SaveEmployeeCommand(
                         employeeDTO.getId(),
                         employeeDTO.getFirstName(),
-                        employeeDTO.getLastName()
+                        employeeDTO.getLastName(),
+                        "user@planning.com"
                 )).map(Command.class::cast)
                 .toList();
     }

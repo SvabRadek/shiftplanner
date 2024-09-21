@@ -24,6 +24,8 @@ public final class EmployeeRecord {
     private String firstName;
     @Setter
     private String lastName;
+    @Setter
+    private String username;
     @OneToMany(mappedBy = "owner", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonIgnore
     private List<ConstraintRecord> constraints = new ArrayList<>();

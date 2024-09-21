@@ -6,6 +6,7 @@ import com.cocroachden.planner.employee.EmployeeId;
 public record SaveEmployeeCommand(
         EmployeeId employeeId,
         String firstName,
-        String lastName
+        String lastName,
+        String currentUser
 ) implements Command {
 }

@@ -23,13 +23,14 @@ public class EmployeeService {
     @EventListener
     public EmployeeHasBeenSaved handle(SaveEmployeeCommand command) {
         log.debug("Handling SaveEmployeeCommand");
-        if (employeeQuery.existsByName(command.firstName(), command.lastName())) {
+        if (employeeQuery.existsByName(command.firstName(), command.lastName(), command.currentUser())) {
             throw new IllegalArgumentException("Employee with this name [%s %s] already exists!".formatted(command.firstName(), command.lastName()));
         }
         var employee = new EmployeeRecord()
                 .setId(command.employeeId().getId())
                 .setFirstName(command.firstName())
-                .setLastName(command.lastName());
+                .setLastName(command.lastName())
+                .setUsername(command.currentUser());
         var savedEmployee = employeeRepository.save(employee);
         return new EmployeeHasBeenSaved(savedEmployee);
     }
@@ -37,10 +38,10 @@ public class EmployeeService {
     @EventListener
     public EmployeeHasBeenDeleted handle(DeleteEmployeeCommand command) {
         log.debug("Handling DeleteEmployeeCommand");
-        if (!employeeRepository.existsById(command.employeeId().getId())) {
+        if (!employeeRepository.existsByIdAndUsername(command.employeeId().getId(), command.currentUser())) {
             return null;
         }
-        employeeRepository.deleteById(command.employeeId().getId());
+        employeeRepository.deleteByIdAndUsername(command.employeeId().getId(), command.currentUser());
         return new EmployeeHasBeenDeleted(command.employeeId());
     }
 }
