@@ -4,6 +4,7 @@ import com.cocroachden.planner.common.messaging.Command;
 import com.cocroachden.planner.solverconfiguration.SolverConfigurationId;
 
 public record DeleteSolverConfigurationCommand(
-        SolverConfigurationId configurationId
+        SolverConfigurationId configurationId,
+        String username
 ) implements Command {
 }

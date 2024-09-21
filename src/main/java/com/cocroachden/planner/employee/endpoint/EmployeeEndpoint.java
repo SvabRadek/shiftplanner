@@ -24,6 +24,9 @@ public class EmployeeEndpoint extends CrudRepositoryService<EmployeeRecord, Stri
     private EmployeeQuery employeeQuery;
     private ApplicationEventPublisher publisher;
 
+
+
+
     @Override
     @Transactional
     public void delete(@Nonnull String employeeId) {

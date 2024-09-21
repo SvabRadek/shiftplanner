@@ -11,6 +11,7 @@ import java.util.List;
 public record UpdateSolverConfigurationCommand(
         SolverConfigurationId id,
         String name,
+        String username,
         LocalDate startDate,
         LocalDate endDate,
         List<EmployeeAssignmentDTO> assignedEmployees,

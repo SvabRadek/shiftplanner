@@ -4,6 +4,9 @@ import Placeholder from 'Frontend/components/placeholder/Placeholder.js';
 import { useRouteMetadata } from 'Frontend/util/routing.js';
 import { Suspense } from 'react';
 import { NavLink, Outlet } from 'react-router-dom';
+import {HorizontalLayout} from "@hilla/react-components/HorizontalLayout";
+import {useAuth} from "Frontend/auth";
+import {Button} from "@hilla/react-components/Button";
 
 const navLinkClasses = ({ isActive }: any) => {
   return `block rounded-m p-s ${isActive ? 'bg-primary-10 text-primary' : 'text-body'}`;
@@ -11,6 +14,7 @@ const navLinkClasses = ({ isActive }: any) => {
 
 export default function MainLayout() {
   const currentTitle = useRouteMetadata()?.title ?? 'Planovac';
+  const auth = useAuth();
   return (
     <AppLayout primarySection="drawer">
       <div slot="drawer" className="flex flex-col justify-between h-full p-m">
@@ -27,10 +31,20 @@ export default function MainLayout() {
         </header>
       </div>
 
-      <DrawerToggle slot="navbar" aria-label="Menu toggle"></DrawerToggle>
-      <h2 slot="navbar" className="text-l m-0">
-        {currentTitle}
-      </h2>
+        <DrawerToggle slot="navbar" aria-label="Menu toggle"></DrawerToggle>
+        <h2 slot="navbar" className="text-l m-0">
+            {currentTitle}
+        </h2>
+        <HorizontalLayout slot={"navbar"} theme={"spacing padding"} style={{ width: "100%", justifyContent: "end", alignItems: "baseline" }}>
+            <HorizontalLayout theme={"spacing"}>
+            </HorizontalLayout>
+            <HorizontalLayout theme={"spacing"}>
+                <h5>{auth.state.user?.username}</h5>
+            </HorizontalLayout>
+            <Button>
+                Logout
+            </Button>
+        </HorizontalLayout>
 
       <Suspense fallback={<Placeholder />}>
         <Outlet />

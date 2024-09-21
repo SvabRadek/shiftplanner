@@ -8,7 +8,6 @@ import com.cocroachden.planner.employee.EmployeeId;
 import com.cocroachden.planner.employee.repository.EmployeeRecord;
 import com.cocroachden.planner.solver.constraints.specific.EmployeeConstraint;
 import com.cocroachden.planner.solverconfiguration.EmployeeAssignmentDTO;
-import com.cocroachden.planner.solverconfiguration.SolverConfigurationId;
 import com.cocroachden.planner.solverconfiguration.command.deleteconfiguration.DeleteSolverConfigurationCommand;
 import com.cocroachden.planner.solverconfiguration.command.deleteconfiguration.SolverConfigurationHasBeenDeleted;
 import com.cocroachden.planner.solverconfiguration.command.saveconfiguration.SaveSolverConfigurationCommand;
@@ -26,7 +25,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.List;
 
@@ -43,36 +41,44 @@ public class SolverConfigurationService {
     @EventListener
     public SolverConfigurationHasBeenSaved handle(SaveSolverConfigurationCommand command) {
         log.debug("Handling SaveSolverConfigurationCommand");
-        var id = command.id();
-        if (configurationRepository.existsById(id.getId())) {
-            throw new IllegalArgumentException("Solver configuration with employeeId [" + id + "] already exists!");
+        if (configurationRepository.existsById(command.id().getId())) {
+            throw new IllegalArgumentException("Solver configuration with employeeId [" + command.id().getId() + "] already exists!");
         }
-        var configurationId = this.saveConfiguration(
-                command.id(),
-                command.name(),
-                command.startDate(),
-                command.endDate(),
+        var configurationRecord = new SolverConfigurationRecord()
+                .setId(command.id().getId())
+                .setUsername(command.username())
+                .setName(command.name())
+                .setStartDate(command.startDate())
+                .setEndDate(command.endDate());
+        this.applyCommandOnConfiguration(
+                configurationRecord,
                 command.assignedEmployees(),
                 command.constraints()
         );
-        return new SolverConfigurationHasBeenSaved(configurationId);
+        entityManager.persist(configurationRecord);
+        return new SolverConfigurationHasBeenSaved(configurationRecord.getId());
     }
 
     @EventListener
-    public SolverConfigurationHasBeenUpdated handle(UpdateSolverConfigurationCommand command) {
+    public SolverConfigurationHasBeenUpdated handle(UpdateSolverConfigurationCommand command) throws IllegalAccessException {
         log.debug("Handling UpdateSolverConfigurationCommand");
-        if (!configurationRepository.existsById(command.id().getId())) {
-            throw new IllegalArgumentException("Solver configuration with employeeId [" + command.id() + "] does not exists!");
+        var existingConfig = configurationRepository.findById(command.id().getId())
+                .orElseThrow(() -> new IllegalArgumentException("Solver configuration [" + command.id() + "] does not exists!"));
+        if (!existingConfig.getUsername().equals(command.username())) {
+            throw new IllegalAccessException("User %s is not owner of the configuration!".formatted(command.username()));
         }
-        var configurationId = this.saveConfiguration(
-                command.id(),
-                command.name(),
-                command.startDate(),
-                command.endDate(),
+        existingConfig
+                .setUsername(command.username())
+                .setName(command.name())
+                .setStartDate(command.startDate())
+                .setEndDate(command.endDate());
+        this.applyCommandOnConfiguration(
+                existingConfig,
                 command.assignedEmployees(),
                 command.constraints()
         );
-        return new SolverConfigurationHasBeenUpdated(configurationId);
+        entityManager.merge(existingConfig);
+        return new SolverConfigurationHasBeenUpdated(existingConfig.getId());
     }
 
     @EventListener
@@ -84,9 +90,7 @@ public class SolverConfigurationService {
         var config = configurationRepository.findById(command.configurationId().getId()).orElseThrow();
 
         var assignments = config.getEmployeeAssignments();
-        assignments.forEach(assignment -> {
-            assignment.getEmployee().getAssignments().remove(assignment);
-        });
+        assignments.forEach(assignment -> assignment.getEmployee().getAssignments().remove(assignment));
         assignments.clear();
         assignmentRepository.deleteAll(assignments);
 
@@ -102,20 +106,14 @@ public class SolverConfigurationService {
         return new SolverConfigurationHasBeenDeleted(command.configurationId());
     }
 
-    private SolverConfigurationId saveConfiguration(
-            SolverConfigurationId id,
-            String name,
-            LocalDate startDate,
-            LocalDate endDate,
+    private void applyCommandOnConfiguration(
+            SolverConfigurationRecord configurationRecord,
             List<EmployeeAssignmentDTO> assignedEmployees,
             List<ConstraintDTO> constraints
     ) {
+        configurationRecord.getEmployeeAssignments().clear();
+        configurationRecord.getConstraintRecords().clear();
         var cachedEmployees = new HashMap<EmployeeId, EmployeeRecord>();
-        var configRecord = new SolverConfigurationRecord()
-                .setId(id.getId())
-                .setName(name)
-                .setStartDate(startDate)
-                .setEndDate(endDate);
         assignedEmployees.forEach(assignment -> {
             var employeeId = assignment.getEmployeeId();
             var employeeRecord = cachedEmployees.computeIfAbsent(employeeId, this::fetchEmployee);
@@ -123,23 +121,20 @@ public class SolverConfigurationService {
                     .setIndex(assignment.getIndex())
                     .setWeight(assignment.getWeight())
                     .setEmployee(employeeRecord)
-                    .setConfiguration(configRecord);
+                    .setConfiguration(configurationRecord);
         });
         constraints.forEach(constraintDto -> {
             var constraint = ConstraintMapper.fromDto(constraintDto);
             var constraintRecord = new ConstraintRecord()
                     .setId(constraintDto.getId())
                     .setRequest(constraint)
-                    .setParent(configRecord);
+                    .setParent(configurationRecord);
             if (constraint instanceof EmployeeConstraint employeeConstraint) {
                 var employeeId = employeeConstraint.getOwner();
                 var employeeRecord = cachedEmployees.computeIfAbsent(employeeId, this::fetchEmployee);
                 constraintRecord.setOwner(employeeRecord);
             }
         });
-//        configurationRepository.save(configRecord);
-        entityManager.persist(configRecord);
-        return configRecord.getId();
     }
 
     private EmployeeRecord fetchEmployee(EmployeeId employeeId) {

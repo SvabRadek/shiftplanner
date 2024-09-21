@@ -3,6 +3,7 @@ package com.cocroachden.planner.employee.repository;
 import com.cocroachden.planner.constraint.repository.ConstraintRecord;
 import com.cocroachden.planner.employee.EmployeeId;
 import com.cocroachden.planner.solverconfiguration.repository.EmployeeAssignmentRecord;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.Accessors;
@@ -24,8 +25,10 @@ public final class EmployeeRecord {
     @Setter
     private String lastName;
     @OneToMany(mappedBy = "owner", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnore
     private List<ConstraintRecord> constraints = new ArrayList<>();
     @OneToMany(mappedBy = "employee")
+    @JsonIgnore
     private List<EmployeeAssignmentRecord> assignments = new ArrayList<>();
 
     public void addConstraint(ConstraintRecord constraint) {

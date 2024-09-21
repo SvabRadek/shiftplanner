@@ -71,7 +71,7 @@ export function GlobalTab(props: Props) {
         <h6>Nastaveni zakazanych kombinaci smen</h6>
       </HorizontalLayout>
       {props.shiftFollowupRestriction.map(r => (
-        <ShiftFollowupRestrictionForm key={r.firstShift + r.forbiddenFollowup}
+        <ShiftFollowupRestrictionForm key={r.id}
                                       request={r}
                                       onAction={props.onShiftFollowupRestrictionAction}/>
       ))}

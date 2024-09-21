@@ -16,7 +16,8 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.IntStream;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor
@@ -27,24 +28,21 @@ public class SolverConfigurationFixture implements SpecificFixtureGenerator {
     @Override
     public List<Command> generateCommands() {
         var fixtureEmployees = EmployeeFixturesData.fixtureEmployees();
-        var constraints = new ArrayList<>(
-                fixtureEmployees.stream()
+        var constraints = fixtureEmployees.stream()
                         .map(EmployeeDTO::getId)
                         .map(this::generateFixtureConstrainsForEmployee)
                         .flatMap(List::stream)
-                        .toList()
-        );
+                        .collect(Collectors.toCollection(ArrayList::new));
         constraints.addAll(this.generateConstraintsForSchedule());
-        var assignments = IntStream.range(0, fixtureEmployees.size())
-                .mapToObj(i -> {
-                    var e = fixtureEmployees.get(i);
-                    return new EmployeeAssignmentDTO(e.getId(), i, 1);
-                }).toList();
-
+        var index = new AtomicInteger();
+        var assignments = fixtureEmployees.stream()
+                .map(e -> new EmployeeAssignmentDTO(e.getId(), index.getAndIncrement(), 1))
+                .toList();
         return List.of(
                 new SaveSolverConfigurationCommand(
                         DEFAULT_ID,
                         "Priklad konfigurace",
+                        "user@planning.com",
                         LocalDate.now(),
                         LocalDate.now().plusDays(30),
                         assignments,
@@ -59,7 +57,7 @@ public class SolverConfigurationFixture implements SpecificFixtureGenerator {
     }
 
     private List<ConstraintDTO> generateConstraintsForSchedule() {
-        return new ArrayList<>(List.of(
+        return List.of(
                 new EmployeesPerShiftConstraintDTO(
                         ConstraintId.random().getId(),
                         WorkShifts.NIGHT,
@@ -80,11 +78,11 @@ public class SolverConfigurationFixture implements SpecificFixtureGenerator {
                         1,
                         3
                 )
-        ));
+        );
     }
 
     private List<ConstraintDTO> generateFixtureConstrainsForEmployee(EmployeeId employeeId) {
-        return new ArrayList<>(List.of(
+        return List.of(
                 new ShiftsPerScheduleConstraintDTO(
                         ConstraintId.random().getId(),
                         employeeId.getId(),
@@ -93,8 +91,8 @@ public class SolverConfigurationFixture implements SpecificFixtureGenerator {
                         14,
                         1,
                         14,
-                        15,
-                        1
+                        1,
+                        15
                 ),
                 new TripleShiftConstraintDTO(
                         ConstraintId.random().getId(),
@@ -120,6 +118,6 @@ public class SolverConfigurationFixture implements SpecificFixtureGenerator {
                         1,
                         3
                 )
-        ));
+        );
     }
 }

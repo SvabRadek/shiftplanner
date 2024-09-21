@@ -12,16 +12,18 @@ import java.util.List;
 public record SaveSolverConfigurationCommand(
         SolverConfigurationId id,
         String name,
+        String username,
         LocalDate startDate,
         LocalDate endDate,
         List<EmployeeAssignmentDTO> assignedEmployees,
         List<ConstraintDTO> constraints
 ) implements Command {
 
-    public static SaveSolverConfigurationCommand from(SolverConfigurationDTO dto) {
+    public static SaveSolverConfigurationCommand from(String username, SolverConfigurationDTO dto) {
         return new SaveSolverConfigurationCommand(
                 dto.getId(),
                 dto.getName(),
+                username,
                 dto.getStartDate(),
                 dto.getEndDate(),
                 dto.getEmployees(),

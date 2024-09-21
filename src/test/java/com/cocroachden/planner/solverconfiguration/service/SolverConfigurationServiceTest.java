@@ -19,6 +19,7 @@ import com.cocroachden.planner.solverconfiguration.command.updateconfiguration.S
 import com.cocroachden.planner.solverconfiguration.command.updateconfiguration.UpdateSolverConfigurationCommand;
 import com.cocroachden.planner.solverconfiguration.repository.EmployeeAssignmentRepository;
 import com.cocroachden.planner.solverconfiguration.repository.SolverConfigurationRepository;
+import jakarta.persistence.EntityNotFoundException;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -27,7 +28,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.List;
-import java.util.NoSuchElementException;
 
 class SolverConfigurationServiceTest extends AbstractMessagingTest {
 
@@ -62,6 +62,7 @@ class SolverConfigurationServiceTest extends AbstractMessagingTest {
         var command = new SaveSolverConfigurationCommand(
                 id,
                 testConfigurationName,
+                "irrelevant",
                 LocalDate.now(),
                 LocalDate.now().plusDays(1),
                 List.of(),
@@ -78,6 +79,7 @@ class SolverConfigurationServiceTest extends AbstractMessagingTest {
         var command = new SaveSolverConfigurationCommand(
                 new SolverConfigurationId("config-employeeId"),
                 "Test Configuration",
+                "irrelevant",
                 LocalDate.now(),
                 LocalDate.now().plusDays(1),
                 List.of(),
@@ -92,12 +94,13 @@ class SolverConfigurationServiceTest extends AbstractMessagingTest {
         var command = new SaveSolverConfigurationCommand(
                 new SolverConfigurationId("config-employeeId"),
                 "Test Configuration",
+                "irrelevant",
                 LocalDate.now(),
                 LocalDate.now().plusDays(1),
                 List.of(new EmployeeAssignmentDTO("non-existent-employeeId", 1, 10)),
                 List.of()
         );
-        this.thenCommandThrowsException(command, NoSuchElementException.class);
+        this.thenCommandThrowsException(command, EntityNotFoundException.class);
     }
 
     @Test
@@ -106,6 +109,7 @@ class SolverConfigurationServiceTest extends AbstractMessagingTest {
         var saveCommand = new SaveSolverConfigurationCommand(
                 id,
                 "Test Configuration",
+                "irrelevant",
                 LocalDate.now(),
                 LocalDate.now().plusDays(1),
                 List.of(),
@@ -131,6 +135,7 @@ class SolverConfigurationServiceTest extends AbstractMessagingTest {
         var saveCommand = new SaveSolverConfigurationCommand(
                 id,
                 "Test Configuration",
+                "irrelevant",
                 LocalDate.now(),
                 LocalDate.now().plusDays(1),
                 List.of(),
@@ -140,17 +145,17 @@ class SolverConfigurationServiceTest extends AbstractMessagingTest {
         var updateCommand = new UpdateSolverConfigurationCommand(
                 id,
                 "Updated Configuration",
+                "irrelevant",
                 LocalDate.now(),
                 LocalDate.now().plusDays(2),
                 List.of(),
                 List.of()
         );
         this.whenCommandHasBeenSent(updateCommand);
-        var updatedConfig = this.thenExactlyOneEventHasBeenDispatched(SolverConfigurationHasBeenUpdated.class)
-                .configurationRecord();
-        Assertions.assertThat(updatedConfig.getName()).isEqualTo("Updated Configuration");
-        Assertions.assertThat(updatedConfig.getStartDate()).isEqualTo(updateCommand.startDate());
-        Assertions.assertThat(updatedConfig.getEndDate()).isEqualTo(updateCommand.endDate());
+        var updatedConfigId = this.thenExactlyOneEventHasBeenDispatched(SolverConfigurationHasBeenUpdated.class).configurationId();
+        Assertions.assertThat(updatedConfigId).isEqualTo(updateCommand.id());
+        var updated = configurationRepository.findById(id.getId()).orElseThrow();
+        Assertions.assertThat(updated.getName()).isEqualTo("Updated Configuration");
     }
 
     @Test
@@ -158,6 +163,7 @@ class SolverConfigurationServiceTest extends AbstractMessagingTest {
         var updateCommand = new UpdateSolverConfigurationCommand(
                 new SolverConfigurationId("non-existent-config-employeeId"),
                 "Non-existent Configuration",
+                "irrelevant",
                 LocalDate.now(),
                 LocalDate.now().plusDays(1),
                 List.of(),
@@ -173,6 +179,7 @@ class SolverConfigurationServiceTest extends AbstractMessagingTest {
         var saveConfigCommand = new SaveSolverConfigurationCommand(
                 configurationId,
                 "Test Configuraiton",
+                "irrelevant",
                 LocalDate.now(),
                 LocalDate.now().plusDays(1),
                 List.of(),
@@ -202,6 +209,7 @@ class SolverConfigurationServiceTest extends AbstractMessagingTest {
         var saveConfigCommand = new SaveSolverConfigurationCommand(
                 configurationId,
                 "Test Configuraiton",
+                "irrelevant",
                 LocalDate.now(),
                 LocalDate.now().plusDays(1),
                 List.of(
@@ -213,10 +221,11 @@ class SolverConfigurationServiceTest extends AbstractMessagingTest {
         );
 
         this.whenCommandHasBeenSent(saveConfigCommand);
-        var savedConfig = this.thenExactlyOneEventHasBeenDispatched(SolverConfigurationHasBeenSaved.class).record();
-        Assertions.assertThat(savedConfig.getConstraintRecords()).hasSize(1);
-        Assertions.assertThat(savedConfig.getEmployeeAssignments()).hasSize(1);
-        var employee = savedConfig.getEmployeeAssignments().get(0).getEmployee();
+        this.thenExactlyOneEventHasBeenDispatched(SolverConfigurationHasBeenSaved.class);
+        var saved = configurationRepository.findById(configurationId.getId()).orElseThrow();
+        Assertions.assertThat(saved.getConstraintRecords()).hasSize(1);
+        Assertions.assertThat(saved.getEmployeeAssignments()).hasSize(1);
+        var employee = saved.getEmployeeAssignments().get(0).getEmployee();
         Assertions.assertThat(employee.getAssignments()).hasSize(1);
         Assertions.assertThat(employee.getConstraints()).hasSize(1);
     }
@@ -235,6 +244,7 @@ class SolverConfigurationServiceTest extends AbstractMessagingTest {
         var saveConfigCommand = new SaveSolverConfigurationCommand(
                 configurationId,
                 "Test Configuraiton",
+                "irrelevant",
                 LocalDate.now(),
                 LocalDate.now().plusDays(1),
                 List.of(

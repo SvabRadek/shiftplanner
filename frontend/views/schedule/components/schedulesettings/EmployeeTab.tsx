@@ -11,8 +11,6 @@ import SolverConfigurationDTO
     from "Frontend/generated/com/cocroachden/planner/solverconfiguration/SolverConfigurationDTO";
 import EmployeeAssignmentDTO
     from "Frontend/generated/com/cocroachden/planner/solverconfiguration/EmployeeAssignmentDTO";
-import employeeDTO from "Frontend/generated/com/cocroachden/planner/employee/EmployeeDTO";
-import employeeId from "Frontend/generated/com/cocroachden/planner/employee/EmployeeId";
 
 type Props = {
   employees: EmployeeDTO[]

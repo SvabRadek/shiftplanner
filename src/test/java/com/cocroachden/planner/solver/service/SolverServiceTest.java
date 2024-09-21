@@ -26,6 +26,7 @@ class SolverServiceTest extends AbstractMessagingTest {
         var configCommand = new SaveSolverConfigurationCommand(
                 configurationId,
                 "irrelevant",
+                "irrelevant",
                 LocalDate.now(),
                 LocalDate.now().plusDays(1),
                 List.of(),

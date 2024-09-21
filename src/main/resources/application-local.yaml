@@ -20,9 +20,6 @@ logging:
     root: INFO
     org.atmosphere: WARN
     com.cocroachden.planner: DEBUG
-    org.springframework.security: DEBUG
 
 vaadin:
   launch-browser: false
-  # For more information https://vaadin.com/docs/flow/spring/tutorial-spring-configuration.html#special-configuration-parameters
-  whitelisted-packages: com.vaadin,org.vaadin,dev.hilla,com.cockroachden.planner
