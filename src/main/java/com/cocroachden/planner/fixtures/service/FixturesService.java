@@ -15,7 +15,7 @@ import java.util.List;
 @Slf4j
 @Service
 @AllArgsConstructor
-public class GenericFixturesGenerator {
+public class FixturesService {
 
     private final List<SpecificFixtureGenerator> generators;
     private final ApplicationEventPublisher publisher;

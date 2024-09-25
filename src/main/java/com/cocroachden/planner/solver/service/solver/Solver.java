@@ -1,4 +1,4 @@
-package com.cocroachden.planner.solver.service;
+package com.cocroachden.planner.solver.service.solver;
 
 import com.cocroachden.planner.solver.SolverProblemConfiguration;
 import com.cocroachden.planner.solver.SolverSolutionDTO;
@@ -11,5 +11,6 @@ public interface Solver {
             Consumer<SolverSolutionDTO> callback,
             SolverOptions solverOptions
     );
+
     void stop();
 }

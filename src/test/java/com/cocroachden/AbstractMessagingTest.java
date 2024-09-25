@@ -1,27 +1,33 @@
 package com.cocroachden;
 
+import com.cocroachden.planner.TestEventReceiver;
 import com.cocroachden.planner.common.messaging.Command;
 import com.cocroachden.planner.common.messaging.Event;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
-import org.springframework.test.context.event.ApplicationEvents;
-import org.springframework.test.context.event.RecordApplicationEvents;
 
 import java.util.List;
 
-@RecordApplicationEvents
 public class AbstractMessagingTest extends AbstractSpringBootContextTest {
 
     @Autowired
-    private ApplicationEventPublisher publisher;
+    protected ApplicationEventPublisher publisher;
     @Autowired
-    private ApplicationEvents applicationEvents;
+    protected TestEventReceiver testEventReceiver;
+
+    protected void thenSomeTimeHasPassed(Integer millis) {
+        try {
+            Thread.sleep(millis);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+    }
 
     @BeforeEach
     public void clearEvents() {
-        applicationEvents.clear();
+        testEventReceiver.clearAll();
     }
 
     protected void givenCommandHasBeenSent(Command command) {
@@ -29,8 +35,16 @@ public class AbstractMessagingTest extends AbstractSpringBootContextTest {
     }
 
     protected void whenCommandHasBeenSent(Command command) {
-        applicationEvents.clear();
+        testEventReceiver.clearAll();
         publisher.publishEvent(command);
+    }
+
+    protected void whenMomentHasPassed(Integer miliseconds) {
+        try {
+            Thread.sleep(miliseconds);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     protected void thenCommandThrowsException(Command command, Class<? extends Throwable> throwable) {
@@ -39,20 +53,30 @@ public class AbstractMessagingTest extends AbstractSpringBootContextTest {
     }
 
     protected <T extends Event> T thenExactlyOneEventHasBeenDispatched(Class<T> type) {
-        var events = applicationEvents.stream(type).toList();
+        var events = testEventReceiver.getRecordedEvents(type).toList();
         Assertions.assertThat(events).hasSize(1);
         return events.get(0);
     }
 
+    protected <T extends Event> List<T> thenAtLeastOneEventHasBeenDispatched(Class<T> type) {
+        var events = testEventReceiver.getRecordedEvents(type).toList();
+        Assertions.assertThat(events.size()).isGreaterThan(0);
+        return events;
+    }
+
     protected <T extends Event> void thenNoEventsOfTypeHaveBeenDispatched(Class<T> type) {
-        var events = applicationEvents.stream(type).toList();
+        var events = testEventReceiver.getRecordedEvents(type).toList();
         Assertions.assertThat(events).isEmpty();
     }
 
-
     protected <T extends Event> List<T> thenEventsHasBeenDispatched(Class<T> type, int count) {
-        var events = applicationEvents.stream(type).toList();
+        var events = testEventReceiver.getRecordedEvents(type).toList();
         Assertions.assertThat(events).hasSize(count);
         return events;
+    }
+
+    protected <T extends Event> void thenNoEventsHasBeenDispatched(Class<T> type) {
+        var events = testEventReceiver.getRecordedEvents(type).toList();
+        Assertions.assertThat(events).hasSize(0);
     }
 }

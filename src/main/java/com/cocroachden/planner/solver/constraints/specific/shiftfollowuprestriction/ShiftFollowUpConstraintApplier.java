@@ -4,9 +4,9 @@ package com.cocroachden.planner.solver.constraints.specific.shiftfollowuprestric
 import com.cocroachden.planner.solver.constraints.ConstraintApplier;
 import com.cocroachden.planner.solver.constraints.SolverConstraint;
 import com.cocroachden.planner.solver.constraints.specific.shiftfollowuprestriction.request.ShiftFollowUpRestrictionConstraint;
-import com.cocroachden.planner.solver.service.SolutionObjectives;
-import com.cocroachden.planner.solver.service.schedule.SchedulePlan;
-import com.cocroachden.planner.solver.service.schedule.ScheduleDay;
+import com.cocroachden.planner.solver.service.solver.SolutionObjectives;
+import com.cocroachden.planner.solver.service.solver.schedule.SchedulePlan;
+import com.cocroachden.planner.solver.service.solver.schedule.ScheduleDay;
 import com.google.ortools.sat.CpModel;
 import com.google.ortools.sat.LinearArgument;
 import com.google.ortools.sat.LinearExpr;

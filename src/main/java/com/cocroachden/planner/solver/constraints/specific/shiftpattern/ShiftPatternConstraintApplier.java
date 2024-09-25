@@ -3,9 +3,9 @@ package com.cocroachden.planner.solver.constraints.specific.shiftpattern;
 
 import com.cocroachden.planner.solver.constraints.SolverConstraint;
 import com.cocroachden.planner.solver.constraints.specific.shiftpattern.request.ShiftPatternConstraint;
-import com.cocroachden.planner.solver.service.SolutionObjectives;
-import com.cocroachden.planner.solver.service.schedule.SchedulePlan;
-import com.cocroachden.planner.solver.service.schedule.ScheduleDay;
+import com.cocroachden.planner.solver.service.solver.SolutionObjectives;
+import com.cocroachden.planner.solver.service.solver.schedule.SchedulePlan;
+import com.cocroachden.planner.solver.service.solver.schedule.ScheduleDay;
 import com.google.ortools.sat.CpModel;
 import com.cocroachden.planner.solver.constraints.ConstraintApplier;
 import org.springframework.stereotype.Service;

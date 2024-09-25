@@ -6,9 +6,7 @@ import {HorizontalLayout} from "@hilla/react-components/HorizontalLayout";
 import {TextField} from "@hilla/react-components/TextField";
 import {VerticalLayout} from "@hilla/react-components/VerticalLayout";
 import {GridDisplayMode, ScheduleGridContainer} from "./components/schedulegrid/ScheduleGridContainer";
-import {
-    EmployeeConstraintsDialog
-} from "Frontend/views/schedule/components/employeesettings/EmployeeConstraintsDialog";
+import {EmployeeConstraintsDialog} from "Frontend/views/schedule/components/employeesettings/EmployeeConstraintsDialog";
 import {areShiftRequestsSame, CrudAction, CRUDActions, generateUUID} from "Frontend/util/utils";
 import {Notification} from "@hilla/react-components/Notification";
 import {Card} from "Frontend/components/Card";
@@ -47,6 +45,7 @@ import EmployeeAssignmentDTO
     from "Frontend/generated/com/cocroachden/planner/solverconfiguration/EmployeeAssignmentDTO";
 import SolutionStatus from "Frontend/generated/com/cocroachden/planner/solver/SolutionStatus";
 import SolverSolutionDTO from "Frontend/generated/com/cocroachden/planner/solver/SolverSolutionDTO";
+import {sortConstraints} from "Frontend/views/schedule/ConstraintUtils";
 
 type EmployeeConfigDialogParams = {
     isOpen: boolean,
@@ -146,7 +145,7 @@ export default function ScheduleView() {
     }
 
     async function handleUpdate() {
-        await SolverConfigurationEndpoint.save({
+        await SolverConfigurationEndpoint.update({
             ...request!,
             constraints: combineConstraints()
         }).then(response => {
@@ -163,36 +162,17 @@ export default function ScheduleView() {
         SolverConfigurationEndpoint.getConfiguration(configId).then(configResponse => {
             validationCtx.clear()
             setResultCache({selectedIndex: 0, results: []})
-            setRequestedShiftConstraints(
-                configResponse.constraints.filter(c => c.type === ConstraintType.REQUESTED_SHIFT_CONSTRAINT) as RequestedShiftConstraintDTO[]
-            )
-            setShiftPerScheduleRequests(
-                configResponse.constraints.filter(c => c.type === ConstraintType.SHIFTS_PER_SCHEDULE) as ShiftsPerScheduleConstraintDTO[]
-            )
-            setConsecutiveWorkingDaysRequests(
-                configResponse.constraints.filter(c => c.type === ConstraintType.CONSECUTIVE_WORKING_DAYS) as ConsecutiveWorkingDaysConstraintDTO[]
-            )
-            setEmployeesPerShiftRequests(
-                configResponse.constraints.filter(c => c.type === ConstraintType.EMPLOYEES_PER_SHIFT) as EmployeesPerShiftConstraintDTO[]
-            )
-            setShiftFollowupRestrictionRequests(
-                configResponse.constraints.filter(c => c.type === ConstraintType.SHIFT_FOLLOW_UP_RESTRICTION) as ShiftFollowupRestrictionConstraintDTO[]
-            )
-            setShiftPatternRequests(
-                configResponse.constraints.filter(c => c.type === ConstraintType.SHIFT_PATTERN_CONSTRAINT) as ShiftPatternConstraintDTO[]
-            )
-            setTripleShiftConstraintRequests(
-                configResponse.constraints.filter(c => c.type === ConstraintType.TRIPLE_SHIFTS_CONSTRAINT) as TripleShiftConstraintDTO[]
-            )
-            setTeamAssignmentRequests(
-                configResponse.constraints.filter(c => c.type === ConstraintType.TEAM_ASSIGNMENT) as TeamAssignmentConstraintDTO[]
-            )
-            setWeekendRequests(
-                configResponse.constraints.filter(c => c.type === ConstraintType.WEEKEND_CONSTRAINT) as WeekendConstraintDTO[]
-            )
-            setEvenDistributionRequests(
-                configResponse.constraints.filter(c => c.type === ConstraintType.EVEN_SHIFT_DISTRIBUTION) as EvenShiftDistributionConstraintDTO[]
-            )
+            const sortedConstraints = sortConstraints(configResponse.constraints)
+            setRequestedShiftConstraints(sortedConstraints[ConstraintType.REQUESTED_SHIFT_CONSTRAINT])
+            setShiftPerScheduleRequests(sortedConstraints[ConstraintType.SHIFTS_PER_SCHEDULE])
+            setConsecutiveWorkingDaysRequests(sortedConstraints[ConstraintType.CONSECUTIVE_WORKING_DAYS])
+            setEmployeesPerShiftRequests(sortedConstraints[ConstraintType.EMPLOYEES_PER_SHIFT])
+            setShiftFollowupRestrictionRequests(sortedConstraints[ConstraintType.SHIFT_FOLLOW_UP_RESTRICTION])
+            setShiftPatternRequests(sortedConstraints[ConstraintType.SHIFT_PATTERN_CONSTRAINT])
+            setTripleShiftConstraintRequests(sortedConstraints[ConstraintType.TRIPLE_SHIFTS_CONSTRAINT])
+            setTeamAssignmentRequests(sortedConstraints[ConstraintType.TEAM_ASSIGNMENT])
+            setWeekendRequests(sortedConstraints[ConstraintType.WEEKEND_CONSTRAINT])
+            setEvenDistributionRequests(sortedConstraints[ConstraintType.EVEN_SHIFT_DISTRIBUTION])
             configResponse["constraints"] = []
             setRequest(configResponse)
         })

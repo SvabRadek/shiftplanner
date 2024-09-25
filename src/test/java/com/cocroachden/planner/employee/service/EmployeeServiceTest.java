@@ -29,7 +29,7 @@ class EmployeeServiceTest extends AbstractMessagingTest {
     @Test
     public void itCanSaveNewEmployee() {
         var id = EmployeeId.random();
-        var command = new SaveEmployeeCommand(id,"John","Doe");
+        var command = new SaveEmployeeCommand(id,"John","Doe", "test-user");
         this.whenCommandHasBeenSent(command);
         this.thenExactlyOneEventHasBeenDispatched(EmployeeHasBeenSaved.class);
         Assertions.assertThat(employeeRepository.findById(id.getId())).isPresent();
@@ -38,7 +38,7 @@ class EmployeeServiceTest extends AbstractMessagingTest {
     @Test
     public void itThrowsWhenSavingExistingEmployee() {
         var id = EmployeeId.random();
-        var command = new SaveEmployeeCommand(id,"John","Doe");
+        var command = new SaveEmployeeCommand(id,"John","Doe", "test-user");
         this.givenCommandHasBeenSent(command);
         this.thenCommandThrowsException(command, IllegalArgumentException.class);
     }
@@ -46,9 +46,9 @@ class EmployeeServiceTest extends AbstractMessagingTest {
     @Test
     public void itCanDeleteEmployee() {
         var id = EmployeeId.random();
-        var saveCommand = new SaveEmployeeCommand(id,"John","Doe");
+        var saveCommand = new SaveEmployeeCommand(id,"John","Doe", "test-user");
         this.givenCommandHasBeenSent(saveCommand);
-        var deleteCommand = new DeleteEmployeeCommand(id);
+        var deleteCommand = new DeleteEmployeeCommand(id, "test-user");
         this.whenCommandHasBeenSent(deleteCommand);
         this.thenExactlyOneEventHasBeenDispatched(EmployeeHasBeenDeleted.class);
         Assertions.assertThat(employeeRepository.existsById(id.getId())).isFalse();
@@ -57,7 +57,7 @@ class EmployeeServiceTest extends AbstractMessagingTest {
     @Test
     public void itIgnoresWhenDeletingNonExistingEmployee() {
         var employeeId = new EmployeeId("non-existent-employeeId");
-        var deleteCommand = new DeleteEmployeeCommand(employeeId);
+        var deleteCommand = new DeleteEmployeeCommand(employeeId, "test-user");
         this.whenCommandHasBeenSent(deleteCommand);
         this.thenNoEventsOfTypeHaveBeenDispatched(EmployeeHasBeenDeleted.class);
     }

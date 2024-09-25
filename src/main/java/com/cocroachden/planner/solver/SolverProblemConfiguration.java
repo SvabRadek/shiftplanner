@@ -3,7 +3,7 @@ package com.cocroachden.planner.solver;
 
 import com.cocroachden.planner.constraint.repository.ConstraintRecord;
 import com.cocroachden.planner.solver.constraints.SolverConstraint;
-import com.cocroachden.planner.solver.service.schedule.ScheduleEmployee;
+import com.cocroachden.planner.solver.service.solver.schedule.ScheduleEmployee;
 import com.cocroachden.planner.solverconfiguration.repository.SolverConfigurationRecord;
 import org.apache.commons.lang3.StringUtils;
 

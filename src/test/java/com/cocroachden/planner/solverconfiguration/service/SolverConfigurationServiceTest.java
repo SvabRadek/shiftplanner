@@ -109,14 +109,14 @@ class SolverConfigurationServiceTest extends AbstractMessagingTest {
         var saveCommand = new SaveSolverConfigurationCommand(
                 id,
                 "Test Configuration",
-                "irrelevant",
+                "test-user",
                 LocalDate.now(),
                 LocalDate.now().plusDays(1),
                 List.of(),
                 List.of()
         );
         this.givenCommandHasBeenSent(saveCommand);
-        var testedCommand = new DeleteSolverConfigurationCommand(id);
+        var testedCommand = new DeleteSolverConfigurationCommand(id, "test-user");
         this.whenCommandHasBeenSent(testedCommand);
         this.thenExactlyOneEventHasBeenDispatched(SolverConfigurationHasBeenDeleted.class);
         Assertions.assertThat(configurationRepository.existsById(id.getId())).isFalse();
@@ -124,7 +124,7 @@ class SolverConfigurationServiceTest extends AbstractMessagingTest {
 
     @Test
     public void itIgnoresWhenDeletingNonExistingSolverConfiguration() {
-        var deleteCommand = new DeleteSolverConfigurationCommand(new SolverConfigurationId("non-existent-config-employeeId"));
+        var deleteCommand = new DeleteSolverConfigurationCommand(new SolverConfigurationId("non-existent-config-employeeId"), "test-user");
         this.whenCommandHasBeenSent(deleteCommand);
         this.thenNoEventsOfTypeHaveBeenDispatched(SolverConfigurationHasBeenDeleted.class);
     }
@@ -179,7 +179,7 @@ class SolverConfigurationServiceTest extends AbstractMessagingTest {
         var saveConfigCommand = new SaveSolverConfigurationCommand(
                 configurationId,
                 "Test Configuraiton",
-                "irrelevant",
+                "test-user",
                 LocalDate.now(),
                 LocalDate.now().plusDays(1),
                 List.of(),
@@ -189,7 +189,7 @@ class SolverConfigurationServiceTest extends AbstractMessagingTest {
         );
         this.givenCommandHasBeenSent(saveConfigCommand);
         Assertions.assertThat(this.constraintRepository.existsById(constraintId.getId())).isTrue();
-        var testedCommand = new DeleteSolverConfigurationCommand(configurationId);
+        var testedCommand = new DeleteSolverConfigurationCommand(configurationId, "test-user");
         this.whenCommandHasBeenSent(testedCommand);
         Assertions.assertThat(this.constraintRepository.existsById(constraintId.getId())).isFalse();
     }
@@ -203,13 +203,14 @@ class SolverConfigurationServiceTest extends AbstractMessagingTest {
         var saveEmployeeCommand = new SaveEmployeeCommand(
                 employeeId,
                 "John",
-                "Doe"
+                "Doe",
+                "test-user"
         );
         this.givenCommandHasBeenSent(saveEmployeeCommand);
         var saveConfigCommand = new SaveSolverConfigurationCommand(
                 configurationId,
                 "Test Configuraiton",
-                "irrelevant",
+                "test-user",
                 LocalDate.now(),
                 LocalDate.now().plusDays(1),
                 List.of(
@@ -238,13 +239,14 @@ class SolverConfigurationServiceTest extends AbstractMessagingTest {
         var saveEmployeeCommand = new SaveEmployeeCommand(
                 employeeId,
                 "John",
-                "Doe"
+                "Doe",
+                "test-user"
         );
         this.givenCommandHasBeenSent(saveEmployeeCommand);
         var saveConfigCommand = new SaveSolverConfigurationCommand(
                 configurationId,
                 "Test Configuraiton",
-                "irrelevant",
+                "test-user",
                 LocalDate.now(),
                 LocalDate.now().plusDays(1),
                 List.of(
@@ -254,7 +256,7 @@ class SolverConfigurationServiceTest extends AbstractMessagingTest {
         );
         this.givenCommandHasBeenSent(saveConfigCommand);
         Assertions.assertThat(this.employeeRepository.findById(employeeId.getId()).orElseThrow().getAssignments()).hasSize(1);
-        var testedCommand = new DeleteSolverConfigurationCommand(configurationId);
+        var testedCommand = new DeleteSolverConfigurationCommand(configurationId, "test-user");
         this.whenCommandHasBeenSent(testedCommand);
         this.thenExactlyOneEventHasBeenDispatched(SolverConfigurationHasBeenDeleted.class);;
         Assertions.assertThat(this.employeeRepository.findById(employeeId.getId()).orElseThrow().getAssignments()).hasSize(0);

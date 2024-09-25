@@ -1,13 +1,12 @@
 package com.cocroachden.planner.solver.constraints;
 
-import com.cocroachden.planner.solver.service.SolutionObjectives;
-import com.cocroachden.planner.solver.service.schedule.SchedulePlan;
+import com.cocroachden.planner.solver.service.solver.SolutionObjectives;
+import com.cocroachden.planner.solver.service.solver.schedule.SchedulePlan;
 import com.google.ortools.sat.CpModel;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
-import java.util.Arrays;
 import java.util.List;
 
 @AllArgsConstructor

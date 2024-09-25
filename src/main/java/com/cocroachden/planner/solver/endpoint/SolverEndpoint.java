@@ -16,6 +16,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.event.EventListener;
+import org.springframework.scheduling.annotation.Async;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Sinks;
 
@@ -24,17 +25,20 @@ import reactor.core.publisher.Sinks;
 @RolesAllowed(Role.ROLE_USER)
 public class SolverEndpoint {
 
-    @Value("${application.solver.default-solver-time-limit-in-sec}")
-    private final Integer solverDefaultTimeLimitInSec = 60;
 
+    private final Integer solverDefaultTimeLimitInSec;
     private final ApplicationEventPublisher publisher;
     private final Flux<SolverSolutionDTO> solutionFlux;
     private final Sinks.Many<SolverSolutionDTO> sink;
 
-    public SolverEndpoint(ApplicationEventPublisher publisher) {
+    public SolverEndpoint(
+            ApplicationEventPublisher publisher,
+            @Value("${application.solver.default-solver-time-limit-in-sec}") Integer solverDefaultTimeLimitInSec
+    ) {
         this.publisher = publisher;
         this.sink = Sinks.many().unicast().onBackpressureBuffer();
         this.solutionFlux = sink.asFlux().takeWhile(solution -> solution.getSolutionStatus().equals(SolutionStatus.OK));
+        this.solverDefaultTimeLimitInSec = solverDefaultTimeLimitInSec;
     }
 
     public EndpointSubscription<@Nonnull SolverSolutionDTO> solveProblem(String configurationId) {
@@ -58,6 +62,7 @@ public class SolverEndpoint {
     }
 
     @EventListener
+    @Async
     protected void on(SolutionHasBeenFound event) {
         sink.tryEmitNext(event.solution());
     }
