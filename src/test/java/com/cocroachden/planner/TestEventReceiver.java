@@ -6,16 +6,16 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.stream.Stream;
 
 @Slf4j
 @Service
 public class TestEventReceiver {
 
-    private final List<Event> recordedEvents = new ArrayList<>();
-    private final List<Command> recordedCommands = new ArrayList<>();
+    private final List<Event> recordedEvents = new CopyOnWriteArrayList<>();
+    private final List<Command> recordedCommands = new CopyOnWriteArrayList<>();
 
     @EventListener
     public void on(Event event) {

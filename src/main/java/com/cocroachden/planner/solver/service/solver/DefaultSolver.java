@@ -18,7 +18,7 @@ import com.cocroachden.planner.solver.constraints.specific.teamassignment.TeamAs
 import com.cocroachden.planner.solver.constraints.specific.tripleshift.TripleShiftConstraintApplier;
 import com.cocroachden.planner.solver.constraints.specific.weekends.WeekendRequestsApplier;
 import com.cocroachden.planner.solver.service.solver.schedule.SchedulePlan;
-import com.cocroachden.planner.solver.service.solution.SolverSolutionCallback;
+import com.cocroachden.planner.solver.service.solution.InternalSolverSolutionCallback;
 import com.google.ortools.Loader;
 import com.google.ortools.sat.CpModel;
 import com.google.ortools.sat.CpSolver;
@@ -45,16 +45,15 @@ public class DefaultSolver implements Solver {
                     new WeekendRequestsApplier()
             )
     );
-    private SolverSolutionCallback solverSolutionCallback;
+    private InternalSolverSolutionCallback internalSolverSolutionCallback;
 
     public void solve(
             SolverProblemConfiguration solverProblemConfiguration,
             Consumer<SolverSolutionDTO> solutionCallback,
             SolverOptions options
     ) {
-        if (this.solverSolutionCallback != null) {
-            log.debug("Calling stop on an existing solution callback.");
-            this.solverSolutionCallback.stopSearch();
+        if (this.internalSolverSolutionCallback != null) {
+            this.internalSolverSolutionCallback.stopSearch();
         }
         Loader.loadNativeLibraries();
         var model = new CpModel();
@@ -74,38 +73,44 @@ public class DefaultSolver implements Solver {
         cpSolver.getParameters().setEnumerateAllSolutions(true);
         cpSolver.getParameters().setMaxTimeInSeconds(options.getSolvingLimitInSec());
         model.minimize(objectives.getObjectiveAsExpression());
-        this.solverSolutionCallback = new SolverSolutionCallback(
+        this.internalSolverSolutionCallback = new InternalSolverSolutionCallback(
                 solutionCallback,
                 schedulePlan
         );
-        var status = cpSolver.solve(model, this.solverSolutionCallback);
+        var status = cpSolver.solve(model, this.internalSolverSolutionCallback);
         var markerSolution = switch (status) {
             case INFEASIBLE -> new SolverSolutionDTO(
                     SolutionStatus.INFEASIBLE,
                     0d,
                     0,
+                    "Submitted model was infeasible!",
                     new HashMap<>()
             );
             case MODEL_INVALID -> new SolverSolutionDTO(
                     SolutionStatus.MODEL_INVALID,
                     0d,
                     0,
+                    "Submitted model was invalid!",
                     new HashMap<>()
             );
             case OPTIMAL -> new SolverSolutionDTO(
                     SolutionStatus.OPTIMAL,
                     0d,
                     0,
+                    "Optimal solution has been reached!",
                     new HashMap<>()
             );
-            default -> null;
+            default -> {
+                log.debug("Status {} occured!", status);
+                yield null;
+            }
         };
         if (markerSolution != null) {
             solutionCallback.accept(markerSolution);
         }
         log.info(model.modelStats());
         log.info(model.validate());
-        log.info("Status: {}, Solutions: {}", status, this.solverSolutionCallback.getCurrentSolutionCount());
+        log.info("Status: {}, Solutions: {}", status, this.internalSolverSolutionCallback.getCurrentSolutionCount());
         log.debug("Statistics");
         log.debug("  conflicts: {}", cpSolver.numConflicts());
         log.debug("  branches : {}", cpSolver.numBranches());
@@ -115,8 +120,8 @@ public class DefaultSolver implements Solver {
 
     @Override
     public void stop() {
-        if (this.solverSolutionCallback != null) {
-            this.solverSolutionCallback.stopSearch();
+        if (this.internalSolverSolutionCallback != null) {
+            this.internalSolverSolutionCallback.stopSearch();
         }
     }
 }

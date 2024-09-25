@@ -15,7 +15,7 @@ import java.util.*;
 import java.util.function.Consumer;
 
 @Slf4j
-public class SolverSolutionCallback extends CpSolverSolutionCallback {
+public class InternalSolverSolutionCallback extends CpSolverSolutionCallback {
     private final Consumer<SolverSolutionDTO> fluxSink;
     @Getter
     private Integer currentSolutionCount = 0;
@@ -25,7 +25,7 @@ public class SolverSolutionCallback extends CpSolverSolutionCallback {
     private final Integer solutionLimit;
     private final SchedulePlan schedulePlan;
 
-    public SolverSolutionCallback(
+    public InternalSolverSolutionCallback(
             Consumer<SolverSolutionDTO> fluxSink,
             SchedulePlan schedulePlan
     ) {
@@ -61,6 +61,7 @@ public class SolverSolutionCallback extends CpSolverSolutionCallback {
                         SolutionStatus.OK,
                         currentObjective,
                         currentSolutionCount,
+                        "Feasible solution found!",
                         employeeMap
                 )
         );

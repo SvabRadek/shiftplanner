@@ -19,5 +19,7 @@ public class SolverSolutionDTO {
   @Nonnull
   private Integer resultIndex;
   @Nonnull
+  private String message;
+  @Nonnull
   private Map<@Nonnull String, @Nonnull Map<@Nonnull LocalDate, @Nonnull WorkShifts>> assignments;
 }
