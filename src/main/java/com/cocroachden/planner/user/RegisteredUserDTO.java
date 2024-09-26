@@ -14,11 +14,11 @@ import java.util.List;
 @Getter
 public class RegisteredUserDTO {
     @Nonnull
-    private String email;
+    private String username;
     @Nonnull
     private List<@Nonnull String> authorities;
 
     public static RegisteredUserDTO from(RegisteredUserRecord user) {
-        return new RegisteredUserDTO(user.getEmail().getId(), user.getAuthorities());
+        return new RegisteredUserDTO(user.getUsername().getId(), user.getAuthorities());
     }
 }

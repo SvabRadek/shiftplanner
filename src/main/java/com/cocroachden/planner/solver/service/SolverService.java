@@ -1,15 +1,15 @@
 package com.cocroachden.planner.solver.service;
 
 import com.cocroachden.planner.solver.SolverProblemConfiguration;
+import com.cocroachden.planner.solver.SolverTask;
 import com.cocroachden.planner.solver.SolverSubscriptionId;
 import com.cocroachden.planner.solver.command.solveconfiguration.SolutionHasBeenFound;
 import com.cocroachden.planner.solver.command.solveconfiguration.SolverHasBeenStarted;
 import com.cocroachden.planner.solver.command.solveconfiguration.StartSolverCommand;
 import com.cocroachden.planner.solver.command.stopsolver.SolverHasBeenStopped;
 import com.cocroachden.planner.solver.command.stopsolver.StopSolverCommand;
-import com.cocroachden.planner.solver.service.solver.Solver;
-import com.cocroachden.planner.solver.service.solver.SolverFactory;
-import com.cocroachden.planner.solver.service.solver.SolverOptions;
+import com.cocroachden.planner.solver.solver.SolverFactory;
+import com.cocroachden.planner.solver.solver.SolverOptions;
 import com.cocroachden.planner.solverconfiguration.repository.SolverConfigurationRepository;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
@@ -32,7 +32,7 @@ public class SolverService {
     private final ApplicationEventPublisher publisher;
     private final SolverFactory solverFactory;
     @Getter
-    private final ConcurrentHashMap<SolverSubscriptionId, Solver> subscriptions = new ConcurrentHashMap<>();
+    private final ConcurrentHashMap<SolverSubscriptionId, SolverTask> subscriptions = new ConcurrentHashMap<>();
 
     @Transactional
     @EventListener
@@ -41,21 +41,22 @@ public class SolverService {
         var configuration = SolverProblemConfiguration.from(
                 solverConfigurationRepository.getById(command.configurationId().getId())
         );
-        publisher.publishEvent(new SolverHasBeenStarted(command.subscriptionId()));
+        var subscriptionId = command.subscriptionId();
         CompletableFuture.runAsync(() -> {
+                    publisher.publishEvent(new SolverHasBeenStarted(subscriptionId));
                     var solver = solverFactory.instantiate();
-                    subscriptions.put(command.subscriptionId(), solver);
-                    solver.solve(
+                    subscriptions.put(subscriptionId, new SolverTask(subscriptionId, solver, command.username()));
+                    solver.start(
                             configuration,
-                            solution -> publisher.publishEvent(new SolutionHasBeenFound(command.subscriptionId(), solution)),
+                            solution -> publisher.publishEvent(new SolutionHasBeenFound(subscriptionId, solution)),
                             SolverOptions.builder()
                                     .solvingLimitInSec(command.limitInSec())
                                     .build()
                     );
                 }).orTimeout(command.limitInSec() + 1, TimeUnit.SECONDS)
                 .whenComplete((aVoid, throwable) -> {
-                    subscriptions.remove(command.subscriptionId());
-                    publisher.publishEvent(new SolverHasBeenStopped(command.subscriptionId()));
+                    subscriptions.remove(subscriptionId);
+                    publisher.publishEvent(new SolverHasBeenStopped(subscriptionId));
                 });
     }
 
@@ -63,7 +64,7 @@ public class SolverService {
     public void handle(StopSolverCommand command) {
         log.debug("Handling StopSolverCommand...");
         if (subscriptions.containsKey(command.subscriptionId())) {
-            subscriptions.get(command.subscriptionId()).stop();
+            subscriptions.get(command.subscriptionId()).solver().stop();
         }
         //SolverHasBeenStopped event is dispatched on thread cancellation
     }

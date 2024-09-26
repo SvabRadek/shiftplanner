@@ -3,8 +3,8 @@ package com.cocroachden.planner.solver.constraints.specific.employeeshiftrequest
 import com.cocroachden.planner.solver.constraints.ConstraintApplier;
 import com.cocroachden.planner.solver.constraints.SolverConstraint;
 import com.cocroachden.planner.solver.constraints.specific.employeeshiftrequest.request.RequestedShiftConstraint;
-import com.cocroachden.planner.solver.service.solver.SolutionObjectives;
-import com.cocroachden.planner.solver.service.solver.schedule.SchedulePlan;
+import com.cocroachden.planner.solver.solver.solution.SolutionObjectives;
+import com.cocroachden.planner.solver.solver.schedule.SchedulePlan;
 import com.cocroachden.planner.solver.WorkShifts;
 import com.google.ortools.sat.CpModel;
 import org.springframework.stereotype.Service;

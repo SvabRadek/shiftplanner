@@ -2,8 +2,8 @@ package com.cocroachden.planner.solver.service.testimplementation;
 
 import com.cocroachden.planner.solver.SolverProblemConfiguration;
 import com.cocroachden.planner.solver.SolverSolutionDTO;
-import com.cocroachden.planner.solver.service.solver.Solver;
-import com.cocroachden.planner.solver.service.solver.SolverOptions;
+import com.cocroachden.planner.solver.solver.Solver;
+import com.cocroachden.planner.solver.solver.SolverOptions;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.Accessors;
@@ -24,8 +24,8 @@ public class TestSolver implements Solver {
     }
 
     @Override
-    public void solve(SolverProblemConfiguration configuration, Consumer<SolverSolutionDTO> callback, SolverOptions solverOptions) {
-        testCallback.solve(configuration, callback, solverOptions);
+    public void start(SolverProblemConfiguration problemConfiguration, Consumer<SolverSolutionDTO> callback, SolverOptions options) {
+        testCallback.solve(problemConfiguration, callback, options);
     }
 
     @Override

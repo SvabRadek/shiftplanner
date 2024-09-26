@@ -1,6 +1,11 @@
 import {DatePicker} from "@hilla/react-components/DatePicker";
 import {Fragment, useContext, useEffect, useState} from "react";
-import {EmployeeEndpoint, SolverConfigurationEndpoint, SolverEndpoint} from "Frontend/generated/endpoints";
+import {
+    EmployeeEndpoint,
+    SolverConfigurationEndpoint,
+    SolverEndpoint,
+    TicketEndpoint
+} from "Frontend/generated/endpoints";
 import {Button} from "@hilla/react-components/Button";
 import {HorizontalLayout} from "@hilla/react-components/HorizontalLayout";
 import {TextField} from "@hilla/react-components/TextField";
@@ -246,39 +251,41 @@ export default function ScheduleView() {
     function handleStartCalculation() {
         handleStopCalculation()
         setGridDisplayMode(GridDisplayMode.RESULT)
-        setResultSubscription(SolverEndpoint.solveProblem(request?.id)
-            .onNext(value => {
-                if (value.solutionStatus !== SolutionStatus.OK) {
-                    Notification.show("Neřešitelné zadání!", {
+        TicketEndpoint.issueTicket().then(ticket => {
+            setResultSubscription(SolverEndpoint.solveProblem(request?.id, ticket)
+                .onNext(value => {
+                    if (value.solutionStatus !== SolutionStatus.OK) {
+                        Notification.show(value.message, {
+                            position: "top-center",
+                            duration: 5000,
+                            theme: "error"
+                        })
+                        return
+                    }
+                    setResultCache(prevState => {
+                        const updatedResults = [...prevState.results, value].slice(-RESULT_CACHE_SIZE)
+                        return {
+                            results: updatedResults,
+                            selectedIndex: updatedResults.length - 1
+                        }
+                    });
+                }).onComplete(() => {
+                    Notification.show("Výpočet ukončen!", {
+                        position: "top-center",
+                        duration: 5000,
+                        theme: "success"
+                    })
+                    handleStopCalculation()
+                }).onError(() => {
+                    Notification.show("Chyba!", {
                         position: "top-center",
                         duration: 5000,
                         theme: "error"
                     })
-                    return
-                }
-                setResultCache(prevState => {
-                    const updatedResults = [...prevState.results, value].slice(-RESULT_CACHE_SIZE)
-                    return {
-                        results: updatedResults,
-                        selectedIndex: updatedResults.length - 1
-                    }
-                });
-            }).onComplete(() => {
-                Notification.show("Výpočet ukončen!", {
-                    position: "top-center",
-                    duration: 5000,
-                    theme: "success"
+                    handleStopCalculation()
                 })
-                handleStopCalculation()
-            }).onError(() => {
-                Notification.show("Neřešitelné zadání!", {
-                    position: "top-center",
-                    duration: 5000,
-                    theme: "error"
-                })
-                handleStopCalculation()
-            })
-        )
+            )
+        })
     }
 
     function handleResultSelectionChanged(offset: 1 | -1) {

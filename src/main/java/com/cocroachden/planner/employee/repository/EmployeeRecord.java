@@ -25,7 +25,7 @@ public final class EmployeeRecord {
     @Setter
     private String lastName;
     @Setter
-    private String username;
+    private String owningUser;
     @OneToMany(mappedBy = "owner", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonIgnore
     private List<ConstraintRecord> constraints = new ArrayList<>();
@@ -54,5 +54,9 @@ public final class EmployeeRecord {
     @Override
     public int hashCode() {
         return id.hashCode();
+    }
+
+    public EmployeeId getId() {
+        return EmployeeId.from(id);
     }
 }

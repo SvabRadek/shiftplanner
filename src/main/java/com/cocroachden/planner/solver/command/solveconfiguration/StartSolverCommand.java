@@ -7,6 +7,7 @@ import com.cocroachden.planner.solverconfiguration.SolverConfigurationId;
 public record StartSolverCommand(
         SolverConfigurationId configurationId,
         SolverSubscriptionId subscriptionId,
-        Integer limitInSec
+        Integer limitInSec,
+        String username
 ) implements Command {
 }

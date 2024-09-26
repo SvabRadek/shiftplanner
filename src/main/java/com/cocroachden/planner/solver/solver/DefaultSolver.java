@@ -1,4 +1,4 @@
-package com.cocroachden.planner.solver.service.solver;
+package com.cocroachden.planner.solver.solver;
 
 
 import com.cocroachden.planner.solver.SolutionStatus;
@@ -17,8 +17,9 @@ import com.cocroachden.planner.solver.constraints.specific.shiftperschedule.Shif
 import com.cocroachden.planner.solver.constraints.specific.teamassignment.TeamAssignmentConstraintApplier;
 import com.cocroachden.planner.solver.constraints.specific.tripleshift.TripleShiftConstraintApplier;
 import com.cocroachden.planner.solver.constraints.specific.weekends.WeekendRequestsApplier;
-import com.cocroachden.planner.solver.service.solver.schedule.SchedulePlan;
-import com.cocroachden.planner.solver.service.solution.InternalSolverSolutionCallback;
+import com.cocroachden.planner.solver.solver.schedule.SchedulePlan;
+import com.cocroachden.planner.solver.solver.solution.InternalSolverSolutionCallback;
+import com.cocroachden.planner.solver.solver.solution.SolutionObjectives;
 import com.google.ortools.Loader;
 import com.google.ortools.sat.CpModel;
 import com.google.ortools.sat.CpSolver;
@@ -47,8 +48,8 @@ public class DefaultSolver implements Solver {
     );
     private InternalSolverSolutionCallback internalSolverSolutionCallback;
 
-    public void solve(
-            SolverProblemConfiguration solverProblemConfiguration,
+    public void start(
+            SolverProblemConfiguration problemConfiguration,
             Consumer<SolverSolutionDTO> solutionCallback,
             SolverOptions options
     ) {
@@ -58,11 +59,11 @@ public class DefaultSolver implements Solver {
         Loader.loadNativeLibraries();
         var model = new CpModel();
         var objectives = new SolutionObjectives();
-        var schedulePlan = new SchedulePlan(solverProblemConfiguration, model);
-        solverProblemConfiguration.solverConstraints().forEach(request ->
+        var schedulePlan = new SchedulePlan(problemConfiguration, model);
+        problemConfiguration.solverConstraints().forEach(request ->
                 constraintApplier.apply(schedulePlan, model, objectives, request)
         );
-        if (solverProblemConfiguration.solverConstraints().stream().noneMatch(c -> c instanceof OneShiftPerDayConstraint)) {
+        if (problemConfiguration.solverConstraints().stream().noneMatch(c -> c instanceof OneShiftPerDayConstraint)) {
             //Apply constraint to assign only one shift per day. It is so basic constraint it feels useless to have it in configuration
             constraintApplier.apply(schedulePlan, model, objectives, new OneShiftPerDayConstraint());
         }
@@ -115,7 +116,6 @@ public class DefaultSolver implements Solver {
         log.debug("  conflicts: {}", cpSolver.numConflicts());
         log.debug("  branches : {}", cpSolver.numBranches());
         log.debug("  wall time: {}", cpSolver.wallTime());
-        log.info("Starting solver thread...");
     }
 
     @Override

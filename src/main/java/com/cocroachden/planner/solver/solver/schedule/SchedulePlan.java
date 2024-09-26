@@ -1,4 +1,4 @@
-package com.cocroachden.planner.solver.service.solver.schedule;
+package com.cocroachden.planner.solver.solver.schedule;
 
 
 import com.cocroachden.planner.employee.EmployeeId;

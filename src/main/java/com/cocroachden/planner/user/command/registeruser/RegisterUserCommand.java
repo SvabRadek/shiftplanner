@@ -11,18 +11,18 @@ import java.util.List;
 @AllArgsConstructor
 @Getter
 public class RegisterUserCommand implements Command {
-    private final RegisteredUserId email;
+    private final RegisteredUserId username;
     private final String hashedPassword;
     private final List<String> authorities;
 
-    public RegisterUserCommand(RegisteredUserId email, String hashedPassword, String... authorities) {
-        this.email = email;
+    public RegisterUserCommand(RegisteredUserId username, String hashedPassword, String... authorities) {
+        this.username = username;
         this.hashedPassword = hashedPassword;
         this.authorities = Arrays.stream(authorities).toList();
     }
 
-    public RegisterUserCommand(String email, String hashedPassword, String... authorities) {
-        this.email = RegisteredUserId.from(email);
+    public RegisterUserCommand(String username, String hashedPassword, String... authorities) {
+        this.username = RegisteredUserId.from(username);
         this.hashedPassword = hashedPassword;
         this.authorities = Arrays.stream(authorities).toList();
     }

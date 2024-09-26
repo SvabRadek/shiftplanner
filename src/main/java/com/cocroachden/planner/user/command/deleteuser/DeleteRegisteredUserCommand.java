@@ -4,6 +4,6 @@ import com.cocroachden.planner.common.messaging.Command;
 import com.cocroachden.planner.user.RegisteredUserId;
 
 public record DeleteRegisteredUserCommand(
-        RegisteredUserId registeredUserId
+        RegisteredUserId username
 ) implements Command {
 }

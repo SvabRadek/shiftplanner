@@ -1,4 +1,4 @@
-package com.cocroachden.planner.solver.service.solver;
+package com.cocroachden.planner.solver.solver.solution;
 
 import com.google.ortools.sat.BoolVar;
 import com.google.ortools.sat.IntVar;

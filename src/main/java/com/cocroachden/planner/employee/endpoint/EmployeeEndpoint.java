@@ -2,10 +2,10 @@ package com.cocroachden.planner.employee.endpoint;
 
 import com.cocroachden.planner.employee.EmployeeDTO;
 import com.cocroachden.planner.employee.EmployeeId;
-import com.cocroachden.planner.employee.command.saveemployee.SaveEmployeeCommand;
-import com.cocroachden.planner.employee.repository.EmployeeRecord;
 import com.cocroachden.planner.employee.command.deleteemployee.DeleteEmployeeCommand;
+import com.cocroachden.planner.employee.command.saveemployee.SaveEmployeeCommand;
 import com.cocroachden.planner.employee.query.EmployeeQuery;
+import com.cocroachden.planner.employee.repository.EmployeeRecord;
 import com.cocroachden.planner.employee.repository.EmployeeRepository;
 import com.cocroachden.planner.security.Role;
 import com.vaadin.flow.server.VaadinRequest;
@@ -14,7 +14,6 @@ import dev.hilla.Nonnull;
 import dev.hilla.Nullable;
 import dev.hilla.crud.CrudRepositoryService;
 import jakarta.annotation.security.RolesAllowed;
-import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;
 
@@ -30,16 +29,15 @@ public class EmployeeEndpoint extends CrudRepositoryService<EmployeeRecord, Stri
     @Override
     public @Nullable EmployeeRecord save(EmployeeRecord value) {
         var username = VaadinRequest.getCurrent().getUserPrincipal().getName();
-        var boxedId = EmployeeId.from(value.getId());
         publisher.publishEvent(
                 new SaveEmployeeCommand(
-                        boxedId,
+                        value.getId(),
                         value.getFirstName(),
                         value.getLastName(),
                         username
                 )
         );
-        return employeeQuery.getById(boxedId, username);
+        return employeeQuery.getById(value.getId(), username);
     }
 
     @Override

@@ -1,6 +1,5 @@
-package com.cocroachden;
+package com.cocroachden.planner;
 
-import com.cocroachden.planner.TestEventReceiver;
 import com.cocroachden.planner.common.messaging.Command;
 import com.cocroachden.planner.common.messaging.Event;
 import org.assertj.core.api.Assertions;
@@ -39,9 +38,9 @@ public class AbstractMessagingTest extends AbstractSpringBootContextTest {
         publisher.publishEvent(command);
     }
 
-    protected void whenMomentHasPassed(Integer miliseconds) {
+    protected void whenMomentHasPassed(Integer milliseconds) {
         try {
-            Thread.sleep(miliseconds);
+            Thread.sleep(milliseconds);
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }

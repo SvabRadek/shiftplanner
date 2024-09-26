@@ -12,8 +12,8 @@ import java.util.Optional;
 public interface SolverConfigurationRepository extends CrudRepository<SolverConfigurationRecord, String>, JpaSpecificationExecutor<SolverConfigurationRecord> {
   SolverConfigurationRecord getById(String id);
   List<SolverConfigurationMetadata> findBy();
-  List<SolverConfigurationMetadata> findByUsername(String username);
-  Optional<SolverConfigurationRecord> findByIdAndUsername(String id, String username);
+  List<SolverConfigurationMetadata> findByOwningUser(String username);
+  Optional<SolverConfigurationRecord> findByIdAndOwningUser(String id, String username);
 
 
 }

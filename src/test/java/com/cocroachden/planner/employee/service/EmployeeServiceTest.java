@@ -1,6 +1,6 @@
 package com.cocroachden.planner.employee.service;
 
-import com.cocroachden.AbstractMessagingTest;
+import com.cocroachden.planner.AbstractMessagingTest;
 import com.cocroachden.planner.employee.EmployeeId;
 import com.cocroachden.planner.employee.command.deleteemployee.DeleteEmployeeCommand;
 import com.cocroachden.planner.employee.command.deleteemployee.EmployeeHasBeenDeleted;

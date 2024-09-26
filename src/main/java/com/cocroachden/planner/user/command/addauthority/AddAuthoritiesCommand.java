@@ -10,14 +10,14 @@ import java.util.List;
 @Getter
 @AllArgsConstructor
 public class AddAuthoritiesCommand implements Command {
-    private final RegisteredUserId userId;
+    private final RegisteredUserId username;
     private final List<String> authorities;
 
     public AddAuthoritiesCommand(
-            RegisteredUserId userId,
+            RegisteredUserId username,
             String... authorities
     ) {
-        this.userId = userId;
+        this.username = username;
         this.authorities = List.of(authorities);
     }
 }

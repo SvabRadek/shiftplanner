@@ -1,4 +1,4 @@
-package com.cocroachden.constraint.validations;
+package com.cocroachden.planner.constraint.validations;
 
 import com.cocroachden.planner.constraint.RequestedShiftConstraintDTO;
 import com.cocroachden.planner.constraint.EmployeesPerShiftConstraintDTO;

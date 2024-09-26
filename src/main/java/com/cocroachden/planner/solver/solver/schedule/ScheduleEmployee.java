@@ -1,4 +1,4 @@
-package com.cocroachden.planner.solver.service.solver.schedule;
+package com.cocroachden.planner.solver.solver.schedule;
 
 
 import com.cocroachden.planner.employee.EmployeeId;
@@ -11,7 +11,7 @@ public record ScheduleEmployee(
 
   public static ScheduleEmployee from(EmployeeAssignmentRecord assignment) {
     return new ScheduleEmployee(
-            EmployeeId.from(assignment.getEmployee().getId()),
+            assignment.getEmployee().getId(),
             assignment.getWeight()
     );
   }

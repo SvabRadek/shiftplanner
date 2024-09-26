@@ -18,7 +18,6 @@ import org.springframework.scheduling.annotation.EnableAsync;
 @EnableAsync
 @Theme(value = "hilla-crm", variant = Lumo.DARK)
 public class Application implements AppShellConfigurator {
-
     public static void main(String[] args) {
         SpringApplication.run(Application.class, args);
     }

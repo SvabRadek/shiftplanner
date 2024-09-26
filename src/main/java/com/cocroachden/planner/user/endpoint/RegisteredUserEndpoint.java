@@ -44,7 +44,7 @@ public class RegisteredUserEndpoint {
     public void registerUser(String email, String hashedPassword) {
         var userId = RegisteredUserId.from(email);
         if (registeredUserQuery.userExists(userId)) {
-            throw new IllegalArgumentException("User with registeredUserId " + email + " already exists!");
+            throw new IllegalArgumentException("User with username " + email + " already exists!");
         }
         publisher.publishEvent(new RegisterUserCommand(userId, hashedPassword));
     }

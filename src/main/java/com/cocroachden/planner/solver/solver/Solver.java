@@ -1,4 +1,4 @@
-package com.cocroachden.planner.solver.service.solver;
+package com.cocroachden.planner.solver.solver;
 
 import com.cocroachden.planner.solver.SolverProblemConfiguration;
 import com.cocroachden.planner.solver.SolverSolutionDTO;
@@ -6,10 +6,10 @@ import com.cocroachden.planner.solver.SolverSolutionDTO;
 import java.util.function.Consumer;
 
 public interface Solver {
-    void solve(
-            SolverProblemConfiguration configuration,
+    void start(
+            SolverProblemConfiguration problemConfiguration,
             Consumer<SolverSolutionDTO> callback,
-            SolverOptions solverOptions
+            SolverOptions options
     );
 
     void stop();

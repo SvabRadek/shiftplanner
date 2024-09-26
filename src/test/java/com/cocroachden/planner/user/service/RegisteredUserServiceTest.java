@@ -1,6 +1,6 @@
 package com.cocroachden.planner.user.service;
 
-import com.cocroachden.AbstractMessagingTest;
+import com.cocroachden.planner.AbstractMessagingTest;
 import com.cocroachden.planner.security.Authorities;
 import com.cocroachden.planner.user.RegisteredUserId;
 import com.cocroachden.planner.user.command.addauthority.AddAuthoritiesCommand;
@@ -39,8 +39,8 @@ class RegisteredUserServiceTest extends AbstractMessagingTest {
         this.whenCommandHasBeenSent(command);
         this.thenExactlyOneEventHasBeenDispatched(UserHasBeenRegistered.class);
         this.thenExactlyOneEventHasBeenDispatched(AuthorityHasBeenAdded.class);
-        Assertions.assertThat(repository.existsById(userId)).isTrue();
-        var user = repository.findById(userId).orElseThrow();
+        Assertions.assertThat(repository.existsById(userId.getId())).isTrue();
+        var user = repository.findById(userId.getId()).orElseThrow();
         Assertions.assertThat(user.getAuthorities()).hasSize(1);
     }
 
@@ -55,7 +55,7 @@ class RegisteredUserServiceTest extends AbstractMessagingTest {
         this.whenCommandHasBeenSent(command);
         this.thenExactlyOneEventHasBeenDispatched(UserHasBeenRegistered.class);
         this.thenNoEventsOfTypeHaveBeenDispatched(AuthorityHasBeenAdded.class);
-        Assertions.assertThat(repository.existsById(userId)).isTrue();
+        Assertions.assertThat(repository.existsById(userId.getId())).isTrue();
     }
 
     @Test
@@ -80,7 +80,7 @@ class RegisteredUserServiceTest extends AbstractMessagingTest {
         var testedCommand = new DeleteRegisteredUserCommand(userId);
         this.whenCommandHasBeenSent(testedCommand);
         this.thenExactlyOneEventHasBeenDispatched(RegisteredUserHasBeenDeleted.class);
-        Assertions.assertThat(this.repository.existsById(userId)).isFalse();
+        Assertions.assertThat(this.repository.existsById(userId.getId())).isFalse();
     }
 
     @Test

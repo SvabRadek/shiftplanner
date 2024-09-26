@@ -1,6 +1,6 @@
 package com.cocroachden.planner.solver.service;
 
-import com.cocroachden.AbstractMessagingTest;
+import com.cocroachden.planner.AbstractMessagingTest;
 import com.cocroachden.planner.solver.SolverSolutionDTO;
 import com.cocroachden.planner.solver.SolverSubscriptionId;
 import com.cocroachden.planner.solver.command.solveconfiguration.SolutionHasBeenFound;
@@ -9,7 +9,7 @@ import com.cocroachden.planner.solver.command.solveconfiguration.StartSolverComm
 import com.cocroachden.planner.solver.command.stopsolver.SolverHasBeenStopped;
 import com.cocroachden.planner.solver.command.stopsolver.StopSolverCommand;
 import com.cocroachden.planner.solver.query.SolverServiceQuery;
-import com.cocroachden.planner.solver.service.solver.SolverFactory;
+import com.cocroachden.planner.solver.solver.SolverFactory;
 import com.cocroachden.planner.solver.service.testimplementation.TestSolver;
 import com.cocroachden.planner.solver.service.testimplementation.TestSolverFactory;
 import com.cocroachden.planner.solverconfiguration.SolverConfigurationId;
@@ -71,14 +71,15 @@ class SolverServiceTest extends AbstractMessagingTest {
         var command = new StartSolverCommand(
                 configurationId,
                 subscriptionId,
-                10
+                10,
+                "irrelevant"
         );
         this.whenCommandHasBeenSent(command);
         this.thenExactlyOneEventHasBeenDispatched(SolverHasBeenStarted.class);
         this.thenSomeTimeHasPassed(10);
         this.thenAtLeastOneEventHasBeenDispatched(SolutionHasBeenFound.class);
         this.thenExactlyOneEventHasBeenDispatched(SolverHasBeenStopped.class);
-        Assertions.assertThat(solverServiceQuery.findSolver(subscriptionId)).isEmpty();
+        Assertions.assertThat(solverServiceQuery.findSolverTask(subscriptionId)).isEmpty();
     }
 
     @Test
@@ -103,13 +104,14 @@ class SolverServiceTest extends AbstractMessagingTest {
         var startCommand = new StartSolverCommand(
                 configurationId,
                 subscriptionId,
-                10
+                10,
+                "irrelevant"
         );
         this.whenCommandHasBeenSent(startCommand);
         this.thenExactlyOneEventHasBeenDispatched(SolverHasBeenStarted.class);
         this.thenSomeTimeHasPassed(10);
         this.thenExactlyOneEventHasBeenDispatched(SolverHasBeenStopped.class);
-        Assertions.assertThat(solverServiceQuery.findSolver(subscriptionId)).isEmpty();
+        Assertions.assertThat(solverServiceQuery.findSolverTask(subscriptionId)).isEmpty();
     }
 
     @Test
@@ -142,15 +144,16 @@ class SolverServiceTest extends AbstractMessagingTest {
         var startCommand = new StartSolverCommand(
                 configurationId,
                 subscriptionId,
-                10
+                10,
+                "irrelevant"
         );
         this.givenCommandHasBeenSent(startCommand);
-        Assertions.assertThat(solverServiceQuery.findSolver(subscriptionId)).isPresent();
-        var cancelCommand = new StopSolverCommand(subscriptionId);
+        Assertions.assertThat(solverServiceQuery.findSolverTask(subscriptionId)).isPresent();
+        var cancelCommand = new StopSolverCommand(subscriptionId, "irrelevant");
         this.whenCommandHasBeenSent(cancelCommand);
         this.thenSomeTimeHasPassed(50);
         this.thenExactlyOneEventHasBeenDispatched(SolverHasBeenStopped.class);
-        Assertions.assertThat(solverServiceQuery.findSolver(subscriptionId)).isEmpty();
+        Assertions.assertThat(solverServiceQuery.findSolverTask(subscriptionId)).isEmpty();
     }
 
     @TestConfiguration

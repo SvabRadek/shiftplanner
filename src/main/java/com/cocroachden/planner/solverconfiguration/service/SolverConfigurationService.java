@@ -40,13 +40,13 @@ public class SolverConfigurationService {
 
     @EventListener
     public SolverConfigurationHasBeenSaved handle(SaveSolverConfigurationCommand command) {
-        log.debug("Handling SaveSolverConfigurationCommand");
+        log.debug("Handling SaveSolverConfigurationCommand...");
         if (configurationRepository.existsById(command.id().getId())) {
             throw new IllegalArgumentException("Solver configuration with employeeId [" + command.id().getId() + "] already exists!");
         }
         var configurationRecord = new SolverConfigurationRecord()
                 .setId(command.id().getId())
-                .setUsername(command.username())
+                .setOwningUser(command.username())
                 .setName(command.name())
                 .setStartDate(command.startDate())
                 .setEndDate(command.endDate());
@@ -61,14 +61,14 @@ public class SolverConfigurationService {
 
     @EventListener
     public SolverConfigurationHasBeenUpdated handle(UpdateSolverConfigurationCommand command) throws IllegalAccessException {
-        log.debug("Handling UpdateSolverConfigurationCommand");
+        log.debug("Handling UpdateSolverConfigurationCommand...");
         var existingConfig = configurationRepository.findById(command.id().getId())
                 .orElseThrow(() -> new IllegalArgumentException("Solver configuration [" + command.id() + "] does not exists!"));
-        if (!existingConfig.getUsername().equals(command.username())) {
+        if (!existingConfig.getOwningUser().equals(command.username())) {
             throw new IllegalAccessException("User %s is not owner of the configuration!".formatted(command.username()));
         }
         existingConfig
-                .setUsername(command.username())
+                .setOwningUser(command.username())
                 .setName(command.name())
                 .setStartDate(command.startDate())
                 .setEndDate(command.endDate());
@@ -83,7 +83,7 @@ public class SolverConfigurationService {
 
     @EventListener
     public SolverConfigurationHasBeenDeleted handle(DeleteSolverConfigurationCommand command) {
-        log.debug("Handling DeleteSolverConfigurationCommand");
+        log.debug("Handling DeleteSolverConfigurationCommand...");
         if (!configurationRepository.existsById(command.configurationId().getId())) {
             return null;
         }

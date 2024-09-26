@@ -1,4 +1,4 @@
-package com.cocroachden.planner.solver.service.solution;
+package com.cocroachden.planner.solver.solver.solution;
 
 
 import com.cocroachden.planner.solver.WorkShifts;

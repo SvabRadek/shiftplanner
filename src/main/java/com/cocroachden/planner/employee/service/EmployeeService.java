@@ -32,7 +32,7 @@ public class EmployeeService {
                 .setId(command.employeeId().getId())
                 .setFirstName(command.firstName())
                 .setLastName(command.lastName())
-                .setUsername(command.currentUser());
+                .setOwningUser(command.currentUser());
         var savedEmployee = employeeRepository.save(employee);
         return new EmployeeHasBeenSaved(savedEmployee);
     }
@@ -40,10 +40,10 @@ public class EmployeeService {
     @EventListener
     public EmployeeHasBeenDeleted handle(DeleteEmployeeCommand command) {
         log.debug("Handling DeleteEmployeeCommand...");
-        if (!employeeRepository.existsByIdAndUsername(command.employeeId().getId(), command.currentUser())) {
+        if (!employeeRepository.existsByIdAndOwningUser(command.employeeId().getId(), command.currentUser())) {
             return null;
         }
-        employeeRepository.deleteByIdAndUsername(command.employeeId().getId(), command.currentUser());
+        employeeRepository.deleteByIdAndOwningUser(command.employeeId().getId(), command.currentUser());
         return new EmployeeHasBeenDeleted(command.employeeId());
     }
 }

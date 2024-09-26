@@ -1,5 +1,6 @@
 package com.cocroachden.planner.user.query;
 
+import com.cocroachden.planner.security.Authorities;
 import com.cocroachden.planner.user.RegisteredUserDTO;
 import com.cocroachden.planner.user.RegisteredUserId;
 import com.cocroachden.planner.security.Role;
@@ -22,7 +23,7 @@ public class RegisteredUserQuery implements UserDetailsService {
     private final RegisteredUserRepository registeredUserRepository;
 
     public Optional<RegisteredUserDTO> findUser(RegisteredUserId userId, String hashedPassword) {
-        var user = registeredUserRepository.findById(userId);
+        var user = registeredUserRepository.findById(userId.getId());
         if (user.isPresent() && user.get().getHashedPassword().equals(hashedPassword)) {
             return user.map(RegisteredUserDTO::from);
         }
@@ -30,14 +31,18 @@ public class RegisteredUserQuery implements UserDetailsService {
     }
 
     public Boolean userExists(RegisteredUserId userId) {
-        return registeredUserRepository.existsById(userId);
+        return registeredUserRepository.existsById(userId.getId());
+    }
+
+    public Boolean hasRole(String username, Authorities authority) {
+        return registeredUserRepository.existsByUsernameAndAuthoritiesContaining(username, authority.getRole());
     }
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        return registeredUserRepository.findById(new RegisteredUserId(username))
+        return registeredUserRepository.findById(username)
                 .map(user -> new User(
-                        user.getEmail().getId(),
+                        user.getUsername().getId(),
                         user.getHashedPassword(),
                         true,
                         true,

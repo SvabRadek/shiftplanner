@@ -22,13 +22,13 @@ public class RegisteredUserService {
 
     @EventListener
     public UserHasBeenRegistered handle(RegisterUserCommand command) {
-        log.debug("Handling RegisterUserCommand");
-        if (registeredUserRepository.existsById(command.getEmail())) {
-            throw new IllegalArgumentException("User with registeredUserId %s already exists!".formatted(command.getEmail()));
+        log.debug("Handling RegisterUserCommand...");
+        if (registeredUserRepository.existsById(command.getUsername().getId())) {
+            throw new IllegalArgumentException("User with username %s already exists!".formatted(command.getUsername().getId()));
         }
         var savedUser = registeredUserRepository.save(
                 new RegisteredUserRecord(
-                        command.getEmail(),
+                        command.getUsername().getId(),
                         command.getHashedPassword(),
                         command.getAuthorities().stream().map(String::toUpperCase).toList()
                 )
@@ -38,23 +38,23 @@ public class RegisteredUserService {
 
     @EventListener
     public AuthorityHasBeenAdded handle(AddAuthoritiesCommand command) {
-        log.debug("Handling AddAuthorityCommand");
-        var user = registeredUserRepository.findById(command.getUserId())
-                .orElseThrow(() -> new IllegalArgumentException("User with registeredUserId %s does not exists!".formatted(command.getUserId())));
+        log.debug("Handling AddAuthorityCommand...");
+        var user = registeredUserRepository.findById(command.getUsername().getId())
+                .orElseThrow(() -> new IllegalArgumentException("User with username %s does not exists!".formatted(command.getUsername())));
         var authorities = user.getAuthorities();
         authorities.addAll(command.getAuthorities());
         user.setAuthorities(authorities.stream().map(String::toUpperCase).distinct().toList());
         var updatedUser = registeredUserRepository.save(user);
-        return new AuthorityHasBeenAdded(updatedUser.getEmail(), command.getAuthorities());
+        return new AuthorityHasBeenAdded(updatedUser.getUsername(), command.getAuthorities());
     }
 
     @EventListener
     public RegisteredUserHasBeenDeleted handle(DeleteRegisteredUserCommand command) {
-        log.debug("Handling DeleteRegisteredUserCommand");
-        if (!registeredUserRepository.existsById(command.registeredUserId())) {
+        log.debug("Handling DeleteRegisteredUserCommand...");
+        if (!registeredUserRepository.existsById(command.username().getId())) {
             return null;
         }
-        registeredUserRepository.deleteById(command.registeredUserId());
-        return new RegisteredUserHasBeenDeleted(command.registeredUserId());
+        registeredUserRepository.deleteById(command.username().getId());
+        return new RegisteredUserHasBeenDeleted(command.username());
     }
 }

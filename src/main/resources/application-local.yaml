@@ -1,6 +1,8 @@
 application:
   solver:
     default-solver-time-limit-in-sec: 60
+  tickets:
+    expiration-time-in-sec: 3
 
 spring:
   mustache:

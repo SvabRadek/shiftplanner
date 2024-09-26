@@ -19,13 +19,13 @@ public class SolverConfigurationQuery {
     }
 
     public SolverConfigurationDTO getSolverConfigurationById(String username, SolverConfigurationId configurationId) {
-        return SolverConfigurationDTO.from(repository.findByIdAndUsername(configurationId.getId(), username)
+        return SolverConfigurationDTO.from(repository.findByIdAndOwningUser(configurationId.getId(), username)
                 .orElseThrow(() -> new IllegalArgumentException("Solver configuration with employeeId [" + configurationId + "] not found!"))
         );
     }
 
     public List<SolverConfigurationMetadata> getAllMetadataForUser(String username) {
-        return repository.findByUsername(username).stream().toList();
+        return repository.findByOwningUser(username).stream().toList();
     }
 
     public SolverConfigurationMetadata getAllMetadataById(List<SolverConfigurationId> configurationIds) {

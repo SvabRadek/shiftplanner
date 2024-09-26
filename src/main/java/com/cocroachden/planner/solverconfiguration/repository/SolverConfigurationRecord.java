@@ -28,7 +28,7 @@ public class SolverConfigurationRecord {
     @Setter
     private String name;
     @Setter
-    private String username;
+    private String owningUser;
     @CreationTimestamp
     private Instant createdAt;
     @UpdateTimestamp

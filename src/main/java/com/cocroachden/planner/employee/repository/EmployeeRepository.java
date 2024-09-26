@@ -10,14 +10,14 @@ import java.util.List;
 @Repository
 public interface EmployeeRepository extends CrudRepository<EmployeeRecord, String>, JpaSpecificationExecutor<EmployeeRecord> {
 
-  List<EmployeeRecord> findByIdInAndUsername(Collection<String> ids, String username);
+  List<EmployeeRecord> findByIdInAndOwningUser(Collection<String> ids, String username);
 
-  Boolean existsByFirstNameAndLastNameAndUsername(String firstName, String lastName, String username);
+  Boolean existsByFirstNameAndLastNameAndOwningUser(String firstName, String lastName, String username);
 
-  List<EmployeeRecord> findAllByIdNotInAndUsername(Collection<String> ids, String username);
-  List<EmployeeRecord> findAllByIdInAndUsername(Collection<String> ids, String username);
-  List<EmployeeRecord> findAllByUsername(String username);
-  Boolean existsByIdAndUsername(String id, String username);
-  void deleteByIdAndUsername(String id, String username);
-  EmployeeRecord getByIdAndUsername(String id, String username);
+  List<EmployeeRecord> findAllByIdNotInAndOwningUser(Collection<String> ids, String username);
+  List<EmployeeRecord> findAllByIdInAndOwningUser(Collection<String> ids, String username);
+  List<EmployeeRecord> findAllByOwningUser(String username);
+  Boolean existsByIdAndOwningUser(String id, String username);
+  void deleteByIdAndOwningUser(String id, String username);
+  EmployeeRecord getByIdAndOwningUser(String id, String username);
 }

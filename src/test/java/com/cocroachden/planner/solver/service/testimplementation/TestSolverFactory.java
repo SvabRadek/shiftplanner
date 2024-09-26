@@ -1,7 +1,7 @@
 package com.cocroachden.planner.solver.service.testimplementation;
 
-import com.cocroachden.planner.solver.service.solver.Solver;
-import com.cocroachden.planner.solver.service.solver.SolverFactory;
+import com.cocroachden.planner.solver.solver.Solver;
+import com.cocroachden.planner.solver.solver.SolverFactory;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 import lombok.Setter;

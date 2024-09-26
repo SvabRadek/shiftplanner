@@ -1,0 +1,4 @@
+POST http://localhost:5000/connect/TicketEndpoint/issueTicket
+Content-Type: application/json
+Cookie: JSESSIONID=A14B45C6521131FBA367079B2A499D54
+X-Csrf-Token: -tL49htiFc-danpHMKt88H4ENPaTINyzTvsFEy_8fiMzxYTkzLbMxXhQdK6wDEkhVIZIkk1iGZSkRu2edp43IUuZHEEB_bPT

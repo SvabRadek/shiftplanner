@@ -1,6 +1,6 @@
 package com.cocroachden.planner.solverconfiguration.service;
 
-import com.cocroachden.AbstractMessagingTest;
+import com.cocroachden.planner.AbstractMessagingTest;
 import com.cocroachden.planner.constraint.ConstraintId;
 import com.cocroachden.planner.constraint.EmployeesPerShiftConstraintDTO;
 import com.cocroachden.planner.constraint.TeamAssignmentConstraintDTO;

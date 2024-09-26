@@ -4,6 +4,7 @@ import com.cocroachden.planner.common.messaging.Command;
 import com.cocroachden.planner.solver.SolverSubscriptionId;
 
 public record StopSolverCommand(
-        SolverSubscriptionId subscriptionId
+        SolverSubscriptionId subscriptionId,
+        String username
 ) implements Command {
 }

@@ -3,8 +3,8 @@ package com.cocroachden.planner.solver.constraints.specific.evenshiftdistributio
 import com.cocroachden.planner.solver.constraints.ConstraintApplier;
 import com.cocroachden.planner.solver.constraints.SolverConstraint;
 import com.cocroachden.planner.solver.constraints.specific.evenshiftdistribution.request.EvenShiftDistributionConstraint;
-import com.cocroachden.planner.solver.service.solver.SolutionObjectives;
-import com.cocroachden.planner.solver.service.solver.schedule.SchedulePlan;
+import com.cocroachden.planner.solver.solver.solution.SolutionObjectives;
+import com.cocroachden.planner.solver.solver.schedule.SchedulePlan;
 import com.google.ortools.sat.CpModel;
 import com.google.ortools.sat.LinearArgument;
 import com.google.ortools.sat.LinearExpr;

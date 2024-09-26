@@ -1,4 +1,4 @@
-package com.cocroachden;
+package com.cocroachden.planner;
 
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;

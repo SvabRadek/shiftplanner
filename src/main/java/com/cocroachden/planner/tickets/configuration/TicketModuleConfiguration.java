@@ -1,4 +1,4 @@
-package com.cocroachden.planner.solver;
+package com.cocroachden.planner.tickets.configuration;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -6,9 +6,9 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
-@ConfigurationProperties(prefix = "application.solver")
+@ConfigurationProperties(prefix = "application.tickets")
 @Getter
 @Setter
-public class SolverModuleConfiguration {
-    private Integer defaultSolverTimeLimitInSec = 60;
+public class TicketModuleConfiguration {
+    private Integer expirationTimeInSec = 5;
 }
