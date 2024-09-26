@@ -14,6 +14,7 @@ import lombok.Setter;
 
 import java.time.Instant;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
@@ -73,9 +74,9 @@ public class SolverConfigurationDTO {
     @Nonnull
     private LocalDate endDate;
     @Nonnull
-    private List<@Nonnull EmployeeAssignmentDTO> employees;
+    private List<@Nonnull EmployeeAssignmentDTO> employees = new ArrayList<>();
     @Nonnull
-    private List<@Nonnull ConstraintDTO> constraints;
+    private List<@Nonnull ConstraintDTO> constraints = new ArrayList<>();
 
     @JsonIgnore
     public @Nonnull SolverConfigurationId getId() {

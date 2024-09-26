@@ -9,6 +9,7 @@ import com.cocroachden.planner.solver.command.solveconfiguration.SolutionHasBeen
 import com.cocroachden.planner.solver.command.solveconfiguration.StartSolverCommand;
 import com.cocroachden.planner.solver.command.stopsolver.StopSolverCommand;
 import com.cocroachden.planner.solverconfiguration.SolverConfigurationId;
+import com.cocroachden.planner.solverconfiguration.query.SolverConfigurationQuery;
 import com.cocroachden.planner.tickets.Ticket;
 import com.cocroachden.planner.tickets.query.TicketQuery;
 import com.cocroachden.planner.user.query.RegisteredUserQuery;
@@ -34,16 +35,19 @@ public class SolverEndpoint {
     private final Sinks.Many<SolverSolutionDTO> sink;
     private final TicketQuery ticketQuery;
     private final RegisteredUserQuery registeredUserQuery;
+    private final SolverConfigurationQuery configurationQuery;
 
     public SolverEndpoint(
             ApplicationEventPublisher publisher,
             TicketQuery ticketQuery,
             RegisteredUserQuery registeredUserQuery,
-            @Value("${application.solver.default-solver-time-limit-in-sec}") Integer solverDefaultTimeLimitInSec
+            @Value("${application.solver.default-solver-time-limit-in-sec}") Integer solverDefaultTimeLimitInSec,
+            SolverConfigurationQuery configurationQuery
     ) {
         this.publisher = publisher;
         this.ticketQuery = ticketQuery;
         this.registeredUserQuery = registeredUserQuery;
+        this.configurationQuery = configurationQuery;
         this.sink = Sinks.many().multicast().onBackpressureBuffer();
         this.solutionFlux = sink.asFlux().takeWhile(solution -> solution.getSolutionStatus().equals(SolutionStatus.OK));
         this.solverDefaultTimeLimitInSec = solverDefaultTimeLimitInSec;
@@ -55,9 +59,10 @@ public class SolverEndpoint {
         if (!registeredUserQuery.hasRole(username, Authorities.USER)) {
             throw new IllegalArgumentException("User " + username + " is not authorized to start solver!");
         }
+        var configuration = configurationQuery.getSolverConfigurationById(username, SolverConfigurationId.from(configurationId));
         SolverSubscriptionId subscriptionId = SolverSubscriptionId.random();
         var command = new StartSolverCommand(
-                new SolverConfigurationId(configurationId),
+                configuration,
                 subscriptionId,
                 solverDefaultTimeLimitInSec,
                 username

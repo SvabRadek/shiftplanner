@@ -1,9 +1,11 @@
 package com.cocroachden.planner.solver;
 
 
+import com.cocroachden.planner.constraint.mapping.ConstraintMapper;
 import com.cocroachden.planner.constraint.repository.ConstraintRecord;
 import com.cocroachden.planner.solver.constraints.SolverConstraint;
 import com.cocroachden.planner.solver.solver.schedule.ScheduleEmployee;
+import com.cocroachden.planner.solverconfiguration.SolverConfigurationDTO;
 import com.cocroachden.planner.solverconfiguration.repository.SolverConfigurationRecord;
 import org.apache.commons.lang3.StringUtils;
 
@@ -26,6 +28,19 @@ public record SolverProblemConfiguration(
                     .toList(),
             record.getConstraintRecords().stream()
                     .map(ConstraintRecord::getRequest)
+                    .toList()
+    );
+  }
+
+  public static SolverProblemConfiguration from(SolverConfigurationDTO dto) {
+    return new SolverProblemConfiguration(
+            dto.getStartDate(),
+            dto.getEndDate(),
+            dto.getEmployees().stream()
+                    .map(a -> new ScheduleEmployee(a.getEmployeeId(), a.getWeight()))
+                    .toList(),
+            dto.getConstraints().stream()
+                    .map(ConstraintMapper::fromDto)
                     .toList()
     );
   }

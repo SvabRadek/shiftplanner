@@ -12,6 +12,7 @@ import com.cocroachden.planner.solver.query.SolverServiceQuery;
 import com.cocroachden.planner.solver.solver.SolverFactory;
 import com.cocroachden.planner.solver.service.testimplementation.TestSolver;
 import com.cocroachden.planner.solver.service.testimplementation.TestSolverFactory;
+import com.cocroachden.planner.solverconfiguration.SolverConfigurationDTO;
 import com.cocroachden.planner.solverconfiguration.SolverConfigurationId;
 import com.cocroachden.planner.solverconfiguration.command.saveconfiguration.SaveSolverConfigurationCommand;
 import com.cocroachden.planner.solverconfiguration.repository.SolverConfigurationRepository;
@@ -69,14 +70,14 @@ class SolverServiceTest extends AbstractMessagingTest {
         );
         this.givenCommandHasBeenSent(configCommand);
         var command = new StartSolverCommand(
-                configurationId,
+                new SolverConfigurationDTO(),
                 subscriptionId,
                 10,
                 "irrelevant"
         );
         this.whenCommandHasBeenSent(command);
-        this.thenExactlyOneEventHasBeenDispatched(SolverHasBeenStarted.class);
         this.thenSomeTimeHasPassed(10);
+        this.thenExactlyOneEventHasBeenDispatched(SolverHasBeenStarted.class);
         this.thenAtLeastOneEventHasBeenDispatched(SolutionHasBeenFound.class);
         this.thenExactlyOneEventHasBeenDispatched(SolverHasBeenStopped.class);
         Assertions.assertThat(solverServiceQuery.findSolverTask(subscriptionId)).isEmpty();
@@ -102,12 +103,13 @@ class SolverServiceTest extends AbstractMessagingTest {
         );
         this.givenCommandHasBeenSent(configCommand);
         var startCommand = new StartSolverCommand(
-                configurationId,
+                new SolverConfigurationDTO(),
                 subscriptionId,
                 10,
                 "irrelevant"
         );
         this.whenCommandHasBeenSent(startCommand);
+        this.thenSomeTimeHasPassed(10);
         this.thenExactlyOneEventHasBeenDispatched(SolverHasBeenStarted.class);
         this.thenSomeTimeHasPassed(10);
         this.thenExactlyOneEventHasBeenDispatched(SolverHasBeenStopped.class);
@@ -122,7 +124,7 @@ class SolverServiceTest extends AbstractMessagingTest {
                         .setTestCallback((configuration, callback, solverOptions) -> {
                             while (!shouldStop.get()) {
                                 try {
-                                    Thread.sleep(10);
+                                    Thread.sleep(5);
                                 } catch (InterruptedException e) {
                                     throw new RuntimeException(e);
                                 }
@@ -142,16 +144,17 @@ class SolverServiceTest extends AbstractMessagingTest {
         );
         this.givenCommandHasBeenSent(configCommand);
         var startCommand = new StartSolverCommand(
-                configurationId,
+                new SolverConfigurationDTO(),
                 subscriptionId,
                 10,
                 "irrelevant"
         );
         this.givenCommandHasBeenSent(startCommand);
+        this.thenSomeTimeHasPassed(10);
         Assertions.assertThat(solverServiceQuery.findSolverTask(subscriptionId)).isPresent();
         var cancelCommand = new StopSolverCommand(subscriptionId, "irrelevant");
         this.whenCommandHasBeenSent(cancelCommand);
-        this.thenSomeTimeHasPassed(50);
+        this.thenSomeTimeHasPassed(10);
         this.thenExactlyOneEventHasBeenDispatched(SolverHasBeenStopped.class);
         Assertions.assertThat(solverServiceQuery.findSolverTask(subscriptionId)).isEmpty();
     }
@@ -160,7 +163,7 @@ class SolverServiceTest extends AbstractMessagingTest {
     public static class SolverServiceTestConfiguration {
         @Bean
         @Primary
-        public SolverFactory testSolverFactory() {
+        public TestSolverFactory testSolverFactory() {
             return new TestSolverFactory(
                     new TestSolver(
                             (configuration, callback, solverOptions) -> callback.accept(new SolverSolutionDTO())

@@ -16,9 +16,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 class EmployeeServiceTest extends AbstractMessagingTest {
 
     @Autowired
-    private EmployeeQuery employeeQuery;
-
-    @Autowired
     private EmployeeRepository employeeRepository;
 
     @BeforeEach
