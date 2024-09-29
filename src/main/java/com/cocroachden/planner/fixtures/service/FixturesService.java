@@ -21,17 +21,26 @@ public class FixturesService {
     private final ApplicationEventPublisher publisher;
 
     @EventListener
-    public FixturesHasBeenGenerated handle(GenerateFixturesCommand c) {
+    public FixturesHasBeenGenerated handle(GenerateFixturesCommand command) {
+        log.debug("Handling GenerateFixturesCommand...");
+        var allowedGenerators = command.getFixtureGeneratorsToApply();
         generators.stream()
-                .sorted(Comparator.comparing(SpecificFixtureGenerator::getOrder))
-                .map(SpecificFixtureGenerator::generateCommands)
-                .flatMap(List::stream)
-                .forEach(command -> {
-                    try {
-                        publisher.publishEvent(command);
-                    } catch (Exception e) {
-                        log.warn("Exception was thrown by command {} due to {}", command.getClass().getSimpleName(), e.getMessage());
+                .filter(generator -> {
+                    if (allowedGenerators.isEmpty()) {
+                        return true;
                     }
+                    return allowedGenerators.contains(generator.getName());
+                })
+                .sorted(Comparator.comparing(SpecificFixtureGenerator::getOrder))
+                .forEach(generator -> {
+                    log.debug("Applying fixture generator [{}]", generator.getName());
+                    generator.generateCommands().forEach(fixtureCommand -> {
+                        try {
+                            publisher.publishEvent(fixtureCommand);
+                        } catch (Exception e) {
+                            log.warn("Exception was thrown by command {} due to {}", fixtureCommand.getClass().getSimpleName(), e.getMessage());
+                        }
+                    });
                 });
         return new FixturesHasBeenGenerated();
     }

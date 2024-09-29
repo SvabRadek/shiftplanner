@@ -9,6 +9,14 @@ import java.util.List;
 
 @Service
 public class EmployeeFixtureGenerator implements SpecificFixtureGenerator {
+
+    public static final String NAME = "employee_fixtures";
+
+    @Override
+    public String getName() {
+        return NAME;
+    }
+
     @Override
     public List<Command> generateCommands() {
         return EmployeeFixturesData.fixtureEmployees().stream()

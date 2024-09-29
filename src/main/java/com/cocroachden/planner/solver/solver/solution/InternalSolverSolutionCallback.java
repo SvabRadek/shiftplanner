@@ -13,6 +13,7 @@ import lombok.extern.slf4j.Slf4j;
 import java.time.LocalDate;
 import java.util.*;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 @Slf4j
 public class InternalSolverSolutionCallback extends CpSolverSolutionCallback {
@@ -20,9 +21,8 @@ public class InternalSolverSolutionCallback extends CpSolverSolutionCallback {
     @Getter
     private Integer currentSolutionCount = 0;
     @Getter
-    private SolverSolution latestResponse;
+    private SolverSolution latestSolution;
     private double bestObjectiveValue = Double.MAX_VALUE;
-    private final Integer solutionLimit;
     private final SchedulePlan schedulePlan;
 
     public InternalSolverSolutionCallback(
@@ -30,13 +30,7 @@ public class InternalSolverSolutionCallback extends CpSolverSolutionCallback {
             SchedulePlan schedulePlan
     ) {
         this.fluxSink = fluxSink;
-        this.solutionLimit = 999999999;
         this.schedulePlan = schedulePlan;
-    }
-
-    @Override
-    public void stopSearch() {
-        super.stopSearch();
     }
 
     @Override
@@ -44,16 +38,15 @@ public class InternalSolverSolutionCallback extends CpSolverSolutionCallback {
         var currentObjective = this.objectiveValue();
         if (currentObjective > bestObjectiveValue) return;
         bestObjectiveValue = currentObjective;
-        var response = createResponseSchedule();
-        var latestResponse = new SolverSolution(response);
-        this.latestResponse = latestResponse;
-        this.printStatsHeader(currentObjective);
+        this.latestSolution = new SolverSolution(this.readAssignments());
+        this.printDebug(currentObjective);
         var employeeMap = new HashMap<String, Map<LocalDate, WorkShifts>>();
-        latestResponse.workdays().forEach((employeeId, responseWorkDays) -> {
-            var shiftMap = new HashMap<LocalDate, WorkShifts>();
-            responseWorkDays.forEach(solutionWorkDay -> {
-                shiftMap.put(solutionWorkDay.date(), solutionWorkDay.assignedShift());
-            });
+        latestSolution.workdays().forEach((employeeId, solutionWorkDays) -> {
+            var shiftMap = solutionWorkDays.stream()
+                    .collect(Collectors.toMap(
+                            SolutionWorkDay::date,
+                            SolutionWorkDay::assignedShift
+                    ));
             employeeMap.put(employeeId.getId(), shiftMap);
         });
         fluxSink.accept(
@@ -66,13 +59,10 @@ public class InternalSolverSolutionCallback extends CpSolverSolutionCallback {
                 )
         );
         currentSolutionCount++;
-        if (currentSolutionCount >= solutionLimit) {
-            stopSearch();
-        }
     }
 
 
-    private HashMap<EmployeeId, List<SolutionWorkDay>> createResponseSchedule() {
+    private HashMap<EmployeeId, List<SolutionWorkDay>> readAssignments() {
         var response = new HashMap<EmployeeId, List<SolutionWorkDay>>();
         schedulePlan.getAssignments()
                 .entrySet().stream()
@@ -97,7 +87,7 @@ public class InternalSolverSolutionCallback extends CpSolverSolutionCallback {
         return response;
     }
 
-    private void printStatsHeader(double currentObjective) {
+    private void printDebug(double currentObjective) {
         double bestBound = this.bestObjectiveBound();
         double distance = currentObjective + (bestBound > 0 ? bestBound : bestBound * -1);
         log.debug("Solution #{}, cost: {}, optimum deviation: {}", currentSolutionCount, currentObjective, distance);

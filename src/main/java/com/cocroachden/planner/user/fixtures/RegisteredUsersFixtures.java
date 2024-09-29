@@ -15,7 +15,13 @@ import java.util.List;
 @AllArgsConstructor
 public class RegisteredUsersFixtures implements SpecificFixtureGenerator {
 
+    public static final String NAME = "registered_user_fixtures";
     private final PasswordEncoder encoder;
+
+    @Override
+    public String getName() {
+        return NAME;
+    }
 
     @Override
     public List<Command> generateCommands() {

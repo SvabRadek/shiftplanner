@@ -23,7 +23,13 @@ import java.util.stream.Collectors;
 @AllArgsConstructor
 public class SolverConfigurationFixture implements SpecificFixtureGenerator {
 
+    public static final String NAME = "solver_configuration_fixtures";
     public final static SolverConfigurationId DEFAULT_ID = new SolverConfigurationId("4e8c8725-3fc8-4895-bf4a-8d1af153c7c5");
+
+    @Override
+    public String getName() {
+        return NAME;
+    }
 
     @Override
     public List<Command> generateCommands() {

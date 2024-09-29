@@ -8,6 +8,7 @@ import com.cocroachden.planner.solver.SolverSubscriptionId;
 import com.cocroachden.planner.solver.command.solveconfiguration.SolutionHasBeenFound;
 import com.cocroachden.planner.solver.command.solveconfiguration.StartSolverCommand;
 import com.cocroachden.planner.solver.command.stopsolver.StopSolverCommand;
+import com.cocroachden.planner.solverconfiguration.SolverConfigurationDTO;
 import com.cocroachden.planner.solverconfiguration.SolverConfigurationId;
 import com.cocroachden.planner.solverconfiguration.query.SolverConfigurationQuery;
 import com.cocroachden.planner.tickets.Ticket;
@@ -53,13 +54,22 @@ public class SolverEndpoint {
         this.solverDefaultTimeLimitInSec = solverDefaultTimeLimitInSec;
     }
 
-    public EndpointSubscription<@Nonnull SolverSolutionDTO> solveProblem(String configurationId, String ticket) {
+    public EndpointSubscription<@Nonnull SolverSolutionDTO> solveSavedProblem(String configurationId, String ticket) {
         var username = ticketQuery.getUsernameForTicket(Ticket.from(ticket))
                 .orElseThrow(() -> new IllegalArgumentException("Ticket " + ticket + " is invalid!"));
         if (!registeredUserQuery.hasRole(username, Authorities.USER)) {
             throw new IllegalArgumentException("User " + username + " is not authorized to start solver!");
         }
         var configuration = configurationQuery.getSolverConfigurationById(username, SolverConfigurationId.from(configurationId));
+        return this.solveProblem(configuration, username);
+    }
+
+    public EndpointSubscription<@Nonnull SolverSolutionDTO> solveProblem(SolverConfigurationDTO configuration, String ticket) {
+        var username = ticketQuery.getUsernameForTicket(Ticket.from(ticket))
+                .orElseThrow(() -> new IllegalArgumentException("Ticket " + ticket + " is invalid!"));
+        if (!registeredUserQuery.hasRole(username, Authorities.USER)) {
+            throw new IllegalArgumentException("User " + username + " is not authorized to start solver!");
+        }
         SolverSubscriptionId subscriptionId = SolverSubscriptionId.random();
         var command = new StartSolverCommand(
                 configuration,
