@@ -8,6 +8,7 @@ import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @AllArgsConstructor
@@ -27,6 +28,13 @@ public class EmployeeQuery {
     public Boolean existsByName(String firstName, String lastName, String currentUser) {
         return employeeRepository.existsByFirstNameAndLastNameAndOwningUser(firstName, lastName, currentUser);
     }
+
+    public Optional<EmployeeDTO> findByName(String firstName, String lastName, String currentUser) {
+        return employeeRepository.findByFirstNameAndLastNameAndOwningUser(firstName, lastName, currentUser)
+                .map(EmployeeDTO::from);
+    }
+
+
 
     public List<EmployeeDTO> findAllByIds(List<EmployeeId> ids, String currentUser) {
         var unboxedIds = ids.stream().map(EmployeeId::getId).toList();

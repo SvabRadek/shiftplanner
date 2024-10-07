@@ -79,7 +79,7 @@ export default function ScheduleView() {
     const [resultSubscription, setResultSubscription] = useState<Subscription<SolverSolutionDTO> | undefined>();
     const [gridDisplayMode, setGridDisplayMode] = useState<GridDisplayMode>(GridDisplayMode.PLANNING);
 
-    const [request, setRequest] = useState<SolverConfigurationDTO | undefined>();
+    const [solverConfiguration, setSolverConfiguration] = useState<SolverConfigurationDTO | undefined>();
     const [requestedShiftConstraints, setRequestedShiftConstraints] = useState<RequestedShiftConstraintDTO[]>([])
     const [shiftPerScheduleRequests, setShiftPerScheduleRequests] = useState<ShiftsPerScheduleConstraintDTO[]>([])
     const [consecutiveWorkingDaysRequests, setConsecutiveWorkingDaysRequests] = useState<ConsecutiveWorkingDaysConstraintDTO[]>([]);
@@ -116,7 +116,7 @@ export default function ScheduleView() {
     }
 
     function handleCancel() {
-        handleFetchConfig(request?.id!)
+        handleFetchConfig(solverConfiguration?.id!)
     }
 
     function combineConstraints() {
@@ -136,7 +136,7 @@ export default function ScheduleView() {
 
     async function handleSave() {
         await SolverConfigurationEndpoint.save({
-            ...request!,
+            ...solverConfiguration!,
             id: generateUUID(),
             constraints: combineConstraints()
         }).then(response => {
@@ -151,7 +151,7 @@ export default function ScheduleView() {
 
     async function handleUpdate() {
         await SolverConfigurationEndpoint.update({
-            ...request!,
+            ...solverConfiguration!,
             constraints: combineConstraints()
         }).then(response => {
             handleFetchConfig(response)
@@ -179,7 +179,7 @@ export default function ScheduleView() {
             setWeekendRequests(sortedConstraints[ConstraintType.WEEKEND_CONSTRAINT])
             setEvenDistributionRequests(sortedConstraints[ConstraintType.EVEN_SHIFT_DISTRIBUTION])
             configResponse["constraints"] = []
-            setRequest(configResponse)
+            setSolverConfiguration(configResponse)
         })
         modeCtx.setMode(ScheduleMode.READONLY)
     }
@@ -193,32 +193,32 @@ export default function ScheduleView() {
                 })
                 break
             case CRUDActions.UPDATE:
-                setRequest(prevState => {
+                setSolverConfiguration(prevState => {
                     if (prevState == undefined) return undefined
                     return {
-                        ...request!,
+                        ...solverConfiguration!,
                         employees: updateAssignmentsWithIndexIntegrity(
                             action.payload,
-                            request!.employees
+                            solverConfiguration!.employees
                         )
                     }
                 })
                 break
             case CRUDActions.CREATE:
-                setRequest(prevState => {
+                setSolverConfiguration(prevState => {
                     if (prevState == undefined) return undefined
                     return {
-                        ...request!,
-                        employees: [...request!.employees, action.payload]
+                        ...solverConfiguration!,
+                        employees: [...solverConfiguration!.employees, action.payload]
                     }
                 })
                 break
             case CRUDActions.DELETE:
-                setRequest(prevState => {
+                setSolverConfiguration(prevState => {
                     if (prevState == undefined) return undefined
                     return {
-                        ...request!,
-                        employees: request!.employees.filter(a => a.employeeId !== action.payload.employeeId)
+                        ...solverConfiguration!,
+                        employees: solverConfiguration!.employees.filter(a => a.employeeId !== action.payload.employeeId)
                     }
                 })
         }
@@ -245,14 +245,14 @@ export default function ScheduleView() {
     }
 
     function validateRequest() {
-        validationCtx.validate({...request!, constraints: combineConstraints()})
+        validationCtx.validate({...solverConfiguration!, constraints: combineConstraints()})
     }
 
     function handleStartCalculation() {
         handleStopCalculation()
         setGridDisplayMode(GridDisplayMode.RESULT)
         TicketEndpoint.issueTicket().then(ticket => {
-            setResultSubscription(SolverEndpoint.solveProblem(request?.id, ticket)
+            setResultSubscription(SolverEndpoint.solveSavedProblem(solverConfiguration?.id, ticket)
                 .onNext(value => {
                     if (value.solutionStatus !== SolutionStatus.OK) {
                         Notification.show(value.message, {
@@ -356,31 +356,31 @@ export default function ScheduleView() {
                 <HorizontalLayout theme={"spacing"} style={{alignItems: "end"}}>
                     <TextField
                         label={"Název"}
-                        value={request?.name}
-                        onChange={e => setRequest({...request!, name: e.target.value})}
+                        value={solverConfiguration?.name}
+                        onChange={e => setSolverConfiguration({...solverConfiguration!, name: e.target.value})}
                         readonly={modeCtx.mode !== ScheduleMode.EDIT}
-                        disabled={!request}
+                        disabled={!solverConfiguration}
                         style={{width: 385}}
                     />
                     <DatePicker
                         label={"Od"}
-                        value={request && request?.startDate}
-                        onChange={e => setRequest({
-                            ...request!,
+                        value={solverConfiguration && solverConfiguration?.startDate}
+                        onChange={e => setSolverConfiguration({
+                            ...solverConfiguration!,
                             startDate: e.target.value
                         })}
                         readonly={modeCtx.mode !== ScheduleMode.EDIT}
-                        disabled={!request}
+                        disabled={!solverConfiguration}
                     />
                     <DatePicker
                         label={"Do"}
-                        value={request && request?.endDate}
-                        onChange={e => setRequest({
-                            ...request!,
+                        value={solverConfiguration && solverConfiguration?.endDate}
+                        onChange={e => setSolverConfiguration({
+                            ...solverConfiguration!,
                             endDate: e.target.value
                         })}
                         readonly={modeCtx.mode !== ScheduleMode.EDIT}
-                        disabled={!request}
+                        disabled={!solverConfiguration}
                     />
                     <Button
                         theme={"secondary"}
@@ -400,7 +400,7 @@ export default function ScheduleView() {
                 onStopCalculation={handleStopCalculation}
                 onStartCalculation={handleStartCalculation}
                 resultSubscription={resultSubscription}
-                request={request}
+                request={solverConfiguration}
                 onConfigSelected={handleFetchConfig}
                 onValidateRequest={validateRequest}
                 resultCache={resultCache}
@@ -408,19 +408,19 @@ export default function ScheduleView() {
                 onUpdate={handleUpdate}
                 onCancel={handleCancel}
                 onClearCache={() => setResultCache({results: [], selectedIndex: 0})}
-                onExportToExcel={() => exportToExcel(request!.name, request!.employees, employees, resultCache.results[resultCache.selectedIndex])}
+                onExportToExcel={() => exportToExcel(solverConfiguration!.name, solverConfiguration!.employees, employees, resultCache.results[resultCache.selectedIndex])}
                 cacheSize={RESULT_CACHE_SIZE}
                 onResultSelectionChanged={handleResultSelectionChanged}
                 gridDisplayMode={gridDisplayMode}
                 onGridDisplayModeChange={setGridDisplayMode}
             />
-            {request ? renderGridHeader() : <h2 style={{marginTop: 30, padding: 10}}>Vyberte rozvrh</h2>}
-            {request &&
+            {solverConfiguration ? renderGridHeader() : <h2 style={{marginTop: 30, padding: 10}}>Vyberte rozvrh</h2>}
+            {solverConfiguration &&
                 <Fragment>
                     <ScheduleSettingsDialog
                         isOpen={isScheduleConfigDialogOpen}
                         onOpenChanged={setIsScheduleConfigDialogOpen}
-                        request={request}
+                        request={solverConfiguration}
                         employees={employees}
                         onAssignmentAction={handleAssignmentAction}
                         employeesPerShift={employeesPerShiftRequests}
@@ -432,7 +432,7 @@ export default function ScheduleView() {
                     />
                     <EmployeeConstraintsDialog
                         key={employeeConfigDialog.selectedEmployeeId}
-                        assignment={request.employees.find(w => w.employeeId === employeeConfigDialog.selectedEmployeeId)!}
+                        assignment={solverConfiguration.employees.find(w => w.employeeId === employeeConfigDialog.selectedEmployeeId)!}
                         employee={employees.find(e => e.id === employeeConfigDialog.selectedEmployeeId)!}
                         isOpen={employeeConfigDialog.isOpen}
                         onShiftPerScheduleAction={handleShiftPerScheduleAction}
@@ -464,7 +464,7 @@ export default function ScheduleView() {
                         }}
                     >
                         <ScheduleGridContainer
-                            request={request}
+                            request={solverConfiguration}
                             employees={employees}
                             shiftRequests={requestedShiftConstraints}
                             shiftPatterns={shiftPatternRequests}
