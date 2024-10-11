@@ -22,9 +22,10 @@ spring:
 
 logging:
   level:
-    root: INFO
+    root: info
     org.atmosphere: WARN
     com.cocroachden.planner: DEBUG
+    web: debug
 
 vaadin:
   launch-browser: false

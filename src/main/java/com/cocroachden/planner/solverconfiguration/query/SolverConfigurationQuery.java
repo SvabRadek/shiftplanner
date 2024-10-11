@@ -4,6 +4,7 @@ import com.cocroachden.planner.solverconfiguration.SolverConfigurationId;
 import com.cocroachden.planner.solverconfiguration.SolverConfigurationDTO;
 import com.cocroachden.planner.solverconfiguration.SolverConfigurationMetadata;
 import com.cocroachden.planner.solverconfiguration.repository.SolverConfigurationRepository;
+import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -11,6 +12,7 @@ import java.util.List;
 
 @Service
 @AllArgsConstructor
+@Transactional
 public class SolverConfigurationQuery {
     private final SolverConfigurationRepository repository;
 
@@ -20,7 +22,7 @@ public class SolverConfigurationQuery {
 
     public SolverConfigurationDTO getSolverConfigurationById(String username, SolverConfigurationId configurationId) {
         return SolverConfigurationDTO.from(repository.findByIdAndOwningUser(configurationId.getId(), username)
-                .orElseThrow(() -> new IllegalArgumentException("Solver configuration with employeeId [" + configurationId + "] not found!"))
+                .orElseThrow(() -> new IllegalArgumentException("Solver configuration with id [" + configurationId.getId() + "] not found!"))
         );
     }
 

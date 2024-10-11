@@ -15,7 +15,7 @@ export function EmployeeView2() {
 
     return (
       <VerticalLayout theme={"spacing padding"}>
-          {employees.map(e => <EmployeeCard employee={e}/>)}
+          {employees.map(e => <EmployeeCard employee={e} onEmployeeAction={() => {}}/>)}
       </VerticalLayout>
   );
 }

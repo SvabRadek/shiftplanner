@@ -29,4 +29,9 @@ public class EmployeeAssignmentId implements Serializable {
   public int hashCode() {
     return Objects.hashCode(employeeId + configurationId);
   }
+
+  @Override
+  public String toString() {
+    return employeeId + configurationId;
+  }
 }

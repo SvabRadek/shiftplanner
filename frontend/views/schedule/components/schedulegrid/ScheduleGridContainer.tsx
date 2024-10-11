@@ -49,7 +49,7 @@ type CellShiftAndColor = {
 }
 
 type Props = {
-    request: SolverConfigurationDTO
+    solverConfiguration: SolverConfigurationDTO
     employees: EmployeeDTO[]
     shiftPatterns: ShiftPatternConstraintDTO[]
     shiftRequests: RequestedShiftConstraintDTO[]
@@ -130,7 +130,7 @@ export function ScheduleGridContainer(props: Props) {
         <ScheduleGrid
             rows={
                 createRows(
-                    props.request,
+                    props.solverConfiguration,
                     props.employees,
                     shiftRequestMap,
                     shiftPatternMap,
@@ -146,7 +146,7 @@ export function ScheduleGridContainer(props: Props) {
             onLeftClick={handleCellLeftClick}
             onAssignmentAction={a => props.onAssignmentAction({
                 type: a.type,
-                payload: props.request.employees.find(e => e.employeeId === a.payload.employeeId)!
+                payload: props.solverConfiguration.employees.find(e => e.employeeId === a.payload.employeeId)!
             })}
         />
     );

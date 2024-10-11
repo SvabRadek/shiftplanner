@@ -1,7 +1,7 @@
 import {Button} from "@hilla/react-components/Button";
 import {Icon} from "@hilla/react-components/Icon";
 import {ScheduleMode, ScheduleModeCtx} from "Frontend/views/schedule/ScheduleModeCtxProvider";
-import {ConfigSelectDialog} from "Frontend/views/schedule/components/ConfigSelectDialog";
+import {ConfigSelectDialog} from "Frontend/views/schedule/components/configurationselect/ConfigSelectDialog";
 import {HorizontalLayout} from "@hilla/react-components/HorizontalLayout";
 import {Subscription} from "@hilla/frontend";
 import {useContext, useEffect, useState} from "react";
@@ -96,12 +96,12 @@ export function HeaderStrip(props: Props) {
                     <Icon icon={"vaadin:cog"} slot={"prefix"}/>
                     Vybrat konfiguraci
                 </Button>
-                <ConfigSelectDialog
-                    configMetaData={configMetaData}
-                    onOpenChanged={value => setIsConfigSelectDialogOpen(value)}
-                    isOpen={isConfigSelectDialogOpen}
-                    onConfigAction={handleConfigAction}
-                />
+                {/*<ConfigSelectDialog*/}
+                {/*    configMetaData={configMetaData}*/}
+                {/*    onOpenChanged={value => setIsConfigSelectDialogOpen(value)}*/}
+                {/*    isOpen={isConfigSelectDialogOpen}*/}
+                {/*    onConfigSelected={handleConfigAction}*/}
+                {/*/>*/}
                 {props.request && <Button
                     disabled={modeCtx.mode === ScheduleMode.EDIT || modeCtx.mode === ScheduleMode.CALCULATING}
                     onClick={() => {

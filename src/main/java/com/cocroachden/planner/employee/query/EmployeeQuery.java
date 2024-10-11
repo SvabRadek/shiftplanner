@@ -4,6 +4,7 @@ import com.cocroachden.planner.employee.EmployeeDTO;
 import com.cocroachden.planner.employee.EmployeeId;
 import com.cocroachden.planner.employee.repository.EmployeeRecord;
 import com.cocroachden.planner.employee.repository.EmployeeRepository;
+import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -12,6 +13,7 @@ import java.util.Optional;
 
 @Service
 @AllArgsConstructor
+@Transactional
 public class EmployeeQuery {
     private final EmployeeRepository employeeRepository;
 

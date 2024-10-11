@@ -18,7 +18,7 @@ import WeekendConstraintDTO from "Frontend/generated/com/cocroachden/planner/con
 import EvenShiftDistributionConstraintDTO
     from "Frontend/generated/com/cocroachden/planner/constraint/EvenShiftDistributionConstraintDTO";
 
-type SortedConstraints = {
+export type SortedConstraints = {
     [ConstraintType.SHIFT_PATTERN_CONSTRAINT]: ShiftPatternConstraintDTO[]
     [ConstraintType.REQUESTED_SHIFT_CONSTRAINT]: RequestedShiftConstraintDTO[]
     [ConstraintType.TRIPLE_SHIFTS_CONSTRAINT]: TripleShiftConstraintDTO[]
@@ -32,8 +32,8 @@ type SortedConstraints = {
 }
 
 export function sortConstraints(constraints: ConstraintDTO[]): SortedConstraints {
-    const filter = (type: ConstraintType) => constraints.filter(c => c.type === type)
 
+    const filter = (type: ConstraintType) => constraints.filter(c => c.type === type)
     return {
         [ConstraintType.REQUESTED_SHIFT_CONSTRAINT]: filter(ConstraintType.REQUESTED_SHIFT_CONSTRAINT) as RequestedShiftConstraintDTO[],
         [ConstraintType.SHIFTS_PER_SCHEDULE]: filter(ConstraintType.SHIFTS_PER_SCHEDULE) as ShiftsPerScheduleConstraintDTO[],
@@ -46,4 +46,18 @@ export function sortConstraints(constraints: ConstraintDTO[]): SortedConstraints
         [ConstraintType.WEEKEND_CONSTRAINT]: filter(ConstraintType.WEEKEND_CONSTRAINT) as WeekendConstraintDTO[],
         [ConstraintType.EVEN_SHIFT_DISTRIBUTION]: filter(ConstraintType.EVEN_SHIFT_DISTRIBUTION) as EvenShiftDistributionConstraintDTO[]
     }
+
+}
+
+export const defaultEmptySortedConstraints: SortedConstraints = {
+    [ConstraintType.SHIFT_PATTERN_CONSTRAINT]: [],
+    [ConstraintType.REQUESTED_SHIFT_CONSTRAINT]: [],
+    [ConstraintType.TRIPLE_SHIFTS_CONSTRAINT]: [],
+    [ConstraintType.CONSECUTIVE_WORKING_DAYS]: [],
+    [ConstraintType.SHIFT_FOLLOW_UP_RESTRICTION]: [],
+    [ConstraintType.SHIFTS_PER_SCHEDULE]: [],
+    [ConstraintType.EMPLOYEES_PER_SHIFT]: [],
+    [ConstraintType.TEAM_ASSIGNMENT]: [],
+    [ConstraintType.WEEKEND_CONSTRAINT]: [],
+    [ConstraintType.EVEN_SHIFT_DISTRIBUTION]: [],
 }

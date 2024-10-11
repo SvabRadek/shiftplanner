@@ -42,6 +42,12 @@ public class CustomEmployeeEndpoint {
         return employeeQuery.findAll(username);
     }
 
+    @Nonnull
+    public List<@Nonnull EmployeeDTO> findEmployees(@Nonnull List<@Nonnull String> ids) {
+        var username = VaadinRequest.getCurrent().getUserPrincipal().getName();
+        return employeeQuery.findAllByIds(ids.stream().map(EmployeeId::from).toList(), username);
+    }
+
     public EmployeeDTO findByName(@Nonnull String firstName, @Nonnull String lastName) {
         var username = VaadinRequest.getCurrent().getUserPrincipal().getName();
         return employeeQuery.findByName(firstName, lastName, username).orElse(null);

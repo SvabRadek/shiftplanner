@@ -15,6 +15,8 @@ export default function LoginView() {
 
     return (
         <LoginOverlay
+            title={"Planovaci aplikace"}
+            description={"Naplanuj smeny pro zamestnance"}
             opened
             error={hasError}
             noForgotPassword

@@ -1,6 +1,7 @@
 import WorkShifts from "Frontend/generated/com/cocroachden/planner/solver/WorkShifts";
 import RequestedShiftConstraintDTO
   from "Frontend/generated/com/cocroachden/planner/constraint/RequestedShiftConstraintDTO";
+import {CSSProperties} from "react";
 
 export enum CRUDActions {
   CREATE,
@@ -71,5 +72,9 @@ export function arePatternsSame(shifts1: WorkShifts[], shift2: WorkShifts[]): bo
     if (shifts1[i] !== shift2[i]) return false
   }
   return true
+}
+
+export function combineStyles(defaultStyle?: CSSProperties, overridingStyle?: CSSProperties) {
+  return Object.assign({}, defaultStyle, overridingStyle)
 }
 

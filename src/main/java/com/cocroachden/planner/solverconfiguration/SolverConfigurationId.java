@@ -1,6 +1,5 @@
 package com.cocroachden.planner.solverconfiguration;
 
-import jakarta.persistence.Embeddable;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -34,5 +33,10 @@ public class SolverConfigurationId implements Serializable {
     @Override
     public int hashCode() {
         return id.hashCode();
+    }
+
+    @Override
+    public String toString() {
+        return id;
     }
 }

@@ -92,12 +92,15 @@ export default function ScheduleView() {
     const [evenDistributionRequests, setEvenDistributionRequests] = useState<EvenShiftDistributionConstraintDTO[]>([]);
 
     useEffect(() => {
-        EmployeeEndpoint.getAllEmployees().then(setEmployees)
         window.addEventListener("beforeunload", handleUnload)
         return () => {
             window.removeEventListener("beforeunload", handleUnload)
         }
     }, []);
+
+    useEffect(() => {
+        EmployeeEndpoint.getAllEmployees().then(setEmployees)
+    }, [solverConfiguration]);
 
     useEffect(() => {
         //validate requests when shift request is made
@@ -252,7 +255,8 @@ export default function ScheduleView() {
         handleStopCalculation()
         setGridDisplayMode(GridDisplayMode.RESULT)
         TicketEndpoint.issueTicket().then(ticket => {
-            setResultSubscription(SolverEndpoint.solveSavedProblem(solverConfiguration?.id, ticket)
+            console.log(ticket)
+            setResultSubscription(SolverEndpoint.solveSavedProblem(solverConfiguration?.id!, ticket!)
                 .onNext(value => {
                     if (value.solutionStatus !== SolutionStatus.OK) {
                         Notification.show(value.message, {
@@ -277,6 +281,7 @@ export default function ScheduleView() {
                     })
                     handleStopCalculation()
                 }).onError(() => {
+                    console.log("Farts?")
                     Notification.show("Chyba!", {
                         position: "top-center",
                         duration: 5000,
@@ -284,7 +289,7 @@ export default function ScheduleView() {
                     })
                     handleStopCalculation()
                 })
-            )
+            );
         })
     }
 
@@ -464,7 +469,7 @@ export default function ScheduleView() {
                         }}
                     >
                         <ScheduleGridContainer
-                            request={solverConfiguration}
+                            solverConfiguration={solverConfiguration}
                             employees={employees}
                             shiftRequests={requestedShiftConstraints}
                             shiftPatterns={shiftPatternRequests}

@@ -1,7 +1,6 @@
 package com.cocroachden.planner.solver.endpoint;
 
 import com.cocroachden.planner.security.Authorities;
-import com.cocroachden.planner.security.Role;
 import com.cocroachden.planner.solver.SolutionStatus;
 import com.cocroachden.planner.solver.SolverSolutionDTO;
 import com.cocroachden.planner.solver.SolverSubscriptionId;
@@ -14,10 +13,10 @@ import com.cocroachden.planner.solverconfiguration.query.SolverConfigurationQuer
 import com.cocroachden.planner.tickets.Ticket;
 import com.cocroachden.planner.tickets.query.TicketQuery;
 import com.cocroachden.planner.user.query.RegisteredUserQuery;
+import com.vaadin.flow.server.auth.AnonymousAllowed;
 import dev.hilla.BrowserCallable;
 import dev.hilla.EndpointSubscription;
 import dev.hilla.Nonnull;
-import jakarta.annotation.security.RolesAllowed;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationEventPublisher;
@@ -27,8 +26,10 @@ import reactor.core.publisher.Sinks;
 
 @BrowserCallable
 @Slf4j
-@RolesAllowed(Role.ROLE_USER)
+//@RolesAllowed(Role.ROLE_USER)
+@AnonymousAllowed
 public class SolverEndpoint {
+
 
     private final Integer solverDefaultTimeLimitInSec;
     private final ApplicationEventPublisher publisher;
@@ -54,17 +55,19 @@ public class SolverEndpoint {
         this.solverDefaultTimeLimitInSec = solverDefaultTimeLimitInSec;
     }
 
-    public EndpointSubscription<@Nonnull SolverSolutionDTO> solveSavedProblem(String configurationId, String ticket) {
+    public @Nonnull EndpointSubscription<@Nonnull SolverSolutionDTO> solveSavedProblem(@Nonnull String configurationId,@Nonnull String ticket) {
+        log.debug("Handling solveSavedProblem endpoint...");
         var username = ticketQuery.getUsernameForTicket(Ticket.from(ticket))
                 .orElseThrow(() -> new IllegalArgumentException("Ticket " + ticket + " is invalid!"));
         if (!registeredUserQuery.hasRole(username, Authorities.USER)) {
             throw new IllegalArgumentException("User " + username + " is not authorized to start solver!");
         }
         var configuration = configurationQuery.getSolverConfigurationById(username, SolverConfigurationId.from(configurationId));
-        return this.solveProblem(configuration, username);
+        return this.solveProblem(configuration, ticket);
     }
 
-    public EndpointSubscription<@Nonnull SolverSolutionDTO> solveProblem(SolverConfigurationDTO configuration, String ticket) {
+    public @Nonnull EndpointSubscription<@Nonnull SolverSolutionDTO> solveProblem(@Nonnull SolverConfigurationDTO configuration, @Nonnull String ticket) {
+        log.debug("Handling solveProblem endpoint...");
         var username = ticketQuery.getUsernameForTicket(Ticket.from(ticket))
                 .orElseThrow(() -> new IllegalArgumentException("Ticket " + ticket + " is invalid!"));
         if (!registeredUserQuery.hasRole(username, Authorities.USER)) {
