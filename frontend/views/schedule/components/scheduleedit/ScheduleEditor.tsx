@@ -14,6 +14,7 @@ import {EmployeeConstraintsDialog} from "Frontend/views/schedule/components/empl
 import {CrudAction, CRUDActions} from "Frontend/util/utils";
 import EmployeeAssignmentDTO
     from "Frontend/generated/com/cocroachden/planner/solverconfiguration/EmployeeAssignmentDTO";
+import ConstraintDTO from "Frontend/generated/com/cocroachden/planner/constraint/ConstraintDTO";
 
 
 function reiterateIndexes(assignments: EmployeeAssignmentDTO[]) {
@@ -80,6 +81,19 @@ export function ScheduleEditor(props: Props) {
         }
     }
 
+    function handleConstraintAction(action: CrudAction<ConstraintDTO>) {
+        switch (action.type) {
+            case CRUDActions.CREATE:
+                break;
+            case CRUDActions.READ:
+                break;
+            case CRUDActions.UPDATE:
+                break;
+            case CRUDActions.DELETE:
+                break;
+        }
+    }
+
     return (
         <VerticalLayout theme={"spacing padding"} style={{width: "100%"}}>
             {props.configuration &&
@@ -88,7 +102,7 @@ export function ScheduleEditor(props: Props) {
                         assignment={props.configuration.employees.find(w => w.employeeId === employeeDialog.employeeId)!}
                         employee={props.employees.find(e => e.id === employeeDialog.employeeId)!}
                         isOpen={employeeDialog.isOpen}
-                        onShiftPerScheduleAction={handleShiftPerScheduleAction}
+                        onShiftPerScheduleAction={handleConstraintAction}
                         shiftsPerScheduleRequests={sortedConstraints["SHIFTS_PER_SCHEDULE"].filter(r => r.owner === employeeDialog.employeeId)}
                         onOpenChanged={(newValue) => setEmployeeDialog(prevState => ({ ...prevState, isOpen: newValue }))}
                         shiftPatternRequests={sortedConstraints["SHIFT_PATTERN_CONSTRAINT"].filter(r => r.owner === employeeDialog.employeeId)}
