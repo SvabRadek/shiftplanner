@@ -56,13 +56,13 @@ export function ShiftFollowupRestrictionForm(props: Props) {
                     style={{width: "50px"}}
                     label={"Pokuta"}
                     value={props.constraint.penalty.toString()}
-                    readonly={modeCtx.mode !== ScheduleMode.EDIT}
+                    readonly={props.readonly}
                     onChange={e => handleUpdate({penalty: Number.parseInt(e.target.value)})}
                 />
             </HorizontalLayout>
             <CardFooter style={{paddingTop: 0}}>
                 <Button onClick={() => props.onAction({type: CRUDActions.DELETE, payload: props.constraint})}
-                        disabled={modeCtx.mode !== ScheduleMode.EDIT}
+                        disabled={props.readonly}
                         theme={"small icon"}>
                     <Icon icon={"vaadin:trash"}/>
                 </Button>

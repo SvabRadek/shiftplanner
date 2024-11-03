@@ -1,12 +1,10 @@
-import { CrudAction, CRUDActions } from "Frontend/util/utils";
-import { Card } from "Frontend/components/Card";
-import { HorizontalLayout } from "@hilla/react-components/HorizontalLayout";
-import { NumberField } from "@hilla/react-components/NumberField";
-import { ScheduleMode, ScheduleModeCtx } from "Frontend/views/schedule/ScheduleModeCtxProvider";
-import { useContext } from "react";
-import { Icon } from "@hilla/react-components/Icon";
-import { Button } from "@hilla/react-components/Button";
-import { Checkbox } from "@hilla/react-components/Checkbox";
+import {CrudAction, CRUDActions} from "Frontend/util/utils";
+import {Card} from "Frontend/components/Card";
+import {HorizontalLayout} from "@hilla/react-components/HorizontalLayout";
+import {NumberField} from "@hilla/react-components/NumberField";
+import {Icon} from "@hilla/react-components/Icon";
+import {Button} from "@hilla/react-components/Button";
+import {Checkbox} from "@hilla/react-components/Checkbox";
 import "@vaadin/icons";
 import WeekendConstraintDTO from "Frontend/generated/com/cocroachden/planner/constraint/WeekendConstraintDTO";
 
