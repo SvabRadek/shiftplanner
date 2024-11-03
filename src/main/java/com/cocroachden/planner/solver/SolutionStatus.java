@@ -4,5 +4,6 @@ public enum SolutionStatus {
   MODEL_INVALID,
   INFEASIBLE,
   OK,
-  OPTIMAL
+  OPTIMAL,
+  STOPPED
 }

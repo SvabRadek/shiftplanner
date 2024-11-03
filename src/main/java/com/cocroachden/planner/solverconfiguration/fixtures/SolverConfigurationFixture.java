@@ -93,12 +93,12 @@ public class SolverConfigurationFixture implements SpecificFixtureGenerator {
                         ConstraintId.random().getId(),
                         employeeId.getId(),
                         WorkShifts.WORKING_SHIFTS,
-                        13,
+                        10,
                         14,
                         1,
                         14,
                         1,
-                        15
+                        19
                 ),
                 new TripleShiftConstraintDTO(
                         ConstraintId.random().getId(),

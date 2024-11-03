@@ -9,6 +9,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.Instant;
@@ -37,26 +38,16 @@ public class SolverConfigurationRecord {
     private LocalDate startDate;
     @Setter
     private LocalDate endDate;
-    @OneToMany(mappedBy = "parent", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "parent", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private List<ConstraintRecord> constraintRecords = new ArrayList<>();
-    @OneToMany(mappedBy = "configuration", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "configuration", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private List<EmployeeAssignmentRecord> employeeAssignments = new ArrayList<>();
 
-    public void addConstraints(List<ConstraintRecord> constraints) {
-        constraints.forEach(this::addConstraint);
-    }
-
     public void addConstraint(ConstraintRecord constraint) {
-        if (constraint == null) return;
         this.constraintRecords.add(constraint);
     }
 
-    public void addAssignments(List<EmployeeAssignmentRecord> assignments) {
-        assignments.forEach(this::addAssignment);
-    }
-
     public void addAssignment(EmployeeAssignmentRecord assignment) {
-        if (assignment == null) return;
         this.employeeAssignments.add(assignment);
     }
 

@@ -10,18 +10,16 @@ import {Button} from "@hilla/react-components/Button";
 import {HorizontalLayout} from "@hilla/react-components/HorizontalLayout";
 import {TextField} from "@hilla/react-components/TextField";
 import {VerticalLayout} from "@hilla/react-components/VerticalLayout";
-import {GridDisplayMode, ScheduleGridContainer} from "./components/schedulegrid/ScheduleGridContainer";
-import {EmployeeConstraintsDialog} from "Frontend/views/schedule/components/employeesettings/EmployeeConstraintsDialog";
+import {GridDisplayMode} from "Frontend/components/solverconfigurationeditor/grid/schedulegrid/ScheduleGridContainer";
 import {areShiftRequestsSame, CrudAction, CRUDActions, generateUUID} from "Frontend/util/utils";
 import {Notification} from "@hilla/react-components/Notification";
 import {Card} from "Frontend/components/Card";
 import {Icon} from "@hilla/react-components/Icon";
 import {Subscription} from "@hilla/frontend";
 import {ScheduleMode, ScheduleModeCtx} from "Frontend/views/schedule/ScheduleModeCtxProvider";
-import {ScheduleSettingsDialog} from "Frontend/views/schedule/components/schedulesettings/ScheduleSettingsDialog";
 import {exportToExcel} from "Frontend/util/excel";
 import {HeaderStrip} from "Frontend/views/schedule/HeaderStrip";
-import {ValidationContext} from "Frontend/views/schedule/components/validation/ScheduleValidationCtxProvider";
+import {ValidationContext} from "Frontend/components/validation/ScheduleValidationCtxProvider";
 import WorkShifts from "Frontend/generated/com/cocroachden/planner/solver/WorkShifts";
 import "@vaadin/icons";
 import SolverConfigurationDTO
@@ -153,17 +151,17 @@ export default function ScheduleView() {
     }
 
     async function handleUpdate() {
-        await SolverConfigurationEndpoint.update({
-            ...solverConfiguration!,
-            constraints: combineConstraints()
-        }).then(response => {
-            handleFetchConfig(response)
-            Notification.show("Konfigurace upravena!", {
-                position: "top-center",
-                duration: 5000,
-                theme: "success"
-            })
-        })
+        // await SolverConfigurationEndpoint.update({
+        //     ...solverConfiguration!,
+        //     constraints: combineConstraints()
+        // }).then(response => {
+        //     handleFetchConfig(response)
+        //     Notification.show("Konfigurace upravena!", {
+        //         position: "top-center",
+        //         duration: 5000,
+        //         theme: "success"
+        //     })
+        // })
     }
 
     function handleFetchConfig(configId: string) {
@@ -251,47 +249,45 @@ export default function ScheduleView() {
         validationCtx.validate({...solverConfiguration!, constraints: combineConstraints()})
     }
 
-    function handleStartCalculation() {
-        handleStopCalculation()
-        setGridDisplayMode(GridDisplayMode.RESULT)
-        TicketEndpoint.issueTicket().then(ticket => {
-            console.log(ticket)
-            setResultSubscription(SolverEndpoint.solveSavedProblem(solverConfiguration?.id!, ticket!)
-                .onNext(value => {
-                    if (value.solutionStatus !== SolutionStatus.OK) {
-                        Notification.show(value.message, {
-                            position: "top-center",
-                            duration: 5000,
-                            theme: "error"
-                        })
-                        return
-                    }
-                    setResultCache(prevState => {
-                        const updatedResults = [...prevState.results, value].slice(-RESULT_CACHE_SIZE)
-                        return {
-                            results: updatedResults,
-                            selectedIndex: updatedResults.length - 1
-                        }
-                    });
-                }).onComplete(() => {
-                    Notification.show("Výpočet ukončen!", {
-                        position: "top-center",
-                        duration: 5000,
-                        theme: "success"
-                    })
-                    handleStopCalculation()
-                }).onError(() => {
-                    console.log("Farts?")
-                    Notification.show("Chyba!", {
-                        position: "top-center",
-                        duration: 5000,
-                        theme: "error"
-                    })
-                    handleStopCalculation()
-                })
-            );
-        })
-    }
+    // function handleStartCalculation() {
+    //     handleStopCalculation()
+    //     setGridDisplayMode(GridDisplayMode.RESULT)
+    //     TicketEndpoint.issueTicket().then(ticket => {
+    //         setResultSubscription(SolverEndpoint.solveSavedProblem(solverConfiguration?.id!, ticket!)
+    //             .onNext(value => {
+    //                 if (value.solutionStatus !== SolutionStatus.OK) {
+    //                     Notification.show(value.message, {
+    //                         position: "top-center",
+    //                         duration: 5000,
+    //                         theme: "error"
+    //                     })
+    //                     return
+    //                 }
+    //                 setResultCache(prevState => {
+    //                     const updatedResults = [...prevState.results, value].slice(-RESULT_CACHE_SIZE)
+    //                     return {
+    //                         results: updatedResults,
+    //                         selectedIndex: updatedResults.length - 1
+    //                     }
+    //                 });
+    //             }).onComplete(() => {
+    //                 Notification.show("Výpočet ukončen!", {
+    //                     position: "top-center",
+    //                     duration: 5000,
+    //                     theme: "success"
+    //                 })
+    //                 handleStopCalculation()
+    //             }).onError(() => {
+    //                 Notification.show("Chyba!", {
+    //                     position: "top-center",
+    //                     duration: 5000,
+    //                     theme: "error"
+    //                 })
+    //                 handleStopCalculation()
+    //             })
+    //         );
+    //     })
+    // }
 
     function handleResultSelectionChanged(offset: 1 | -1) {
         setResultCache(prevState => ({
@@ -403,7 +399,7 @@ export default function ScheduleView() {
         <VerticalLayout theme={"spacing padding"}>
             <HeaderStrip
                 onStopCalculation={handleStopCalculation}
-                onStartCalculation={handleStartCalculation}
+                onStartCalculation={() => {}}
                 resultSubscription={resultSubscription}
                 request={solverConfiguration}
                 onConfigSelected={handleFetchConfig}
@@ -422,43 +418,43 @@ export default function ScheduleView() {
             {solverConfiguration ? renderGridHeader() : <h2 style={{marginTop: 30, padding: 10}}>Vyberte rozvrh</h2>}
             {solverConfiguration &&
                 <Fragment>
-                    <ScheduleSettingsDialog
-                        isOpen={isScheduleConfigDialogOpen}
-                        onOpenChanged={setIsScheduleConfigDialogOpen}
-                        request={solverConfiguration}
-                        employees={employees}
-                        onAssignmentAction={handleAssignmentAction}
-                        employeesPerShift={employeesPerShiftRequests}
-                        onEmployeePerShiftAction={handleEmployeePerShiftAction}
-                        shiftFollowupRestriction={shiftFollowupRestrictionRequests}
-                        onShiftFollowupRestrictionAction={handleShiftFollowupRestrictionAction}
-                        consecutiveWorkingDays={consecutiveWorkingDaysRequests}
-                        onConsecutiveWorkingDaysAction={handleConsecutiveWorkingDaysAction}
-                    />
-                    <EmployeeConstraintsDialog
-                        key={employeeConfigDialog.selectedEmployeeId}
-                        assignment={solverConfiguration.employees.find(w => w.employeeId === employeeConfigDialog.selectedEmployeeId)!}
-                        employee={employees.find(e => e.id === employeeConfigDialog.selectedEmployeeId)!}
-                        isOpen={employeeConfigDialog.isOpen}
-                        onShiftPerScheduleAction={handleShiftPerScheduleAction}
-                        shiftsPerScheduleRequests={shiftPerScheduleRequests.filter(r => r.owner === employeeConfigDialog.selectedEmployeeId)}
-                        onOpenChanged={(newValue) => setEmployeeConfigDialog(prevState => ({
-                            ...prevState,
-                            isOpen: newValue
-                        }))}
-                        shiftPatternRequests={shiftPatternRequests.filter(r => r.owner === employeeConfigDialog.selectedEmployeeId)}
-                        onShiftPatternRequestsAction={handleShiftPatternAction}
-                        tripleShiftConstraintRequest={tripleShiftConstraintRequests.filter(r => r.owner === employeeConfigDialog.selectedEmployeeId)}
-                        onTripleShiftConstraintAction={handleTripleShiftConstraintAction}
-                        teamAssignmentRequests={teamAssignmentRequests.filter(r => r.owner === employeeConfigDialog.selectedEmployeeId)}
-                        onTeamAssignmentRequestAction={handleTeamAssignmentAction}
-                        onAssignmentAction={handleAssignmentAction}
-                        weekendRequests={weekendRequests.filter(r => r.owner === employeeConfigDialog.selectedEmployeeId)}
-                        onWeekendRequestRequestAction={handleWeekendRequestAction}
-                        evenDistributionRequests={evenDistributionRequests}
-                        onEvenDistributionRequestsAction={handleEvenDistributionRequestAction}
-                        readonly={modeCtx.mode !== ScheduleMode.EDIT}
-                    />
+                    {/*<ScheduleSettingsDialog*/}
+                    {/*    isOpen={isScheduleConfigDialogOpen}*/}
+                    {/*    onOpenChanged={setIsScheduleConfigDialogOpen}*/}
+                    {/*    solverConfiguration={solverConfiguration}*/}
+                    {/*    employees={employees}*/}
+                    {/*    onAssignmentAction={handleAssignmentAction}*/}
+                    {/*    employeesPerShift={employeesPerShiftRequests}*/}
+                    {/*    onEmployeePerShiftAction={handleEmployeePerShiftAction}*/}
+                    {/*    shiftFollowupRestriction={shiftFollowupRestrictionRequests}*/}
+                    {/*    onShiftFollowupRestrictionAction={handleShiftFollowupRestrictionAction}*/}
+                    {/*    consecutiveWorkingDays={consecutiveWorkingDaysRequests}*/}
+                    {/*    onConsecutiveWorkingDaysAction={handleConsecutiveWorkingDaysAction}*/}
+                    {/*/>*/}
+                    {/*<EmployeeConstraintsDialog*/}
+                    {/*    key={employeeConfigDialog.selectedEmployeeId}*/}
+                    {/*    assignment={solverConfiguration.employees.find(w => w.employeeId === employeeConfigDialog.selectedEmployeeId)!}*/}
+                    {/*    employee={employees.find(e => e.id === employeeConfigDialog.selectedEmployeeId)!}*/}
+                    {/*    isOpen={employeeConfigDialog.isOpen}*/}
+                    {/*    onShiftPerScheduleAction={handleShiftPerScheduleAction}*/}
+                    {/*    shiftsPerScheduleRequests={shiftPerScheduleRequests.filter(r => r.owner === employeeConfigDialog.selectedEmployeeId)}*/}
+                    {/*    onOpenChanged={(newValue) => setEmployeeConfigDialog(prevState => ({*/}
+                    {/*        ...prevState,*/}
+                    {/*        isOpen: newValue*/}
+                    {/*    }))}*/}
+                    {/*    shiftPatternRequests={shiftPatternRequests.filter(r => r.owner === employeeConfigDialog.selectedEmployeeId)}*/}
+                    {/*    onShiftPatternRequestsAction={handleShiftPatternAction}*/}
+                    {/*    tripleShiftConstraintRequest={tripleShiftConstraintRequests.filter(r => r.owner === employeeConfigDialog.selectedEmployeeId)}*/}
+                    {/*    onTripleShiftConstraintAction={handleTripleShiftConstraintAction}*/}
+                    {/*    teamAssignmentRequests={teamAssignmentRequests.filter(r => r.owner === employeeConfigDialog.selectedEmployeeId)}*/}
+                    {/*    onTeamAssignmentRequestAction={handleTeamAssignmentAction}*/}
+                    {/*    onAssignmentAction={handleAssignmentAction}*/}
+                    {/*    weekendRequests={weekendRequests.filter(r => r.owner === employeeConfigDialog.selectedEmployeeId)}*/}
+                    {/*    onWeekendRequestRequestAction={handleWeekendRequestAction}*/}
+                    {/*    evenDistributionRequests={evenDistributionRequests}*/}
+                    {/*    onEvenDistributionRequestsAction={handleEvenDistributionRequestAction}*/}
+                    {/*    readonly={modeCtx.mode !== ScheduleMode.EDIT}*/}
+                    {/*/>*/}
                     <Card
                         style={{
                             borderWidth: 1,
@@ -468,18 +464,18 @@ export default function ScheduleView() {
                             overflow: "scroll"
                         }}
                     >
-                        <ScheduleGridContainer
-                            solverConfiguration={solverConfiguration}
-                            employees={employees}
-                            shiftRequests={requestedShiftConstraints}
-                            shiftPatterns={shiftPatternRequests}
-                            shiftPerScheduleRequests={shiftPerScheduleRequests}
-                            teamAssignments={teamAssignmentRequests}
-                            onAssignmentAction={handleAssignmentAction}
-                            onShiftRequestsChanged={handleShiftRequestsChanged}
-                            result={resultCache.results.length > 0 ? resultCache.results[resultCache.selectedIndex] : undefined}
-                            displayMode={gridDisplayMode}
-                        />
+                        {/*<ScheduleGridContainer*/}
+                        {/*    solverConfiguration={solverConfiguration}*/}
+                        {/*    employees={employees}*/}
+                        {/*    shiftRequests={requestedShiftConstraints}*/}
+                        {/*    shiftPatterns={shiftPatternRequests}*/}
+                        {/*    shiftPerScheduleRequests={shiftPerScheduleRequests}*/}
+                        {/*    teamAssignments={teamAssignmentRequests}*/}
+                        {/*    onAssignmentAction={handleAssignmentAction}*/}
+                        {/*    onShiftRequestsChanged={handleShiftRequestsChanged}*/}
+                        {/*    result={resultCache.results.length > 0 ? resultCache.results[resultCache.selectedIndex] : undefined}*/}
+                        {/*    displayMode={gridDisplayMode}*/}
+                        {/*/>*/}
                     </Card>
                 </Fragment>
             }

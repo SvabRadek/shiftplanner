@@ -3,6 +3,8 @@ application:
     default-solver-time-limit-in-sec: 60
   tickets:
     expiration-time-in-sec: 3
+  fixtures:
+    enabled: true
 
 spring:
   mustache:
@@ -22,10 +24,15 @@ spring:
 
 logging:
   level:
-    root: info
+    root: INFO
     org.atmosphere: WARN
     com.cocroachden.planner: DEBUG
-    web: debug
+#    org.springframework.security: DEBUG
 
 vaadin:
   launch-browser: false
+
+server:
+  servlet:
+    session:
+      timeout: 60m

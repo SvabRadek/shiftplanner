@@ -14,6 +14,5 @@ public interface SolverConfigurationRepository extends CrudRepository<SolverConf
   List<SolverConfigurationMetadata> findBy();
   List<SolverConfigurationMetadata> findByOwningUser(String username);
   Optional<SolverConfigurationRecord> findByIdAndOwningUser(String id, String username);
-
-
+  Boolean existsByIdAndOwningUser(String id, String username);
 }

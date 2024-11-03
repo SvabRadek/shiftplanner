@@ -16,8 +16,8 @@ import java.util.List;
 public class SolverConfigurationQuery {
     private final SolverConfigurationRepository repository;
 
-    public Boolean exists(SolverConfigurationId configurationId) {
-        return repository.existsById(configurationId.getId());
+    public Boolean exists(SolverConfigurationId configurationId, String username) {
+        return repository.existsByIdAndOwningUser(configurationId.getId(), username);
     }
 
     public SolverConfigurationDTO getSolverConfigurationById(String username, SolverConfigurationId configurationId) {

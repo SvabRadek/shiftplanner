@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 
-@Entity(name = "constraint_record")
+@Entity(name = "solver_record")
 @NoArgsConstructor
 @Getter
 @Accessors(chain = true)
@@ -20,9 +20,11 @@ public class ConstraintRecord {
   private String id;
 
   @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "owner_id")
   private EmployeeRecord owner;
 
   @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "parent_id")
   private SolverConfigurationRecord parent;
 
   private ConstraintType type;
@@ -37,14 +39,12 @@ public class ConstraintRecord {
   }
 
   public ConstraintRecord setParent(SolverConfigurationRecord parent) {
-    if (this.parent != null) return this;
     parent.addConstraint(this);
     this.parent = parent;
     return this;
   }
 
   public ConstraintRecord setOwner(EmployeeRecord owner) {
-    if (owner == null) return this;
     owner.addConstraint(this);
     this.owner = owner;
     return this;

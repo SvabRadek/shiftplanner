@@ -1,19 +1,17 @@
 import {Button} from "@hilla/react-components/Button";
 import {Icon} from "@hilla/react-components/Icon";
 import {ScheduleMode, ScheduleModeCtx} from "Frontend/views/schedule/ScheduleModeCtxProvider";
-import {ConfigSelectDialog} from "Frontend/views/schedule/components/configurationselect/ConfigSelectDialog";
 import {HorizontalLayout} from "@hilla/react-components/HorizontalLayout";
 import {Subscription} from "@hilla/frontend";
 import {useContext, useEffect, useState} from "react";
 import {ResultCache} from "Frontend/views/schedule/ScheduleView";
 import {CrudAction, CRUDActions} from "Frontend/util/utils";
 import {Card} from "Frontend/components/Card";
-import {ResultSubHeaderStrip} from "Frontend/views/schedule/ResultSubHeaderStrip";
-import {ValidationIssuesDialog} from "Frontend/views/schedule/components/validation/ValidationIssuesDialog";
+import {ValidationIssuesDialog} from "Frontend/components/validation/ValidationIssuesDialog";
 import {Tooltip} from "@hilla/react-components/Tooltip";
-import {ValidationContext} from "Frontend/views/schedule/components/validation/ScheduleValidationCtxProvider";
+import {ValidationContext} from "Frontend/components/validation/ScheduleValidationCtxProvider";
 import {SolverConfigurationEndpoint} from "Frontend/generated/endpoints";
-import {GridDisplayMode} from "Frontend/views/schedule/components/schedulegrid/ScheduleGridContainer";
+import {GridDisplayMode} from "Frontend/components/solverconfigurationeditor/grid/schedulegrid/ScheduleGridContainer";
 import "@vaadin/icons";
 import SolverConfigurationDTO
     from "Frontend/generated/com/cocroachden/planner/solverconfiguration/SolverConfigurationDTO";
@@ -145,14 +143,14 @@ export function HeaderStrip(props: Props) {
                     </HorizontalLayout>
                 }
             </HorizontalLayout>
-            {(props.resultSubscription || props.resultCache.results.length > 0)
-                && <ResultSubHeaderStrip
-                    onExportToExcel={props.onExportToExcel}
-                    resultCache={props.resultCache}
-                    cacheSize={props.cacheSize}
-                    resultSubscription={props.resultSubscription}
-                    resultSelectionChanged={props.onResultSelectionChanged}
-                />}
+            {/*{(props.resultSubscription || props.resultCache.results.length > 0)*/}
+            {/*    && <ResultSubHeaderStrip*/}
+            {/*        onExportToExcel={props.onExportToExcel}*/}
+            {/*        cachedSolutions={props.resultCache}*/}
+            {/*        cacheSize={props.cacheSize}*/}
+            {/*        resultSubscription={props.resultSubscription}*/}
+            {/*        resultSelectionChanged={props.onResultSelectionChanged}*/}
+            {/*    />}*/}
         </Card>
 
     );

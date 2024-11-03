@@ -7,22 +7,23 @@ import com.cocroachden.planner.employee.command.saveemployee.SaveEmployeeCommand
 import com.cocroachden.planner.employee.query.EmployeeQuery;
 import com.cocroachden.planner.employee.repository.EmployeeRecord;
 import com.cocroachden.planner.employee.repository.EmployeeRepository;
-import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @AllArgsConstructor
 @Slf4j
-@Transactional
 public class EmployeeService {
 
     private final EmployeeQuery employeeQuery;
     private final EmployeeRepository employeeRepository;
 
     @EventListener
+    @Transactional
     public EmployeeHasBeenSaved handle(SaveEmployeeCommand command) {
         log.debug("Handling SaveEmployeeCommand...");
         if (employeeQuery.existsByName(command.firstName(), command.lastName(), command.currentUser())) {
@@ -38,6 +39,7 @@ public class EmployeeService {
     }
 
     @EventListener
+    @Transactional
     public EmployeeHasBeenDeleted handle(DeleteEmployeeCommand command) {
         log.debug("Handling DeleteEmployeeCommand...");
         if (!employeeRepository.existsByIdAndOwningUser(command.employeeId().getId(), command.currentUser())) {

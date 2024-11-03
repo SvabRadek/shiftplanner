@@ -7,10 +7,10 @@ import EmployeeDTO from "Frontend/generated/com/cocroachden/planner/employee/Emp
 import SolverSolutionDTO from "Frontend/generated/com/cocroachden/planner/solver/SolverSolutionDTO";
 import {workShiftBindings} from "Frontend/views/schedule/WorkShiftBindigs";
 
-export function exportToExcel(filename: string, assignments: EmployeeAssignmentDTO[], employees: EmployeeDTO[], result: SolverSolutionDTO) {
+export function exportToExcel(filename: string, assignments: EmployeeAssignmentDTO[], employees: EmployeeDTO[], solution: SolverSolutionDTO) {
   const rows: string[][] = []
-  const employeeIds = Object.keys(result.assignments)
-  const dates = Object.keys(result.assignments[employeeIds[0]])
+  const employeeIds = Object.keys(solution.assignments)
+  const dates = Object.keys(solution.assignments[employeeIds[0]])
     .map(date => stringToDate(date))
     .sort((a, b) => a.getTime() - b.getTime())
   const firstRow = (): string[] => {
@@ -31,7 +31,7 @@ export function exportToExcel(filename: string, assignments: EmployeeAssignmentD
     .forEach(assignment => {
       const row: string[] = [];
       const employee = employees.find(e => e.id === assignment.employeeId)!
-      const employeesAssignments = result.assignments[assignment.employeeId]
+      const employeesAssignments = solution.assignments[assignment.employeeId]
       const employeeName = employee.lastName + " " + employee.firstName
       row.push(employeeName)
       dates.forEach(date => {

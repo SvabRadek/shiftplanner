@@ -34,7 +34,7 @@ export function stringToDate(date: string): Date {
 
 export function getDistanceInDaysNumeric(startDate: Date, endDate: Date): number {
   const diffTimeInMillis = Math.abs(endDate.valueOf() - startDate.valueOf());
-  return diffTimeInMillis / (1000 * 60 * 60 * 24)
+  return Math.floor(diffTimeInMillis / (1000 * 60 * 60 * 24));
 }
 
 type IdentifiableSpecificShiftRequestDTO = Pick<RequestedShiftConstraintDTO, "owner" | "date">
