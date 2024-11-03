@@ -26,15 +26,12 @@ public final class EmployeeRecord {
     private String lastName;
     @Setter
     private String owningUser;
-    @OneToMany(mappedBy = "owner", cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonIgnore
+    @OneToMany(mappedBy = "owner", cascade = CascadeType.REMOVE, orphanRemoval = true, fetch = FetchType.LAZY)
     private List<ConstraintRecord> constraints = new ArrayList<>();
-    @OneToMany(mappedBy = "employee")
-    @JsonIgnore
+    @OneToMany(mappedBy = "employee", cascade = CascadeType.REMOVE, orphanRemoval = true, fetch = FetchType.LAZY)
     private List<EmployeeAssignmentRecord> assignments = new ArrayList<>();
 
     public void addConstraint(ConstraintRecord constraint) {
-        if (constraint == null) return;
         constraints.add(constraint);
     }
 

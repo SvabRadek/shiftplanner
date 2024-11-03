@@ -36,6 +36,7 @@ type DefaultConstraints = {
   [ConstraintType.TEAM_ASSIGNMENT]: ConstraintBinding<TeamAssignmentConstraintDTO>
   [ConstraintType.WEEKEND_CONSTRAINT]: ConstraintBinding<WeekendConstraintDTO>
   [ConstraintType.EVEN_SHIFT_DISTRIBUTION]: ConstraintBinding<EvenShiftDistributionConstraintDTO>
+  [ConstraintType.ONE_SHIFT_PER_DAY]: ConstraintBinding<ConstraintDTO>
 }
 
 export const apolinarPattern: WorkShifts[] = [
@@ -215,6 +216,13 @@ export const defaultConstraints: DefaultConstraints = {
       owner: "default",
       distributeShiftsEvenlyThroughoutSchedule: true,
       penaltyForDeviationFromWeeksAverage: 10
+    }
+  },
+  [ConstraintType.ONE_SHIFT_PER_DAY]: {
+    label: "Jedna smena za den",
+    constraint: {
+      type: ConstraintType.ONE_SHIFT_PER_DAY,
+      id: generateUUID()
     }
   }
 }

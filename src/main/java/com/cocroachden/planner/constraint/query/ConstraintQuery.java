@@ -5,6 +5,7 @@ import com.cocroachden.planner.constraint.ConstraintDTO;
 import com.cocroachden.planner.constraint.mapping.ConstraintMapper;
 import com.cocroachden.planner.constraint.repository.ConstraintRepository;
 import com.cocroachden.planner.employee.EmployeeId;
+import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -13,6 +14,7 @@ import java.util.stream.StreamSupport;
 
 @Service
 @AllArgsConstructor
+@Transactional
 public class ConstraintQuery {
     private final ConstraintRepository repository;
 

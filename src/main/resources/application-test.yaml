@@ -12,3 +12,7 @@ logging:
     root: INFO
     org.atmosphere: WARN
     com.cocroachden.planner: DEBUG
+
+application:
+  fixtures:
+    enabled: false

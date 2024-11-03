@@ -6,7 +6,8 @@ import {Suspense} from 'react';
 import {NavLink, Outlet} from 'react-router-dom';
 import {HorizontalLayout} from "@hilla/react-components/HorizontalLayout";
 import {useAuth} from "Frontend/auth";
-import {Button} from "@hilla/react-components/Button";
+import {SecondaryButton} from "Frontend/components/SecondaryButton";
+import {Icon} from "@hilla/react-components/Icon";
 
 const navLinkClasses = ({isActive}: any) => {
     return `block rounded-m p-s ${isActive ? 'bg-primary-10 text-primary' : 'text-body'}`;
@@ -27,6 +28,9 @@ export default function MainLayout() {
                         <NavLink className={navLinkClasses} to="/zamestnanci">
                             Zaměstnanci
                         </NavLink>
+                        <NavLink className={navLinkClasses} to="/test">
+                            Test
+                        </NavLink>
                     </nav>
                 </header>
             </div>
@@ -36,16 +40,17 @@ export default function MainLayout() {
                 {currentTitle}
             </h2>
             <HorizontalLayout slot={"navbar"} theme={"spacing padding"}
-                              style={{width: "100%", justifyContent: "end", alignItems: "baseline"}}>
+                              style={{ width: "100%", justifyContent: "end", alignItems: "baseline"}}>
                 <HorizontalLayout theme={"spacing"}>
                 </HorizontalLayout>
                 <HorizontalLayout theme={"spacing"}>
                     <h5>{auth.state.user?.username}</h5>
                 </HorizontalLayout>
                 <a href={"/login"}>
-                    <Button onClick={() => auth.logout()}>
+                    <SecondaryButton onClick={() => auth.logout()}>
+                        <Icon icon={"vaadin:exit"} slot={"prefix"}/>
                         Logout
-                    </Button>
+                    </SecondaryButton>
                 </a>
             </HorizontalLayout>
 

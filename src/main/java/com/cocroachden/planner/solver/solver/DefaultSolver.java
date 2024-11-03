@@ -109,17 +109,18 @@ public class DefaultSolver implements Solver {
         if (markerSolution != null) {
             solutionCallback.accept(markerSolution);
         }
-        log.info(model.modelStats());
-        log.info(model.validate());
-        log.info("Status: {}, Solutions: {}", status, this.internalSolverSolutionCallback.getCurrentSolutionCount());
-        log.debug("Statistics");
-        log.debug("  conflicts: {}", cpSolver.numConflicts());
-        log.debug("  branches : {}", cpSolver.numBranches());
-        log.debug("  wall time: {}", cpSolver.wallTime());
+//        log.info(model.modelStats());
+//        log.info(model.validate());
+//        log.info("Status: {}, Solutions: {}", status, this.internalSolverSolutionCallback.getCurrentSolutionCount());
+//        log.debug("Statistics");
+//        log.debug("  conflicts: {}", cpSolver.numConflicts());
+//        log.debug("  branches : {}", cpSolver.numBranches());
+//        log.debug("  wall time: {}", cpSolver.wallTime());
     }
 
     @Override
     public void stop() {
+        log.debug("Stopping search");
         if (this.internalSolverSolutionCallback != null) {
             this.internalSolverSolutionCallback.stopSearch();
         }

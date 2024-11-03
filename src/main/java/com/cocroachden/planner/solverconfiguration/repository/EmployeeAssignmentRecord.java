@@ -15,7 +15,6 @@ import java.io.Serializable;
 @Getter
 @Accessors(chain = true)
 public class EmployeeAssignmentRecord implements Serializable {
-
   @EmbeddedId
   private EmployeeAssignmentId id = new EmployeeAssignmentId();
   @Setter
@@ -23,9 +22,11 @@ public class EmployeeAssignmentRecord implements Serializable {
   @Setter
   private Integer weight = 1;
   @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "employee_id", insertable = false, updatable = false)
   @MapsId("employeeId")
   private EmployeeRecord employee;
   @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "configuration_id", insertable = false, updatable = false)
   @MapsId("configurationId")
   private SolverConfigurationRecord configuration;
 
@@ -43,16 +44,21 @@ public class EmployeeAssignmentRecord implements Serializable {
   }
 
   public EmployeeAssignmentRecord setEmployee(EmployeeRecord employee) {
-    if(employee == null) return this;
     employee.addAssignment(this);
     this.employee = employee;
     return this;
   }
 
   public EmployeeAssignmentRecord setConfiguration(SolverConfigurationRecord configuration) {
-    if(configuration == null) return this;
     configuration.addAssignment(this);
     this.configuration = configuration;
     return this;
+  }
+
+  @PreRemove
+  public void removeFromEmployeeAssignments() {
+    if (employee != null) {
+      employee.getAssignments().remove(this);
+    }
   }
 }

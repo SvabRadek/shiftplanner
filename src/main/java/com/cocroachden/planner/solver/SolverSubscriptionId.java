@@ -11,6 +11,10 @@ public record SolverSubscriptionId(
         return new SolverSubscriptionId(UUID.randomUUID().toString());
     }
 
+    public static SolverSubscriptionId from(String id) {
+        return new SolverSubscriptionId(id);
+    }
+
     @Override
     public boolean equals(Object obj) {
         if (obj instanceof SolverSubscriptionId other) {
@@ -22,5 +26,10 @@ public record SolverSubscriptionId(
     @Override
     public int hashCode() {
         return id.hashCode();
+    }
+
+    @Override
+    public String toString() {
+        return id;
     }
 }

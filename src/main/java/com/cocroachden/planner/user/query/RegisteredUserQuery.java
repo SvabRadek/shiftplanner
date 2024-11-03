@@ -5,6 +5,7 @@ import com.cocroachden.planner.user.RegisteredUserDTO;
 import com.cocroachden.planner.user.RegisteredUserId;
 import com.cocroachden.planner.security.Role;
 import com.cocroachden.planner.user.repository.RegisteredUserRepository;
+import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.userdetails.User;
@@ -18,6 +19,7 @@ import java.util.Optional;
 @Slf4j
 @Service
 @AllArgsConstructor
+@Transactional
 public class RegisteredUserQuery implements UserDetailsService {
 
     private final RegisteredUserRepository registeredUserRepository;
@@ -39,6 +41,7 @@ public class RegisteredUserQuery implements UserDetailsService {
     }
 
     @Override
+    @Transactional
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         return registeredUserRepository.findById(username)
                 .map(user -> new User(
